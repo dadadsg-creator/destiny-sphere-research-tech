@@ -25,3 +25,7 @@
 # OS/editor cruft
 Thumbs.db
 desktop.ini
+
+# Secrets - never commit
+/token.txt
+/REDACTED_CREDENTIALS.txt
