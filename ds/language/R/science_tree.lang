@@ -1,0 +1,45 @@
+<?php
+
+$lang = array();
+
+$lang['NEED'] = 'Требуется';
+$lang['SELECTED'] = 'Выбрано';
+$lang['RACE_1'] = 'Воранер';
+$lang['RACE_2'] = 'Лиенсу';
+$lang['RACE_3'] = 'Псолао';
+$lang['LEVEL'] = 'Уровень';
+
+$lang['STASIS_ENERGY'] = 'Статическая энергия';
+$lang['KADERIUM'] = 'Кадериум';
+$lang['NANO_CRYSTAL'] = 'Нано-кристаллы';
+$lang['PRODIUM'] = 'Продиум';
+$lang['FOOD'] = 'Еда';
+$lang['TRADE'] = 'Торговля';
+$lang['SPYING'] = 'Шпионаж';
+
+/*'Stasis-Energie-Forschung';
+'Kaderium-Forschung';
+'Nano-Kristall-Forschung';
+'Prodium-Forschung';
+'Nahrungs-Forschung';
+'Handels- Forschung';
+'Spionage-Forschung';
+
+'Stasis-energy research';
+'Kaderium research';
+'Nano-crystals research';
+'Prodium research';
+'Food research';
+'Trade research';
+'Espionage research';
+
+'Ricerca energia statica';
+'Ricerca caderium';
+'Ricerca nano-cristalli';
+'Ricerca prodium';
+'Ricerca cibo';
+'Ricerca del commercio';
+'Ricerca spionaggio';
+*/
+
+?>

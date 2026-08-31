@@ -1,0 +1,50 @@
+<?php
+$lang_err['PROTECTION_CODE_ERROR'] = 'Вы ошиблись при вводе защитного кода.';
+$lang_err['WORLD_CLOSED'] = 'Мир закрыт. Попробуйте зарегистрироваться позже.';
+$lang_err['CANT_REGISTRATE_IN_WORLD'] = 'Вы не можете зарегистрироваться в этом мире.';
+$lang_err['NO_FREE_COMBS'] = 'На выбранном кольце нет свободных сот.';
+$lang_err['UNABLE_TO_CREATE_INSTANCE'] = 'Ошибка. Попробуйте зарегистрироваться позже.';
+$lang_err['WRONG_SYMBOLS_IN_COMB_NAME'] = 'Неверные символы в название соты';
+$lang_err['COMB_NAME_TOO_SHORT'] = 'Название соты слишком короткое.';
+$lang_err['COMB_NAME_TOO_LONG'] = 'Название соты слишком длинное.';
+$lang_err['COMB_NOT_UNIQUE'] = 'Сота с таким названием уже существует.';
+$lang_err['MISMATCH_UIID_AND_UID'] = 'Ошибка.';
+$lang_err['REPLICATION_PROBLEMS'] = 'Изменённый пароль пока не вступил в силу. Подождите, пожалуйста, или верните старый пароль.';
+
+if((constant('PREMIUM_PRESENT_DAYS') % 10) == 1)
+{
+    $days = ' день';
+} elseif((constant('PREMIUM_PRESENT_DAYS') % 10) < 5){
+    $days = ' дня';
+} else {
+    $days = ' дней';
+}
+
+if (count($_SESSION) > 1 && key_exists('uid', $_SESSION) && !GE_LogicGetPremiumPresent::CheckIfPresentForDRIsReceived($_SESSION['uid'])) {
+    $countOfDays = 5;
+    $days = ' дня';
+} else {
+    $countOfDays = constant('PREMIUM_PRESENT_DAYS');
+}
+$lang_err['PREMIUM_PRESENT_ADDED'] = 'Вам добавлено '.$countOfDays.$days.' премиума.';
+
+$lang_err['PREMIUM_PRESENT_RELOGIN'] = 'Вам добавлено '.constant('PREMIUM_PRESENT_DAYS').$days.' премиума. Чтобы премиум включился Вы должны <a href="/" class="wnd_header_txt_large">перелогиниться</a>.';
+$lang_err['MESSAGE_SEND_OK'] = 'Сообщение отправлено';
+$lang_err['MESSAGE_SEND_ERROR'] = 'Произошла ошибка при отправке сообщения. Пожалуйста повторите или попробуйте позже.';
+$lang_err['EMPTY_SUPPORT_MESSAGE'] = 'Пустое сообщение.';
+$lang_err['MESSAGE_LIMIT'] = 'Вы превысили допустимое количество сообщений';
+$lang_err['NO_RACE_SELECTED'] = 'Вы не выбрали расу.';
+$lang_err['NO_WORLD_SELECTED'] = 'Вы не выбрали игровой мир.';
+
+$lang_err['EMPTY_EMAIL'] = 'Вы не ввели новый e-mail.';
+$lang_err['EMAIL_ALREADY_CHANGED'] = 'Вы уже изменили e-mail.';
+$lang_err['CHANGE_ERROR'] = 'Ошибка при смене e-mail, попробуйте повторить.';
+$lang_err['MAIL_CHANGE_OK'] = 'E-mail успешно изменен.';
+$lang_err['WRONG_SYMBOLS_IN_EMAIL'] = 'Неверный e-mail.';
+$lang_err['EMAIL_TOO_SHORT'] = 'Неверный e-mail.';
+$lang_err['EMAIL_TOO_LONG'] = 'Неверный e-mail.';
+$lang_err['EMAIL_NOT_UNIQUE'] = 'Выбранный e-mail уже существует.';
+$lang_err['ACTIVATION_MAIL_SEND'] = 'Письмо с инструкцией по активации аккаунта успешно выслано.';
+$lang_err['YOU_VOICE_WAS_CONSIDERED'] = 'Ваш голос был учтен. Спасибо.';
+$lang_err['ANSWER_NON_CHOOSEN'] = 'Вы не выбрали вариант ответа.';
+?>

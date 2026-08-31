@@ -1,0 +1,344 @@
+BODY {
+	border: 0px;
+	background-color: #1E273F; 
+	background-image: url(img/cabinet/bg/bg_main.gif);
+	margin: 0; 
+	margin-left: 0; 
+	margin-top: 0; 
+	margin-bottom: 0;
+	margin-right: 0;
+}
+
+/*-------------Background color style---------------*/
+.bg_top {
+	background-image: url(img/cabinet/bg/bg_top.gif);
+	background-repeat: repeat-x;
+}
+
+.bg_left {
+	background-image: url(img/cabinet/bg/bg_left.gif);
+	background-repeat: repeat-y;
+	width: 8px;
+}
+
+.bg_right {
+	background-image: url(img/cabinet/bg/bg_right.gif);
+	background-repeat: repeat-y;
+	width: 8px;
+}
+
+.bg_top_menu {
+	background-image: url(img/cabinet/bg/bg_top_menu.gif);
+	background-repeat: repeat-x;
+	height: 34px;
+}
+
+.f_d01 {
+	background-image: url(img/cabinet/bg/bg_line01.gif);
+	background-repeat: repeat-x;
+	height: 3px;
+}
+
+.f_bg01 {
+	background-image: url(img/cabinet/bg/bg_footer_l.gif);
+	background-repeat: repeat-x;
+	height: 55px;
+}
+
+.bg_border_left {
+	width: 12px;
+	background-image: url(img/cabinet/border/01/left_bg.gif);
+   background-repeat: repeat-y;
+}
+
+.bg_border_right {
+	width: 12px;
+	background-image: url(img/cabinet/border/01/right_bg.gif);
+   background-repeat: repeat-y;
+}
+
+.bg_border_left02 {
+	width: 12px;
+	background-image: url(img/cabinet/border/02/left_bg.gif);
+   background-repeat: repeat-y;
+}
+
+.bg_border_right02 {
+	width: 12px;
+	background-image: url(img/cabinet/border/02/right_bg.gif);
+   background-repeat: repeat-y;
+}
+
+.bg01 {
+	background-color: #EBEDF1;
+}
+
+.bg02 {
+	background-color: #ffffff;
+	border-left: solid #cccccc 1px;
+	border-bottom: solid #cccccc 1px;
+}
+
+.delimetr01 {
+	height: 1px;
+	background-image: url(img/cabinet/bg/delimetr01.gif);
+	background-repeat: repeat-x;
+}
+
+.delimetr02 {
+	width: 1px;
+	background-image: url(img/cabinet/bg/delimetr02.gif);
+	background-repeat: repeat-y;
+}
+
+.bg_header01 {
+	width: 200px;
+	height: 29px;
+	background-image: url(img/cabinet/graph/bg_h01.jpg);
+	background-repeat: no-repeat;
+	font-family: Tahoma, Verdana, Arial, sans-serif;
+	font-size: 10px;
+	font-weight: bold;
+	text-decoration: none;
+	color: #2D2F60;
+	text-transform: uppercase;
+	padding-left: 26px;
+	padding-right: 3px;
+}
+
+/*-------------Font style---------------*/
+
+.header_txt {
+	font-family: Tahoma, Verdana, Arial, sans-serif;
+	font-size: 10px;
+	font-weight: bold;
+	text-decoration: none;
+	color: #2D2F60;
+	text-transform: uppercase;
+	padding-left: 3px;
+	padding-right: 3px;
+}
+
+.header_txt_02 {
+	font-family: Tahoma, Verdana, Arial, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	text-decoration: none;
+	color: #2D2F60;
+	padding-left: 3px;
+	padding-right: 3px;
+}
+
+.menu_txt {
+	color: #333333;
+	font-size: 11px;
+	font-weight: bold;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+a.menu_txt:hover {
+	color: #2D2F60;
+	font-size: 11px;
+	font-weight: bold;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+a.menu_txt:link, a.menu_txt:visited {
+	color: #333333;
+	font-size: 11px;
+	font-weight: bold;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+.sys_message_ok {
+	font-family: Tahoma, Verdana, Arial, sans-serif;
+	color: #006C01;
+	font-size: 11px;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+.sys_message_error {
+	font-family: Tahoma, Verdana, Arial, sans-serif;
+	color: #970000;
+	font-size: 11px;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+div.menu {
+	width:110px;
+	height:100%;
+	cursor: hand;
+	color: #333333;
+	font-size: 11px;
+	font-weight: bold;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+div.menu:hover {
+	width:110px;
+	height:100%;
+	cursor: hand;
+	color: #2D2F60;
+	font-size: 11px;
+	font-weight: bold;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+div.b_menu {
+	width:100%;
+	height:100%;
+	cursor: hand;
+	color: #333333;
+	font-size: 10px;
+	font-weight: bold;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+div.b_menu:hover {
+	width:100%;
+	height:100%;
+	cursor: hand;
+	color: #2D2F60;
+	font-size: 10px;
+	font-weight: bold;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+/* standart */
+
+img {
+	border: none;
+}
+
+a:link, a:visited {
+	font-family: Verdana, Arial;
+	font-size: 10px;
+	color: #111111;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+a:hover {
+	font-family: Verdana, Arial;
+	font-size: 10px;
+	color: #2D447E;
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+td {
+	font-family: Verdana, Arial;
+	font-size: 10px;
+	color: #222222;
+	font-weight: normal;
+	text-decoration: none;
+}
+
+.copyrights {
+	font-family: Arial, Verdana, sans-serif;
+	font-size: 9px;
+	color: #666F78;
+	text-decoration: none;
+	padding-right: 5px;
+/*	font-weight: bold;*/
+}
+
+/*-------------Element style---------------*/
+
+input.check {
+	border: none;
+}
+
+textarea {
+	font-family: Tahoma;
+	font-size: 11px;
+	font-weight: bold;
+	color: #444444;
+	border: 1px solid #A1AFC6;
+}
+
+input {
+	border: 1px solid #A1AFC6;
+	height: 16px;
+	font-family: Tahoma;
+	font-weight: bold;
+	font-size: 10px;
+	color: #444444;
+}
+
+.submit01 {
+	border: solid 0px;;
+	background-image: url(img/cabinet/btn/02.gif);
+	background-color: #C2C9D2;
+	height: 21px;
+	width: 97px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	text-align: center;
+	color: #2D2F60;
+	font-weight: bold;
+}
+
+.submit02 {
+	border: solid 0px;;
+	background-image: url(img/cabinet/btn/03.gif);
+	background-color: #C2C9D2;
+	height: 21px;
+	width: 150px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	text-align: center;
+	color: #2D2F60;
+	font-weight: bold;
+}
+
+.submit_yes {
+	border: solid 0px;;
+	background-image: url(img/cabinet/btn/02.gif);
+	background-color: #C2C9D2;
+	height: 21px;
+	width: 97px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	text-transform: uppercase;
+	text-align: center;
+	color: #006C01;
+	font-weight: bold;
+}
+
+.submit_no {
+	border: solid 0px;;
+	background-image: url(img/cabinet/btn/02.gif);
+	background-color: #C2C9D2;
+	height: 21px;
+	width: 97px;
+	font-family: Arial, Helvetica, sans-serif;
+	text-transform: uppercase;
+	font-size: 10px;
+	text-align: center;
+	color: #970000;
+	font-weight: bold;
+}
+
+select {
+	border: solid 1px #404F64;
+	height: 16px;
+	font-family: Tahoma;
+	font-weight: bold;
+	font-size: 10px;
+	color: #555555;
+}
+
+.img_link {
+	cursor: pointer;
+}
+
+.img {
+	margin-right: 5px;
+	margin-bottom: 3px;
+	width: 50px;
+	height: 50px;
+	border: 0px;
+}

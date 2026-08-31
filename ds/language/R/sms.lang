@@ -1,0 +1,48 @@
+<?php
+
+$lang = array();
+
+$lang['SMS'] = 'SMS';
+$lang['SERVICE_UNAVAILABLE'] = 'В данный момент сервис не доступен!';
+$lang['SERVICE_UNAVAILABLE_2'] = 'Ваши данные не обработались, попробуйте позже';
+$lang['UNKNOWN_TYPE'] = 'Не опознана команда!';
+
+$lang['FREE'] = 'свободно';
+$lang['SEND'] = 'Отправлено';
+$lang['GROUP'] = 'групп';
+
+$lang['PREMIUM_MSG_START'] = 'Ваш премиум аккаунт';
+$lang['PREMIUM_MSG_ACTIVATED_10'] = 'активирован, включено 10 дней';
+$lang['PREMIUM_MSG_PROLONGED_10'] = 'продлен на 10 дней';
+$lang['PREMIUM_MSG_ACTIVATED_8'] = 'активирован, включено 8 дней';
+$lang['PREMIUM_MSG_PROLONGED_8'] = 'продлен на 8 дней';
+
+$lang['ARMIE_MSG_NO_ATTACK'] = 'Вас никто не атакует.';
+$lang['ARMIE_MSG_ERROR'] = 'Нет возможности получить данные!';
+
+$lang['ART_MSG_START'] = 'Было';
+$lang['ART_MSG_ARTS'] = 'артефактов';
+$lang['ART_MSG_BONUS'] = 'бонус';
+$lang['ART_MSG_END'] = 'Стало';
+$lang['ART_MSG_ERROR_COORDS'] = 'Сота с указанными координатами не существует.';
+$lang['ART_MSG_ERROR_COORDS_USER'] = 'Сота с указанными координатами вам не принадлежит.';
+$lang['ART_MSG_ERROR_NAME'] = 'Сота с указанным названием не существует.';
+$lang['ART_MSG_ERROR_NAME_USER'] = 'Сота с указанным названием вам не принадлежит.';
+$lang['ART_MSG_ERROR_COMB'] = 'Неверное название или координаты соты.';
+
+$lang['CREDIT_MSG_ADDED'] = 'Кредиты добавлены.';
+$lang['CREDIT_MSG_ERROR'] = 'Вы ввели логин неверно!';
+
+$lang['ERROR_WORLD'] = 'Вы не указали игровой мир или указали его неправильно!';
+$lang['ERROR_WORLD_2'] = 'Вы указали несуществующий мир!';
+$lang['ERROR_LOGIN_OR_PASSWORD'] = 'Вы не указали свой логин или пароль!';
+$lang['ERROR_LOGIN_OR_PASSWORD_2'] = 'Вы ввели свой логин или пароль неверно!';
+$lang['ERROR_LOGIN'] = 'Вы ввели свой логин неверно!';
+$lang['ERROR_SHORT_NUMBER'] = 'Вы отправили сообщение на неправильный номер. Подробности на sms.destinysphere.ru!';
+$lang['ERROR_MESAGE'] = 'Не установлена цена сообщения';
+$lang['ERROR_MESAGE_2'] = 'Тип сообщения не опознан!';
+$lang['ERROR_PARAMS'] = 'Неизвестный формат запроса!';
+
+$lang['PROCCESSED'] = 'Обработано';
+
+?>

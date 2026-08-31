@@ -1,0 +1,9 @@
+<?
+
+$lang = array();
+
+$lang['TEXT1'] = 'Spielwelt:';
+$lang['SUBMIT'] = 'Eintreten';
+$lang['world_closed'] = 'unzug&auml;nglich';
+
+?>

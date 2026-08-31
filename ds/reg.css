@@ -1,0 +1,593 @@
+/*=================================================================*/
+/*============================ RESET ==============================*/
+/*=================================================================*/
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,textarea,p,blockquote,th,td {margin:0; padding:0;}
+table {border-collapse:collapse; border-spacing:0;}
+fieldset,img {border:0;}
+address,caption,cite,code,dfn,em,strong,th,var {font-style:normal;  font-weight:normal;}
+ol,ul {list-style:none;}
+caption,th {text-align:left;}
+h1,h2,h3,h4,h5,h6 {font-size:100%;font-weight:normal;}
+q:before,q:after {content:'';}
+abbr,acronym {border:0;}
+/*============================ eof RESET ==========================*/
+
+/*=================================================================*/
+/*============================ BASE ===============================*/
+/*=================================================================*/
+html{
+    width:100%;
+    height:100%;
+}
+*{
+    font-size:12px;
+}
+body{
+    width:100%;
+    height:100%;
+    background-color:#000000;
+}
+a{
+    text-decoration:underline;
+}
+a:hover{
+    text-decoration:none;
+}
+:focus {
+    outline: 0;
+}
+input.chkbx{
+    width:20px;
+    height:20px;
+    border:0px;
+    border:none;
+}
+input.input_text{
+    width:112px;
+    height:19px;
+    padding:6px 10px 3px 10px;
+    border:none;
+    background:transparent;
+    vertical-align:middle;
+    overflow:hidden;
+
+    font-family:Tahoma;
+    font-size:11px;
+    font-weight:bold;
+    color:#FFFFFF;
+}
+div.input_text{
+    display:table-cell;
+    float:left;
+    width:132px;
+    background:transparent url('img/content/input/text.png') no-repeat top right;
+    vertical-align:middle;
+    overflow:hidden;
+}
+
+input.input_text2{
+    width:156px;
+    height:14px;
+    margin:10px 10px 4px 10px;
+    border:none;
+    background:transparent;
+    vertical-align:middle;
+    overflow:hidden;
+
+    font-family:Tahoma;
+    font-size:11px;
+    font-weight:bold;
+    color:#FFFFFF;
+}
+div.input_text2{
+    width:177px;
+    height:31px;
+    background:transparent url('img/content/input/text2.png') no-repeat top right;
+    vertical-align:middle;
+    overflow:hidden;
+}
+
+textarea.text_area{
+    width:319px;
+    height:98px;
+    border:none;
+    overflow:auto;
+    background:transparent;
+    _margin-top:-10px;
+    font-family:Tahoma;
+    font-size:11px;
+    font-weight:bold;
+    color:#999999;
+}
+div.text_area{
+    width:319px;
+    height:98px;
+    padding:10px;
+    background:transparent url('img/content/input/textarea.png') no-repeat top left;
+}
+
+textarea.text_area2{
+    width:428px;
+    height:107px;
+    border:none;
+    overflow:auto;
+    background:transparent;
+    font-family:Tahoma;
+    font-size:11px;
+    font-weight:bold;
+    color:#999999;
+}
+div.text_area2{
+    width:428px;
+    height:107px;
+    padding:10px;
+    background:transparent url('img/content/input/textarea2.png') no-repeat top left;
+}
+div.text_area3{
+    width:428px;
+    height:307px;
+    padding:10px;
+}
+
+/*============================ eof BASE ===========================*/
+
+
+/*=================================================================*/
+/*============================ LAYOUT =============================*/
+/*=================================================================*/
+table.layout{
+    width:100%;
+    height:1016px;
+    background-color:#111111;
+}
+table.layout td.layout_left{
+    background:transparent url('img/layout/bg_main_left.gif') repeat-y top right;
+}
+table.layout td.layout_right{
+    background:transparent url('img/layout/bg_main_right.gif') repeat-y top left;
+}
+div.min_width{
+    width:1001px;
+    height:0px;
+    font-size:0px;
+}
+/*============================ eof LAYOUT =========================*/
+
+/*=================================================================*/
+/*============================ ONLINE =============================*/
+/*=================================================================*/
+div.online{
+    position:absolute;
+    width:54px;
+    height:15px;
+    margin-top:5px;
+    margin-left:888px;
+    overflow:hidden;
+    text-align:center;
+    font-family:Tahoma;
+    font-size:14px;
+    font-weight:bold;
+    color:#FFFFFF;
+}
+/*============================ eof ONLINE =========================*/
+
+/*=================================================================*/
+/*============================ LEFT MENU ==========================*/
+/*=================================================================*/
+div.left_menu{
+    position:absolute;
+    width:205px;
+    height:215px;
+    margin-top:290px;
+    margin-left:47px;
+    overflow:hidden;
+}
+div.left_menu a{
+    display:block;
+    width:100%;
+    height:100%;
+}
+div.left_menu div.btn_1{
+    width:167px;
+    height:48px;
+    margin-top:0px;
+    margin-left:0px;
+    /*border:1px dashed green;*/
+}
+div.left_menu div.btn_1 img{
+    margin-top:10px;
+    margin-left:23px;
+}
+div.left_menu div.btn_2{
+    width:157px;
+    height:48px;
+    margin-top:6px;
+    margin-left:20px;
+    /*border:1px dashed green;*/
+}
+div.left_menu div.btn_2 img{
+    margin-top:12px;
+    margin-left:20px;
+}
+div.left_menu div.btn_3{
+    width:167px;
+    height:50px;
+    margin-top:5px;
+    margin-left:24px;
+    /*border:1px dashed green;*/
+}
+div.left_menu div.btn_3 img{
+    margin-top:10px;
+    margin-left:15px;
+}
+div.left_menu div.btn_4{
+    width:127px;
+    height:37px;
+    margin-top:7px;
+    margin-left:54px;
+    /*border:1px dashed green;*/
+}
+div.left_menu div.btn_4 img{
+    margin-top:8px;
+    margin-left:15px;
+}
+/*============================ eof LEFT MENU ======================*/
+
+/*=================================================================*/
+/*============================ LEFT NOTES =========================*/
+/*=================================================================*/
+div.left_notes{
+    position:absolute;
+    width:175px;
+    height:215px;
+    margin-top:545px;
+    margin-left:52px;
+    overflow:hidden;
+
+    color:#FFFFFF;
+    font-family:Tahoma;
+    font-size:12px;
+}
+div.left_notes a{
+    color:#FFFFFF;
+    text-decoration:underline;
+}
+div.left_notes a:hover{
+    text-decoration:none;
+}
+/*============================ eof LEFT NOTES =====================*/
+
+/*=================================================================*/
+/*============================ TOP MENU ===========================*/
+/*=================================================================*/
+div.top_menu{
+    position:absolute;
+    width:210px;
+    height:18px;
+    margin-top:327px;
+    //margin-top:330px;
+    margin-left:385px;
+    overflow:hidden;
+}
+div.top_menu table.top_menu{
+    width:210px;
+    height:100%;
+}
+div.top_menu a{
+    display:block;
+    height:18px;
+    padding-top:2px;
+    padding-left:10px;
+}
+div.top_menu table.top_menu td.btn_1{
+    width:63px;
+}
+div.top_menu table.top_menu td.btn_2{
+    width:61px;
+}
+div.top_menu table.top_menu td.btn_2 a{
+    //padding-top:1px;
+}
+div.top_menu table.top_menu td.btn_3{
+    width:86px;
+}
+div.top_menu table.top_menu td.btn_3 a{
+    padding-top:3px;
+    //padding-top:1px;
+}
+/*============================ eof TOP MENU =======================*/
+
+/*=================================================================*/
+/*============================ RIGHT MENU =========================*/
+/*=================================================================*/
+div.right_menu{
+    position:absolute;
+    width:209px;
+    height:311px;
+    margin-top:287px;
+    margin-left:774px;
+    overflow:hidden;
+}
+div.right_menu table.right_menu{
+    width:209px;
+    height:311px;
+}
+div.right_menu table.right_menu td{
+    vertical-align:top;
+}
+div.right_menu table.right_menu td.head_1{
+    height:18px;
+}
+div.right_menu table.right_menu td.head_1 a{
+    display:block;
+    width:103px;
+    height:13px;
+    margin-left:55px;
+    margin-top:2px;
+}
+div.right_menu table.right_menu td.head_2{
+    height:18px;
+}
+div.right_menu table.right_menu td.head_2 a{
+    display:block;
+    width:65px;
+    height:13px;
+    margin-left:70px;
+    margin-top:2px;
+}
+div.right_menu table.right_menu td.item{
+    width:104px;
+    height:69px;
+}
+div.right_menu table.right_menu td.item a{
+    display:block;
+    width:104px;
+    height:67px;
+    margin-top:2px;
+}
+/*============================ eof RIGHT MENU =====================*/
+
+/*=================================================================*/
+/*============================ CONTENT ============================*/
+/*=================================================================*/
+div.content{
+    position:absolute;
+    width:490px;
+    height:610px;
+    margin-top:360px;
+    margin-left:244px;
+    overflow:hidden;
+    z-index:100;
+
+    font-family:Tahoma;
+    font-size:12px;
+    font-weight:bold;
+    color:#FFFFFF;
+}
+div.content p{
+    margin:8px;
+}
+div.content div.title{
+    width:361px;
+    height:40px;
+    margin-top:10px;
+    margin-left:78px;
+    text-align:center;
+    overflow:hidden;
+}
+div.content div.pager{
+    width:215px;
+    height:27px;
+    margin-top:30px;
+    margin-left:150px;
+    text-align:center;
+    overflow:hidden;
+}
+div.content div.pager img{
+    margin-left:5px;
+}
+div.content div.next_btn{
+    position:absolute;
+    width:116px;
+    height:41px;
+    margin-top:465px;
+    margin-left:260px;
+    overflow:hidden;
+    z-index:112;
+}
+div.content div.prev_btn{
+    position:absolute;
+    width:116px;
+    height:41px;
+    margin-top:465px;
+    margin-left:140px;
+    overflow:hidden;
+    z-index:102;
+}
+
+/*============================ container ==========================*/
+table.container{
+    margin-top:10px;
+    margin-left:10px;
+}
+table.container td.item{
+    width:240px;
+    height:215px;
+    background:transparent url('img/content/container/cell.png') no-repeat top left;
+    vertical-align:top;
+    padding-left:2px;
+}
+
+
+table.container td.item table.block td.head{
+    height:34px;
+    vertical-align:bottom;
+}
+table.container td.item table.block td.head a.button{
+    margin-left:60px;
+}
+table.container td.item table.block td.head input.chkbx{
+    margin-left:16px;
+    width:26px;
+    height:27px;
+    border:0px;
+    border:none;
+    /*background:transparent url('img/content/input/chkbox.png') no-repeat top left;*/
+}
+
+table.container td.item table.block td.image_left{
+    text-align:left;
+    vertical-align:top;
+    overflow:hidden;
+}
+table.container td.item table.block td.image_right{
+    text-align:right;
+    vertical-align:top;
+    overflow:hidden;
+}
+
+table.container td.item table.block td.text_left{
+    text-align:left;
+    vertical-align:top;
+    font-family:Tahoma;
+    font-size:11px;
+    font-weight:bold;
+    color:#FFFFFF;
+    width:110px;
+    height:85px;
+    overflow:hidden;
+}
+
+table.container td.item table.block td.text_right{
+    text-align:left;
+    vertical-align:top;
+    font-family:Tahoma;
+    font-size:11px;
+    font-weight:bold;
+    color:#FFFFFF;
+    overflow:hidden;
+    padding-left:0px;
+    margin-left:0px;
+}
+
+
+table.container td.item table{
+    margin:4px;
+}
+table td.label{
+    vertical-align:top;
+    padding-top:5px;
+    padding-left:3px;
+    padding-right:3px;
+}
+table td.val{
+    vertical-align:top;
+    padding-top:2px;
+    padding-left:3px;
+    padding-right:3px;
+}
+
+
+
+
+table.world_list{
+    height:440px;
+    width:480px;
+}
+table.world_list td.list{
+    height:280px;
+    vertical-align:top;
+    padding-top:10px;
+    padding-left:10px;
+}
+table.world_list td.list div.list{
+    height:467px;
+    overflow:auto;
+    padding-top:10px;
+}
+
+table.world_list2 td.list2 div.list2{
+    height:467px;
+    overflow:auto;
+    padding-top:10px;
+}
+
+table.world_list td.list table.list{
+    width:440px;
+}
+table.world_list td.list table.list td.pic{
+    width:63px;
+    height:63px;
+    padding-left:20px;
+    text-align:left;
+    vertical-align:middle;
+}
+table.world_list td.list table.list td.chk_btn{
+    width:35px;
+    text-align:left;
+    vertical-align:middle;
+}
+table.world_list td.list table.list td.text{
+    text-align:left;
+    vertical-align:middle;
+    font-family:Tahoma;
+    font-size:11px;
+    font-weight:bold;
+    color:#FFFFFF;
+}
+
+table.world_list td.service{
+    overflow:hidden;
+    height:140px;
+    vertical-align:top;
+    padding-top:10px;
+    text-align:center;
+}
+table.world_list td.service div.input_text2{
+    margin-left:140px;
+    //margin-left:0;
+}
+table.world_list td.service div.text_area{
+    margin-left:70px;
+    //margin-left:0;
+}
+
+div.container{
+    width:470px;
+    height:430px;
+    overflow:hidden;
+    padding-top:20px;
+    margin-left:20px;
+}
+div.container div.text_area2{
+    margin-top:10px;
+}
+
+div.flags{
+    position:absolute;
+    width:150px;
+    height:25px;
+    margin-top:12px;
+    margin-left:35px;
+    overflow:hidden;
+    text-align:center;
+    font-family:Tahoma;
+    font-size:14px;
+    font-weight:bold;
+    color:#FFFFFF;
+}
+
+div.copyright{
+    position:absolute;
+    width:254px;
+    height:15px;
+    margin-top:1000px;
+    margin-left:350px;
+    overflow:hidden;
+    text-align:center;
+    font-family:Tahoma;
+    font-size:14px;
+    font-weight:bold;
+    color:#FFFFFF;
+}
+/*============================ eof CONTENT ========================*/

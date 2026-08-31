@@ -1,0 +1,50 @@
+intro=<?xml version="1.0" encoding="UTF-8"?>
+    <body>
+      <trans-unit id="001" resname="IDS_NAME_WINDOW_FIELD">
+        <source>KAIP PRADETI ZAISTI</source>
+      </trans-unit>
+      <trans-unit id="002" resname="IDS_SC_1_TEXT">
+        <source>Dirbtinis ziedu pasaulis yra paverstas pirmapradzio tyrumo lopsiu... Tautos isskirtos ir pavirstos trimis rasemis. Kiekviena is ju apgyvendinta didziuliame ziede, besisukanciame aplink raudonos zvaigzdes vadinamos Sulis.
+
+Kiekvieno ziedo pavirsiuje — begalinis koriu kompleksu, apsuptu neiveikiamu jegos skydu, kiekis. Laikui begant, rases ismoko taupyti, naudodamos kiekviena skirto jiems pavirsiaus peda, ir tapo gyvybinga Suliso sviesa.
+
+Pirmajame ziede apgyvendinti buvo meistrai — Voraneriai... Antrame apsigyveno zemdirbiai ir medziotojai — Liensu... Dvasininkai ir vienuoliai pradejo savo gyvenimo kelia treciame ziede ir pasivadino Psalao...
+
+...ir buvo jiems lemta susitikti ketvirtame ziede.</source>
+      </trans-unit>
+      <trans-unit id="003" resname="IDS_SC_2_TEXT">
+        <source>Naminiame koryje egzistuoja sekantys pavirsiaus tipai:</source>
+      </trans-unit>
+      <trans-unit id="004" resname="IDS_SC_2_TEXT_DESERT">
+        <source> – zeme. Viso – 85 vnt. ( vertingiausias pavirsius )</source>
+      </trans-unit>
+      <trans-unit id="005" resname="IDS_SC_2_TEXT_GRASS">
+        <source> – zole. Viso – 52 vnt.( reikalinga fermoms ir gyvenvietems )</source>
+      </trans-unit>
+      <trans-unit id="006" resname="IDS_SC_2_TEXT_GROUND">
+        <source>– dykuma. Viso – 36 vnt. ( visa skirta burems-gaudyklems )</source>
+      </trans-unit>
+      <trans-unit id="007" resname="IDS_SC_2_TEXT_WATER">
+        <source> – vanduo. Viso – 44 vnt.( po tam tikru mokslo lygio studijavimo skirta hidrofermoms )</source>
+      </trans-unit>
+      <trans-unit id="008" resname="IDS_SC_3_TEXT">
+        <source>Zaidimo pradzioje jums teks pastatyti bazini gamybos kompleksa. Rekomenduojami pastatai:
+Bures-gaudykles — Statines Energijos gamyba — 7 vnt. (statomi ant smelio)
+Kaderiumo kalves — Kaderiumo gamyba — 2 vnt. (statomi ant zemes)
+Nano-kristalizatoriai — Nano-kristalu gamyba — 2 vnt. (statomi ant zemes)
+Gyvenamieji namai — 2 vnt. (statomi ant zoles)
+Fermos — Maisto gamyba darbuotoju islaikymui — 2 vnt. (statomi ant zoles)
+
+Vienu metu galima statyti nedaugiau kaip 4 pastatus. Ekonomini korio balansa — Jus galite pamatyti "Sleptuve", kuri jau yra ikurta koryje.</source>
+      </trans-unit>
+      <trans-unit id="009" resname="IDS_SC_4_TEXT">
+        <source>Koriu gyventojai susideda is darbininku, mokslininku, archeologu ir kariniu vienetu. Mokslininkai reikalingi mokslo ir technologiju vystimui.
+
+Pastatykite ant "zemes" viena "Mokslo centra" ir istreniruokite ten 10 mokslininku. Po to Jus galite vystyti tam tikrus mokslus. Kuo daugiau mokslininku, tuo greiciau vyksta studijavimas.
+
+Isvystikite moksla "Kaderiumas" iki 2 lygio ir galesite pastatyti Kaderiumo presa. Po to kai isvystysite "Kaderiumas" iki 5 lygio, "Nano-kristalai", "Statine energija"  ir "Maistas" - iki 3 Jus galesite atkurti "Centriniu vartu nuolauzos" ir gausite priejima prie   visos "Likimo Sferos" erdves.</source>
+      </trans-unit>
+      <trans-unit id="010" resname="IDS_SC_4_TREE">
+        <source>Issami informacija apie reikiama vystymosi lygi tam tikru gebejimu yra pavaizduota "Mokslu medis" ( pamatyti informacija galima is "Mokslo centras")</source>
+      </trans-unit>
+    </body>

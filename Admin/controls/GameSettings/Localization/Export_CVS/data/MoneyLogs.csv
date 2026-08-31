@@ -1,0 +1,61 @@
+"Data  from 2019-11-12 to 2019-18-12"
+World;"User from";"User to";Date;"Action ";GC;SC;Detail
+Кабинет;asolotun;DestinySphere;"2019-12-17 23:31:48.76518";SEND_INTERWORLD_TRANSFER;0;"3 000";"Сфера Ориона-Ворона-Феникса"
+Кабинет;DestinySphere;asolotun;"2019-12-17 23:31:12.711146";ENTER_MONEY;0;"3 000";
+Кабинет;asolotun;DestinySphere;"2019-12-17 23:29:45.167441";SEND_INTERWORLD_TRANSFER;0;"3 000";"Сфера Ориона-Ворона-Феникса"
+Кабинет;DestinySphere;asolotun;"2019-12-17 23:27:36.743415";ENTER_MONEY;0;"3 000";
+Кабинет;DestinySphere;HeroesII;"2019-12-17 16:08:34.920963";ENTER_MONEY;0;"3 000";
+Кабинет;DestinySphere;HeroesII;"2019-12-17 15:58:37.077043";ENTER_MONEY;0;"3 000";
+Кабинет;DestinySphere;HeroesII;"2019-12-17 15:41:41.759007";ENTER_MONEY;0;"3 000";
+Кабинет;DestinySphere;HeroesII;"2019-12-17 15:40:50.886248";ENTER_MONEY;0;"3 000";
+Кабинет;HeroesII;DestinySphere;"2019-12-17 15:39:31.958812";SEND_INTERWORLD_TRANSFER;0;"15 000";"Сфера Сириуса"
+Кабинет;Colt943;DestinySphere;"2019-12-17 00:57:44.839996";SEND_INTERWORLD_TRANSFER;0;4;"Сфера Ориона-Ворона-Феникса"
+Кабинет;gf5h6;DestinySphere;"2019-12-16 23:05:35.673267";SEND_INTERWORLD_TRANSFER;0;"10 000";"Сфера Ориона-Ворона-Феникса"
+Кабинет;gf5h6;DestinySphere;"2019-12-16 23:04:46.154081";EXCHANGE_CREDITS;10;0;
+Кабинет;DestinySphere;gf5h6;"2019-12-16 23:04:46.154081";EXCHANGE_CREDITS;0;"10 000";
+Кабинет;DestinySphere;oldvolk1;"2019-12-16 18:31:11.002721";ENTER_MONEY;0;"3 000";
+Кабинет;DestinySphere;oldvolk1;"2019-12-16 18:30:34.929344";ENTER_MONEY;0;"3 000";
+Кабинет;DestinySphere;oldvolk1;"2019-12-16 18:29:52.898777";ENTER_MONEY;0;"3 000";
+Кабинет;DestinySphere;HeroesII;"2019-12-16 16:51:24.514543";ENTER_MONEY;0;"3 000";
+Кабинет;HeroesII;DestinySphere;"2019-12-16 13:48:07.048102";PS_TRAIN_SPEEDUP_90;20;0;
+Кабинет;DestinySphere;HeroesII;"2019-12-16 13:47:37.034557";ENTER_MONEY;25;0;
+Кабинет;zigrida;DestinySphere;"2019-12-16 13:46:31.720177";SEND_INTERWORLD_TRANSFER;0;"1 000";"Сфера Парусов"
+Кабинет;zigrida;DestinySphere;"2019-12-16 13:46:16.538361";EXCHANGE_CREDITS;1;0;
+Кабинет;DestinySphere;zigrida;"2019-12-16 13:46:16.538361";EXCHANGE_CREDITS;0;"1 000";
+Кабинет;DestinySphere;zigrida;"2019-12-16 13:37:24.631237";ENTER_MONEY;1;0;
+Кабинет;DestinySphere;nismoracer7;"2019-12-16 03:37:24.508413";ENTER_MONEY;15;0;
+Кабинет;DestinySphere;andre_8;"2019-12-16 03:27:01.034784";ENTER_MONEY;5;0;
+Кабинет;HeroesII;DestinySphere;"2019-12-16 00:38:43.687445";PS_GRANT_BUILDING;0;"3 833";
+Кабинет;Colt943;DestinySphere;"2019-12-16 00:37:27.743333";SEND_INTERWORLD_TRANSFER;0;100;"Сфера Змееносца"
+Кабинет;DestinySphere;Colt943;"2019-12-16 00:37:12.59062";RECIVE_INTERWORLD_TRANSFER;0;104;"Сфера Ориона-Ворона-Феникса"
+Кабинет;HeroesII;DestinySphere;"2019-12-16 00:36:11.309669";PS_BUY_ANALIZATOR;0;"2 333";
+Кабинет;DestinySphere;M41R0N15;"2019-12-16 00:07:27.7228";RECIVE_INTERWORLD_TRANSFER;0;"2 000";"Терра Нова"
+Кабинет;HeroesII;DestinySphere;"2019-12-15 23:33:20.50033";SEND_INTERWORLD_TRANSFER;0;"9 000";"Сфера Сириуса"
+Кабинет;barna;DestinySphere;"2019-12-15 14:44:03.537023";PS_TRAIN_SPEEDUP_30;8;0;
+Кабинет;DestinySphere;barna;"2019-12-15 14:43:46.102146";ENTER_MONEY;10;0;
+Кабинет;barna;DestinySphere;"2019-12-15 07:02:11.558104";PS_BY_PREMIUM_BAN;0;"1 750";
+Кабинет;barna;DestinySphere;"2019-12-15 07:00:51.483351";SEND_INTERWORLD_TRANSFER;0;"1 000";"Сфера Эридана"
+Кабинет;barna;DestinySphere;"2019-12-15 07:00:46.70013";EXCHANGE_CREDITS;3;0;
+Кабинет;DestinySphere;barna;"2019-12-15 07:00:46.70013";EXCHANGE_CREDITS;0;"3 000";
+Кабинет;DestinySphere;barna;"2019-12-15 07:00:19.669576";ENTER_MONEY;3;0;
+Кабинет;Beasley;DestinySphere;"2019-12-15 03:46:34.218142";SEND_INTERWORLD_TRANSFER;0;"40 004";"Сфера Ориона-Ворона-Феникса"
+Кабинет;DestinySphere;Beasley;"2019-12-15 03:45:07.420219";RECIVE_INTERWORLD_TRANSFER;0;"39 520";"Сфера Ориона-Ворона-Феникса"
+Кабинет;vivax4;DestinySphere;"2019-12-13 19:47:49.076545";SEND_INTERWORLD_TRANSFER;0;"10 066";"Сфера Эридана"
+Кабинет;vivax4;DestinySphere;"2019-12-13 19:47:22.52101";EXCHANGE_CREDITS;10;0;
+Кабинет;DestinySphere;vivax4;"2019-12-13 19:47:22.52101";EXCHANGE_CREDITS;0;"10 000";
+Кабинет;Arkona;DestinySphere;"2019-12-13 14:39:51.479537";SEND_INTERWORLD_TRANSFER;0;"2 000";"Сфера Эридана"
+Кабинет;Arkona;DestinySphere;"2019-12-13 14:39:26.901484";EXCHANGE_CREDITS;2;0;
+Кабинет;DestinySphere;Arkona;"2019-12-13 14:39:26.901484";EXCHANGE_CREDITS;0;"2 000";
+Кабинет;DestinySphere;Arkona;"2019-12-13 14:38:14.794216";ENTER_MONEY;2;0;
+Кабинет;_Dexter_Morgan_;DestinySphere;"2019-12-13 08:24:02.060262";SEND_INTERWORLD_TRANSFER;0;100;"Сфера Водолея-Льва"
+Кабинет;barna;DestinySphere;"2019-12-12 22:35:02.4998";SEND_INTERWORLD_TRANSFER;0;"1 000";"Сфера Эридана"
+Кабинет;barna;DestinySphere;"2019-12-12 22:34:58.458493";EXCHANGE_CREDITS;1;0;
+Кабинет;DestinySphere;barna;"2019-12-12 22:34:58.458493";EXCHANGE_CREDITS;0;"1 000";
+Кабинет;DestinySphere;barna;"2019-12-12 22:34:43.421189";ENTER_MONEY;1;0;
+Кабинет;HeroesII;DestinySphere;"2019-12-12 00:43:51.96511";PS_BUY_ANALIZATOR;0;"2 333";
+Кабинет;DestinySphere;texnik2;"2019-12-12 00:07:25.539662";RECIVE_INTERWORLD_TRANSFER;0;"29 503";"Терра Нова"
+Кабинет;DrWest;DestinySphere;"2019-12-11 14:19:24.293915";SEND_INTERWORLD_TRANSFER;0;"1 500";"Сфера Водолея-Льва"
+Кабинет;DrWest;DestinySphere;"2019-12-11 14:18:48.471295";EXCHANGE_CREDITS;2;0;
+Кабинет;DestinySphere;DrWest;"2019-12-11 14:18:48.471295";EXCHANGE_CREDITS;0;"2 000";
+Кабинет;DestinySphere;DrWest;"2019-12-11 14:16:35.494298";ENTER_MONEY;2;0;
+Кабинет;DestinySphere;ZLOOOOO;"2019-12-11 00:07:26.887668";RECIVE_INTERWORLD_TRANSFER;0;"2 000";"Сфера Стрельца"

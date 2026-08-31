@@ -1,0 +1,15 @@
+<?php
+$lang = array();
+
+$lang['TITLE'] = "Магазин :: вход";
+$lang['CAPTION'] = "Вход в магазин";
+$lang['ENCODING'] = 'windows-1251';
+$lang['COPYRIGHT'] = '2003-'.date('Y').'©. DestinySphere GmbH, ООО Геймспейс. All Rights Reserved.';
+
+$lang['ENTER_INFO'] = 'Вход в магазин';
+
+$lang['LOGIN'] = 'Логин';
+$lang['PASSWORD'] = 'Пароль';
+$lang['CABINET_SUBMIT'] = 'войти в магазин';
+
+?>

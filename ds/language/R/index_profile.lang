@@ -1,0 +1,33 @@
+<?
+$lang = array();
+
+$lang['TITLE'] = '::: DestinySphere ::: Изменение профиля игрока...';
+$lang['ENCODING'] = 'windows-1251';
+$lang['HEADER'] = 'Параметры профиля игрока:';
+$lang['LOGO_ALT'] = 'DestinySphere Logo';
+$lang['LOGIN_NAME'] = 'Имя:';
+$lang['TIME_DELTA'] = 'Часовой пояс:';
+$lang['USERS_LANGUAGE'] = 'Язык:';
+$lang['BUTTON_TEXT'] = 'Изменить';
+$lang['USER_MAIL_TEXT'] = '(Для замены e-mail обращайтесь <br> по адресу support@ru.destinysphere.com)';
+$lang['USER_MAIL'] = 'Адрес e-mail:';
+$lang['OLD_PASSWORD'] = 'Старый пароль:';
+$lang['NEW_PASSWORD'] = 'Новый пароль:';
+$lang['CONFIRM_PASSWORD'] = 'Подтверждение пароля:';
+$lang['FORUM_PROFILE_TEXT'] = 'Профиль на форуме';
+$lang['SCALING'] = 'Полноэкранный режим: ';
+$lang['REFLINK_TEXT'] = 'Реферальная ссылка:';
+
+
+$time_delta_phrases = array();
+
+$time_delta_phrases['GMT0'] = '(время по Гринвичу)';
+$time_delta_phrases['GMT3'] = '(московское время)'; 
+$time_delta_phrases['GMT4'] = '(летнее московское время)';
+
+
+$errors = array();
+
+$errors['WRONG_OLD_PASSWORD'] = 'Введен неверный текущий пароль.';
+$errors['CANT_CHANGE_FORUM_INFO'] = 'Предупреждение: данные на форуме не были изменены';
+?>

@@ -1,0 +1,14 @@
+<?
+$lang = array();
+
+$lang['TITLE'] = 'DestinySphere :: Account aktiviert';
+$lang['TITLEIMAGE'] = '<a href="../index.php"><span class="maintitle"><img src="images/logo_sp3k.gif" border="0" alt="DestinySphere Startseite" vspace="1" width="361" height="60" /></span></a>';
+$lang['ENCODING'] = 'iso-8859-1';
+$lang['ACTIVATION_CAPTION'] = 'Account-Aktivierung';
+$lang['ACTIVATION'] = 'Account-Aktivierung war erfolgreich! Du kannst nun sofort loslegen!';
+$lang['ERROR'] = 'Folgende Fehler sind aufgetreten:';
+$lang['ENTER'] = 'Hier geht es zum Login >>';
+$lang['COPYRIGHT'] = 'Copyright 2003-2004 by DestinySphere GmbH';
+$lang['IMPRESSUM'] = 'Impressum';
+
+?>

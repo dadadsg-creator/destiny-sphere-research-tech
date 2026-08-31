@@ -1,0 +1,2052 @@
+<html>
+  <head>
+    <title>Documentation: Graph</title>
+    <style type="text/css">
+    <!--
+      body,td { font: 8pt verdana #000000; }
+      body { background: #ffffff; }
+      a { text-decoration: none; color: #0000aa; }
+      a:hover { text-decoration: underline; }
+      h1 { font-size: 12pt; letter-spacing: 2pt; }
+      hr { height: 1px; color: #dddddd; background: #dddddd; }
+      .varname { font-size: 10pt; letter-spacing: 2pt; color: #123456; font-weight: bold; }
+      .funname { font-size: 10pt; letter-spacing: 2pt; color: #123456; font-weight: bold; }
+      .vartype { color: #0000aa; font-weight: bold; }
+    //-->
+    </style>
+  </head>
+  <body>
+    <a name='top'></a>
+    <h1>Class: <b>Graph</b> (0.1)</h1>
+    Class to create graphs. It should not be used. Instead, use extended classes like LineGraph or PieGraph.<br>
+    Credits to: <a href='mailto:a25617@alunos.det.ua.pt'>Jeph</a><br>
+    <a name='var'></a>
+    <br><u>Variables</u><br><br>
+    <a href='#var_axis_bgcolor' title="Axis background color (not important when deepness = 0)"><span class=vartype>array</span> Graph::axis_bgcolor</a><br>
+    <a href='#var_axis_bordercolor' title="Axis border color (it's line color when deepness = 0)"><span class=vartype>array</span> Graph::axis_bordercolor</a><br>
+    <a href='#var_axis_deepness' title="Axis deepness (z-axis size)"><span class=vartype>int</span> Graph::axis_deepness</a><br>
+    <a href='#var_axis_frontgridlines' title="Front gridlines visibility (not importante when deepness = 0)"><span class=vartype>boolean</span> Graph::axis_frontgridlines</a><br>
+    <a href='#var_axis_gridlines' title="Gridlines visibility"><span class=vartype>boolean</span> Graph::axis_gridlines</a><br>
+    <a href='#var_axis_maxX' title="Axis maximum x (calculated when drawing)"><span class=vartype>int</span> Graph::axis_maxX</a><br>
+    <a href='#var_axis_maxY' title="Axis maximum y (calculated when drawing)"><span class=vartype>int</span> Graph::axis_maxY</a><br>
+    <a href='#var_axis_minX' title="Axis minimum x (calculated when drawing)"><span class=vartype>int</span> Graph::axis_minX</a><br>
+    <a href='#var_axis_minY' title="Axis minimum x (calculated when drawing)"><span class=vartype>int</span> Graph::axis_minY</a><br>
+    <a href='#var_axis_modeX' title="Axis x scale mode (0=normal, 1=dynamic, 2=pixel)"><span class=vartype>int</span> Graph::axis_modeX</a><br>
+    <a href='#var_axis_modeY' title="Axis y scale mode (0=normal, 1=dynamic, 2=pixel)"><span class=vartype>int</span> Graph::axis_modeY</a><br>
+    <a href='#var_axis_positions' title="Axis 4 positions visibility (left,top,right,bottom)"><span class=vartype>array</span> Graph::axis_positions</a><br>
+    <a href='#var_axis_scalecolor' title="Axis scale color (RGB)"><span class=vartype>array</span> Graph::axis_scalecolor</a><br>
+    <a href='#var_axis_scalefont' title="Axis scale font"><span class=vartype>int</span> Graph::axis_scalefont</a><br>
+    <a href='#var_axis_stepSize' title="Axis step size (how long is the line in each scale step)"><span class=vartype>int</span> Graph::axis_stepSize</a><br>
+    <a href='#var_axis_stepX' title="Axis x step"><span class=vartype>int</span> Graph::axis_stepX</a><br>
+    <a href='#var_axis_stepY' title="Axis y step"><span class=vartype>int</span> Graph::axis_stepY</a><br>
+    <a href='#var_axis_xscalevisible' title="X scale visibility"><span class=vartype>boolean</span> Graph::axis_xscalevisible</a><br>
+    <a href='#var_axis_yscalevisible' title="Y scale visibility"><span class=vartype>boolean</span> Graph::axis_yscalevisible</a><br>
+    <a href='#var_data' title="Graph data"><span class=vartype>array</span> Graph::data</a><br>
+    <a href='#var_graph_areaheight' title="Area height where graph is constructed"><span class=vartype>int</span> Graph::graph_areaheight</a><br>
+    <a href='#var_graph_areawidth' title="Area height where graph is constructed"><span class=vartype>int</span> Graph::graph_areawidth</a><br>
+    <a href='#var_graph_bgcolor' title="Graph background color (RGB)"><span class=vartype>array</span> Graph::graph_bgcolor</a><br>
+    <a href='#var_graph_bgtransparent' title="Graph background transparent"><span class=vartype>boolean</span> Graph::graph_bgtransparent</a><br>
+    <a href='#var_graph_bordercolor' title="Graph border color (RGB)"><span class=vartype>array</span> Graph::graph_bordercolor</a><br>
+    <a href='#var_graph_borderwidth' title="Graph border size"><span class=vartype>int</span> Graph::graph_borderwidth</a><br>
+    <a href='#var_graph_padding' title="Padding of graph (distance between graph and the borders of the image graph"><span class=vartype>array</span> Graph::graph_padding</a><br>
+    <a href='#var_graph_title' title="Graph title"><span class=vartype>string</span> Graph::graph_title</a><br>
+    <a href='#var_graph_titlecolor' title="Graph title color (RGB)"><span class=vartype>array</span> Graph::graph_titlecolor</a><br>
+    <a href='#var_graph_titlefont' title="Graph title font"><span class=vartype>int</span> Graph::graph_titlefont</a><br>
+    <a href='#var_graph_transparencylevel' title="Graph transparency level [ 0 (opaque) to 127 (transparent) ]"><span class=vartype>int</span> Graph::graph_transparencylevel</a><br>
+    <a href='#var_legend_bgcolor' title="Legend background color (RGB)"><span class=vartype>array</span> Graph::legend_bgcolor</a><br>
+    <a href='#var_legend_bordercolor' title="Legend border color (RGB)"><span class=vartype>array</span> Graph::legend_bordercolor</a><br>
+    <a href='#var_legend_borderwidth' title="Legend border size"><span class=vartype>int</span> Graph::legend_borderwidth</a><br>
+    <a href='#var_legend_color' title="Legend colors (1 for each item on legend data)"><span class=vartype>array</span> Graph::legend_color</a><br>
+    <a href='#var_legend_data' title="Legend data"><span class=vartype>array</span> Graph::legend_data</a><br>
+    <a href='#var_legend_floating' title="Legend floating (if true, legend will be over graph)"><span class=vartype>boolean</span> Graph::legend_floating</a><br>
+    <a href='#var_legend_font' title="Legend font"><span class=vartype>int</span> Graph::legend_font</a><br>
+    <a href='#var_legend_height' title="Legend height (calculated when drawing)"><span class=vartype>int</span> Graph::legend_height</a><br>
+    <a href='#var_legend_insidepadding' title="Legend inside padding (distance between elements inside the legend)"><span class=vartype>int</span> Graph::legend_insidepadding</a><br>
+    <a href='#var_legend_padding' title="Legend distance to image borders (if floating=true, it's distance to graph borders)"><span class=vartype>int</span> Graph::legend_padding</a><br>
+    <a href='#var_legend_position' title="Legend position (1=bottom left, 2=top left, 3=top right, 4=bottom right)"><span class=vartype>int</span> Graph::legend_position</a><br>
+    <a href='#var_legend_visible' title="Legend visibility"><span class=vartype>boolean</span> Graph::legend_visible</a><br>
+    <a href='#var_legend_width' title="Legend width (calculated when drawing)"><span class=vartype>int</span> Graph::legend_width</a><br>
+    <a href='#var_scale_funX' title="X scale function [ you can set this to int2month(%d) if you want to transform the scale into a month string ;) ]"><span class=vartype>string</span> Graph::scale_funX</a><br>
+    <a href='#var_scale_funY' title="Y scale function (see &lt;var=scale_funX&gt;)"><span class=vartype>string</span> Graph::scale_funY</a><br>
+    <a href='#var_scale_roundX' title="X scale decimal places"><span class=vartype>int</span> Graph::scale_roundX</a><br>
+    <a href='#var_scale_roundY' title="Y scale decimal places"><span class=vartype>int</span> Graph::scale_roundY</a><br>
+    <a name='fun'></a>
+    <br><u>Methods</u><br><br>
+    <a href='#fun_SetAxisBackgroundColor' title="Set axis background color (RGB)">Graph::SetAxisBackgroundColor (
+    $red
+    , $green
+    , $blue
+    ) </a><br>
+    <a href='#fun_SetAxisBorderColor' title="Set axis border color (RGB)">Graph::SetAxisBorderColor (
+    $red
+    , $green
+    , $blue
+    ) </a><br>
+    <a href='#fun_SetAxisDeepness' title="Set axis deepness (z axis size)">Graph::SetAxisDeepness (
+    $deepness
+    ) </a><br>
+    <a href='#fun_SetAxisFrontGridlines' title="Set axis front gridlines visibility (not important when deepness = 0)">Graph::SetAxisFrontGridlines (
+    $state
+    ) </a><br>
+    <a href='#fun_SetAxisGridlines' title="Set axis gridlines visibility">Graph::SetAxisGridlines (
+    $state
+    ) </a><br>
+    <a href='#fun_SetAxisModeX' title="Set x step mode">Graph::SetAxisModeX (
+    $mode
+    ) </a><br>
+    <a href='#fun_SetAxisModeY' title="Set y step mode">Graph::SetAxisModeY (
+    $mode
+    ) </a><br>
+    <a href='#fun_SetAxisPositions' title="Set axis positions visibility (4 directions)">Graph::SetAxisPositions (
+    $positions
+    ) </a><br>
+    <a href='#fun_SetAxisScaleColor' title="Set axis scale color (RGB)">Graph::SetAxisScaleColor (
+    $red
+    , $green
+    , $blue
+    ) </a><br>
+    <a href='#fun_SetAxisScaleFont' title="Set axis scale font
+You can use these strings instead of int:
+  1=x-small
+  2=small
+  3=normal
+  4=large
+  5=x-large">Graph::SetAxisScaleFont (
+    $font
+    ) </a><br>
+    <a href='#fun_SetAxisScaleXVisibility' title="Set axis x scale visibility">Graph::SetAxisScaleXVisibility (
+    $state
+    ) </a><br>
+    <a href='#fun_SetAxisScaleYVisibility' title="Set axis y scale visibility">Graph::SetAxisScaleYVisibility (
+    $state
+    ) </a><br>
+    <a href='#fun_SetAxisStepSize' title="Set axis step size">Graph::SetAxisStepSize (
+    $size
+    ) </a><br>
+    <a href='#fun_SetAxisStepX' title="Set x scale step">Graph::SetAxisStepX (
+    $step
+    ) </a><br>
+    <a href='#fun_SetAxisStepY' title="Set y scale step">Graph::SetAxisStepY (
+    $step
+    ) </a><br>
+    <a href='#fun_SetGraphAreaHeight' title="Set graph area height">Graph::SetGraphAreaHeight (
+    $height
+    ) </a><br>
+    <a href='#fun_SetGraphAreaWidth' title="Set graph area width">Graph::SetGraphAreaWidth (
+    $width
+    ) </a><br>
+    <a href='#fun_SetGraphBackgroundColor' title="Set graph background color">Graph::SetGraphBackgroundColor (
+    $red
+    , $green
+    , $blue
+    ) </a><br>
+    <a href='#fun_SetGraphBackgroundTransparent' title="Set graph background transparent (default is RGB(255,0,255) but you can change it to a color you won' use in graph)">Graph::SetGraphBackgroundTransparent (
+    $addtransparency
+    , $red
+    , $green
+    , $blue
+    ) </a><br>
+    <a href='#fun_SetGraphBorderColor' title="Set graph border color (RGB)">Graph::SetGraphBorderColor (
+    $red
+    , $green
+    , $blue
+    ) </a><br>
+    <a href='#fun_SetGraphBorderWidth' title="Set graph border size">Graph::SetGraphBorderWidth (
+    $width
+    ) </a><br>
+    <a href='#fun_SetGraphPadding' title="Set graph paddings">Graph::SetGraphPadding (
+    $left
+    , $top
+    , $right
+    , $bottom
+    ) </a><br>
+    <a href='#fun_SetGraphTitle' title="Set graph title text">Graph::SetGraphTitle (
+    $title
+    ) </a><br>
+    <a href='#fun_SetGraphTitleColor' title="Set graph title color (RGB)">Graph::SetGraphTitleColor (
+    $red
+    , $green
+    , $blue
+    ) </a><br>
+    <a href='#fun_SetGraphTitleFont' title="Set graph title font (1 to 5 are loaded by default on GD2, if you want others, you have to load them)
+You can use these strings instead of int:
+  1=x-small
+  2=small
+  3=normal
+  4=large
+  5=x-large">Graph::SetGraphTitleFont (
+    $font
+    ) </a><br>
+    <a href='#fun_SetGraphTransparency' title="Set graph transparency level [ 0 (opaque) to 100 (transparent) ]">Graph::SetGraphTransparency (
+    $percent
+    ) </a><br>
+    <a href='#fun_SetLegendBackgroundColor' title="Set legend background color (RGB)">Graph::SetLegendBackgroundColor (
+    $red
+    , $green
+    , $blue
+    ) </a><br>
+    <a href='#fun_SetLegendBorderColor' title="Set legend border color (RGB)">Graph::SetLegendBorderColor (
+    $red
+    , $green
+    , $blue
+    ) </a><br>
+    <a href='#fun_SetLegendBorderWidth' title="Set legend border size">Graph::SetLegendBorderWidth (
+    $width
+    ) </a><br>
+    <a href='#fun_SetLegendColors' title="Set colors to the diferent items of legend data (this argument should be an array where each item is another array of 3 items corresponding to Red, Green and Blue of each color)">Graph::SetLegendColors (
+    $colors
+    ) </a><br>
+    <a href='#fun_SetLegendData' title="Legend data (array containing the names or any other string you want to name each element)">Graph::SetLegendData (
+    $data
+    ) </a><br>
+    <a href='#fun_SetLegendFloating' title="Set legend floating (designed over graph)">Graph::SetLegendFloating (
+    $floating
+    ) </a><br>
+    <a href='#fun_SetLegendInsidePadding' title="Legend inside padding (distance between elements inside the legend)">Graph::SetLegendInsidePadding (
+    $padding
+    ) </a><br>
+    <a href='#fun_SetLegendPadding' title="Set legend distance to image borders (if floating=true, it's distance to graph borders)">Graph::SetLegendPadding (
+    $padding
+    ) </a><br>
+    <a href='#fun_SetLegendPosition' title="Legend position (1=bottom left, 2=top left, 3=top right, 4=bottom right)">Graph::SetLegendPosition (
+    $position
+    ) </a><br>
+    <a href='#fun_SetLegendVisible' title="Set legend visibility">Graph::SetLegendVisible (
+    $visible
+    ) </a><br>
+    <a href='#fun_SetLegentFont' title="Set legend font
+You can use these strings instead of int:
+  1=x-small
+  2=small
+  3=normal
+  4=large
+  5=x-large">Graph::SetLegentFont (
+    $font
+    ) </a><br>
+    <a href='#fun_SetScaleFunctionX' title="Set x scale function (usefull to change x scale for example: int2date(%d) where int2date() changes an int to the apropriate string)">Graph::SetScaleFunctionX (
+    $name
+    ) </a><br>
+    <a href='#fun_SetScaleFunctionY' title="Set y scale function (see &lt;fun=SetScaleFunctionX&gt;)">Graph::SetScaleFunctionY (
+    $name
+    ) </a><br>
+    <a href='#fun_SetScaleRoundX' title="Set x scale decimal places">Graph::SetScaleRoundX (
+    $number
+    ) </a><br>
+    <a href='#fun_SetScaleRoundY' title="Set y scale decimal places">Graph::SetScaleRoundY (
+    $number
+    ) </a><br>
+    <hr>
+    <a name='var_axis_bgcolor'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::axis_bgcolor</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Axis background color (not important when deepness = 0)<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; Array(int, int, int)<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; Array(152, 137, 124)<br>
+    <br>
+    <hr>
+    <a name='var_axis_bordercolor'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::axis_bordercolor</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Axis border color (it's line color when deepness = 0)<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; Array(int, int, int)<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; Array(99, 88, 78)<br>
+    <br>
+    <hr>
+    <a name='var_axis_deepness'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::axis_deepness</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Axis deepness (z-axis size)<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; int<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; 0<br>
+    <br>
+    <hr>
+    <a name='var_axis_frontgridlines'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::axis_frontgridlines</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Front gridlines visibility (not importante when deepness = 0)<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; boolean<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; true<br>
+    <br>
+    <hr>
+    <a name='var_axis_gridlines'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::axis_gridlines</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Gridlines visibility<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; boolean<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; true<br>
+    <br>
+    <hr>
+    <a name='var_axis_maxX'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::axis_maxX</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Axis maximum x (calculated when drawing)<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; int<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; 0<br>
+    <br>
+    <hr>
+    <a name='var_axis_maxY'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::axis_maxY</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Axis maximum y (calculated when drawing)<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; int<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; 0<br>
+    <br>
+    <hr>
+    <a name='var_axis_minX'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::axis_minX</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Axis minimum x (calculated when drawing)<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; int<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; 0<br>
+    <br>
+    <hr>
+    <a name='var_axis_minY'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::axis_minY</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Axis minimum x (calculated when drawing)<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; int<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; 0<br>
+    <br>
+    <hr>
+    <a name='var_axis_modeX'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::axis_modeX</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Axis x scale mode (0=normal, 1=dynamic, 2=pixel)<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; int<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; 0<br>
+    <br>
+    <hr>
+    <a name='var_axis_modeY'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::axis_modeY</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Axis y scale mode (0=normal, 1=dynamic, 2=pixel)<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; int<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; 0<br>
+    <br>
+    <hr>
+    <a name='var_axis_positions'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::axis_positions</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Axis 4 positions visibility (left,top,right,bottom)<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; Array(boolean, boolean, boolean, boolean)<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; Array(true, false, false, true)<br>
+    <br>
+    <hr>
+    <a name='var_axis_scalecolor'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::axis_scalecolor</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Axis scale color (RGB)<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; Array(int, int, int)<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; Array(0, 0, 255)<br>
+    <br>
+    <hr>
+    <a name='var_axis_scalefont'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::axis_scalefont</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Axis scale font<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; int<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; 2<br>
+    <br>
+    <hr>
+    <a name='var_axis_stepSize'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::axis_stepSize</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Axis step size (how long is the line in each scale step)<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; int<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; 3<br>
+    <br>
+    <hr>
+    <a name='var_axis_stepX'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::axis_stepX</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Axis x step<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; int<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; 1<br>
+    <br>
+    <hr>
+    <a name='var_axis_stepY'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::axis_stepY</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Axis y step<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; int<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; 1<br>
+    <br>
+    <hr>
+    <a name='var_axis_xscalevisible'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::axis_xscalevisible</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    X scale visibility<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; boolean<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; true<br>
+    <br>
+    <hr>
+    <a name='var_axis_yscalevisible'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::axis_yscalevisible</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Y scale visibility<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; boolean<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; true<br>
+    <br>
+    <hr>
+    <a name='var_data'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::data</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Graph data<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; Array()<br>
+    <br>
+    <hr>
+    <a name='var_graph_areaheight'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::graph_areaheight</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Area height where graph is constructed<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; int<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; 100<br>
+    <br>
+    <hr>
+    <a name='var_graph_areawidth'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::graph_areawidth</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Area height where graph is constructed<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; int<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; 50<br>
+    <br>
+    <hr>
+    <a name='var_graph_bgcolor'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::graph_bgcolor</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Graph background color (RGB)<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; Array(int, int, int)<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; Array(255, 255, 255)<br>
+    <br>
+    <hr>
+    <a name='var_graph_bgtransparent'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::graph_bgtransparent</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Graph background transparent<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; boolean<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; false<br>
+    <br>
+    <hr>
+    <a name='var_graph_bordercolor'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::graph_bordercolor</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Graph border color (RGB)<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; Array(int, int, int)<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; Array(218, 218, 239)<br>
+    <br>
+    <hr>
+    <a name='var_graph_borderwidth'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::graph_borderwidth</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Graph border size<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; int<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; 1<br>
+    <br>
+    <hr>
+    <a name='var_graph_padding'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::graph_padding</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Padding of graph (distance between graph and the borders of the image graph<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; Array(string, string, string, string)<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; Array(50, 20, 20, 20)<br>
+    <br>
+    <hr>
+    <a name='var_graph_title'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::graph_title</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Graph title<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; string<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; <br>
+    <br>
+    <hr>
+    <a name='var_graph_titlecolor'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::graph_titlecolor</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Graph title color (RGB)<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; Array(int, int, int)<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; Array(99, 88, 78)<br>
+    <br>
+    <hr>
+    <a name='var_graph_titlefont'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::graph_titlefont</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Graph title font<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; int<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; 3<br>
+    <br>
+    <hr>
+    <a name='var_graph_transparencylevel'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::graph_transparencylevel</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Graph transparency level [ 0 (opaque) to 127 (transparent) ]<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; int<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; 0<br>
+    <br>
+    <hr>
+    <a name='var_legend_bgcolor'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::legend_bgcolor</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Legend background color (RGB)<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; Array(int, int, int)<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; Array(255, 255, 255)<br>
+    <br>
+    <hr>
+    <a name='var_legend_bordercolor'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::legend_bordercolor</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Legend border color (RGB)<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; Array(int, int, int)<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; Array(0, 0, 0)<br>
+    <br>
+    <hr>
+    <a name='var_legend_borderwidth'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::legend_borderwidth</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Legend border size<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; int<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; 1<br>
+    <br>
+    <hr>
+    <a name='var_legend_color'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::legend_color</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Legend colors (1 for each item on legend data)<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; Array(Array(int, int, int))<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; Array(Array(0, 0, 255))<br>
+    <br>
+    <hr>
+    <a name='var_legend_data'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::legend_data</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Legend data<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; Array(Item 1)<br>
+    <br>
+    <hr>
+    <a name='var_legend_floating'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::legend_floating</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Legend floating (if true, legend will be over graph)<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; boolean<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; false<br>
+    <br>
+    <hr>
+    <a name='var_legend_font'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::legend_font</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Legend font<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; int<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; 1<br>
+    <br>
+    <hr>
+    <a name='var_legend_height'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::legend_height</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Legend height (calculated when drawing)<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; int<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; 0<br>
+    <br>
+    <hr>
+    <a name='var_legend_insidepadding'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::legend_insidepadding</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Legend inside padding (distance between elements inside the legend)<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; int<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; 3<br>
+    <br>
+    <hr>
+    <a name='var_legend_padding'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::legend_padding</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Legend distance to image borders (if floating=true, it's distance to graph borders)<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; int<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; 30<br>
+    <br>
+    <hr>
+    <a name='var_legend_position'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::legend_position</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Legend position (1=bottom left, 2=top left, 3=top right, 4=bottom right)<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; int<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; 3<br>
+    <br>
+    <hr>
+    <a name='var_legend_visible'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::legend_visible</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Legend visibility<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; boolean<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; false<br>
+    <br>
+    <hr>
+    <a name='var_legend_width'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::legend_width</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Legend width (calculated when drawing)<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; int<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; 0<br>
+    <br>
+    <hr>
+    <a name='var_scale_funX'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::scale_funX</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    X scale function [ you can set this to int2month(%d) if you want to transform the scale into a month string ;) ]<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; string<br>
+    <br>
+    <hr>
+    <a name='var_scale_funY'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::scale_funY</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Y scale function (see <a href='#var_scale_funX'>scale_funX</a>)<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; string<br>
+    <br>
+    <hr>
+    <a name='var_scale_roundX'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::scale_roundX</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    X scale decimal places<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; int<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; 1<br>
+    <br>
+    <hr>
+    <a name='var_scale_roundY'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>Graph::scale_roundY</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Y scale decimal places<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; int<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; 1<br>
+    <br>
+    <hr><a name='fun_SetAxisBackgroundColor'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetAxisBackgroundColor()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set axis background color (RGB)<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $red<br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $green<br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $blue<br>
+    <br>
+    <hr><a name='fun_SetAxisBorderColor'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetAxisBorderColor()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set axis border color (RGB)<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $red<br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $green<br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $blue<br>
+    <br>
+    <hr><a name='fun_SetAxisDeepness'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetAxisDeepness()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set axis deepness (z axis size)<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $deepness<br>
+    <br>
+    <hr><a name='fun_SetAxisFrontGridlines'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetAxisFrontGridlines()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set axis front gridlines visibility (not important when deepness = 0)<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>boolean</span>
+    )
+    $state<br>
+    <br>
+    <hr><a name='fun_SetAxisGridlines'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetAxisGridlines()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set axis gridlines visibility<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>boolean</span>
+    )
+    $state<br>
+    <br>
+    <hr><a name='fun_SetAxisModeX'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetAxisModeX()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set x step mode<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $mode<br>
+    <br>
+    <hr><a name='fun_SetAxisModeY'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetAxisModeY()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set y step mode<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $mode<br>
+    <br>
+    <hr><a name='fun_SetAxisPositions'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetAxisPositions()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set axis positions visibility (4 directions)<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>array</span>
+    )
+    $positions<br>
+    <br>
+    <hr><a name='fun_SetAxisScaleColor'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetAxisScaleColor()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set axis scale color (RGB)<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $red<br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $green<br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $blue<br>
+    <br>
+    <hr><a name='fun_SetAxisScaleFont'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetAxisScaleFont()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set axis scale font<br />
+You can use these strings instead of int:<br />
+&nbsp; 1=x-small<br />
+&nbsp; 2=small<br />
+&nbsp; 3=normal<br />
+&nbsp; 4=large<br />
+&nbsp; 5=x-large<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>string</span>
+    | <span class=vartype>int</span>
+    )
+    $font<br>
+    <br>
+    <hr><a name='fun_SetAxisScaleXVisibility'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetAxisScaleXVisibility()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set axis x scale visibility<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>boolean</span>
+    )
+    $state<br>
+    <br>
+    <hr><a name='fun_SetAxisScaleYVisibility'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetAxisScaleYVisibility()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set axis y scale visibility<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>boolean</span>
+    )
+    $state<br>
+    <br>
+    <hr><a name='fun_SetAxisStepSize'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetAxisStepSize()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set axis step size<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $size<br>
+    <br>
+    <hr><a name='fun_SetAxisStepX'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetAxisStepX()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set x scale step<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $step<br>
+    <br>
+    <hr><a name='fun_SetAxisStepY'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetAxisStepY()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set y scale step<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $step<br>
+    <br>
+    <hr><a name='fun_SetGraphAreaHeight'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetGraphAreaHeight()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set graph area height<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $height<br>
+    <br>
+    <hr><a name='fun_SetGraphAreaWidth'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetGraphAreaWidth()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set graph area width<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $width<br>
+    <br>
+    <hr><a name='fun_SetGraphBackgroundColor'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetGraphBackgroundColor()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set graph background color<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $red<br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $green<br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $blue<br>
+    <br>
+    <hr><a name='fun_SetGraphBackgroundTransparent'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetGraphBackgroundTransparent()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set graph background transparent (default is RGB(255,0,255) but you can change it to a color you won' use in graph)<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>boolean</span>
+    )
+    $addtransparency<br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $red<br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $green<br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $blue<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;$addtransparency = true<br>
+    &nbsp; &nbsp; &nbsp; &nbsp;$red = 255<br>
+    &nbsp; &nbsp; &nbsp; &nbsp;$green = 0<br>
+    &nbsp; &nbsp; &nbsp; &nbsp;$blue = 255<br>
+    <br>
+    <hr><a name='fun_SetGraphBorderColor'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetGraphBorderColor()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set graph border color (RGB)<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $red<br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $green<br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $blue<br>
+    <br>
+    <hr><a name='fun_SetGraphBorderWidth'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetGraphBorderWidth()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set graph border size<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $width<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;$width = 0<br>
+    <br>
+    <hr><a name='fun_SetGraphPadding'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetGraphPadding()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set graph paddings<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $left<br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $top<br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $right<br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $bottom<br>
+    <br>
+    <hr><a name='fun_SetGraphTitle'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetGraphTitle()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set graph title text<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $title<br>
+    <br>
+    <hr><a name='fun_SetGraphTitleColor'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetGraphTitleColor()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set graph title color (RGB)<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $red<br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $green<br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $blue<br>
+    <br>
+    <hr><a name='fun_SetGraphTitleFont'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetGraphTitleFont()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set graph title font (1 to 5 are loaded by default on GD2, if you want others, you have to load them)<br />
+You can use these strings instead of int:<br />
+&nbsp; 1=x-small<br />
+&nbsp; 2=small<br />
+&nbsp; 3=normal<br />
+&nbsp; 4=large<br />
+&nbsp; 5=x-large<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>string</span>
+    | <span class=vartype>int</span>
+    )
+    $font<br>
+    <br>
+    <hr><a name='fun_SetGraphTransparency'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetGraphTransparency()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set graph transparency level [ 0 (opaque) to 100 (transparent) ]<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $percent<br>
+    <br>
+    <hr><a name='fun_SetLegendBackgroundColor'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetLegendBackgroundColor()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set legend background color (RGB)<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $red<br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $green<br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $blue<br>
+    <br>
+    <hr><a name='fun_SetLegendBorderColor'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetLegendBorderColor()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set legend border color (RGB)<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $red<br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $green<br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $blue<br>
+    <br>
+    <hr><a name='fun_SetLegendBorderWidth'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetLegendBorderWidth()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set legend border size<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $width<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;$width = 0<br>
+    <br>
+    <hr><a name='fun_SetLegendColors'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetLegendColors()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set colors to the diferent items of legend data (this argument should be an array where each item is another array of 3 items corresponding to Red, Green and Blue of each color)<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>array</span>
+    )
+    $colors<br>
+    <br>
+    <hr><a name='fun_SetLegendData'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetLegendData()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Legend data (array containing the names or any other string you want to name each element)<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>array</span>
+    )
+    $data<br>
+    <br>
+    <hr><a name='fun_SetLegendFloating'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetLegendFloating()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set legend floating (designed over graph)<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>boolean</span>
+    )
+    $floating<br>
+    <br>
+    <hr><a name='fun_SetLegendInsidePadding'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetLegendInsidePadding()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Legend inside padding (distance between elements inside the legend)<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $padding<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;$padding = 0<br>
+    <br>
+    <hr><a name='fun_SetLegendPadding'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetLegendPadding()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set legend distance to image borders (if floating=true, it's distance to graph borders)<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $padding<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;$padding = 0<br>
+    <br>
+    <hr><a name='fun_SetLegendPosition'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetLegendPosition()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Legend position (1=bottom left, 2=top left, 3=top right, 4=bottom right)<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>string</span>
+    | <span class=vartype>int</span>
+    )
+    $position<br>
+    <br>
+    <hr><a name='fun_SetLegendVisible'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetLegendVisible()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set legend visibility<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>boolean</span>
+    )
+    $visible<br>
+    <br>
+    <hr><a name='fun_SetLegentFont'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetLegentFont()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set legend font<br />
+You can use these strings instead of int:<br />
+&nbsp; 1=x-small<br />
+&nbsp; 2=small<br />
+&nbsp; 3=normal<br />
+&nbsp; 4=large<br />
+&nbsp; 5=x-large<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>string</span>
+    | <span class=vartype>int</span>
+    )
+    $font<br>
+    <br>
+    <hr><a name='fun_SetScaleFunctionX'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetScaleFunctionX()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set x scale function (usefull to change x scale for example: int2date(%d) where int2date() changes an int to the apropriate string)<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>string</span>
+    )
+    $name<br>
+    <br>
+    <hr><a name='fun_SetScaleFunctionY'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetScaleFunctionY()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set y scale function (see <a href='#fun_SetScaleFunctionX'>SetScaleFunctionX</a>)<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>string</span>
+    )
+    $name<br>
+    <br>
+    <hr><a name='fun_SetScaleRoundX'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetScaleRoundX()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set x scale decimal places<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $number<br>
+    <br>
+    <hr><a name='fun_SetScaleRoundY'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>Graph::SetScaleRoundY()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set y scale decimal places<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $number<br>
+    <br>
+  </body>
+</html>

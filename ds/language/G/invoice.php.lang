@@ -1,0 +1,157 @@
+<?
+
+
+
+$lang = array ();
+
+
+
+$lang['INVOICE_ADDRESS'] = "DestinySphere GmbH<br>Friedbergstrasse 7<br>14057 Berlin";
+
+
+
+$lang['PAYMENT_DATE_TEXT'] = "Rechnungsdatum:";
+
+$lang['CUSTOMER_NUMBER_TEXT'] = "Kundennummer:";
+
+$lang['INVOICE_NUMBER_TEXT'] = "Rechnungsnummer:";
+
+
+
+$lang['CONTRACT_DATE_TEXT'] = "Vertragsbeginn am:";
+
+$lang['NICKNAME_TEXT'] = "Benutzername:";
+
+$lang['CONTRACT_HEADER1'] = "Diese Seite bitte ausdrucken und unterschrieben an ++49 030 36406625 faxen (bitte möglischst Feinauflösung benutzen) oder per Post an unsere unten angegebene Adresse schicken.";
+
+$lang['CONTRACT_HEADER2'] = "Wichtig: Handschriftliche Bemerkungen und Änderungen an diesem Fax können nicht berücksichtigt werden und gelten als nicht geschrieben.";
+
+$lang['CONTRACT_CAPTION'] = "DestinySphere Premium Account (Abonnement) - Vertrag";
+
+$lang['CONTRACT_TEXT1'] = "Zwischen ";
+
+$lang['CONTRACT_TEXT2'] = "als Spielbetreiber,";
+
+$lang['CONTRACT_TEXT3'] = "Telefon: ";
+
+$lang['CONTRACT_TEXT4'] = ", E-Mail: ";
+
+$lang['CONTRACT_TEXT5'] = ",<br>im folgenden Kunde genannt.";
+
+
+
+$lang['INVOICE_CAPTION'] = "Ihre Rechnung (DestinySphere Premium Abonnement)";
+
+$lang['PAYMENT_PERIOD'] = "Abrechnungszeitraum:";
+
+$lang['CAPTION1'] = "Dienstleistung";
+
+$lang['CAPTION2'] = "Benutzername";
+
+$lang['CAPTION3'] = "Nettopreis";
+
+$lang['CAPTION4'] = "Bruttopreis";
+
+$lang['PRICE_TEXT'] = "Zwischensumme:";
+
+$lang['TAX_TEXT'] = "Zzgl. 16 % MwSt:";
+
+$lang['TOTAL_PRICE_TEXT'] = "Zu zahlender Betrag:";
+
+
+
+$lang['TEXT1'] = "Der Rechnungsbetrag wird von Ihrem Konto Nr. ";
+
+$lang['TEXT2'] = ", BLZ ";
+
+$lang['TEXT3'] = " abgebucht.";
+
+$lang['TEXT4'] = "Die letzten Ziffern der Kontonummer haben wir aus Sicherheitsgründen unkenntlich gemacht.";
+
+$lang['TEXT5'] = "Bei Fragen zu Ihrer Rechnung bieten wir Ihnen in Ihrem geschützten Konfigurationsbereich die Möglichkeit, 
+
+eine E-Mail Anfrage an unsere Rechnungsstelle zu richten.<br> 
+
+Bei Unerreichbarkeit Ihres Konfigurationsbereichs wenden Sie sich bitte an billing@destinysphere.com.<br>
+
+Bei allgemeinen Fragen zu unserem Support nutzen Sie bitte unsere Premium Supportsysteme.";
+
+
+
+$lang['FOOTER'] = "DestinySphere GmbH · HRB 87956 Amtsgericht Charlottenburg · Steuer Nr. 27/023/03153 · Ust-IdNr. DE226169180
+
+Bankverbindung: Berliner Bank · BLZ 100 200 00 · Kto-Nr. 2479 716 201";
+
+
+
+$lang['TEXT6'] = "Bitte zahlen Sie den Rechnungsbetrag unter Angabe Ihrer Kundennummer und Rechnungsnummer innerhalb von 5 Tagen auf unten genanntes Konto der DestinySphere GmbH:";
+
+$lang['TEXT7'] = "Konto Nr: 2479716201<br>
+
+BLZ: 100 200 00<br>
+
+Bank: Berliner Bank<br><br>
+
+Für Schweizer, Österreicher und sonstige Europäer:<br>
+
+SWIFT: BEBEDEBB<br>
+
+IBAN: DE79 1002 0000 2479 7162 00<br>
+
+BIC: BEBEDEBBXXX";
+
+
+
+$lang['TEXT8'] = "In Auftrag des Kunden stellt Spielbetreiber ein DestinySphere Premium Account für den Kunden bereit. Die Leistungsbeschreibungen und die Allgemeinen Geschäftsbedingungen des Spielbetreibers sind Bestandteil dieses Vertrags. Der Vertrag läuft für zunächst ";
+
+$lang['TEXT9'] = " Tage. Wird der Vertrag nicht mit einer Frist von 10 Tagen zum Ende der Vertragslaufzeit gekündigt, verlängert er sich jeweils um weitere ";
+
+$lang['TEXT10'] = " Tage.";
+
+$lang['TEXT11'] = "Spielbetreiber erhält vom Kunden für ein DestinySphere Premium Account ein Entgelt in Höhe von ";
+
+$lang['TEXT12'] = " alle ";
+
+$lang['TEXT13'] = " Tage.";
+
+$lang['TEXT14'] = "Ich habe die Allgemeinen Geschäftsbedingungen erhalten, gelesen und akzeptiert.";
+
+$lang['TEXT15'] = "Ort, Datum";
+
+$lang['TEXT16'] = "Unterschrift/en des/der Zahlungspflichtigen";
+
+$lang['TEXT17'] = "Ermächtigung zum Einzug von Forderungen durch Lastschriften";
+
+$lang['TEXT18'] = "An:";
+
+$lang['TEXT19'] = "Hiermit ermächtige(n) ich, ";
+
+$lang['TEXT20'] = ", Sie widerruflich, die von mir/uns zu entrichtenden Zahlungen im Rahmen des Kunden/Spielbetreiber Vertragsverhältnisses bei Fälligkeit zu Lasten meines/unseres Girokontos Nr. ";
+
+$lang['TEXT21'] = " bei ";
+
+$lang['TEXT22'] = "Bankleitzahl ";
+
+$lang['TEXT23'] = " durch Lastschrift einzuziehen.";
+
+$lang['TEXT24'] = "Wenn mein/unser Konto die erforderliche Deckung nicht aufweist, besteht seitens des kontoführenden Kreditinstituts (siehe oben) keine Verpflichtung zur Einlösung.";
+
+$lang['TEXT25'] = "Teileinlösungen werden im Lastschriftverfahren nicht vorgenommen.";
+
+$lang['DAY'] = 'Tage';
+
+$lang['PRINT'] = 'Ausdrucken';
+
+$lang['READY_'] = 'Fertig';
+
+$lang['OWN_INVOICE_ONLY'] = 'Sie können nur Ihre eigenen Rechnungen ansehen!';
+
+$lang['TEXT26'] = 'und';
+
+$lang['TEXT27'] = ', bei';
+
+$lang['TEXT28'] = 'in';
+
+$lang['CAPTION5'] = 'E-mail'
+
+?>

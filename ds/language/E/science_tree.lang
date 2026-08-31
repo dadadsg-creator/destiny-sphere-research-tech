@@ -1,0 +1,12 @@
+<?php
+
+$lang = array();
+
+$lang['NEED'] = 'Need';
+$lang['SELECTED'] = 'Selected';
+$lang['RACE_1'] = 'Voraner';
+$lang['RACE_2'] = 'Liensu';
+$lang['RACE_3'] = 'Psolao';
+$lang['LEVEL'] = 'Level';
+
+?>

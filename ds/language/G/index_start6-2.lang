@@ -1,0 +1,7 @@
+<?
+
+$lang = array();
+
+$lang['TEXT1'] = 'Du bist bereits in einer Spielwelt registriert.';
+
+?>

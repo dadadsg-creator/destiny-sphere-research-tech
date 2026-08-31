@@ -1,0 +1,27 @@
+<?
+$lang['CHARSET'] = "iso-8859-1";
+$lang['title'] = ":: DestinySphere :: kostenloses Multiplayer-Online-Web-Strategie-Spiel basierend auf Macromedia Flash-Technologie";
+
+$lang['caption'] = "Kompatibilit?ts?berpr?fung";
+
+$lang['browser'] = "Browser";
+$lang['browser_version'] = "Browser version";
+$lang['OS'] = "OS";
+$lang['Flash_Version'] = "Flash Plugin version";
+$lang['html'] = "HTML";
+$lang['java'] = "JavaScript Unterst?tzung";
+$lang['iframe'] = "IFRAME Unterst?tzung";
+$lang['cookies'] = "Cookies";
+$lang['to_game'] = "Zum Spiel";
+$lang['skip'] = "Skip";
+
+$lang['CheckFlashPL'] = "Check Flash Plugin...";
+$lang['OK'] = 'OK';
+$lang['Reduced_compatibility'] = 'Verringerte Kompabilit?t';
+$lang['Bad_compatibility'] = 'Schlechte Kompabilit?t';
+$lang['Critical_error'] = 'Kritischer Fehler';
+
+$lang['copyright'] = "2003-".date('Y')."©. DestinySphere GmbH. All Rights Reserved.<br>Optimiert f?r Bildschirmaufl?sung 1024 x 768 und Microsoft Internet Explorer 6.0 oder h?her.";
+
+$lang['counters'] = "";
+?>

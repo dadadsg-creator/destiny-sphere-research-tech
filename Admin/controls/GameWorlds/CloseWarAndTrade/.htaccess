@@ -1,0 +1,1 @@
+php_value include_path .:/usr/local/www/htdocs/portal/ds:/usr/local/www/htdocs/portal/Admin/controls/GameWorlds/CloseWar/classes:/usr/local/www/htdocs/portal/Admin/controls/GameWorlds/CloseWar/include:/usr/local/www/htdocs/portal/Admin/controls/GameWorlds/CloseWar/_smarty/libs

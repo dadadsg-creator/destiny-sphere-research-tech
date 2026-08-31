@@ -1,0 +1,15 @@
+<?
+$lang = array();
+
+$lang['TITLE'] = 'DestinySphere :: Вход в игру';
+$lang['SERVERS_OVERLOAD1'] = 'Серверы в настоящий момент сильно перегружены.<br> 
+			Загрузка серверов ';
+$lang['SERVERS_OVERLOAD2'] = '%<br>
+			Ваш запрос будет автоматически повторен через: &nbsp;&nbsp;';
+$lang['AUTO_RELOAD'] = 'Перезагрузка происходит <u>автоматически</u>, не пытайтесь вручную обновлять страницу.<br>Когда подойдёт ваша очередь, вход будет произведен без промедления.</span>';
+$lang['IN_FREE_TIME'] = 'Чтобы не терять время, вы можете пока заняться другими делами, например, посетить <a href="http://forum.destinysphere.ru/forum/" target="_blank" class="gen"><b>Форум</b></a> игры. </span>';
+
+$lang['PAGE_TITLE'] = 'DestinySphere :: Ожидание входа в игру';
+$lang['BODY_TITLE'] = 'Подождите, пожалуйста...';
+$lang['COPYRIGHT'] = 'Copyright 2003-'.date('Y').' by DestinySphere GmbH';
+?>

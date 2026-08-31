@@ -1,0 +1,108 @@
+<?php
+
+$lang['TITLE'] = "Магазин";
+$lang['ENCODING'] = 'windows-1251';
+
+$lang['ACCOUNT_STATUS'] = "Cостояние счета";
+$lang['ACCOUNT_STATUS_WORLDS'] = "Состояние счета по мирам";
+
+$lang['ACCOUNT_TXT'] = "Аккаунт";
+
+$lang['GOLD_CREDITS'] = "золотых кредитов";
+$lang['SILVER_CREDITS'] = "серебряных кредитов";
+
+$lang['EXCHANGE_DONE'] = "Обмен кредитов завершен.";
+$lang['TRANSFER_TO_INSTANCE_DONE'] = "Перевод кредитов завершен.";
+$lang['TRANSFER_TO_USER_DONE'] = "Перевод кредитов завершен.";
+
+$lang['INVALID_ACTION_NAME'] = "Ошибка. Неверное действие.";
+$lang['WRONG_CREDITS_COUNT'] = "Неверное количество";
+$lang['NOT_ENOUGHT_GOLD_CREDITS'] = "У вас недостаточно золотых кредитов";
+$lang['NOT_ENOUGHT_SILVER_CREDITS'] = "У вас недостаточно серебряных кредитов";
+
+$lang['5_WRONG_USER_NAME_OR_PASSWORD'] = 'вы ошиблись при вводе логина или пароля';
+$lang['WRONG_SYMBOLS_IN_USER_NAME'] = 'неверный логин';
+$lang['USER_NAME_TOO_SHORT'] = 'неверный логин';
+$lang['WRONG_SYMBOLS_IN_PASSWORD'] = 'неверный пароль';
+$lang['5_PASSWORD_TOO_SHORT'] = 'неверный пароль';
+$lang['SESSION_UID_MISSMATCH'] = 'логин/пароль не от этого аккаунта';
+$lang['ERROR'] = 'произошла ошибка';
+
+$lang['SUBMIT_01'] = 'перевести';
+$lang['SUBMIT_02'] = 'обменять';
+
+$lang['CLOSE'] = 'закрыть';
+$lang['BACK'] = 'назад';
+
+$lang['YES'] = 'да';
+$lang['NO'] = 'нет';
+
+$lang['DONATE'] = 'Вы действительно хотите перевести на счет DestinySphere';
+$lang['DONATE_TITLE'] = 'Подарить игре деньги';
+$lang['DONATION_DONE'] = 'Кредиты переведены';
+
+$lang['LOGIN_TXT'] = 'Логин';
+$lang['EMAIL_TXT'] = 'E-Mail';
+
+$lang['LOGIN'] = 'логин';
+$lang['LOGOUT'] = 'выход';
+$lang['PASSWORD'] = 'пароль';
+$lang['BUY_BUT_TXT'] = 'купить игровую валюту';
+$lang['BUY_BUT_LINK'] = '/ds/billing.php?SID=SIDID&mode=gold';
+
+$lang['TRANSFER_CONFIRM'] = 'Вы действительно хотите перевести';
+$lang['TO_WORLD'] = 'в мир';
+$lang['FROM_WORLD'] = 'из мира';
+$lang['EXCHANGE_CONFIRM'] = 'Вы действительно хотите обменять';
+$lang['TRANSFER_TAX'] = 'Налог';
+
+$lang['AND'] = 'и';
+
+$lang['ON_SILVER'] = 'на';
+
+$lang['NO_ACCOUNT'] = 'У вас нет аккаунта';
+
+$lang['EXCHANGE_TITLE'] = 'Обмен золотых кредитов на серебряные';
+$lang['EXCHANGE'] = 'Обменять';
+
+$lang['LAST_OPERATIONS'] = 'Последние 5 операций...';
+$lang['GLOBAL_ALLINCE_CONTROL'] = 'Управление глобальным альянсом';
+$lang['GO_TO_CONTROL_PANEL'] = 'Перейти в панель управления';
+$lang['ALL_STAT'] = 'Вся статистика операций со счетом';
+$lang['GO'] = 'перейти';
+$lang['SMS'] = 'SMS-сервисы';
+$lang['PROFILE'] = 'Профиль';
+$lang['EDIT_PROFILE'] = 'Редактировать профиль';
+$lang['PAYMENT_SERVICES'] = 'Платные сервисы';
+$lang['GO_TO_PAYMENT_SERVICE'] = 'Перейти к платным сервисам';
+
+$lang['TRANSFER_TITLE_TO'] = 'Перевод кредитов в игровой мир';
+$lang['TRANSFER_TITLE_FROM'] = 'Перевод кредитов из игрового мира';
+
+$lang['FROM_WORLD'] = 'из мира';
+$lang['TO_WORLD'] = 'в мир';
+
+$lang['ACCOUNT_BLOCKED'] = 'Аккаунт заблокирован';
+
+$lang['SESSION_ERROR'] = 'Время текущей сессии истекло.</b>\nПожалуйста, зайдите в магазин заново.';
+
+$lang['COPYRIGHT'] = '2003-'.date('Y').'. © DestinySphere GmbH, ООО Геймспейс. All Rights Reserved.';
+
+$lang['BUY_GC'] = 'Купить золотые кредиты';
+$lang['ENTER_CREDITS'] = 'Введите число кредитов';
+$lang['NOT_NUM'] = 'Введённое значение не является числом';
+$lang['ONLY_INT'] = 'Число покупаемых кредитов может быть только целым';
+$lang['BUY'] = 'купить';
+$lang['PAYM_SUCC'] = 'Платёж совершён успешно. Перезагрузите страницу кабинета, чтобы увидеть новые кредиты.';
+$lang['PAYM_CANCEL'] = 'Золотые кредиты не начислены, т.к. вы отказались от проведения платежа.';
+
+$lang['YOUR_REFLINK']  = 'ВАША ССЫЛКА:'; 
+$lang['REFLINK_ANONS']  = "
+Получайте кредиты бесплатно! Распространяйте вашу реферральную ссылку:";
+$lang['REFLINK_MOREINFO'] = "Подробности"; 
+$lang['REFLINK_REFTEXT'] = "тут"; 
+$lang['SPONSORPAY_TITLE'] = "Получайте игровые деньги бесплатно"; 
+$lang['SPONSORPAY_TEXT'] = 'Участвуйте в рекламных акциях и получайте игровые деньги бесплатно';
+$lang['FREETOPAY_TITLE'] = "Получайте игровые деньги бесплатно";
+$lang['FREETOPAY_TEXT'] = 'Участвуйте в рекламных акциях и получайте игровые деньги бесплатно';
+?>

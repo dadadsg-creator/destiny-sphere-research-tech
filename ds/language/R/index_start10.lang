@@ -1,0 +1,16 @@
+<?
+
+$lang = array();
+
+$lang['TEXT1'] = 'Премиум-аккаунт';
+
+$lang['TEXT3_1'] = 'Премиум-аккаунт';
+$lang['TEXT4_'] = 'Аккаунт действителен еще ';
+$lang['DAY_'] = ' дней';
+
+$lang['LINK1'] = 'https://account.destinysphere.net/ru/page0.php';
+$lang['LINK2'] = 'http://forum.destinysphere.ru/forum/premium.php';
+
+$lang['PREMIUM_BANER'] = "<img src='images/banner-468x60_r.gif' border=0 align=center width=468 height=60>";
+
+?>

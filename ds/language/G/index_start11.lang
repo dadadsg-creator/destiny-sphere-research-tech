@@ -1,0 +1,7 @@
+<?
+
+$lang = array();
+
+$lang['TEXT1'] = 'Verf&uuml;gbare Spielwelten';
+
+?>

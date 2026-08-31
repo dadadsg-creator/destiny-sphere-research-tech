@@ -1,0 +1,4 @@
+id_league;league_name;min_level;min_life_time;min_armies_weight;min_one_army_stars;
+1;I;0;0;0;0;
+2;II;18;90;300000000;7;
+3;III;27;180;1200000001;8;

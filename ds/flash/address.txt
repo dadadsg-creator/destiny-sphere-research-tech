@@ -1,0 +1,2 @@
+xmldata=<?xml version="1.0" encoding="utf-8"?>
+<address><links ranking="ranking.php?SID=SIDID" profile="/ds/index_profile.php" forum="http://forum.ds-game.ru/" portal="http://ds-game.ru/" info="http://ds-game.ru"/><interface sms="/ds/sms.php" premium="http://ds-game.ru/index.php?p=premium_info_page" service="https://billing.destinysphere.ru" news="http://news.destinysphere.ru" /></address>

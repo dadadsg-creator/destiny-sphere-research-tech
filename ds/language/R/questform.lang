@@ -1,0 +1,35 @@
+<?php
+
+$lang = array();
+
+$lang['TITLE'] = 'DestinySphere';
+
+$lang['CAPTION'] = 'Квест!';
+$lang['CAPTION_INFO'] = 'Информация';
+
+$lang['COPYRIGHT'] = '&copy; Copyright 2003-2006 by DestinySphere GmbH';
+
+$lang['ABOUT'] = 'О создателях';
+$lang['ABOUT_HREF'] = 'http://destinysphere.ru/index.php?p=about';
+
+$lang['WRONG_USERNAME'] = 'Неверное имя';
+$lang['NO_USERNAME'] = 'Не указано имя';
+$lang['NO_KEYWORD'] = 'Не указано ключевое слово';
+$lang['NO_INFO'] = 'Ошибка';
+$lang['WRONG_WORLD'] = 'Ошибка';
+$lang['NO_WORLD'] = 'Не указан мир';
+$lang['ANSWER_LIMIT'] = 'Вы превысили лимит ответов';
+$lang['WRONG_SYMBOLS_IN_USER_NAME'] = 'Неверные символы в имени игрока';
+$lang['USER_NAME_TOO_SHORT'] = 'Слишком короткое имя игрока';
+$lang['USER_NAME_TOO_LONG'] = 'Слишком длинное имя игрока';
+$lang['ANSWER_SEND'] = 'Данные оправлены';
+
+$lang['NAME'] = 'Игровой логин';
+$lang['KEY_WORD'] = 'Ключевое слово';
+$lang['WORLD'] = 'Игровой мир';
+$lang['INFO'] = 'Инфо';
+$lang['SEND'] = 'отправить';
+
+$lang['COUNTERS'] = "";
+
+?>

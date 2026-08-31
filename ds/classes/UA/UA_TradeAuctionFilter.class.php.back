@@ -1,0 +1,573 @@
+<?php $CVS_Version = '$Revision: 1.7 $ ; $Date: 2008/12/22 13:04:17 $';
+
+/**
+ * Запрос на получения списка лотов в торгователе
+ *
+ */
+class UA_TradeAuctionFilter extends UA_Action
+{
+	/**
+	 * Текущая страница
+	 *
+	 * @var integer
+	 */
+	private $curPage;
+
+	/**
+	 * Имя продавца
+	 *
+	 * @var string
+	 */
+	private $traderSearch;
+
+	/**
+	 * Что покупаем ('RESOURCES', 'UNITS', 'ARTEFACTS')
+	 *
+	 * @var string
+	 */
+	private $sortType;
+
+	/**
+	 * Enter description here...
+	 *
+	 * @var DE_TradeAuctionPanelMainSQL
+	 */
+	private $mainSQL;
+
+	/**
+	 * Набор чекбоксов из фильтров
+	 *
+	 * @var array
+	 */
+	private $checkBoxFilters;
+
+	/**
+	 * Фильтр по продаваемым товарам
+	 *
+	 * @var array
+	 */
+	private $filters;
+
+	/**
+	 * В каком торгователе смотреть
+	 *
+	 * @var string
+	 */
+	private $sortPlace;
+
+	/**
+	 * За что покупаем
+	 *
+	 * @var array
+	 */
+	private $buy_by;
+
+	/**
+	 * Enter description here...
+	 *
+	 * @var DE_Comb
+	 */
+	private $combObject;
+
+	/**
+	 * Колличество лотов на странице
+	 *
+	 * @var integer
+	 */
+	private $tradesPerPage = 10;
+
+	/**
+	 * Данные для вывода лотов
+	 *
+	 * @var TI_AuctionTrades
+	 */
+	private $transportInput;
+
+	/**
+	 * Порядки сортировки
+	 *
+	 * @var array
+	 */
+	private $order = array();
+
+	static private $allowedSortTypes = array('RESOURCES', 'UNITS', 'ARTEFACTS');
+
+	function __construct()
+	{
+		parent::UA_Action();
+
+		$this->mainSQL = new DE_TradeAuctionPanelMainSQL(DE_World::CreateForCurrentWorld());
+
+		$this->combObject = DE_Comb::CreateFromID((int)$this->comb);
+
+		$this->transportInput = new TI_AuctionTrades();
+	}
+
+	function checkLocalParams()
+	{
+		// текущая страница
+		$this->curPage = (int)$this->root->get_attribute("page");
+		if($this->curPage <= 0)
+		{
+			$this->curPage = 1;
+		}
+
+		// ник продавца
+		$this->traderSearch = strtoupper($this->root->get_attribute("trader"));
+		if((!empty($this->traderSearch) && !VD_UserName::Validate($this->traderSearch)) || DE_WorldSettings::CreateForCurentWorld()->get('TRADE_ANONYMOUS'))
+		{
+			$this->traderSearch = '';
+		}
+
+		// что продается
+		$this->sortType = $this->root->get_attribute("typebuy");
+		assert(in_array($this->sortType, self::$allowedSortTypes));
+
+		// чекбоксы
+		$this->_getFilters();
+
+		// в фильтрах артефактов приходят не ИД артефактов, а сочетание скопа, размера и типа бонуса
+		if($this->sortType == 'ARTEFACTS')
+		{
+			$this->filters = ME_TradeUnserializeFilter::UnserializeFull($this->root->get_attribute("select"));
+			$this->_getArtefactIDsFromFilter();
+		} else {
+			$this->filters = ME_TradeUnserializeFilter::UnserializeFlat($this->root->get_attribute("select"));
+		}
+
+		// какой торгователь
+		$this->sortPlace = $this->root->get_attribute("sort_place");
+
+		// за что продается
+		$this->buy_by = $this->root->get_attribute("buy_by");
+		assert(preg_match('/^[A-Z,_-]+$/', $this->buy_by));
+		$this->buy_by = explode(',', $this->buy_by);
+
+		// сортировка
+		$this->_getSortOrder();
+
+		return true;
+	}
+
+	private function _getFilters()
+	{
+		$filters = explode(',', $this->root->get_attribute("filter"));
+		$allFilters = DS_TradeInterface::GetTradeMenuFilters();
+		$checkBoxFilters = array();
+
+		//ТИпа тупо типизации
+		foreach ($filters as $k => $f)
+		{
+			$checkBoxFilters[] = (int)$f;
+		}
+
+		//Выясняем какие филтры отмеченны
+		foreach ($allFilters as $k => $f)
+		{
+			if(in_array((int)$f['id_filter'], $checkBoxFilters))
+			{
+				$this->checkBoxFilters[$f['name']] = 1;
+			} else {
+				$this->checkBoxFilters[$f['name']] = 0;
+			}
+		}
+	}
+
+	private function _getSortOrder()
+	{
+		$allowedDirections = array('D', 'U');
+
+		$sorts = $this->root->get_attribute("sort");
+		if(empty($sorts))
+		{
+			return;
+		}
+
+		$sorts = explode(',', $sorts);
+
+		foreach ($sorts as $k => $sort)
+		{
+			list($id, $direction) = explode('|', $sort);
+			$id = (int)$id;
+			if($id == 0)
+			{
+				continue;
+			}
+			assert($id > 0);
+				
+			$direction = strtoupper($direction);
+			assert(in_array($direction, $allowedDirections));
+				
+			$orderName = DS_TradeInterface::GetTradeMenuSortNameByID($id);
+				
+			$this->order[$orderName] = $direction;
+		}
+	}
+
+	function checkAction()
+	{
+		return true;
+	}
+
+
+	function performAction()
+	{
+		SU_DebugTools::LogUser('Asya', 'in function');
+		$this->_initMainSQL();
+
+		//$this->_getPageData();
+
+		$this->_getTradeLots();
+
+		SU_OutputHandler::Singleton()->addString(TL_AuctionTrades::FormMenu($this->transportInput), 'xmldata');
+
+		return true;
+	}
+
+	private function _getTradeLots()
+	{
+		$sql = sprintf ( "select ltl.text
+						from ds_localizedtextlanguage ltl,
+						ds_systemmessage sm
+						where ltl.id_localizedtext = sm.id_localizedtext
+						and ltl.id_language = %d
+						and sm.messagename = 'ARTEFACT_DEATH_TIME'", $this->langId );
+		$loc_death_text_res = $this->common->getResultArray ( "system_message_finished_id_language_".$this->langId, $sql, "", "SHORT_PREFIX", "GLOBAL_CACHE" );
+		$loc_death_text = $loc_death_text_res[0]['text'];
+				
+		$tradeLots = DS_TradeInterface::GetTradeLots($this->mainSQL, 'MAIN_SELECT');
+		foreach($tradeLots as $k=>$tradeData)
+		{
+			$endDate = GB_TypeFactory::CreateBase('GB_Date', $tradeData['end_date']);
+				
+			if($tradeData['is_auction'] == 't')
+			{
+				$imidiate = 0;
+			}else{
+				$imidiate = 1;
+			}
+				
+			$tradeType = DE_TradeType::CreateFromTypeIDForCurrentWorld((int)$tradeData['id_tradetype']);
+			$tradeFromArticle = DE_TradeArticle::CreateFromTradeCategoryIDAndArticleIDForCurrentWorld($tradeType->getTradeFromCategoryID(), (int)$tradeData['id_article']);
+			$tradeToArticle = $tradeType->getToArticle();
+			$tradeType->setFromTradeArticle($tradeFromArticle);
+				
+			$combTo = $this->combObject;
+			$combFrom = DE_Comb::CreateFromID((int)$tradeData['id_seller_comb']);
+			$speed = GB_TypeFactory::CreateBase('GB_MoveSpeed', (float)1);
+			$amount = (int)$tradeData['amount'];
+
+			$getPrice = '';
+			if($combTo->getID() != $combFrom->getID())
+			{
+				$travelTime = GL_TravelTime::Count($combFrom, $combTo, $speed);
+
+				if($tradeFromArticle->getTradeCategoryID() == 2) //UNITS
+				{
+					if($this->comb == $tradeData['id_seller_comb'])
+					{
+						$getPrice = '';
+					} else {
+						$unit = DE_Unit::CreateFromID((int)$tradeData['id_article']);
+						$upkeepValue = GL_FullUnitsMovementCost::CountBuyUnits($combFrom, $combTo, $unit, $amount, GB_TypeFactory::CreateBase('GB_Date', time()));
+
+						$getPrice = "T:".$travelTime->getDSFormat().";".$upkeepValue->getShortPayNotLocalizedList();
+					}
+				}else{
+					if($this->comb == $tradeData['id_seller_comb'])
+					{
+						$getPrice = '';
+					} else {
+						$getPrice = "T:".$travelTime->getDSFormat();
+					}
+				}
+			}
+				
+				
+			if($tradeData['id_seller'] == $this->uiid)
+			{
+				$disabled = 1;
+			}else{
+				$disabled = 0;
+			}
+				
+			if((int)$tradeData['id_userinstance_bid'] > 0)
+			{
+				$currentCustomerName = DE_UserInstance::CreateFromID((int)$tradeData['id_userinstance_bid'])->getUser()->getName();
+			}else{
+				if((int)$tradeData['is_personal'] == 't')
+				{
+					$currentCustomerName = $tradeData['person_name'];
+				}else{
+					$currentCustomerName = '';
+				}
+			}
+				
+			if((float)$tradeData['price_bid'] > 0)
+			{
+				$price = (float)$tradeData['price_bid'];
+			}else{
+				$price = (float)$tradeData['startprice'];
+			}
+				
+
+			if(!$imidiate)
+			{
+				$prices = GL_TradeCountMinAndMaxPrices::Count($tradeType, (float)$tradeData['amount'], $price);
+
+				if(!empty($currentCustomerName))
+				{
+					$nextPrice = $prices['NEXT_PRICE'];
+				}
+				else
+				{
+					$nextPrice = $price;
+				}
+					
+				$maxPrice = $prices['MAX_PRICE'];
+			}else{
+				$nextPrice = 0;
+				$maxPrice = 0;
+			}
+
+			//Закрыто отображение текущего покупателя если эо не текущий пользователь
+			if(!empty($currentCustomerName) && $currentCustomerName != DE_User::CreateForCurrentUser()->getName())
+			{
+				$currentCustomerName = DE_ServerSideInterfaceLocalization::CreateForCurentLang()->get('LOT_HAVE_CUSTOMER');
+			}
+				
+			if((DE_WorldSettings::CreateForCurentWorld()->get('TRADE_ANONYMOUS') || $tradeData['is_anonymous'] == 't') && (int)$tradeData['id_seller'] != $this->uiid)
+			{
+				$sellerName = ' - ';
+			} else {
+				$sellerName = DE_UserInstance::CreateFromID((int)$tradeData['id_seller'])->getUser()->getName();
+			}
+
+			$death_message = "";
+			$lifetime = "";
+			
+			$tradeFromArticleName = $tradeFromArticle->getInternalName();
+			if($tradeFromArticle->getTradeCategoryID() == 3) {//ARTEFACT
+//				if(preg_match("/_SALE$/", $tradeFromArticleName)) {
+					$sql = "SELECT
+							to_char(ai.death_time, 'DD.MM.YYYY') AS death_time,
+							to_char(ai.birth_time, 'DD.MM.YYYY') AS birth_time
+							FROM ds_trade_lot_artefactinstances AS ta
+							LEFT JOIN ds_artefactinstance AS ai ON ta.id_artefactinstance = ai.id_artefactinstance
+							WHERE ta.id_trade_lot = ".$tradeData['id']." AND ai.immortal = TRUE";
+					$artres = $this->common->getResultArray('', $sql);
+					if(!empty($artres)) {
+						list($d,$m,$y) = explode('.', $artres[0]['birth_time']);
+						$lifetime = mktime(0, 0, 0, $m, $d, $y);
+						list($d,$m,$y) = explode('.', $artres[0]['death_time']);
+						$lifetime .= '|'.mktime(0, 0, 0, $m, $d, $y);
+						$tradeFromArticleName = "_".$lifetime;
+						$death_message = sprintf(str_replace('%', '%s', $loc_death_text), $artres[0]['death_time']);
+					}
+//				}
+			}
+				
+				
+			$data = array(
+				'TRADE_ID' => (int)$tradeData['id'],
+			 	'END_DATE' => $endDate->getPgFormat(DE_User::CreateForCurrentUser()->getTimeDelta()),
+			 	'AMOUNT' => $tradeData['amount'],
+				'PRICE' => $price,
+				'SELLER_NAME' => $sellerName,
+				'TRADE_BY' => $tradeToArticle->getInternalName(),
+				'TRADE_SCOPE' => $tradeData['tradescopename'],
+				'IMIDIATE' => $imidiate,
+				'LIBNAME' => $tradeFromArticleName,
+				'GET_PRICE' => $getPrice,
+				'ID_CAT_ON' => (int)$tradeData['id_trade_on_category'],
+				'ID_CAT_BY' => (int)$tradeData['id_trade_by_category'],
+				'DISABLED' => $disabled,
+				'CUSTOMER' => $currentCustomerName,
+				'NEXT_PRICE' => $nextPrice,
+				'MAX_PRICE' => $maxPrice,
+				'BEST_PRICE' => $tradeData['best_price'],
+				'DEATH_MESSAGE' => $death_message,
+				'LIFETIME' => $lifetime
+			);
+				
+			$this->transportInput->setTrade($data);
+		}
+	}
+
+	/**
+	 * Получение списка айдишников артефатктов по полученным фильтрам
+	 *
+	 */
+	private function _getArtefactIDsFromFilter()
+	{
+		if(count($this->filters) == 0 || $this->sortType != 'ARTEFACTS')
+		{
+			return;
+		}
+
+		$res = array();
+
+		foreach ($this->filters as $scope => $f)
+		{
+			assert(is_array($f));
+			$size = array();
+			$bonus = array();
+				
+			if(key_exists('SIZE', $f))
+			{
+				$size = $f['SIZE'];
+			}
+				
+			if(key_exists('BONUS', $f))
+			{
+				$bonus = $f['BONUS'];
+			}
+				
+			if(count($size) == 0 && count($bonus) == 0)
+			{
+				continue;
+			}
+				
+			$res = array_merge($res, DS_TradeInterface::GetArtefactsIDByTradeFilter((int)$scope, $size, $bonus));
+		}
+
+		$this->filters = $res;
+	}
+
+	private function _initMainSQL()
+	{
+		SU_DebugTools::LogUser('Asya', 'in function');
+
+		if($_SESSION["worldtype"] == 'RACE_VS_RACE')
+		{
+			$this->mainSQL->setRvrFlag(true);
+		}
+		elseif(DE_WorldSettings::CreateForCurentWorld()->get('TRADE_NON_RVR_INTERRACE_ALLOW_UNITS'))
+		{
+			$this->mainSQL->setNonRvrUnitsInterRaceFlag(true);
+		}
+
+		$this->mainSQL->setTradeDelay((int)DE_WorldSettings::CreateForCurentWorld()->get('TRADE_DELAY'));
+		$this->mainSQL->setSortPlace($this->sortPlace);
+		$this->mainSQL->setSortType($this->sortType);
+		$this->mainSQL->setComb($this->combObject);
+
+		///From function in bottom page
+		$this->mainSQL->setTrader($this->traderSearch);
+
+		$this->mainSQL->setBuyBy($this->buy_by);
+		$this->mainSQL->setFilters($this->checkBoxFilters);
+		$this->mainSQL->setSortName($this->filters);
+		$this->mainSQL->setPersonal(DE_User::CreateFromID((int)$_SESSION['uid'])->getName());
+
+		$this->mainSQL->setOrder($this->order);
+
+		ME_TradeFormAuctionMainSQL::Exec($this->mainSQL);
+
+		$countData = DS_TradeInterface::GetTradeLots($this->mainSQL, 'COUNT_ROWS'); //Get count lots??
+		assert(is_array($countData) && count($countData) == 1);
+		$rowsCount = (int)$countData[0]['colvo'];
+
+		//Расчет стрниц для вывода
+		$totalPages = (int)ceil($rowsCount / $this->tradesPerPage);
+		$currentPage = (int)$this->curPage;
+		if($this->checkNewFilter())
+		{
+			if($this->curPage > $totalPages)
+			{
+				$this->curPage = $totalPages;
+			}
+		}else{
+			$this->curPage = 1;
+		}
+
+		if($this->curPage <= 0){
+			$this->curPage = 1;
+		}
+
+
+		$this->saveFiltersToSession();
+
+		$this->mainSQL->setPages($this->curPage, $this->tradesPerPage);
+
+		ME_TradeFormAuctionMainSQL::ApplyPages($this->mainSQL);
+
+		if($this->curPage > 0)
+		{
+			$this->transportInput->setPages($this->curPage, $totalPages, $this->tradesPerPage);
+		}
+	}
+
+	/**
+	 * сохранить текущие фильтры в сессию
+	 *
+	 */
+	private function saveFiltersToSession()
+	{
+
+		$ArrayForSaveFilterSettingToSession = array(
+			'ORDER' => $this->order, //Это массив
+			'CHECKBOXES' => $this->checkBoxFilters, //и это массив
+			'SORT_PLACE' => $this->sortPlace, //это тип торгователя (кольцевой/альянсовый)
+			'SORT_TYPE' => $this->sortType, //что покупаем (ресы/юниты/арты)
+			'SORT_NAME' => $this->filters, //и даже это массив (что покупаем)
+			'BUY_BY' => $this->buy_by, //за что покупаем (массив)
+			'TRADERSEARCH' => $this->traderSearch, //чье покупаем
+		);
+		$_SESSION['TradeFilterBackup'] = $ArrayForSaveFilterSettingToSession;
+	}
+
+	/**
+	 * если этот метод возвращает false то фильтры новые и надо перекинуть лоты на первую страницу
+	 *  если true то переход на первую страницу не нужен, оставляем на текущей или переходим на максимально близкую страницу
+	 *
+	 * @return boolean
+	 */
+	private function checkNewFilter()
+	{
+
+		//TPD ДОработать проверку существания
+
+		if(
+		($_SESSION['TradeFilterBackup']['ORDER'] != $this->order) ||
+		($_SESSION['TradeFilterBackup']['CHECKBOXES'] != $this->checkBoxFilters) ||
+		($_SESSION['TradeFilterBackup']['SORT_PLACE'] != $this->sortPlace) ||
+		($_SESSION['TradeFilterBackup']['SORT_TYPE'] != $this->sortType) ||
+		($_SESSION['TradeFilterBackup']['SORT_NAME'] != $this->filters) ||
+		($_SESSION['TradeFilterBackup']['BUY_BY'] != $this->buy_by) ||
+		($_SESSION['TradeFilterBackup']['TRADERSEARCH'] != $this->traderSearch))
+		{
+			return false;
+		}
+
+		return true;
+
+	}
+
+	/*
+	 private function _getPageData()
+	 {
+		$countData = DS_TradeInterface::GetTradeLots($this->mainSQL, 'COUNT_ROWS');
+		assert(is_array($countData) && count($countData) == 1);
+		$rowsCount = (int)$countData[0]['colvo'];
+
+		if($rowsCount == 0)
+		{
+		return false;
+		}
+
+		//Расчет стрниц для вывода
+		$totalPages = (int)ceil($rowsCount / $this->tradesPerPage);
+		$currentPage = (int)$this->curPage;
+		//SU_DebugTools::LogAll('Проверка валидности торговых фильтров '.$this->checkNewFilter(), 'oleg123oleg.log');
+
+
+		$this->transportInput->setPages($currentPage, $totalPages, $this->tradesPerPage);
+
+		return true;
+		}
+		*/
+
+}
+
+?>

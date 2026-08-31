@@ -1,0 +1,18 @@
+<?
+$lang['CHARSET'] = "windows-1251";
+$lang['title'] = ":: DestinySphere :: Турнирный рейтинг";
+
+$lang['cap_btn_ranking'] = "Рейтинг";
+$lang['cap_btn_ranking_detail'] = "Подробный рейтинг";
+
+$lang['number'] = "№";
+$lang['player'] = "Игрок";
+$lang['exp'] = "Очки";
+$lang['battle_exp'] = "Боевой опыт";
+$lang['prize'] = " Приз";
+
+$lang['move'] = "Перейти";
+$lang['player_search'] = "Поиск игрока";
+
+$lang['copyright'] = "2003-".date('Y')."©. DestinySphere GmbH, ООО Геймспейс. All Rights Reserved.<br>Оптимизировано для разрешения экрана 1024 x 768 и броузера Microsoft Internet Explorer версии 6.0 и выше.";
+?>

@@ -1,0 +1,32 @@
+<?
+$lang = array();
+
+$lang['TITLE'] = 'DestinySphere :: Login';
+$lang['TITLEIMAGE'] = '<a href="../index.php"><span class="maintitle"><img src="images/logo_sp3k.gif" border="0" alt="DestinySphere Startseite" vspace="1" width="361" height="60" /></span></a>';
+$lang['ENCODING'] = 'iso-8859-1';
+$lang['LOGIN'] = 'Login';
+$lang['ERROR'] = 'Folgende Fehler sind aufgetreten:';
+$lang['USERNAME'] = 'Benutzername:';
+$lang['PASSWORD'] = 'Passwort:';
+$lang['SENDPASSWORD_HREF'] = 'http://80.237.203.23/forum/profile.php?mode=sendpassword';
+$lang['SENDPASSWORD'] = 'Ich habe mein Passwort vergessen!';
+$lang['REGISTRATION'] = 'Registrieren';
+$lang['TEXT2'] = 'Es sind ';
+$lang['TEXT3'] = 'Spieler online';
+$lang['TEXT4'] = 'Bei Eingaben oben bitte unbedingt auf Groß-/Kleinschreibung achten.<br>Beachte bitte, dass Du unbedingt die Flash Plug-In Version ab <a href="http://www.macromedia.com/software/flash/about/" target="_blank">6.0.65.0</a> brauchst.<br />Mit Deinem Login bestätigst Du automatisch Dein Einverständnis mit den aktuell gültigen <a href="http://80.237.203.23/forum/agb.php" target="_blank">AGBs</a>.<br><a href="https://account.destinysphere.net" target="_blank" style="color:orange">Premium Registrierung und Login &gt;&gt;</a>';
+$lang['TEXT5'] = 'Empfehle uns Deinen Freunden!';
+$lang['EMAIL'] = 'E-Mail-Adresse (auch mehrere Adressen sind mit Komma getrennt möglich):';
+$lang['TEXT6'] = 'Empfehlungstext:';
+$lang['TEXT7'] = 'Hi !
+                            
+Ich möchte Dir das Online-Spiel DestinySphere empfehlen,
+zu finden unter http://www.destinysphere.com.
+
+Viele Grüße';
+
+$lang['TEXT8'] = 'Jetzt senden!';
+$lang['COPYRIGHT'] = 'Copyright 2003-2004 by DestinySphere GmbH';
+$lang['TEXT9'] = 'Accounts sind gesperrt.';
+
+
+?>

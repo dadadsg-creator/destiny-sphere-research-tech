@@ -1,0 +1,146 @@
+<?php
+
+$lang['TITLE'] = "Кабинет игрока";
+$lang['ENCODING'] = 'windows-1251';
+
+
+$lang['CREATE_LNK'] = 'СОЗДАТЬ';
+$lang['JOIN_LNK'] = 'ВСТУПИТЬ';
+
+$lang['STAT_LNK'] = 'СТАТИСТИКА';
+$lang['JOIN_LIST_LNK'] = 'ЗАЯВКИ';
+$lang['MEMBERS_LNK'] = 'УЧАСТНИКИ';
+$lang['MESSAGES_LNK'] = 'СООБЩЕНИЯ';
+$lang['CONTROL_LNK'] = 'УПРАВЛЕНИЕ';
+$lang['RESTORE_PASSWORD'] = 'ВОССТАНОВЛЕНИЕ ПАРОЛЯ';
+$lang['ALLIANCE'] = 'альянса';
+$lang['ALLIANCE2'] = 'альянсом';
+
+
+
+$lang['WRONG_JOIN_PAYMENT'] = 'aaa';
+
+$lang['SUCCESSFULL'] = 'Успешно';
+$lang['CREATE_ALLIANCE_SUCCESSFULL'] = 'Создание альянса прошло успешно';
+$lang['SUCCESSFULL_CHANGE_PASSWORD'] = 'Вы успешно сменили пароль';
+$lang['SUCCESSFULL_CHANGE_JOIN'] = 'Вы успешно изменили настройки вступления';
+$lang['SUCCESSFULL_ADD_AVATAR'] = 'Добавление аватара прошло успешно';
+$lang['PASSWORD_WAS_SEND'] = 'Ваш пароль был выслан вам на e-mail';
+$lang['SUCCESSFULL_CHANGE_NAME'] = 'Вы успешно сменили название альянса';
+$lang['AVATAR_WAS_CHANGE'] = 'Аватар был изменен';
+$lang['SUCCESSFULL_EXPEL_WITH_BL'] = 'Игроки были успешно исключены с занесением в черный список';
+$lang['SUCCESSFULL_EXPEL'] = 'Игроки были успешно исключены из альянса';
+$lang['SUCCESSFULL_SEND_MESSAGE'] = 'Сообщение отправлено';
+$lang['SUCCESSFULL_ACCEPTS'] = 'Заявки были приняты';
+$lang['SUCCESSFULL_ACCEPT'] = 'Заявка была принята';
+$lang['SUCCESSFULL_DECLINES'] = 'Заявки были отклонены';
+$lang['SUCCESSFULL_DECLINE'] = 'Заявка была отклонена';
+$lang['SUCCESSFULL_ADD_USER_TO_BL'] = 'Игрок был занесен в черный список';
+
+
+$lang['ALLIANCE_NAME_HAS_WRONG_SYMBOLS'] = 'Неверные символы в названии альянса';
+$lang['ALLIANCE_NAME_TO_SHORT'] = 'Слишком короткое название альянса';
+$lang['ALLIANCE_NAME_TO_LONG'] = 'Слишком длинное название альянса';
+$lang['ALLIANCE_NAME_NOT_UNIQUE'] = 'Альянс с таким названием уже существует';
+$lang['LEAVE_ALLINCE'] = 'Покинуть альянс';
+
+$lang['CANT_EXPEL_YOURSELF'] = 'Вы не можете исключить самого себя';
+
+
+$lang['ALLIANCE_TAG_HAS_WRONG_SYMBOLS'] = 'Неверные символы в сокращении';
+$lang['ALLIANCE_TAG_TO_LONG'] = '';
+$lang['ALLIANCE_TAG_NOT_UNIQUE'] = 'Альянс с таким сокращением уже существует';
+
+$lang['GLOBAL_ALLIANCE_NAME_NOT_UNIQUE'] = 'Альянс с таким названием уже существует';
+$lang['GLOBAL_ALLIANCE_TAG_NOT_UNIQUE'] = 'Альянс с таким сокращением уже существует';
+
+$lang['JOINPASSWORD_HAS_WRONG_SYMBOLS'] = 'Неверные символы в пароле';
+$lang['JOINPASSWORD_TO_SHORT'] = 'Пароль слишком короткий';
+$lang['JOINPASSWORD_TO_LONG'] = 'Неверные символы в пароле';
+
+$lang['WRONG_SYMBOLS_IN_PASSWORD'] = 'Неверные символы в пароле';
+$lang['5_PASSWORD_TOO_SHORT'] = 'Пароль слишком короткий';
+$lang['5_PASSWORD_TOO_LONG'] = 'Неверные символы в пароле';
+$lang['MISMATCH_PASSWORD'] = 'Пароль не совпадает с подтверждением пароля!';
+$lang['CONFIRM_LEAVE_ALLIANCE'] = 'Подтвердите выход из альянса';
+$lang['JOIN_ALLIANCE_SUCCESSFUL'] = 'Вступление в альянс';
+
+$lang['GEN_ERROR'] = 'Произошла ошибка, попробуйте перезагрузить страницу';
+$lang['NOT_ENOUGHT_CREDITS_FOR_CREATION'] = 'У вас недостаточно денег на счете для создания альянса';
+$lang['CANT_JOIN_ALLIANCE'] = 'Вы не можете вступить в этот альянс';
+$lang['WRONG_JOIN_PASSWORD'] = 'Пароль для вступления в альянс неправильный';
+$lang['NOT_ENOUGHT_CREDITS_FOR_JOIN'] = 'У вас недостаточно денег на счете для вступление в альянс';
+$lang['NOT_ENOUGHT_CREDITS_FOR_SEND_MESSAGE'] = 'У вас недостаточно денег на счете для отправки сообщения';
+$lang['NOT_ENOUGHT_CREDITS_FOR_RENAME'] = 'У вас недостаточно денег на счете для переименования';
+$lang['NOT_ENOUGHT_CREDITS_FOR_CHANGE_AVATAR'] = 'У вас недостаточно денег на счете для смены аватара';
+$lang['USER_HAS_NOT_INSTANCE'] = 'Вы не можете создавать и вступать в альянсы, пока не зарегистрируетесь в каком-либо мире';
+$lang['WRONG_OLD_PASSWORD'] = 'Введен неверный текущий пароль';
+$lang['USER_NOT_EXIST'] = 'Пользователь с введенным ником не существует';
+$lang['USER_NOT_IN_ALLIANCE'] = 'Пользователь с введенным ником не состоит в альянсе';
+$lang['CANT_LOAD_AVATAR_ON_SERVER'] = 'Не удается загрузить файл на сервер';
+$lang['USER_ALREADY_IN_ALLIANCE'] = 'Вы уже состоите в альянсе';
+$lang['EMPTY_USER'] = 'Введите имя игрока';
+$lang['CANT_ADD_IN_BL_YOURSELF'] = 'Вы не можете занести в черный список самого себя';
+$lang['USER_ALREADY_IN_BLACK_LIST'] = 'Игрок уже в черном списке';
+$lang['WRONG_ALLIANCE_NAME'] = 'Некорректное название альянса';
+$lang['WRONG_ALLIANCE_TAG'] = 'Некорректное короткое название альянса';
+$lang['WRONG_PASSWORD'] = 'Неверный пароль';
+$lang['WRONG_IMAGE_SIZE'] = 'Изображение должно быть размером не более 100x100 пикселей!';
+$lang['ALLIANCE_DELETE'] = 'Удалить альянс';
+$lang['REQUESTS'] = 'Заявки на вступление в альянс';
+$lang['BACK'] = 'Назад';
+$lang['COMMENTS_TOO_LONG'] = 'Комментарий слишком длинный';
+
+$lang['EMPTY_SUBJECT'] = 'Введите тему';
+$lang['EMPTY_MESSAGE'] = 'Введите сообщение';
+
+$lang['SUBJECT_TOO_SHORT'] = 'Тема слишком короткая';
+$lang['SUBJECT_TOO_LONG'] = 'Тема слишком длинная';
+$lang['MESSAGE_TOO_LONG'] = 'Сообщение слишком длинное';
+$lang['MESSAGE_TOO_SHORT'] = 'Сообщение слишком короткое';
+$lang['CHOOSE_WORLD'] = 'Выберите миры';
+$lang['CHOOSE_USERS'] = 'Выберите игроков';
+$lang['COMMENTS_TOO_LONG'] = 'Комментарий слишком длинный';
+$lang['SEND_PASSWORD'] = 'Выслать пароль на e-mail';
+$lang['MAIL_PROBLEMS'] = 'Ошибка почты';
+$lang['CONFIRM_ACTION'] = 'Подтвердите действие';
+$lang['COMFIRM_SEND_MESSAGE_TO_USERS'] = 'Отправка сообщения';
+
+$lang['CONFIRM_JOIN'] = 'Подтверждение вступления';
+$lang['CHANGE_LEADER'] = 'Вы успешно сменили лидера';
+$lang['YES'] = 'Да';
+$lang['CANCEL'] = 'Отмена';
+
+$lang['MEMBER'] = 'Участник';
+$lang['RUNKING'] = 'Рейтинг';
+$lang['WORLD'] = 'Мир';
+$lang['BATTLEXP'] = 'Военный рейтинг';
+$lang['BLACK_LIST'] = 'ЧЕРНЫЙ СПИСОК';
+$lang['WORLD_STAT'] = 'Статистика по миру';
+$lang['CONFIRM_SEND_MESSAGE'] = 'Подтвердите отправку сообщения';
+
+$lang['PASSWORD'] = 'Пароль';
+$lang['OLD_PASSWORD'] = 'Старый пароль';
+$lang['NEW_PASSWORD'] = 'Новый пароль';
+$lang['CONFIRM_PASSWORD'] = 'Подтверждение пароля';
+$lang['NEW_LEADER'] = 'Новый лидер';
+$lang['NEW_JOIN_PAYMENT'] = 'Плата за вступление';
+$lang['DELETE_ALLIANCE'] = 'Удалить альянс';
+$lang['CHANGE_PASSWORD'] = 'Смена пароля';
+$lang['CHANGE_LEADER'] = 'Смена лидера';
+$lang['ADD_AVATAR'] = 'Добавление аватара';
+$lang['CHANGE_JOIN'] = 'Смена настроек вступления';
+$lang['CHANGE_ALLIANCE_NAME'] = 'Смена названия альянса';
+$lang['CHANGE_AVATAR'] = 'Смена аватара';
+
+
+$lang['CHANGE'] = 'Изменить';
+$lang['ADD'] = 'Добавить';
+
+
+
+$lang['SESSION_ERROR'] = 'Время текущей сессии истекло.</b>\nПожалуйста, зайдите в кабинет заново.';
+
+$lang['COPYRIGHT'] = '2003-'.date('Y').'. © DestinySphere GmbH, ООО Геймспейс. All Rights Reserved.';
+
+?>

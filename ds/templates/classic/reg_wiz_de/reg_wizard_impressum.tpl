@@ -1,0 +1,159 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Destiny Sphere - Registration</title>
+    <link href="reg.css" rel="stylesheet" type="text/css" />
+  <style  type="text/css">
+  {literal}
+table.layout td.layout_center{
+    width:1001px;
+{/literal}
+  background:transparent url('{$backgroundurl}') no-repeat top left;
+{literal}
+    vertical-align:top;
+}
+table.world_list td.list div.list{
+    height:367px;
+    overflow:auto;
+    padding-top:10px;
+}
+  {/literal}
+  </style>
+    <!--[if lt IE 7]>
+    <script type="text/javascript" src="js/fixpng.js"></script>
+    <![endif]-->
+  <script language="Javascript" src="js/reg.js"></script>
+</head>
+<body>
+    <table class="layout">
+        <tr>
+            <td class="layout_left">&nbsp;</td>
+            <td class="layout_center">
+                <div class="min_width"></div>
+                <!-- Контент -->
+                <div class="content">
+                    <div class="title">
+                      <!--<img src="img/reg_wiz_de/content/title/impressum.jpg" alt="" />-->
+                 <span style="font-size:23pt;font-family:Arial">IMPRESSUM</span>                      
+                    </div>
+
+          <div class="prev_btn"></div>
+                    <div class="next_btn">
+          </div>
+          <table class="world_list">
+                        <tr>
+              <td class="list" style="padding-left:30px">
+              <div class="list">
+              <p style="text-align:justify">
+              
+&nbsp;<span class="wnd_gen_txt_large"><span class="label01"><strong><font size="2">
+<div><strong>DestinySphere ist ein Projekt der DestinySphere GmbH</strong></div>
+<div><strong>&nbsp;</strong></div>
+<div><strong>Website: <u><a href="/" style='color:white'>http://www.destinysphere.net</a></u></strong></div>
+</font></strong></span>
+<p><span class="label01"><strong><font size="2">DestinySphere GmbH</font></strong></span><br/>
+Hochbaumstr. 48<br>
+14167 Berlin<br>
+Germany<br>
+<br>
+<p><strong>Gesch&auml;ftsf&uuml;hrung:</strong><br/>
+Vladislav Belinski<br/>
+Dmitri Iourtchouk</p>
+<p>HRB 87956, Amtsgericht Charlottenburg<br/>
+Steuernummer: 27/023/03153<br/>
+USt-IdNr.: DE226169180</p>
+<p><strong>eMail:</strong><br/>
+<a href="mailto:kontakt@destinysphere.com" style='color:white'><u><strong>kontakt@destinysphere.com</strong></u></a></p>
+<p><strong>Spielidee:</strong><br/>
+Alexander Goldybin<br/>
+Matthias Schr&ouml;der</p>
+<div>Redaktionelle Verantwortung</div>
+<div>Vladislav Belinski</div>
+<div>Copyright: </div>
+<div>DestinySphere GmbH&nbsp;</div>
+<div>&nbsp;</div>
+<div>RECHTLICHE HINWEISE</div>
+<div>Hinweise zum Inhalt</div>
+<div>Namentlich gekennzeichnete Beitr&auml;ge geben nicht immer die Meinung des Herausgebers wieder.</div>
+<div>Hinweise zum Urheberrecht</div>
+<div>Alle Inhalte dieser Internetseite sind nur f&uuml;r den bestimmungsgem&auml;&szlig;en Abruf im Internet nutzbar und d&uuml;rfen au&szlig;erhalb dieser Zweckbestimmung nur mit schriftlicher Genehmigung von DestinySphere verwendet werden. </div>
+<div>Hinweise zur Gew&auml;hrleistung und zum Haftungsausschlu&szlig;</div>
+<div>Die Inhalte dieses Internetangebotes werden stets sorgf&auml;ltig gepr&uuml;ft. Die Richtigkeit, Vollst&auml;ndigkeit und Aktualit&auml;t dieser Inhalte kann von DestinySphere jedoch nicht zugesichert werden.</div>
+<div>&nbsp;</div>
+<div>DestinySphere stellt alle Inhalte ohne Gew&auml;hrleistung jedweder Art zur Verf&uuml;gung. DestinySphere schlie&szlig;t jegliche Haftung f&uuml;r direkt oder indirekt Sch&auml;den aus, die aus der Benutzung dieses Internetangebotes entstehen soweit diese nicht auf Vorsatz oder grober Fahrl&auml;ssigkeit von DestinySphere beruhen.</div>
+<div>&nbsp;</div>
+<div>DestinySphere distanziert sich von allen Inhalten aller gelinkten Seiten auf der Internetseite und macht sich diese Inhalte nicht zu Eigen.</div>
+</span>              
+</p>
+
+              </div>
+              </td>
+            </tr>
+                    </table>
+                </div>
+        
+                <div class="online">{$USERS_ONLINE}</div>
+                <div class="copyright"><span style='font-size:8pt'>&copy; 2003-2010 <a href="http://www.destinysphere.com" style='font-size:8pt;color:white' target="_blank">DestinySphere GmbH</a></span></div>
+                <div class="flags"> 
+                  <a href="?step=_impressum&lang=3"><img src="img/ru_30.png" border=0></a>&nbsp;
+                  <a href="?step=_impressum&lang=2"><img src="img/en_30.png" border=0></a>&nbsp;
+                  <a href="?step=_impressum&lang=1"><img src="img/de_30.png" border=0></a>
+                </div>
+                
+                <!-- Онлайн -->
+                <div class="left_menu">
+                    <div class="btn_1"><a href="?lang=1&step=_about" title="Where am I"></a></div>
+                    <div class="btn_2"><a href="?lang=1&step=_races" title="Game races"></a></div>
+                    <div class="btn_3"><a href="?lang=1&step=_help" title="Help"></a></div>
+                    <div class="btn_4"><a href="?lang=1&step=_license"  title="License agreement"></a></div>
+                </div>
+
+                <!-- Сноска слева -->
+                <div class="left_notes">
+                    <a href="reg_wizard.php?lang=1"><img src="img/reg_wiz_de/content/buttons/reg.png" width="192" height="83" alt="Registration" /></a><br>
+                    <a href="index_login.php?lang=1"><img src="img/reg_wiz_de/content/buttons/enter2.png" width="192" height="83" alt="Enter game" /></a>
+                </div>
+                <!-- Меню сверху -->
+                <div class="top_menu">
+                    <table class="top_menu">
+                        <tr>
+                            <td class="btn_1"><a href="http://www.destinysphere.net/"  target="_blank" title="Portal"></a></td>
+                            <td class="btn_2"  target="_blank"><a href="http://forum.destinysphere.de" title="Forum"  target="_blank"></a></td>
+                            <td class="btn_3"  target="_blank" title="impressum"><a href="?lang=1&step=_impressum"></a></td>
+                        </tr>
+                    </table>
+                </div>
+                <!-- Меню справа -->
+                <div class="right_menu">
+                    <table class="right_menu">
+                        <tr>
+                            <td colspan="2" class="head_1"><a href="?lang=1&step=_screenshots" title="game screenshot"></a></td>
+                        </tr>
+                        <tr>
+                            <td class="item"><a href="img/content/screenshots/1.html" title="game screenshot" target="_blank" onClick="return openURL('img/content/screenshots/1.html', 610, 455)"></a></td>
+                            <td class="item"><a href="img/content/screenshots/2.html" target="_blank" onClick="return openURL('img/content/screenshots/2.html', 610, 365)" title="game screenshot"></a></td>
+                        </tr>
+                        <tr>
+                            <td class="item"><a href="img/content/screenshots/3.html" target="_blank" onClick="return openURL('img/content/screenshots/3.html', 610, 365)" title="game screenshot"></a></td>
+                            <td class="item"><a href="img/content/screenshots/4.html" target="_blank" onClick="return openURL('img/content/screenshots/4.html', 610, 455)"title="game screenshot"></a></td>
+                        </tr>
+                        <tr>
+                            <td class="item"><a href="img/content/screenshots/5.html" target="_blank" onClick="return openURL('img/content/screenshots/5.html', 610, 455)" title="game screenshot"></a></td>
+                            <td class="item"><a href="img/content/screenshots/6.html" target="_blank" onClick="return openURL('img/content/screenshots/6.html', 610, 365)" title="game screenshot"></a></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" class="head_2"><a href="?lang=1&step=_videoall" title="video of online game"></a></td>
+                        </tr>
+                        <tr>
+                            <td class="item"><a href="?lang=1&step=_video1" title="video"></a></td>
+                            <td class="item"><a href="?lang=1&step=_video2" title="video"></a></td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+            <td class="layout_right">&nbsp;</td>
+        </tr>
+    </table>
+{include file='counters.php'}
+</body>
+</html>

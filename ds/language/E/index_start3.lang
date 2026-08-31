@@ -1,0 +1,7 @@
+<?
+
+$lang = array();
+
+$lang['world_closed'] = 'closed';
+
+?>

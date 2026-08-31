@@ -1,0 +1,10 @@
+<?
+$lang = array();
+
+$lang['REG_CONGERT'] = 'Deine Registrierung bei DestinySphere war erfolgreich!';
+$lang['REG_PASSWORD'] = 'Dein Passwort';
+$lang['REG_LOGIN'] = 'Dein Benutzername';
+$lang['REG_ABOUT_ACTIVATION'] = 'Für Spielaccountaktivierung klicke bitte auf folgenden Link';
+$lang['LATTER_SUBJECT'] = 'DestinySphere Spielaccountaktivierung';
+$lang['LATTER_FROM'] = 'DestinySphere'
+?>

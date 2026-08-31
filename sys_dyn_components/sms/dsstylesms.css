@@ -1,0 +1,261 @@
+BODY {
+	border: 0px;
+	background-color: #280403; 
+	background-image: url(img/sms/background/bg.gif);
+	margin: 0; 
+	margin-left: 0; 
+	margin-top: 0; 
+	margin-bottom: 0;
+	margin-right: 0;
+}
+/* general window setting begin */
+/***************************************************************************************************/
+.wnd_outer {
+	font-size: 10px;
+	background-color: #E4E5E4;
+}
+/***************************************************************************************************/
+.wnd_inner {
+	font-size: 10px;
+	background-color: #EAEAEA;
+}
+/***************************************************************************************************/
+.menu_txt {
+	color: #333333;
+	font-size: 12px;
+	font-weight: bold;
+	font-family: Arial, Helvetica, sans-serif;
+}
+.menu_txt:link, .menu_txt:visited {
+	color: #333333;
+	text-decoration: none;
+}
+.menu_txt:hover {
+	color: #9D0000;
+	text-decoration: none;
+}
+/***************************************************************************************************/
+.menu_txt_wt {
+	color: #eeeeee;
+	font-size: 11px;
+	font-weight: bold;
+	font-family: Arial, Helvetica, sans-serif;
+}
+.menu_txt_wt:link, .menu_txt_wt:visited {
+	color: #eeeeee;
+	text-decoration: none;
+}
+.menu_txt_wt:hover {
+	color: #ffffff;
+	text-decoration: none;
+}
+/***************************************************************************************************/
+.menu_txt_left {
+	color: #eeeeee;
+	font-size: 11px;
+	font-weight: bold;
+	font-family: Arial, Helvetica, sans-serif;
+}
+.menu_txt_left:link, .menu_txt_left:visited {
+	color: #eeeeee;
+	text-decoration: none;
+}
+.menu_txt_left:hover {
+	color: #F4D314;
+	text-decoration: none;
+}
+/***************************************************************************************************/
+.wnd_cap_txt {
+	color: #5D0000;
+	font-size: 13px;
+	font-weight: bold;
+	font-family: Arial, Helvetica, sans-serif;
+}
+.wnd_cap_txt:link, .wnd_cap_txt:visited {
+	text-decoration: none;
+}
+.wnd_cap_txt:hover {
+	text-decoration: underline;
+}
+/***************************************************************************************************/
+.wnd_header_txt {
+	color: #FCA111;
+	font-size: 12px;
+	font-weight: bold;
+	font-family: Arial, Helvetica, sans-serif;
+}
+.wnd_header_txt:link, .wnd_header_txt:visited {
+	text-decoration: none;
+}
+.wnd_header_txt:hover {
+	text-decoration: underline;
+}
+/***************************************************************************************************/
+.wnd_header_txt_small {
+	color: #FCA111;
+	font-size: 11px;
+	font-weight: bold;
+	font-family: Arial, Helvetica, sans-serif;
+}
+.wnd_header_txt_small:link, .wnd_header_txt_small:visited {
+	text-decoration: none;
+}
+.wnd_header_txt_small:hover {
+	text-decoration: underline;
+}
+/***************************************************************************************************/
+.wnd_header_txt_large {
+	color: #FCA111;
+	font-size: 13px;
+	font-weight: bold;
+	font-family: Arial, Helvetica, sans-serif;
+}
+.wnd_header_txt_large:link, .wnd_header_txt_large:visited {
+	text-decoration: none;
+}
+.wnd_header_txt_large:hover {
+	text-decoration: underline;
+}
+/***************************************************************************************************/
+.wnd_gen_txt {
+	color: #222222;
+	font-size: 11px;
+	font-weight: normal;
+	font-family: Arial, Helvetica, sans-serif;
+}
+.wnd_gen_txt:link, .wnd_gen_txt:visited {
+	color: #000000;
+	text-decoration: none;
+}
+.wnd_gen_txt:hover {
+	color: #9D0000;
+	text-decoration: underline;
+}
+/***************************************************************************************************/
+.wnd_gen_txt_wt {
+	color: #dddddd;
+	font-size: 11px;
+	font-weight: normal;
+	font-family: Arial, Helvetica, sans-serif;
+}
+.wnd_gen_txt_wt:link, .wnd_gen_txt_wt:visited {
+	color: #eeeeee;
+	text-decoration: none;
+}
+.wnd_gen_txt_wt:hover {
+	color: #eeeeee;
+	text-decoration: underline;
+}
+/***************************************************************************************************/
+.wnd_gen_txt_small {
+	color: #222222;
+	font-size: 10px;
+	font-weight: normal;
+	font-family: Arial, Helvetica, sans-serif;
+}
+.wnd_gen_txt_small:link, .wnd_gen_txt_small:visited {
+	color: #000000;
+	text-decoration: none;
+}
+.wnd_gen_txt_small:hover {
+	color: #9D0000;
+	text-decoration: underline;
+}
+/***************************************************************************************************/
+.wnd_gen_txt_large {
+	color: #222222;
+	font-size: 12px;
+	font-weight: normal;
+	font-family: Arial, Helvetica, sans-serif;
+}
+.wnd_gen_txt_large:link, .wnd_gen_txt_large:visited {
+	color: #000000;
+	text-decoration: none;
+}
+.wnd_gen_txt_large:hover {
+	color: #9D0000;
+	text-decoration: underline;
+}
+/***************************************************************************************************/
+/* general window setting end */
+
+/* additional window setting begin */
+
+/* additional window setting end */
+
+/* additional font setting begin */
+/***************************************************************************************************/
+.copyright_txt {
+	color: #eeeeee;
+	font-size: 9px;
+	font-weight: normal;
+	font-family: Arial, Helvetica, sans-serif;
+}
+/***************************************************************************************************/
+/* additional font setting end */
+
+/* elements setting begin */
+/***************************************************************************************************/
+.input_login_wnd {
+	background-image: url(img/background/input_login.gif);
+	width: 140px;
+	height: 18px;
+	border-style: solid;
+	border-color: #888888;
+	border-width: 1px;
+	color: #222222;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+}
+/***************************************************************************************************/
+.input_gen {
+	background-image: url(img/background/input_login.gif);
+	height: 18px;
+	border-style: solid;
+	border-color: #888888;
+	border-width: 1px;
+	color: #222222;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+}
+/***************************************************************************************************/
+.input_button {
+	background-color: #eeeeee;
+	background-image: url(img/sms/buttons/but_input.gif);
+	height: 20px;
+	font-weight: bold;
+	border-style: groove; 
+	border-left: #ffffff;
+	border-top: #ffffff;
+	border-bottom: #111111;
+	border-right: #111111;
+	border-width: 1px;
+	color: #222222;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+}
+/***************************************************************************************************/
+.select_gen {
+	background-color: #f8f8f8;
+	//background-image: url(img/background/input_login.gif);
+	height: 18px;
+	border-style: solid;
+	border-color: #888888;
+	border-width: 1px;
+	color: #111111;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+}
+/***************************************************************************************************/
+.textarea_gen {
+	background-color: #f8f8f8;
+	border-style: solid;
+	border-color: #888888;
+	border-width: 1px;
+	color: #222222;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+}
+/* elements setting end */
+
+

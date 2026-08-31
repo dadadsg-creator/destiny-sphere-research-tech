@@ -1,0 +1,2 @@
+<? echo'muzlist=<?xml version="1.0" encoding="utf-8"?>
+<muslist><mus url="flash/muz/1.mp3" /><mus url="flash/muz/2.mp3" /><mus url="flash/muz/3.mp3" /><mus url="flash/muz/4.mp3" /><mus url="flash/muz/5.mp3" /><mus url="flash/muz/6.mp3" /></muslist>'?>

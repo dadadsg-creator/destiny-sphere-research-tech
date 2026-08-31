@@ -1,0 +1,189 @@
+<?php
+
+$lang = array();
+
+$lang['TITLE'] = 'DestinySphere :: Entrance';
+$lang['ENCODING'] = 'windows-1251';
+
+$lang['ACCOUNT'] = 'Account';
+
+$lang['LOGIN'] = 'Login';
+$lang['PASSWORD'] = 'Password';
+
+$lang['CABINET_DESCRIPT'] = 'Enter your login and password to get to your game Cabinet then press the button.';
+
+$lang['CABINET_SUBMIT'] = 'Enter to the Cabinet.';
+
+$lang['NAME'] = 'Name';
+$lang['EMAIL'] = 'E-mail';
+$lang['LOGOUT'] = 'Exit';
+
+$lang['PROTECTION'] = 'Protection code:';
+$lang['PROTECTION_HINT'] = ' (Turn on images representation.)';
+
+$lang['TEXT1'] = 'Please choose the game world';
+$lang['GAME_WORLD'] = 'Game World';
+$lang['NEW_WORLD_TEXT'] = 'NEW_WORLD_TEXT';
+$lang['NEW_WORLD_LINK'] = 'NEW_WORLD_LINK';
+$lang['SUBMIT'] = 'Enter';
+
+$lang['WORLD_UNION_INFO'] = '<span style="font-size:12px;"><font color="red"><b>Attention!</b></font> You can <a href="FreeTransfer.php" target="_blank">order the transfer</a></span><br>';
+$lang['WORLD_UNION_HREF'] = 'of your home comb <b>for free</b>.';
+
+$lang['WORLD_FREE_TRANSFER_HREF'] = '<a href="FreeWorldTransfer.php" target="_blank">Free transfer to another game world</a>';
+
+$lang['PERSON'] = 'Dear ';
+
+$lang['BAN_TITLE'] = 'Your game account is blocked!';
+$lang['TEXT_BAN'] = 'Your game account is blocked for rules violation.<br> You can write to <a class="wnd_header_txt_large" href="mailto:dv@destinysphere.com">dv@destinysphere.com</a> for explanation.';
+
+$lang['BAN_REASON'] = 'Reason:';
+$lang['BAN_ENDDATE'] = 'End date:';
+
+$lang['MAIL_ACTIVATION_TITLE'] = 'Need activation!';
+$lang['TEXT_MAIL_ACTIVATION_1'] = 'Don\'t forget to activate your game account.<br> You\'ll receive a letter with activation link, press this link to activate your account.';
+$lang['TEXT_MAIL_ACTIVATION_2'] = '';
+
+$lang['MAIL_ACTIVATION_DAYS'] = 'You need to activate your account before ';
+
+$lang['REGISTRATION'] = 'Register in the game world';
+$lang['RACE'] = 'Race:';
+$lang['COMB_NAME'] = 'Name of home comb:';
+
+$lang['COMB_NAME_HINT'] = 'Home comb is your game zone. Choose any name. You can use latin letters, numbers or \'_\' symbol.';
+
+$lang['ADD'] = 'Add';
+$lang['RECOMENDED_FOR_NUBIE'] = 'Following worlds are recommended for newbies:';
+
+$lang['RACE_INFO_HREF'] = 'http://destinysphere.ru/?p=game_races';
+$lang['RACE_INFO'] = 'Information about characteristics of game races.';
+
+$lang['PREMIUM'] = 'Premium-account';
+$lang['VALID_TILL'] = 'Premium-account is valid ';
+$lang['DAYS'] = ' days';
+$lang['HOURS'] = ' hours';
+
+$lang['SUPPORT_MESSAGE'] = 'Message';
+$lang['SUPPORT_CAPTION'] = 'Support service';
+$lang['SEND'] = 'Send';
+
+$lang['PREMIUM_PRESENT_HREF'] = 'index_start.php';
+$lang['PREMIUM_PRESENT'] = 'Get!';
+
+if((constant('PREMIUM_PRESENT_DAYS') % 10) == 1)
+{
+	$days = ' day';
+} elseif((constant('PREMIUM_PRESENT_DAYS') % 10) < 5){
+	$days = ' days';
+} else {
+	$days = ' days';
+}
+
+$lang['PREMIUM_PRESENT_TEXT'] = 'Get as present '.constant('PREMIUM_PRESENT_DAYS').$days.' of premium-access!';
+
+$lang['PREMIUM_REGISTRATION_HREF'] = 'https://billing.destinysphere.ru';
+$lang['PREMIUM_REGISTRATION'] = 'Register!';
+$lang['PREMIUM_REGISTRATION_TEXT'] = 'Register <font color=red>FOR FREE</font> in Destiny Sphere Billing and get 10 days of premium-access as present!';
+
+$lang['PREMIUM_SUPPORT'] = 'In case of problems with getting premium-access write to premium support service:';
+$lang['PREMIUM_BANNER'] = 'http://ds.rambler.ru/?p=premium_info_page';
+
+$lang['EXISTING_WORLDS'] = 'Existing game worlds';
+
+$lang['LEFT'] = '';
+$lang['PLACE_FOR_REG'] = ' places left.';
+
+$lang['DOWN'] = '(closed)';
+
+$lang['COPYRIGHT'] = '2003-'.date('Y').'. © DestinySphere GmbH, ќќќ —фера —удьбы. All Rights Reserved.';
+
+$lang['ABOUT'] = 'Impressum';
+$lang['ABOUT_HREF'] = 'http://ds.rambler.ru/index.php?p=about';
+
+$lang['COUNTERS'] = "<!--LiveInternet counter-->
+<script type=\"text/javascript\"><!--
+document.write(\"<img src='http://counter.yadro.ru/hit?r\"+
+escape(document.referrer)+((typeof(screen)==\"undefined\")?\"\":
+\";s\"+screen.width+\"*\"+screen.height+\"*\"+(screen.colorDepth?
+screen.colorDepth:screen.pixelDepth))+\";u\"+escape(document.URL)+
+\";\"+Math.random()+
+\"' width=1 height=1 alt=''>\")//--></script>
+<!--/LiveInternet-->
+
+<!-- SpyLOG f:0211 -->
+<script language=\"javascript\"><!--
+Mu=\"u5095.09.spylog.com\";Md=document;Mnv=navigator;Mp=0;
+Md.cookie=\"b=b\";Mc=0;if(Md.cookie)Mc=1;Mrn=Math.random();
+Mn=(Mnv.appName.substring(0,2)==\"Mi\")?0:1;Mt=(new Date()).getTimezoneOffset();
+Mz=\"p=\"+Mp+\"&rn=\"+Mrn+\"&c=\"+Mc+\"&t=\"+Mt;
+if(self!=top){Mfr=1;}else{Mfr=0;}Msl=\"1.0\";
+//--></script><script language=\"javascript1.1\"><!--
+Mpl=\"\";Msl=\"1.1\";Mj = (Mnv.javaEnabled()?\"Y\":\"N\");Mz+='&j='+Mj;
+//--></script><script language=\"javascript1.2\"><!--
+Msl=\"1.2\";Ms=screen;Mpx=(Mn==0)?Ms.colorDepth:Ms.pixelDepth;
+Mz+=\"&wh=\"+Ms.width+'x'+Ms.height+\"&px=\"+Mpx;
+//--></script><script language=\"javascript1.3\"><!--
+Msl=\"1.3\";//--></script><script language=\"javascript\"><!--
+My=\"\";My+=\"<a href='http://\"+Mu+\"/cnt?cid=509509&f=3&p=\"+Mp+\"&rn=\"+Mrn+\"' target='_blank'>\";
+My+=\"<img src='http://\"+Mu+\"/cnt?cid=509509&\"+Mz+\"&sl=\"+Msl+\"&r=\"+escape(Md.referrer)+\"&fr=\"+Mfr+\"&pg=\"+escape(window.location.href);
+My+=\"' border=0 width=1 height=1 alt='SpyLOG'>\";
+My+=\"</a>\";Md.write(My);//--></script><noscript>
+<a href=\"http://u5095.09.spylog.com/cnt?cid=509509&f=3&p=0\" target=\"_blank\">
+<img src=\"http://u5095.09.spylog.com/cnt?cid=509509&p=0\" alt='SpyLOG' border='0' width=1 height=1>
+</a></noscript>
+<!-- SpyLOG -->
+
+<!--begin of Rambler's Top100 code -->
+<a href=\"http://top100.rambler.ru/top100/\" target=_blank>
+<img src=\"http://counter.rambler.ru/top100.cnt?1161020\" alt=\"\" width=1 height=1 border=0></a>
+<!--end of Top100 code-->
+<!--begin of Top100 logo-->
+<a href=\"http://top100.rambler.ru/top100/\" target=_blank>
+<img src=\"http://top100-images.rambler.ru/top100/banner-88x31-rambler-black2.gif\" alt=\"Rambler's Top100\" width=1 height=1 border=0></a>
+<!--end of Top100 logo -->
+
+<!-- HotLog -->
+<script language=\"javascript\">
+hotlog_js=\"1.0\";
+hotlog_r=\"\"+Math.random()+\"&s=139920&im=131&r=\"+escape(document.referrer)+\"&pg=\"+
+escape(window.location.href);
+document.cookie=\"hotlog=1; path=/\"; hotlog_r+=\"&c=\"+(document.cookie?\"Y\":\"N\");
+</script><script language=\"javascript1.1\">
+hotlog_js=\"1.1\";hotlog_r+=\"&j=\"+(navigator.javaEnabled()?\"Y\":\"N\")</script>
+<script language=\"javascript1.2\">
+hotlog_js=\"1.2\";
+hotlog_r+=\"&wh=\"+screen.width+'x'+screen.height+\"&px=\"+
+(((navigator.appName.substring(0,3)==\"Mic\"))?
+screen.colorDepth:screen.pixelDepth)</script>
+<script language=\"javascript1.3\">hotlog_js=\"1.3\"</script>
+<script language=\"javascript\">hotlog_r+=\"&js=\"+hotlog_js;
+document.write(\"<a href='http://click.hotlog.ru/?139920' target='_blank'><img \"+
+\" src='http://hit6.hotlog.ru/cgi-bin/hotlog/count?\"+
+hotlog_r+\"&' border=0 width=1 height=1 alt='HotLog'></a>\")</script>
+<noscript><a href=http://click.hotlog.ru/?139920 target=_blank><img
+src=\"http://hit6.hotlog.ru/cgi-bin/hotlog/count?s=139920&im=131\" border=0
+width=1 height=1 alt='HotLog'></a></noscript>
+<!-- /HotLog -->
+
+<!--Rating@Mail.ru COUNTER-->
+<script language=\"JavaScript\" type=\"text/javascript\"><!--
+d=document;var a='';a+=';r='+escape(d.referrer)
+js=10//--></script><script language=\"JavaScript1.1\" type=\"text/javascript\"><!--
+a+=';j='+navigator.javaEnabled()
+js=11//--></script><script language=\"JavaScript1.2\" type=\"text/javascript\"><!--
+s=screen;a+=';s='+s.width+'*'+s.height
+a+=';d='+(s.colorDepth?s.colorDepth:s.pixelDepth)
+js=12//--></script><script language=\"JavaScript1.3\" type=\"text/javascript\"><!--
+js=13//--></script><script language=\"JavaScript\" type=\"text/javascript\"><!--
+d.write('<IMG src=\"http://d6.c2.ba.a0.top.list.ru/counter'+
+'?id=665247;js='+js+a+';rand='+Math.random()+
+'\" height=1 width=1/>')
+if(11<js)d.write('<'+'!-- ')//--></script><noscript><img
+src=\"http://d6.c2.ba.a0.top.list.ru/counter?js=na;id=665247\"
+height=1 width=1 alt=\"\"/></noscript><script language=\"JavaScript\" type=\"text/javascript\"><!--
+if(11<js)d.write('--'+'>')//--></script>
+<!--/COUNTER-->
+
+<a href=\"http://www.yandex.ru/cy?base=0&host=www.destinysphere.ru\" target=_blank>
+<img src=\"http://www.yandex.ru/cycounter?www.destinysphere.ru\" width=1 height=1 alt=\"яндекс цитировани€\" border=0></a>";
+?>

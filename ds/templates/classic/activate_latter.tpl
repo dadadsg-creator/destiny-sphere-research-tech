@@ -1,0 +1,4 @@
+{$lang.CHANGE_MAIL}
+
+{$lang.REG_ABOUT_ACTIVATION}:
+{$URL}

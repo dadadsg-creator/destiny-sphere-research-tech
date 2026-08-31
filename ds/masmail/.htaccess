@@ -1,0 +1,5 @@
+AuthType Basic
+AuthName "Destiny Sphere Admin and Developments restricted area. Only authorized access."
+AuthUserFile /etc/apache2/passwd
+Require valid-user
+

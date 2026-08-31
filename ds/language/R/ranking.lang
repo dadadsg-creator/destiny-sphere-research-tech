@@ -1,0 +1,31 @@
+<?
+$lang['CHARSET'] = "windows-1251";
+$lang['title'] = ":: DestinySphere :: Рейтинг";
+
+$lang['cap_btn_ranking'] = "Рейтинг";
+$lang['cap_btn_ranking_alliance'] = "Рейтинг альянсов";
+$lang['number'] = "№";
+$lang['player'] = "Игрок";
+$lang['sote'] = "Сота";
+$lang['coord'] = "Координаты";
+$lang['aliance'] = "Альянс";
+$lang['race'] = "Раса";
+$lang['exp'] = "Очки";
+$lang['battle_exp'] = "Боевые Очки";
+$lang['battle_exp_abs'] = "Боевой Рейтинг";
+$lang['npc_exp'] = "NPC Рейтинг";
+
+$lang['move'] = "Перейти";
+$lang['player_search'] = "Поиск игрока";
+
+$lang['armyranking'] = "Армия";
+$lang['artefactranking'] = "Археология";
+$lang['buildingranking'] = "Строительство";
+$lang['productionranking'] = "Ресурсы";
+$lang['scienceranking'] = "Наука";
+$lang['level'] = "Уровень";
+$lang['league'] = "Лига";
+
+$lang['copyright'] = "2003-".date('Y')."©. DestinySphere GmbH, ООО Геймспейс. All Rights Reserved.<br>Оптимизировано для разрешения экрана 1024 x 768 и броузера Microsoft Internet Explorer версии 6.0 и выше.";
+
+?>

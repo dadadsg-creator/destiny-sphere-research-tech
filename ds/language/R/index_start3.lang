@@ -1,0 +1,11 @@
+<?
+
+$lang = array();
+
+$lang['TEXT1'] = 'Игровой мир:';
+$lang['SUBMIT'] = 'Вход';
+$lang['world_closed'] = 'закрыта';
+$lang['NEW_WORLD_TEXT'] = 'Пройти на страницу входа в новый игровой мир - Сферу Стрельца &gt;&gt;';
+$lang['NEW_WORLD_LINK'] = 'http://ds.destinysphere.ru/ds/index_login.php';
+
+?>

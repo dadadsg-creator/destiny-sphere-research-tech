@@ -1,0 +1,6 @@
+<?
+
+$lang['NO_FREE_COMBS'] = 'Auf diesem Ring sind keine Waben mehr frei. Versuche bitte eine andere Rasse auszuwählen.';
+$lang['PROFI_USERS_ONLY'] = 'Sie müssen Ihr Premium-Abo verlängern, um weiterhin in dieser Premium-Welt spielen zu können.';
+ 
+?>

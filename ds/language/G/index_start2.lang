@@ -1,0 +1,8 @@
+<?
+
+$lang = array();
+
+//$lang['TEXT1'] = 'Du hast Dich noch in keiner Spielwelt';
+$lang['TEXT1'] = 'Du hast Dich noch in keiner Spielwelt registriert.';
+
+?>

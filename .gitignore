@@ -1,0 +1,27 @@
+# Runtime cache / temp
+/CacheFiles/
+/CachePagesInfo/*
+!/CachePagesInfo/.gitkeep
+/tmp/
+
+# Server logs and backups (not source code)
+/ds/logs_backup/
+/ds/httplogs/
+/ds/log_classic/
+/ds/log_unlim/
+/ds/logs_1/
+/ds/logs_2/
+/ds/log_pulsar/
+
+# Third-party installer binaries (Flash Player / Chrome extension), not project source
+/flash/*.exe
+/flash/*.msi
+/flash/*.dmg
+/flash/*.zip
+
+# User-uploaded runtime content
+/UserFiles/
+
+# OS/editor cruft
+Thumbs.db
+desktop.ini

@@ -1,0 +1,8 @@
+<?
+
+$lang = array();
+
+$lang['COPYRIGHT'] = '&copy; Copyright 2003-2005 by DestinySphere GmbH';
+$lang['IMPRESSUM'] = 'О создателях';
+$lang['IMPRESSUM_LINK'] = '"http://www.destinysphere.ru/index.php?p=about"';
+?>

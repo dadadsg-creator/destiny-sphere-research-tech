@@ -1,0 +1,7 @@
+<?
+
+$lang = array();
+
+$lang['COPYRIGHT'] = '&copy; Copyright 2003-2004 by DestinySphere GmbH';
+
+?>

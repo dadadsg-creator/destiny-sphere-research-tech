@@ -1,0 +1,16 @@
+<?
+$lang = array();
+
+$lang['REG_CONGERT'] = "Здравствуйте!\n\nВы зарегистрировались в игре DestinySphere.";
+$lang['GAME_LINK'] = 'Вход в игру: ';
+$lang['REG_PASSWORD'] = 'Ваш пароль';
+$lang['REG_LOGIN'] = 'Ваш логин';
+$lang['REG_ABOUT_ACTIVATION'] = 'Пожалуйста, перейдите по ссылки для активации вашего аккаунта';
+$lang['LATTER_SUBJECT'] = 'Оповещение о регистрации';
+$lang['LATTER_FROM'] = 'DestinySphere';
+$lang['FORUM_REGISTRATION'] = 'Вместе с игровым аккаунтом был автоматически создан и аккаунт на форуме. 
+Форумный логин совпадает с игровым. 
+Пароль для входа на форум : ';
+$lang['FORUM_REGISTRATION_NOT_CREATED'] = 'Аккаунт на форуме создан не был, так как такой ник или e-mail уже заняты на форуме.';
+$lang['REG_ENDLETTER'] = "Игровой портал с массой полезной информации: http://www.destinysphere.ru\n\nСпасибо и приятной игры.\n\nКоманда DestinySphere";
+?>

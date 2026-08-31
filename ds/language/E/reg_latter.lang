@@ -1,0 +1,11 @@
+<?
+$lang = array();
+
+$lang['REG_CONGERT'] = 'You successfully pass registration in play Destiny Sphere.';
+$lang['REG_PASSWORD'] = 'Your password';
+$lang['REG_LOGIN'] = 'Your login';
+$lang['REG_ABOUT_ACTIVATION'] = 'To activate your account pass on reference';
+$lang['LATTER_SUBJECT'] = 'Notification about registration';
+$lang['LATTER_FROM'] = 'DestinySphere';
+$lang['REG_ENDLETTER'] = 'We pay your attention, that at the first enter in game there are situations when on one game ring there are no empty seats. In this case we ask you to come into game later. Empty seats appear daily, as a result of removal of inactive players. Also we periodically open the new game worlds. ';
+?>

@@ -1,0 +1,9 @@
+allow from 212.32.62.216
+allow from 104.28.166.181
+#deny from all
+#deny from 188.162.144.0/20
+#deny from 188.134.42
+#deny from 88.215.168.2 
+#deny from 178.252.101.12
+#deny from 195.5.41.202
+#deny from 176.8.75.5

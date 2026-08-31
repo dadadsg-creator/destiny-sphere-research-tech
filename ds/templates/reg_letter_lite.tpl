@@ -1,0 +1,7 @@
+
+{$lang.REG_CONGERT}
+
+{$lang.REG_LOGIN}: {$LOGIN}
+{$lang.REG_PASSWORD}: {$PASSWORD}
+
+{$lang.REG_ENDLETTER}

@@ -1,0 +1,28 @@
+<?
+$lang = array();
+
+$lang['TITLE'] = 'DestinySphere :: Login';
+$lang['TITLEIMAGE'] = '<span class="maintitle"><img src="images/logo_sp3k.gif" border="0" alt="DestinySphere Startseite" vspace="1" width="361" height="60" /></span></a>';
+$lang['ENCODING'] = 'iso-8859-1';
+$lang['REGISTRATION'] = 'Registrierungsinformationen';
+$lang['FIELDS_NEEDED'] = 'Mit * markierte Felder sind erforderlich';
+$lang['ERROR'] = 'Folgende Fehler sind aufgetreten:';
+$lang['USERNAME'] = 'Benutzername: *';
+$lang['EMAIL'] = 'E-Mail-Adresse: *';
+$lang['PASSWORD'] = 'Passwort (mindestens 8 Zeichen): *';
+$lang['CONFIRM_PASSWORD'] = 'Passwort bestätigen: *';
+$lang['LANGUAGE'] = 'Sprache:';
+$lang['LICENSE_AGREEMENT'] = 'Ich bin mit den <a href="http://forum.destinysphere.net/forum/agb.php" target="_blank">Nutzungsbedingungen</a> von DestinySphere einverstanden und über oder exakt 12 Jahre alt.';
+$lang['TEXT1'] = '<br>
+		<span class="gensmall">
+		<b>Die Registrierung gilt auch für das Forum. Deine Zusatzdaten können über den "Profil"-Link dort geändert werden.<br><br>
+		Jeder Spieler darf nur 1 Spiel-Account pro Spielwelt besitzen, mehrere Accounts in der gleichen Spielwelt sind streng verboten und führen zur Accountsperrung!<br><br>
+		Innerhalb von 5 Tagen nach der Registrierung erhälst Du automatisch eine Probe der <a href="http://forum.destinysphere.net/forum/premium.php" target="_blank">Premium-Version</a>, danach geht es weiter mit Standard-Version, es sei denn, Du registrierst Dich in der <a href="https://account.destinysphere.net" target="_blank">Premium-Version</a>.</b>
+		</span><br><br>
+		<span class="gensmall">		 
+		 Zur Zeit befindet sich DestinySphere noch in der aktiven Entwicklung. Bitte beachte, dass die momentane Version noch nicht alle Funktionen des fertigen Spiels hat und es zu täglichen Änderungen kommen kann. Solltest Du erst Interesse haben, wenn das Spiel weiter fortgeschritten ist, kannst Du Dich trotzdem registrieren. Du bekommst dann gelegentlich Benachrichtigungen von uns.
+		</span>';
+$lang['COPYRIGHT'] = 'Copyright 2003-2004 by DestinySphere GmbH';
+$lang['IMPRESSUM'] = 'Impressum';
+
+?>

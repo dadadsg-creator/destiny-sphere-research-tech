@@ -1,0 +1,43 @@
+<?
+$lang = array();
+
+$lang['TITLE'] = 'Бесплатная регистрация в стратегической онлайн игре Destiny Sphere';
+$lang['ENCODING'] = 'windows-1251';
+$lang['BTN_REGISTER'] = 'Регистрация';
+$lang['REGISTRATION'] = 'Информация для регистрации';
+$lang['FIELDS_NEEDED'] = 'Поля, отмеченные символом <font color=red>*</font> обязательны для заполнения';
+$lang['ERROR'] = 'Обнаружены следующие ошибки:';
+$lang['USERNAME'] = 'Имя пользователя (ник): <font color=red>*</font>';
+$lang['EMAIL'] = 'e-mail: <font color=red>*</font>';
+$lang['EMAIL_CONF'] = 'Повторение e-mail: <font color=red>*</font>';
+$lang['PASSWORD'] = 'Пароль (минимум 6 знаков): <font color=red>*</font>';
+$lang['CONFIRM_PASSWORD'] = 'Повторение пароля: <font color=red>*</font>';
+$lang['USER_RECOMENDED'] = 'Я регистрируюсь по рекомендации игрока:';
+$lang['NOT_NEEDED'] = '(указывать необязательно, но если вы укажете ник игрока, то сделаете доброе дело)';
+$lang['LANGUAGE'] = 'Язык:';
+$lang['BTN_RESET'] = 'Сбросить';
+$lang['LICENSE_AGREEMENT'] = 'Я согласен с <b><a href="../?p=game_license" target="_blank">Условиями</a></b> игры Destiny Sphere. <font color=red>*</font>';
+
+$lang['TEXT1'] = '<b>Регистрация также действует для форума. Позже вы сможете изменить ваши данные, если возникнет такая необходимость.</b>
+<br>
+<br>
+Обращаем ваше внимание, что при первом входе в игру бывают ситуации, когда ни на одном игровом кольце нет свободных мест. В этом случае мы просим вас зайти в игру позднее. Свободные места появляются ежедневно, в результате удаления неактивных игроков. Также мы периодически открываем новые игровые миры.';
+
+$lang['COPYRIGHT'] = '2003-'.date('Y').'. © DestinySphere GmbH, ООО Геймспейс. All Rights Reserved.';
+$lang['IMPRESSUM'] = 'О создателях';
+$lang['INFO_TITLE'] = 'Добро пожаловать!';
+
+$lang['ALREADY_REGISTRED'] = 'Вы уже зарегистрированы в игре';
+$lang['R_ENTER'] = 'войти в игру';
+$lang['RAMBLER_ID_REG'] = 'Для того чтобы создать аккаунт в нашей игре, вам нужно <a href="http://id.rambler.ru/script/newuser.cgi" target="_blank" style="font-size: 9pt;">зарегистрироваться в системе Rambler ID</a>.<br>
+Сделать это можно пройдя по <a href="http://id.rambler.ru/script/newuser.cgi" target="_blank" style="font-size: 9pt;">ссылке</a><br><br>';
+$lang['R_ID_LOGIN'] = 'Логин в системе Rambler ID';
+$lang['PASS'] = 'Пароль';
+$lang['GAME_LOGIN'] = 'Выберите ваш игровой ник';
+
+$lang['TEXT2'] = '
+Добро пожаловать в регистрацию бесплатной многопользовательской стратегической онлайн игры <a href="http://dsgame.rambler.ru/">Destiny Sphere / Сферы Судьбы</a>. Для игры вам потребуется один из стандартных браузеров и плагин Macromedia Flash.<br>
+Если Вы регистрируйтесь первый раз, то после успешной регистрации, следуйте за нашим интерактивным хелпом – это вам поможет на первых шагах в игре.';
+
+$lang['COUNTERS'] = "";
+?>

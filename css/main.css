@@ -1,0 +1,150 @@
+BODY {
+	list-style-type: square;
+}
+.forma {
+	padding-bottom: 2px;
+	padding-left: 5px;
+	padding-right: 10px;
+}
+.nobody {
+	FONT-SIZE: 0.7em;
+	COLOR: #595959;
+	FONT-FAMILY: Tahoma, sans-serif;
+	padding-left: 36px;
+	padding-right: 20px;
+	}
+.menu {
+	COLOR: #707070;
+	font-family: Tahoma, sans-serif;
+	font-size: 0.7em;
+	padding-right: 5px;
+	padding-left: 5px;
+	text-decoration: none;
+}
+.fixbg {
+	background-repeat: no-repeat;
+}
+.submit {
+	background-color: #999999;
+	font-family: Tahoma, sans-serif;
+	font-size: 11px;
+	color: #FFFFFF;
+	cursor: hand;
+	font-weight: normal;
+	border: 1px solid #404040;
+	height: 20px;
+	clip:    rect(5px auto auto auto);
+	width: 70px;
+}
+.kolonka {
+	FONT-SIZE: 0.7em;
+	COLOR: #595959;
+	FONT-FAMILY: Tahoma, sans-serif;
+	padding-right: 10px;
+	padding-left: 10px;
+	width: 92%;
+}
+.punkt {
+	font-size: 50%;
+	text-decoration: none;
+}
+.leftbg {
+	background-position: right;
+}
+.rightbg {
+	background-position: left;
+}
+.inputfield {
+	border: 1px solid #bbbbbb;
+}
+.menu_title_active {
+	background-color: #999999;
+	font-style: normal;
+	color: #FFFFFF;
+	font-weight: bold;
+}
+.menu_title_passive {
+	background: #EBEBEB;
+	color: #6B6B6B;
+	font-style: normal;
+	font-weight: bold;
+}
+A:link {
+	COLOR: #0000CD; 
+        TEXT-DECORATION: underline;
+}
+A:visited {
+	COLOR: #0000CD; 
+        TEXT-DECORATION: underline;
+}
+A:active {
+	COLOR: #0000CD; 
+        TEXT-DECORATION: underline;
+}
+A:hover {
+	COLOR: #0000CD; 
+        TEXT-DECORATION: underline;
+}
+.nopadding {
+	FONT-SIZE: 0.7em;
+	COLOR: #595959;
+	FONT-FAMILY: Tahoma, sans-serif;
+	padding-right: 20px;
+}
+.newwork {
+	background-repeat: repeat-x;
+	background-position: top;
+	padding: 10px;
+}
+.banner {
+	background-color: #FFFFFF;
+	border-top: 0px solid;
+	border-right: 1px solid #8D9193;
+	border-bottom: 1px solid #8D9193;
+	border-left: 0px solid;
+	clip:    rect(10px 10px 10px 10px);
+}
+.submit {
+	background-color: #999999;
+	font-family: Tahoma, sans-serif;
+	font-size: 11px;	color: #FFFFFF;
+	cursor: hand;
+	font-weight: normal;
+	border: 1px solid #404040;
+	height: 20px;
+	clip:    rect(5px auto auto auto);
+	width: 70px;
+}
+.kolonka {
+	FONT-SIZE: 0.7em;
+	COLOR: #595959;
+	FONT-FAMILY: Tahoma, sans-serif;
+	padding-right: 10px;
+	padding-left: 10px;
+	width: 92%;
+}
+.punkt {
+	font-size: 50%;
+	text-decoration: none;
+}
+.leftbg {
+	background-position: right;
+}
+.rightbg {
+	background-position: left;
+}
+.inputfield {
+	border: 1px solid #bbbbbb;
+}
+form {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+UL {
+  list-style-position: outside;
+  list-style-type: square;
+}
+hr {
+  color: Black;
+  height: 1px;
+}

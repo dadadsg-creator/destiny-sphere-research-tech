@@ -1,0 +1,1 @@
+<SCRIPT language=JavaScript src="http://www.destinysphere.ru/sys_dyn_components/top_bannerl.php"></SCRIPT>

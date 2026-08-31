@@ -1,0 +1,15 @@
+<?
+
+$lang = array();
+
+$lang['TEXT1'] = 'Premium Account';
+
+              
+$lang['TEXT3_1'] = 'Dein Premium-Verwaltungsbereich &gt;&gt;';
+$lang['TEXT4_'] = 'Account läuft in ';
+$lang['TEXT_VOTE'] = 'Stimme für uns!';
+$lang['DAY_'] = 'Tagen ab<br>(bei ELV wird er danach automatisch erneuert)';
+$lang['LINK1'] = 'https://account.destinysphere.net/page0.php';
+$lang['LINK2'] = '/forum/premium.php';
+$lang['PREMIUM_BANER'] = "<img src='http://80.237.203.23/banners/banner468x60_1.gif' border=0 align=center width=468 height=60>";
+?>

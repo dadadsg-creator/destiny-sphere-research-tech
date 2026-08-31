@@ -1,0 +1,4 @@
+php_flag register_globals off
+ErrorDocument 403 http://alpha.destinysphere.ru/?p=error_403
+#allow from 81.3.170.33
+#deny from all

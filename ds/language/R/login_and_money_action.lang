@@ -1,0 +1,21 @@
+<?
+$lang = array();
+$lang['LATTER_FROM'] = 'DestinySphere';
+$lang['LATTER_SUBJECT'] = 'Справка о логинах в игру и торговых операциях';
+
+$lang['EMPTY_VISIT'] = 'В данный период не было ни одного захода на соту';
+$lang['EMPTY_TRADE'] = 'В данный период торговых операций не совершалось';
+$lang['TRADE_ACTIONS'] = 'Торговые операции';
+$lang['WORLD'] = 'Мир';
+$lang['SELLER'] = 'Продавец';
+$lang['CUSTOMER'] = 'Покупатель';
+$lang['WHAT'] = 'Что';
+$lang['TAX'] = 'Сумма налога';
+$lang['FOR_WHAT'] = 'За что';
+$lang['SUM'] = 'Сумма';
+$lang['DATE_FROM'] = 'Дата начала торгов';
+$lang['DATE_TO'] = 'Дата продажи';
+$lang['DATE'] = 'Дата';
+$lang['IP_ADDRESS'] = 'IP адреc';
+
+?>

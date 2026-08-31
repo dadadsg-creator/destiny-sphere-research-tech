@@ -1,0 +1,14 @@
+<?
+$lang = array();
+
+$lang['TITLE'] = 'Destiny Sphere :: Аккаунт активирован';
+$lang['TITLEIMAGE'] = '<a href="../index.php"><span class="maintitle"><img src="images/logo_ds.gif" border="0" alt="Главная страница Destiny Sphere" vspace="1" width="196" height="60" /></span></a><a target="_blank" href="http://www.rambler.ru"><span class="maintitle"><img src="images/logorambler.gif" border="0" alt="Rambler" vspace="1" width="122" height="60" /></span></a>';
+$lang['ENCODING'] = 'windows-1251';
+$lang['ACTIVATION_CAPTION'] = 'Активация е-мейла';
+$lang['ACTIVATION'] = 'Активация е-мейла произведена успешно. Теперь вы можете приступить к игре.';
+$lang['ERROR'] = 'Обнаружены слудующие ошибки:';
+$lang['ENTER'] = 'Перейти на страницу входа в игру >>';
+$lang['COPYRIGHT'] = 'Copyright 2003-2004 by DestinySphere GmbH';
+$lang['IMPRESSUM'] = 'О создателях';
+
+?>

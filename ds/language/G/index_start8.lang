@@ -1,0 +1,14 @@
+<?
+
+$lang = array();
+
+$lang['TEXT1'] = 'Spielwelt:';
+$lang['TEXT2'] = 'Rasse:';
+$lang['RACES_INFO_HREF'] = '/forum/races.php';
+$lang['RACES_INFO'] = 'Infos über Eigenschaften jeder Rasse';
+$lang['TEXT3'] = 'Name Deines Reiches (Wabenname):';
+$lang['SUBMIT'] = 'Hinzufügen';
+$lang['INFO_HREF'] = '/forum/infos.php';
+$lang['INFO'] = 'Viele nützliche Spielinfos &gt;&gt;';
+
+?>

@@ -1,0 +1,2 @@
+$Table[Template][ElementResult] = "tmpl.tmp.html";
+//    $tpl = new FastTemplate ($_SERVER['DOCUMENT_ROOT'].'/templates/Admin/');

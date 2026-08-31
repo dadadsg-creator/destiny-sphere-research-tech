@@ -1,0 +1,44 @@
+<html>
+<head>
+<script language="Javascript">
+var mode = 1;
+function resize()
+{
+
+  mode = mode==1?2:1;
+  if (mode==2)
+  {
+    w = 1024;
+    h = 768;
+    file = '1pop_b.jpg';
+  }
+  else
+  {
+    w = 600;
+    h = 450;
+    file = '1pop.jpg';
+  }
+  setSize(w, h);
+  document.getElementById('pic1').src= file;
+}
+
+function setSize(width,height) {
+	if (window.outerWidth) {
+		window.outerWidth = width;
+		window.outerHeight = height;
+	}
+	else if (window.resizeTo) {
+		window.resizeTo(width,height);
+	}
+	else {
+  }
+}
+
+</script>
+</head>
+<body>
+<div id='d1'>
+<a href="javascript:resize();"><img id="pic1" src="1pop.jpg" border=0></a>
+</div>
+</body>
+</html>

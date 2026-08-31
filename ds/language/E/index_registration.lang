@@ -1,0 +1,23 @@
+<?
+$lang = array();
+
+$lang['TITLE'] = 'DestinySphere :: Registration';
+$lang['TITLEIMAGE'] = '<a href="../index.php"><span class="maintitle"><img src="images/logo_ds.gif" border="0" alt="Главная страница Destiny Sphere" vspace="1" width="196" height="60" /></span></a><a target="_blank" href="http://www.rambler.ru"></a>';
+$lang['ENCODING'] = 'windows-1251';
+$lang['REGISTRATION'] = 'Registration info';
+$lang['FIELDS_NEEDED'] = 'Fields marked with * are nessesarily';
+$lang['ERROR'] = 'The following errors have been found:';
+$lang['USERNAME'] = 'Nickname: *';
+$lang['EMAIL'] = 'e-mail: *';
+$lang['PASSWORD'] = 'Password (8 signs minimum): *';
+$lang['CONFIRM_PASSWORD'] = 'Repeat password: *';
+$lang['LANGUAGE'] = 'Language:';
+$lang['LICENSE_AGREEMENT'] = 'I agree with <a href="http://forum.destinysphere.ru/forum/agb.php" target="_blank">the conditions</a> of the Destiny Sphere game.';
+$lang['TEXT1'] = '<br>
+		<span class="gensmall">
+		<b>
+		</b>';
+$lang['COPYRIGHT'] = 'Copyright 2003-2004 by DestinySphere GmbH';
+$lang['IMPRESSUM'] = 'Impressum';
+
+?>

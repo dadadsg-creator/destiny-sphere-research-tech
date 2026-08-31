@@ -1,0 +1,219 @@
+<html>
+  <head>
+    <title>Documentation: LineGraph</title>
+    <style type="text/css">
+    <!--
+      body,td { font: 8pt verdana #000000; }
+      body { background: #ffffff; }
+      a { text-decoration: none; color: #0000aa; }
+      a:hover { text-decoration: underline; }
+      h1 { font-size: 12pt; letter-spacing: 2pt; }
+      hr { height: 1px; color: #dddddd; background: #dddddd; }
+      .varname { font-size: 10pt; letter-spacing: 2pt; color: #123456; font-weight: bold; }
+      .funname { font-size: 10pt; letter-spacing: 2pt; color: #123456; font-weight: bold; }
+      .vartype { color: #0000aa; font-weight: bold; }
+    //-->
+    </style>
+  </head>
+  <body>
+    <a name='top'></a>
+    <h1>Class: <b>LineGraph</b> (0.1)</h1>
+    Class to create line graphs.<br>
+    Credits to: <a href='mailto:a25617@alunos.det.ua.pt'>Jeph</a><br>
+    <a name='var'></a>
+    <br><u>Variables</u><br><br>
+    <a href='#var_line_bgcolor' title="Line background color (not important when deepness = 0)"><span class=vartype>array</span> LineGraph::line_bgcolor</a><br>
+    <a href='#var_line_color' title="Line color (both &lt;var=line_color&gt; and &lt;var=line_bgcolor&gt; can be arrays of arrays of red, green and blue colors, when drawing more than one line)"><span class=vartype>array</span> LineGraph::line_color</a><br>
+    <a name='fun'></a>
+    <br><u>Methods</u><br><br>
+    <a href='#fun_AddLineBackgroundColor' title="Add one more line backgorund color (RGB)">LineGraph::AddLineBackgroundColor (
+    $red
+    , $green
+    , $blue
+    ) </a><br>
+    <a href='#fun_AddLineColor' title="Add one more line color (RGB)">LineGraph::AddLineColor (
+    $red
+    , $green
+    , $blue
+    ) </a><br>
+    <a href='#fun_DrawGraph' title="Draw graph
+If no file given, output will be stdout">LineGraph::DrawGraph (
+    $file
+    ) </a><br>
+    <a href='#fun_SetLineBackgroundColor' title="Set line background color (RGB)">LineGraph::SetLineBackgroundColor (
+    $red
+    , $green
+    , $blue
+    ) </a><br>
+    <a href='#fun_SetLineColor' title="Set line color (RGB)">LineGraph::SetLineColor (
+    $red
+    , $green
+    , $blue
+    ) </a><br>
+    <hr>
+    <a name='var_line_bgcolor'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>LineGraph::line_bgcolor</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Line background color (not important when deepness = 0)<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; Array(int, int, int)<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; Array(39, 78, 120)<br>
+    <br>
+    <hr>
+    <a name='var_line_color'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td>
+          <span class=varname>LineGraph::line_color</span></a>
+        </td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Line color (both <a href='#var_line_color'>line_color</a> and <a href='#var_line_bgcolor'>line_bgcolor</a> can be arrays of arrays of red, green and blue colors, when drawing more than one line)<br><br>
+    &nbsp; <b>Type:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; Array(int, int, int)<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp; Array(39, 78, 120)<br>
+    <br>
+    <hr><a name='fun_AddLineBackgroundColor'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>LineGraph::AddLineBackgroundColor()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Add one more line backgorund color (RGB)<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $red<br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $green<br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $blue<br>
+    <br>
+    <hr><a name='fun_AddLineColor'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>LineGraph::AddLineColor()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Add one more line color (RGB)<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $red<br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $green<br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $blue<br>
+    <br>
+    <hr><a name='fun_DrawGraph'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>LineGraph::DrawGraph()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Draw graph<br />
+If no file given, output will be stdout<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $file<br>
+    <br>&nbsp; <b>Default:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;$file = ""<br>
+    <br>
+    <hr><a name='fun_SetLineBackgroundColor'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>LineGraph::SetLineBackgroundColor()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set line background color (RGB)<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $red<br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $green<br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $blue<br>
+    <br>
+    <hr><a name='fun_SetLineColor'></a>
+    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+      <tr>
+        <td><span class=funname>LineGraph::SetLineColor()</span></a></td>
+        <td align=right>
+          <a href='#top'>^ Top</a>
+          | <a href='#var'>^ Variables</a>
+          | <a href='#fun'>^ Methods</a>
+        </td>
+      </tr>
+    </table>
+    Set line color (RGB)<br><br>
+    &nbsp; <b>Arguments:</b><br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $red<br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $green<br>
+    &nbsp; &nbsp; &nbsp; &nbsp;
+    ( <span class=vartype>int</span>
+    )
+    $blue<br>
+    <br>
+  </body>
+</html>

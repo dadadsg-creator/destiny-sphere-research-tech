@@ -1,0 +1,14 @@
+<?
+
+$lang = array();
+
+$lang['TEXT1'] = 'Игровой мир:';
+$lang['TEXT2'] = 'Раса:';
+$lang['RACES_INFO_HREF'] = 'http://destinysphere.net/ru/forum/races.php';
+$lang['RACES_INFO'] = 'Информация о свойствах и характеристиках каждой расы';
+$lang['TEXT3'] = 'Название вашей домашней соты:';
+$lang['SUBMIT'] = 'Добавить';
+$lang['INFO_HREF'] = 'http://destinysphere.net/ru/forum/infos.php';
+$lang['INFO'] = 'Полезная информация &gt;&gt;';
+
+?>

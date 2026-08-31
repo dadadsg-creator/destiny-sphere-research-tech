@@ -1,0 +1,52 @@
+<?
+$lang = array();
+
+$lang['TITLE'] = '::: DestinySphere ::: Изменение профиля игрока...';
+$lang['ENCODING'] = 'windows-1251';
+$lang['HEADER'] = 'Параметры профиля игрока:';
+$lang['LOGO_ALT'] = 'DestinySphere Logo';
+$lang['LOGIN_NAME'] = 'Имя:';
+$lang['TIME_DELTA'] = 'Часовой пояс:';
+$lang['USERS_LANGUAGE'] = 'Язык:';
+$lang['BUTTON_TEXT'] = 'Изменить';
+$lang['ADD'] = 'Добавить';
+$lang['USER_MAIL_TEXT'] = '(Для замены e-mail обращайтесь <br> по адресу support@ru.destinysphere.com)';
+$lang['USER_MAIL'] = 'Адрес e-mail:';
+$lang['OLD_PASSWORD'] = 'Старый пароль:';
+$lang['NEW_PASSWORD'] = 'Новый пароль:';
+$lang['CONFIRM_PASSWORD'] = 'Подтверждение пароля:';
+$lang['SCALING'] = 'Полноэкранный режим: ';
+$lang['AVATAR'] = 'Аватара :';
+
+$lang['AVATAR_PARAMS'] = 'Изображение должно быть 100x100px не более 6kb формата jpg, gif или png.';
+$lang['NOT_ALLOWABLE_IMAGE_TYPE'] = 'Недопустимый формат файла. Изображение должно быть формата jpg, gif или png.';
+$lang['IMAGE_TOO_BIG'] = 'Изображение должно быть не более 6kb';
+$lang['IMAGE_SIZE_TOO_LONG'] = 'Изображение должно быть не более 100x100px';
+$lang['ERROR_ADD_AVATAR'] = 'Ошибка при добавлении аватара';
+$lang['NOT_ENOUGHT_CREDITS'] = "Недостаточно денег на счете для совершения данной операции";
+
+
+$lang['PAYMENT_SERVICES'] = 'Платные услуги';
+$lang['COST_CHANGE_NAME'] = 'Стоимость смены ника';
+$lang['COST_CHANGE_AVATAR'] = 'Стоимость смены аватара';
+$lang['COST_ADD_AVATAR'] = 'Стоимость добавления аватара';
+$lang['WILL_TAKE_OFF'] = 'С вашего счета будет снято';
+
+$lang['WRONG_SYMBOLS_IN_USER_NAME'] = 'Неверные символы в имени';
+$lang['USER_NAME_TOO_SHORT'] = 'Имя слишком короткое ( минимум 3 символа )';
+$lang['USER_NAME_TOO_LONG'] = 'Имя слишком длинное ( максимум 20 символов )';
+$lang['USER_NAME_NOT_UNIQUE'] = 'Пользователь с таким именем уже зарегистрирован, пожалуйста выберете другое имя';
+
+$lang['COPYRIGHT'] = '2003-'.date('Y').'. © DestinySphere GmbH, ООО Геймспейс. All Rights Reserved.';
+
+
+
+$time_delta_phrases = array();
+
+$time_delta_phrases['GMT0'] = '(время по Гринвичу)';
+$time_delta_phrases['GMT3'] = '(московское время)'; 
+$time_delta_phrases['GMT4'] = '(летнее московское время)';
+
+$lang['WRONG_OLD_PASSWORD'] = 'Введен неверный текущий пароль.';
+$lang['CANT_CHANGE_FORUM_INFO'] = 'Предупреждение: данные на форуме не были изменены';
+?>

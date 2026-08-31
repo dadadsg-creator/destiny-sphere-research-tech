@@ -1,0 +1,27 @@
+<?
+$lang['CHARSET'] = "windows-1251";
+$lang['title'] = ":: DestinySphere :: FREE strategic online-game, based on Macromedia Flash";
+
+$lang['caption'] = "Congratulations!";
+
+$lang['browser'] = "Browser";
+$lang['browser_version'] = "Browser version";
+$lang['OS'] = "Operating system";
+$lang['Flash_Version'] = "Flash version";
+$lang['html'] = "HTML";
+$lang['java'] = "JavaScript support";
+$lang['iframe'] = "IFRAME support";
+$lang['cookies'] = "Cookies";
+$lang['to_game'] = "Play the game";
+$lang['skip'] = "Skip checking";
+
+$lang['CheckFlashPL'] = "Chicking Flash plugin...";
+$lang['OK'] = 'OK';
+$lang['Reduced_compatibility'] = 'Partial compatibility';
+$lang['Bad_compatibility'] = 'Bad  compatibility';
+$lang['Critical_error'] = 'Critical error';
+
+$lang['copyright'] = "2003-".date('Y')."©. DestinySphere GmbH, OOO Sfera Sudby. All Rights Reserved.<br>Optimised for 1024x768 and Microsoft Internet Explorer 6.0 and higher.";
+
+$lang['counters'] = "";
+?>

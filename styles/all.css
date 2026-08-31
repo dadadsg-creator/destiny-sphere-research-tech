@@ -1,0 +1,58 @@
+/* сетка */
+
+body {margin: 0px; padding: 0px; color:#000000; background: url(../img/body_bg.gif) repeat-y;}
+
+
+#module_1 {width: 100%; height: 100%;}
+#module_1_left {padding-top: 363; width:151;  vertical-align:top; background: url(../img/module_1_left_bg.jpg) no-repeat;}
+#module_1_middle {width:191; background-color:#D9F3F2; vertical-align:top}
+#module_1_right {width:100%; vertical-align:top;}
+
+#module_2 {width:100%; height:100%}
+#module_2_hdr {height:81}
+#module_2_middle {height:100%; vertical-align:top }
+#module_2_ftr {height:68; background:#787878}
+
+#module_3 {width:100%; height:100%;}
+#module_3_left {width:197; vertical-align:top}
+#module_3_right {width:100%; vertical-align:top}
+
+
+/* SERVICES */
+
+/* site search */
+#search { margin:0; width:151; height:107; background: url(../img/search_bg.gif) no-repeat;padding-left:18; padding-top:24}
+#search input {width:100; height:18; font:11px;  margin-bottom: 10}
+#search img {margin: 0px; border: 0; cursor: hand}
+
+/* enter */
+#enter { margin:0; width:151; height:115; background: url(../img/enter_bg.gif) no-repeat; padding-left:18; padding-top:24}
+#enter input {width:100; height:18; font:11px;  margin-bottom: 5}
+#enter img {margin: 2 0 7 0 ; border: 0; cursor: hand;}
+#enter a{color:#FFFFFF; display: block; font: 11px Tahoma, Arial, Helvetica }
+
+/* header */
+#header {width:100%; height:81;  background: #3B4496 url(../img/mmk_header_bg.gif) no-repeat}
+#header a{width:420; height:81; text-decoration:none; display: block;}
+
+/* navigation */
+#navigation {width:100%; height:182; background:#E6E6E6; padding-top:11}
+#navigation a {padding:2 0 6 0; background: url(../img/menu_divider.gif) no-repeat bottom left; font:bold 10px arial,tahoma ; display:block; text-decoration: none; color:#606060; padding-left:20}
+#navigation a.last {background: none }
+#navigation a:hover {color:#000000}
+
+
+/* footer */
+#ftr {padding: 0 30 0 30; font:10px tahoma, arial; color:#FFFFFF}
+#ftr a {color:#FFFFFF}
+#ftr img {border:0; margin: 0 10 0 0; vertical-align:top; float:right}
+#ftr p {border:0; margin: 0; vertical-align:top; float:left}
+
+/* sitemap */
+
+.dir {font: 11px Tahoma, Arial, Helvetica; color:#606060}
+.sitemapa {font: 11px Tahoma, Arial, Helvetica; color:#3B4496}
+
+/* register form */
+#register_form .red {color:#FF0000}
+#register_form #button {height:19; font:10px  tahoma}

@@ -1,0 +1,12 @@
+<?
+
+$lang = array();
+
+$lang['ENCODING'] = 'windows-1251';
+$lang['TITLE'] = ':: Destiny Sphere :: Бесплатная многопользовательская веб-стратегия, основанная на технологии Macromedia Flash';
+$lang['LOGO_ALT'] = 'Стартовая страница DestinySphere';
+$lang['TEXT1'] = 'Спасибо за вашу рекомендацию!';
+$lang['TEXT2'] = 'Мы желаем вам и вашим друзьям удачи в игре <em>DestinySphere</em>!';
+$lang['TEXT3'] = 'Закрыть окно';
+
+?>

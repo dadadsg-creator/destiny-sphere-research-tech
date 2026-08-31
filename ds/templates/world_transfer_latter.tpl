@@ -1,0 +1,1 @@
+{$lang.DEAR} {$USERNAME}, {$lang.MESSAGE}

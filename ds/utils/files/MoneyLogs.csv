@@ -1,0 +1,47 @@
+"Data for user dgefff from 2012-28-03 to 2012-04-04"
+World;"User from";"User to";Date;"Action ";GC;SC;Detail
+Кабинет;dgefff;DestinySphere;"2012-04-04 17:05:06.610027";SEND_INTERWORLD_TRANSFER;0;"-293 500";"Сфера Водолея"
+"Сфера Водолея";dgefff;DestinySphere;"2012-04-04 17:05:06.583705";RECIVE_INTERWORLD_TRANSFER;0;"293 500";cabinet
+Кабинет;dgefff;DestinySphere;"2012-04-04 17:04:43.6392";EXCHANGE_CREDITS;0;"1 000";
+Кабинет;dgefff;DestinySphere;"2012-04-04 17:04:43.6392";EXCHANGE_CREDITS;-1;0;
+Кабинет;dgefff;DestinySphere;"2012-04-04 17:04:43.6392";EXCHANGE_CREDITS;0;"1 000";
+Кабинет;dgefff;DestinySphere;"2012-04-04 17:04:43.6392";EXCHANGE_CREDITS;-1;0;
+Кабинет;dgefff;DestinySphere;"2012-04-04 17:02:49.288924";ENTER_MONEY;1;0;
+Кабинет;dgefff;DestinySphere;"2012-04-04 16:47:11.794875";RECIVE_INTERWORLD_TRANSFER;0;"142 500";"Сфера Водолея"
+"Сфера Водолея";dgefff;DestinySphere;"2012-04-04 16:47:11.729722";SEND_INTERWORLD_TRANSFER;0;"-142 500";cabinet
+"Сфера Водолея";dgefff;DestinySphere;"2012-04-04 16:47:11.729722";PAY_TRANSFER_TAX;0;"-7 500";
+Кабинет;dgefff;DestinySphere;"2012-04-04 16:46:39.895025";EXCHANGE_CREDITS;0;"150 000";
+Кабинет;dgefff;DestinySphere;"2012-04-04 16:46:39.895025";EXCHANGE_CREDITS;-150;0;
+Кабинет;dgefff;DestinySphere;"2012-04-04 16:46:39.895025";EXCHANGE_CREDITS;0;"150 000";
+Кабинет;dgefff;DestinySphere;"2012-04-04 16:46:39.895025";EXCHANGE_CREDITS;-150;0;
+Кабинет;dgefff;DestinySphere;"2012-04-04 16:46:12.571512";ENTER_MONEY;150;0;
+"Сфера Водолея";dgefff;Bourbon;"2012-04-03 20:03:02.187851";TRADE_PAYMENT;0;-6;"393,683 продиум"
+"Сфера Водолея";dgefff;Bourbon;"2012-04-03 20:02:52.773064";TRADE_PAYMENT;0;-2;"125,872 продиум"
+Кабинет;dgefff;DestinySphere;"2012-04-03 14:28:59.852065";SEND_INTERWORLD_TRANSFER;0;"-150 000";"Сфера Водолея"
+"Сфера Водолея";dgefff;DestinySphere;"2012-04-03 14:28:59.818632";RECIVE_INTERWORLD_TRANSFER;0;"150 000";cabinet
+Кабинет;dgefff;DestinySphere;"2012-04-03 14:28:40.970441";EXCHANGE_CREDITS;0;"150 000";
+Кабинет;dgefff;DestinySphere;"2012-04-03 14:28:40.970441";EXCHANGE_CREDITS;-150;0;
+Кабинет;dgefff;DestinySphere;"2012-04-03 14:28:40.970441";EXCHANGE_CREDITS;0;"150 000";
+Кабинет;dgefff;DestinySphere;"2012-04-03 14:28:40.970441";EXCHANGE_CREDITS;-150;0;
+Кабинет;dgefff;DestinySphere;"2012-04-03 14:28:28.463502";ENTER_MONEY;150;0;
+"Сфера Водолея";dgefff;DestinySphere;"2012-04-03 13:21:26.299453";RESTORE_PROTECTIVE_FIELD;0;-500;
+"Сфера Водолея";dgefff;MegaVoin;"2012-04-03 12:17:49.766242";TRADE_PAYMENT;0;-220;"10,316,200 продиум"
+"Сфера Водолея";dgefff;vanica;"2012-04-03 12:17:38.394593";TRADE_PAYMENT;0;-180;"8,559,980 продиум"
+"Сфера Водолея";dgefff;Oldwarn;"2012-04-03 12:17:26.370208";TRADE_PAYMENT;0;-20;"1,000,000 продиум"
+"Сфера Водолея";dgefff;Oldwarn;"2012-04-03 12:17:23.648592";TRADE_PAYMENT;0;-20;"1,000,000 продиум"
+"Сфера Водолея";dgefff;Oldwarn;"2012-04-03 12:17:21.080093";TRADE_PAYMENT;0;-20;"1,000,000 продиум"
+"Сфера Водолея";dgefff;DestinySphere;"2012-04-02 19:38:46.624154";UNIT_REINCARNATION;0;"-10 257";
+"Сфера Водолея";dgefff;Bourbon;"2012-04-02 18:20:46.504622";TRADE_PAYMENT;0;-2;"121,973 продиум"
+"Сфера Водолея";dgefff;Bourbon;"2012-04-02 18:20:33.373938";TRADE_PAYMENT;0;-2;"125,224 продиум"
+"Сфера Водолея";dgefff;IvanBulochkin;"2012-04-02 18:20:09.391782";TRADE_PAYMENT;0;-41;"1,955,480 продиум"
+"Сфера Водолея";dgefff;Oldwarn;"2012-04-02 18:19:58.430997";TRADE_PAYMENT;0;-20;"1,000,000 продиум"
+"Сфера Водолея";dgefff;Oldwarn;"2012-04-02 18:19:55.335096";TRADE_PAYMENT;0;-20;"1,000,000 продиум"
+Кабинет;dgefff;DestinySphere;"2012-04-02 17:27:32.810868";SEND_INTERWORLD_TRANSFER;0;"-30 000";"Сфера Водолея"
+"Сфера Водолея";dgefff;DestinySphere;"2012-04-02 17:27:32.780129";RECIVE_INTERWORLD_TRANSFER;0;"30 000";cabinet
+Кабинет;dgefff;DestinySphere;"2012-04-02 17:27:11.599008";EXCHANGE_CREDITS;0;"30 000";
+Кабинет;dgefff;DestinySphere;"2012-04-02 17:27:11.599008";EXCHANGE_CREDITS;-30;0;
+Кабинет;dgefff;DestinySphere;"2012-04-02 17:27:11.599008";EXCHANGE_CREDITS;0;"30 000";
+Кабинет;dgefff;DestinySphere;"2012-04-02 17:27:11.599008";EXCHANGE_CREDITS;-30;0;
+Кабинет;dgefff;DestinySphere;"2012-04-02 17:23:36.352228";ENTER_MONEY;30;0;
+"Сфера Водолея";dgefff;DestinySphere;"2012-03-30 22:48:55.888034";RESTORE_PROTECTIVE_FIELD;0;"-2 500";
+"Сфера Водолея";dgefff;DestinySphere;"2012-03-28 11:22:43.954367";UNIT_REINCARNATION;0;"-4 971";

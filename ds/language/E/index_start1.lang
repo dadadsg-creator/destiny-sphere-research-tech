@@ -1,0 +1,10 @@
+<?
+$lang = array();
+
+$lang['TITLE'] = 'DestinySphere :: Вход';
+$lang['ENCODING'] = 'windows-1251';
+
+$lang['TEXT1'] = 'Пожалуйста выберите игровой мир';
+$lang['LOGO_ALT'] = 'Стартовая страница DestinySphere';
+
+?>

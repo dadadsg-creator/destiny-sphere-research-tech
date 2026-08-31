@@ -1,0 +1,10 @@
+<th class="thHead"  height="25" width="1%" >&nbsp;</th>
+<th class="thHead"  height="25" width="16%" ><span class="gen"><a href="ranking.php?world=<?= $world ?>&dbid=<?= $dbId ?>&player=<?= @$_GET['player']  ?>&alliance=<?=$allianceInfo ?>&race=<?= $raceInfo ?>&sort=username&dir=asc" class="gen">Игрок</a></span></th>
+<th class="thHead"  height="25" valign="middle" width="16%"><span class="gen"><a href="ranking.php?world=<?= $world ?>&dbid=<?= $dbId ?>&player=<?= @$_GET['player']  ?>&alliance=<?=$allianceInfo ?>&race=<?= $raceInfo ?>&sort=combname&dir=asc" class="gen">Сота</a></span></th>
+<th class="thHead"  height="25" valign="middle" width="16%"><span class="gen"><a href="ranking.php?world=<?= $world ?>&dbid=<?= $dbId ?>&player=<?= @$_GET['player']  ?>&alliance=<?=$allianceInfo ?>&race=<?= $raceInfo ?>&sort=coords&dir=asc" class="gen">Координаты</a></span></th>
+<th class="thHead"  height="25" valign="middle" width="16%"><span class="gen"><a href="ranking.php?world=<?= $world ?>&dbid=<?= $dbId ?>&player=<?= @$_GET['player']  ?>&alliance=<?=$allianceInfo ?>&race=<?= $raceInfo ?>&sort=alliancetag&dir=asc" class="gen">Альянс</a></span></th>
+<th class="thHead"  height="25" valign="middle" width="16%"><span class="gen"><a href="ranking.php?world=<?= $world ?>&dbid=<?= $dbId ?>&player=<?= @$_GET['player']  ?>&alliance=<?=$allianceInfo ?>&race=<?= $raceInfo ?>&sort=racename&dir=asc" class="gen">Раса</a></span></th>
+<th class="thHead"  height="25" valign="middle" width="16%"><span class="gen"><a href="ranking.php?world=<?= $world ?>&dbid=<?= $dbId ?>&player=<?= @$_GET['player']  ?>&alliance=<?=$allianceInfo ?>&race=<?= $raceInfo ?>&sort=thefinal&dir=desc" class="gen">Очки</a></span></th>
+<?if($showBattlexp) {?>
+  <th class="thHead"  height="25" valign="middle" width="16%"><span class="gen"><a href="ranking.php?world=<?= $world ?>&dbid=<?= $dbId ?>&player=<?= @$_GET['player']  ?>&alliance=<?=$allianceInfo ?>&race=<?= $raceInfo ?>&sort=battlexp&dir=desc" class="gen">Боевой&nbsp;опыт</a></span></th>
+<?}?>

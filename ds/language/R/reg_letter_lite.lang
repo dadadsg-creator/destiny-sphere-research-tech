@@ -1,0 +1,13 @@
+<?
+$lang = array();
+
+$lang['REG_CONGERT'] = 'Вы успешно прошли регистрацию в игре DestinySphere.';
+$lang['REG_PASSWORD'] = 'Ваш пароль';
+$lang['REG_LOGIN'] = 'Ваш логин';
+$lang['LATTER_SUBJECT'] = 'Оповещение о регистрации';
+$lang['LATTER_FROM'] = 'DestinySphere';
+$lang['FORUM_REGISTRATION'] = 'Вместе с игровым аккаунтом был автоматически создан и аккант на форуме. 
+Форумный логин совпадает с игровым. 
+Пароль для входа на форум : ';
+$lang['REG_ENDLETTER'] = '';
+?>

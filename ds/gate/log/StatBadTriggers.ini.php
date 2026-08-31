@@ -1,0 +1,38 @@
+
+[BADTRIGGER]
+2006-05-04 15:34:22 = "ds test"
+2006-05-04 16:19:18 = "ds test"
+2006-05-04 16:19:48 = "dstest"
+2006-05-04 17:14:51 = "DsArmy 40min 111 edr"
+2006-05-04 17:15:04 = "DsArmy 40min 111 edr"
+2007-05-21 18:46:31 = "dsu premium stariy"
+2007-05-21 18:47:02 = "dsu premium stariy"
+2007-05-21 18:47:41 = "dsu premium stariy"
+2007-05-21 18:52:01 = "dsu premium stariy"
+2007-05-21 18:58:20 = "dsu premium stariy"
+2007-05-21 18:58:21 = "dsu premium stariy"
+2007-06-14 19:51:32 = "DSU CREDIT Stariy"
+2007-06-14 19:52:37 = "DSU CREDIT Stariy"
+2007-06-14 19:52:38 = "DSU CREDIT Stariy"
+2007-06-14 19:52:39 = "DSU CREDIT Stariy"
+2007-06-14 19:53:13 = "DSU CREDIT Stariy"
+2007-06-14 19:53:14 = "DSU CREDIT Stariy"
+2007-06-14 19:53:56 = "DSU CREDIT Stariy"
+2007-06-14 20:02:20 = "DSUCREDIT Stariy"
+2007-06-14 20:05:35 = "DSUCREDIT Stariy"
+2007-06-14 20:06:37 = "DSUCREDIT Stariy"
+2007-06-14 20:06:48 = "DSUCREDIT Stariy"
+2007-06-14 20:07:39 = "DSUCREDIT Stariy"
+2007-06-14 20:07:41 = "DSUCREDIT Stariy"
+2007-06-14 20:08:16 = "DSUCREDIT Stariy"
+2007-06-14 20:08:17 = "DSUCREDIT Stariy"
+2007-06-14 20:08:18 = "DSUCREDIT Stariy"
+2007-06-14 20:08:40 = "DSUCREDIT Stariy"
+
+[SETTINGS]
+lastModify = 1181837320
+
+[TOTAL]
+2006-05-04 = 5
+2007-05-21 = 6
+2007-06-14 = 34

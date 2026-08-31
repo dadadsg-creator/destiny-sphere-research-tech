@@ -1,0 +1,398 @@
+BODY {
+	border: 0px;
+	background-color: #040D23; 
+	background-image: url(img/index_login/bg.gif);
+	margin: 0; 
+	margin-left: 0; 
+	margin-top: 0; 
+	margin-bottom: 0;
+	margin-right: 0;
+}
+
+.bgleft {
+	background-image: url(img/index_login/bg_left.gif);
+	background-repeat: repeat-y;
+	width: 6px;
+}
+
+.bgright {
+	background-image: url(img/index_login/bg_right.gif);
+	background-repeat: repeat-y;
+	width: 6px;
+}
+
+.body_chat {
+	border: 0px;
+	background-color: #040D23; 
+	background-image: url(img/background/bg_chat.gif);
+	margin: 0; 
+	margin-left: 0; 
+	margin-top: 0; 
+	margin-bottom: 0;
+	margin-right: 0;
+}
+.td_add {
+	background-image: url(img/header/bg01.jpg);
+	background-repeat: no-repeat; 
+}
+/* general window setting begin */
+/***************************************************************************************************/
+.wnd_outer {
+	font-size: 10px;
+	background-color: #E4E5E4;
+}
+/***************************************************************************************************/
+.wnd_inner {
+	font-size: 10px;
+	background-color: #dbdbdb;
+}
+/***************************************************************************************************/
+.wnd_header_txt {
+	color: #204E7C;
+	font-size: 11px;
+	font-weight: bold;
+	font-family: Arial, Helvetica, sans-serif;
+}
+a.wnd_header_txt:link, a.wnd_header_txt:visited {
+	text-decoration: none;
+}
+a.wnd_header_txt:hover {
+	text-decoration: underline;
+}
+/***************************************************************************************************/
+.menu_txt {
+	color: #333333;
+	font-size: 11px;
+	font-weight: bold;
+	font-family: Arial, Helvetica, sans-serif;
+}
+a.menu_txt:link, a.menu_txt:visited {
+	color: #333333;
+	text-decoration: none;
+}
+a.menu_txt:hover {
+	color: #111111;
+	text-decoration: none;
+}
+/***************************************************************************************************/
+.menu_txt_wt {
+	color: #eeeeee;
+	font-size: 11px;
+	font-weight: bold;
+	font-family: Arial, Helvetica, sans-serif;
+}
+a.menu_txt_wt:link, a.menu_txt_wt:visited {
+	color: #eeeeee;
+	text-decoration: none;
+}
+a.menu_txt_wt:hover {
+	color: #ffffff;
+	text-decoration: none;
+}
+/***************************************************************************************************/
+.menu_txt_left {
+	color: #eeeeee;
+	font-size: 11px;
+	font-weight: bold;
+	font-family: Arial, Helvetica, sans-serif;
+}
+a.menu_txt_left:link, a.menu_txt_left:visited {
+	color: #eeeeee;
+	text-decoration: none;
+}
+a.menu_txt_left:hover {
+	color: #F4D314;
+	text-decoration: none;
+}
+/***************************************************************************************************/
+.wnd_header_txt_small {
+	color: #204E7C;
+	font-size: 11px;
+	font-weight: bold;
+	font-family: Arial, Helvetica, sans-serif;
+}
+a.wnd_header_txt_small:link, a.wnd_header_txt_small:visited {
+	text-decoration: none;
+}
+a.wnd_header_txt_small:hover {
+	text-decoration: underline;
+}
+/***************************************************************************************************/
+.wnd_header_txt_large {
+	color: #204E7C;
+	font-size: 12px;
+	font-weight: bold;
+	font-family: Arial, Helvetica, sans-serif;
+}
+a.wnd_header_txt_large:link, a.wnd_header_txt_large:visited {
+	text-decoration: none;
+}
+a.wnd_header_txt_large:hover {
+	text-decoration: underline;
+}
+/***************************************************************************************************/
+.wnd_gen_txt {
+	color: #222222;
+	font-size: 10px;
+	font-weight: normal;
+	font-family: Arial, Helvetica, sans-serif;
+}
+a.wnd_gen_txt:link, a.wnd_gen_txt:visited {
+	color: #000000;
+	text-decoration: none;
+}
+a.wnd_gen_txt:hover {
+	color: #1A4165;
+	text-decoration: underline;
+}
+/***************************************************************************************************/
+.wnd_gen_txt_wt {
+	color: #dddddd;
+	font-size: 10px;
+	font-weight: normal;
+	font-family: Arial, Helvetica, sans-serif;
+}
+a.wnd_gen_txt_wt:link, a.wnd_gen_txt_wt:visited {
+	color: #eeeeee;
+	text-decoration: none;
+}
+a.wnd_gen_txt_wt:hover {
+	color: #eeeeee;
+	text-decoration: underline;
+}
+/***************************************************************************************************/
+.wnd_gen_txt_wt_large {
+	color: #eeeeee;
+	font-size: 12px;
+	font-weight: bold;
+	font-family: Arial, Helvetica, sans-serif;
+}
+a.wnd_gen_txt_wt_large:link, a.wnd_gen_txt_wt_large:visited {
+	color: #eeeeee;
+	text-decoration: none;
+}
+a.wnd_gen_txt_wt_large:hover {
+	color: #dddddd;
+	text-decoration: underline;
+}
+/***************************************************************************************************/
+.wnd_gen_txt_small {
+	color: #222222;
+	font-size: 9px;
+	font-weight: normal;
+	font-family: Arial, Helvetica, sans-serif;
+}
+a.wnd_gen_txt_small:link, a.wnd_gen_txt_small:visited {
+	color: #000000;
+	text-decoration: none;
+}
+a.wnd_gen_txt_small:hover {
+	color: #1A4165;
+	text-decoration: underline;
+}
+/***************************************************************************************************/
+.wnd_gen_txt_large {
+	color: #222222;
+	font-size: 11px;
+	font-weight: normal;
+	font-family: Arial, Helvetica, sans-serif;
+}
+a.wnd_gen_txt_large:link, a.wnd_gen_txt_large:visited {
+	color: #000000;
+	text-decoration: none;
+}
+a.wnd_gen_txt_large:hover {
+	color: #1A4165;
+	text-decoration: underline;
+}
+/***************************************************************************************************/
+.wnd_gen_txt_large_high {
+	color: #222222;
+	font-size: 12px;
+	font-weight: normal;
+	font-family: Arial, Helvetica, sans-serif;
+}
+a.wnd_gen_txt_large_high:link, .wnd_gen_txt_large_high:visited {
+	color: #000000;
+	text-decoration: none;
+}
+a.wnd_gen_txt_large_high:hover {
+	color: #1A4165;
+	text-decoration: underline;
+}
+/***************************************************************************************************/
+/* general window setting end */
+
+/* additional window setting begin */
+
+/* additional window setting end */
+
+/* additional font setting begin */
+/***************************************************************************************************/
+.copyright_txt {
+	color: #444444;
+	font-size: 9px;
+	font-weight: normal;
+	font-family: Arial, Helvetica, sans-serif;
+}
+/***************************************************************************************************/
+/* additional font setting end */
+
+/* elements setting begin */
+/***************************************************************************************************/
+.input_login_wnd {
+	background-image: url(img/background/input_login.gif);
+	width: 140px;
+	height: 18px;
+	border-style: solid;
+	border-color: #888888;
+	border-width: 1px;
+	color: #222222;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+}
+/***************************************************************************************************/
+.input_gen {
+	background-image: url(img/background/input_login.gif);
+	height: 18px;
+	border-style: solid;
+	border-color: #888888;
+	border-width: 1px;
+	color: #222222;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+}
+/***************************************************************************************************/
+.input_button {
+	background-color: #3C4C7B;
+	height: 18px;
+	font-weight: bold;	
+	border-width: 1px;
+	border-style: solid;
+	border-color: #000000;
+	color: #eeeeee;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+}
+/***************************************************************************************************/
+.select_gen {
+	background-color: #f8f8f8;
+	//background-image: url(img/background/input_login.gif);
+	height: 18px;
+	border-style: solid;
+	border-color: #888888;
+	border-width: 1px;
+	color: #111111;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+}
+/***************************************************************************************************/
+.textarea_gen {
+	background-color: #f8f8f8;
+	border-style: solid;
+	border-color: #888888;
+	border-width: 1px;
+	color: #222222;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+}
+/* elements setting end */
+.tip,.tipc{font-size:10px;font-family:verdana,sans-serif;border:solid 1px #000000;text-align:left;padding:3px;position:absolute;z-index:999;visibility:hidden;color:#000000;top:20px;left:90px;background-color:#FFFFE1}
+
+.ind_st2 {
+	color: #5D0000;
+	font-size: 12px;
+	font-weight: bold;
+	font-family: Arial, Helvetica, sans-serif;
+}
+.ind_st1 {
+	color: #222222;
+	font-size: 12px;
+	font-weight: bold;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+/****************************************************************************************************************************/
+
+.ranking_table {
+	border: solid #666666 1px;
+	background-color: #f8f8f8;
+}
+
+.ranking_header {
+	background: url(img/elements/header.gif);
+	height: 24px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	background-color: #364A7A;
+	color: #FDD600;
+	font-weight: bold;
+	text-align: center;
+}
+
+/****************************************************************************************************************************/
+
+.ranking_header_text {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #FDD600;
+	font-weight: bold;
+	text-decoration: none;
+}
+a.ranking_header_text:link, a.ranking_header_text:visited {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #FDD600;
+	font-weight: bold;
+	text-decoration: none;
+}
+a.ranking_header_text:hover {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #FDD600;
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+/****************************************************************************************************************************/
+
+.ranking_table_01 {
+	background-color: #dddddd;
+	padding-left: 3px;
+	padding-right: 3px;
+	height: 22px;
+}
+
+.ranking_table_02 {
+	background-color: #cccccc;
+	padding-left: 3px;
+	padding-right: 3px;
+	height: 22px;
+}
+
+.ranking_table_active {
+	background: url(img/background/bg_ranking.gif);
+	background-color: #aaaaaa;
+	border: solid #204E7C 1px;
+	padding-left: 3px;
+	padding-right: 3px;
+	height: 24px;
+}
+
+/****************************************************************************************************************************/
+
+.wnd_gen_ranking_large {
+	color: #222222;
+	font-size: 12px;
+	font-weight: bold;
+	font-family: Arial, Helvetica, sans-serif;
+}
+a.wnd_gen_ranking_large:link, a.wnd_gen_ranking_large:visited {
+	color: #000000;
+	text-decoration: underline;
+}
+a.wnd_gen_ranking_large:hover {
+	color: #1A4165;
+	text-decoration: underline;
+}
+/***************************************************************************************************/

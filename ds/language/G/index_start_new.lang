@@ -1,0 +1,82 @@
+<?php
+ 
+$lang = array();
+
+$lang['TITLE'] = 'DestinySphere :: Enter';
+$lang['ENCODING'] = 'iso-8859-1'; 
+
+$lang['ACCOUNT'] = 'Account'; 
+$lang['NAME'] = 'Username'; 
+$lang['EMAIL'] = 'E-Mail'; 
+$lang['LOGOUT'] = 'logout'; 
+
+$lang['PROTECTION'] = 'Sicherheitscode:'; 
+$lang['PROTECTION_HINT'] = ' (In Internetoptionen werden "Bilder einzeigen" aufnehmen)'; 
+
+$lang['TEXT1'] = 'Wahle bitte eine Spielwelt aus'; 
+
+$lang['GAME_WORLD'] = 'Spielwelt:'; 
+$lang['NEW_WORLD_TEXT'] = 'NEW_WORLD_TEXT'; 
+$lang['NEW_WORLD_LINK'] = 'NEW_WORLD_LINK'; 
+
+$lang['SUBMIT'] = 'Login'; 
+$lang['WORLD_UNION_INFO'] = '<span style="font-size:14px;" class="wnd_gen_txt_large"><fontcolor="red"><b>Achtung!</b></font> Sie koennen <b>kostenlos</b> </span><br>'; 
+$lang['WORLD_UNION_HREF'] = '<a href="FreeTransfer.php" class="wnd_header_txt_large" target="_blank">Ueberfahrt haeuslich Weben bestellen</a>';
+
+$lang['PERSON'] = 'Sehr geehrte';
+ 
+$lang['BAN_TITLE'] = 'IAccount ist gesperrt!'; 
+$lang['TEXT_BAN'] = 'Ihr Account ist wegen eines Verstoss gegen die Benutzungregeln gesperrt.<br> Bitte wenden Sie sich an die folgende Adresse <a class="wnd_header_txt_large" href="mailto:commanager@destinysphere.com">commanager@destinysphere.com</a>';
+ 
+$lang['BAN_REASON'] = 'Ursache:';
+$lang['BAN_ENDDATE'] = 'Vollendungsfrist:';
+ 
+$lang['MAIL_ACTIVATION_TITLE'] = 'Der Account ist noch nicht aktiviert'; 
+$lang['TEXT_MAIL_ACTIVATION_1'] = 'Vergessen Sie nicht, Ihren Spiel-account zu aktivieren'; 
+$lang['TEXT_MAIL_ACTIVATION_2'] = 'Wenn Sie die email mit dem Aktivierunglink nicht bekommen haben, schreiben Sie in <a class="wnd_header_txt_large" href="mailto:support@ru.destinysphere.com">support@ru.destinysphere.com</a>.<br>Wir werden die Aktivierungs-mail erneut abschicken';
+ 
+$lang['MAIL_ACTIVATION_DAYS'] = 'Der Account sollte bis zu';
+ 
+$lang['REGISTRATION'] = 'Registrieren in Spielwelt'; 
+
+$lang['RACE_INFO_HREF'] = 'http://ds.destinysphere.net/?p=game_races';
+$lang['RACE'] = 'Rasse:'; 
+
+$lang['COMB_NAME'] = 'Name Deines Reiches (Wabenname):'; 
+$lang['ADD'] = 'Eintreten'; 
+$lang['RECOMENDED_FOR_NUBIE'] = 'Diese Welt ist fuer Anfaenger empfohlen:';
+ 
+$lang['RACE_INFO'] = 'Infos ueber Eigenschaften jeder Rasse';
+ 
+$lang['PREMIUM'] = 'Premium Account';
+$lang['VALID_TILL'] = 'Account laeuft in '; 
+$lang['DAYS'] = ' Tage'; 
+$lang['HOURS'] = ' Stunden';
+ 
+$lang['SUPPORT_MESSAGE'] = 'Nachricht';
+$lang['SUPPORT_CAPTION'] = 'SUPPORT';
+$lang['SEND'] = 'Senden';
+ 
+$lang['PREMIUM_PRESENT_HREF'] = 'index_start.php';
+$lang['PREMIUM_PRESENT'] = 'Geschenk!';
+$lang['PREMIUM_PRESENT_TEXT'] = '5 Premiumtage geschenkt bekommen!';
+ 
+$lang['PREMIUM_REGISTRATION_HREF'] = 'https://billing.gamigogames.de/';
+$lang['PREMIUM_REGISTRATION'] = 'Registrierung'; 
+$lang['PREMIUM_REGISTRATION_TEXT'] = '';
+ 
+$lang['PREMIUM_SUPPORT'] = 'Wenn Sie Probleme haben, koennen Sie sich in Support wenden:';
+ 
+$lang['EXISTING_WORLDS'] = 'Verf&uuml;gbare Spielwelten';
+ 
+$lang['LEFT'] = 'Es ist';
+$lang['PLACE_FOR_REG'] = 'freier Platzt fuer die Besiedelung.';
+ 
+$lang['DOWN'] = '(igeschlossen)';
+ 
+$lang['COPYRIGHT'] = '&copy; Copyright 2003-2006 by DestinySphere GmbH';
+$lang['ABOUT'] = 'Impressum';
+$lang['ABOUT_HREF'] = 'http://ds.destinysphere.net/index.php?p=about';
+
+$lang['COUNTERS'] = "";
+?>

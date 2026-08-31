@@ -1,0 +1,11 @@
+
+{$lang.HELLO} {$USERNAME}
+
+{$lang.TEXT} {$PREM_DAYS} {$lang.TEXT_END}
+
+{$INDEX_LINK}
+
+{$lang.REMAIND_PASS_LINK}: {$REMAIND_PASS_LINK}
+
+{$lang.FOOTER}
+

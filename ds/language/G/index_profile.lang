@@ -1,0 +1,30 @@
+<?
+$lang = array();
+
+$lang['TITLE'] = '::: DestinySphere ::: Spieler-Einstellungen...';
+$lang['ENCODING'] = 'iso-8859-1';
+$lang['HEADER'] = 'Spieler-Einstellungen:';
+$lang['LOGO_ALT'] = 'DestinySphere Logo';
+$lang['LOGIN_NAME'] = 'Nickname:';
+$lang['TIME_DELTA'] = 'Zeitzone:';
+$lang['USERS_LANGUAGE'] = 'Sprache:';
+$lang['BUTTON_TEXT'] = 'Ändern';
+$lang['USER_MAIL_TEXT'] = '(Um Ihre Email-Adresse zu ändern, schreiben Sie uns bitte<br>eine Email an support@destinysphere.com)';
+$lang['USER_MAIL'] = 'Email-Adresse:';
+$lang['OLD_PASSWORD'] = 'Altes Passwort:';
+$lang['NEW_PASSWORD'] = 'Neues Passwort:';
+$lang['CONFIRM_PASSWORD'] = 'Passwortbestätigung:';
+$lang['FORUM_PROFILE_TEXT'] = 'Forumprofil';
+
+$time_delta_phrases = array();
+
+$time_delta_phrases['GMT0'] = '(GMT+0)';
+$time_delta_phrases['GMT3'] = '(GMT+3)'; 
+$time_delta_phrases['GMT4'] = '(GMT+4)';
+
+
+$errors = array();
+
+$errors['WRONG_OLD_PASSWORD'] = 'Das alte Passwort ist inkorrekt.';
+$errors['CANT_CHANGE_FORUM_INFO'] = 'Achtung: Ihre Forumdaten konnten nicht geändert werden!';
+?>

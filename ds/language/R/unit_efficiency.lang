@@ -1,0 +1,156 @@
+<?php
+
+$lang['CHARSET'] = "windows-1251";
+$lang['title'] = ":: DestinySphere :: Эффективность юнита";
+
+$lang['caption'] = "Эффективность юнита";
+
+$lang['legend'] = "
+Иконка <Img src=\"../img/support/resource/uron.gif\"> - показывает изменение атаки юнита - против
+конкретного врага, насколько будет изменен урон (К юнит против юнита).<br>
+Нормальная атака юнита - 100%. Если этот параметр меньше 100% урон
+ослабнет. Если более 100% урон усилится.<br><br>
+Иконка <Img src=\"../img/support/resource/br.gif\" valiign=middle> - показывает процент выживших у атакующего
+(защищающегося) юнита при бое равных в продиумном (или в эквиваленте
+статической энегриии) весе армий, в одном раунде. Чем выше % выживших,
+тем более склонен к защите и стоек юнит. Рядом с процентами - шкала,
+визуально показывающая параметры.<br><br>
+<b>Результат</b> - Боевая эфективность атакующего юнита приведенная к 1 продиуму.<br><br>
+";
+
+$lang['efficiency'] = 'Эффективность юнита';
+$lang['vs_race'] = 'против юнитов расы';
+
+$lang['your_race'] = 'Ваша раса';
+$lang['oponent_race'] = 'Раса врага';
+
+$lang['your_religion'] = 'Ваша религия';
+$lang['oponent_religion'] = 'Религия врага';
+
+$lang['compare'] = 'сравнить';
+
+$lang['text01'] = '
+Как вы знаете, есть параметры «эффективность юнита» и «вес юнита». Эффективность зависит от боевых параметров, а вес - от стоимости юнита. Если сравнить два подразделения - в равном весе выиграет тот, чья эффективность выше. В таблице представлен параметр – отношение атакующего воина к воинам другой расы.  Таким образом, в равных весовых категориях, выиграет то подразделение, у которого эффективность выше. 
+<br><br>
+В левом верхнем углу показан выбранный вами юнит. Справа от него - юниты выбранной вами расы. Цвета показывают соотношение:
+(Ваш юнит)/(Юнит расы противника)
+<br><br>
+Кнопки «Раса» и «Религия», позволяют учесть эти параметры в расчете.
+<br><br>
+Если эффективность вашего юнита выше, значение будет больше 1 и он победит в бою. Если ниже - меньше 1, то скорее он проиграет. Цвет показывает это.
+<br><br>
+Ниже приведены цветовые градации, соответствующие значениям в таблице:
+<br><br>
+<span style="background-color:#000040; color:#ffffff;"><b><Темно-синий></b></span>  - Абсолютный разгром противника. Полное уничтожение. Истинный «противоюнит», возможно даже неуязвимый. Это значит соотношение эффективностей 2,5 раза и выше.
+<br><br>
+<span style="background-color:#0000A0; color:#ffffff;"><b><Синий></b></span> - <span style="background-color:#00ff00; color:#000000;"><b><Зеленый></b></span>  - Противник будет разбит, но с потерями для вас. Соотношение эффективности от 1,25 до 2,5 раз (шаг цвета 0,05).
+<br><br>
+<span style="background-color:#00ff00; color:#000000;"><b><Зеленый></b></span>  - Противник будет разбит, но с потерями для вас. Соотношение эффективности 1,25 раза. 
+<br><br>
+<span style="background-color:#00ff00; color:#000000;"><b><Зеленый></b></span> - <span style="background-color:#DCDC00; color:#000000;"><b><Желтый></b></span> - Примерно равный бой. Все зависит от случайности урона и прочих факторов. Соотношение эффективности от 0,8 до 1,25 раз (шаг цвета 0,05). 
+<br><br>
+<span style="background-color:#DCDC00; color:#000000;"><b><Желтый></b></span> - Увы, вы проиграете, но победу врага можно назвать пирровой. Соотношение эффективности 0,8  раза.
+<br><br>
+<span style="background-color:#DCDC00; color:#000000;"><b><Желтый></b></span> - <span style="background-color:#ff0000; color:#ffffff;"><b><Красный></b></span> - Противник победит, но при этом он понесёт потери. Соотношение эффективности от 0,5 до 0,8 раз (шаг цвета 0,05).
+<br><br>
+<span style="background-color:#ff0000; color:#ffffff;"><b><Красный></b></span> - Безусловный проигрыш, это можно компенсировать артефактами, прикрытием из транспорта и прослоем, но лучше не обнадеживаться. Соотношение эффективности от 0,1 до 0,5.
+<br><br>
+<span style="background-color:#6E0000; color:#ffffff;"><b><Багровый></b></span> - Сокрушительное поражение. Соотношение эффективности 0,1  раза. Это даже не проигрыш, а полное и безусловное уничтожение вашего подразделения.
+<br><br>
+<i>Все бои рассчитывались для одной группы против другой, равной в продовом весе.</i>
+<br><br>
+Естественно мы не учитывали артефакты в Военной базе, так как заранее не можем знать ваши данные.
+';
+
+$lang['copyright'] = "2003-".date('Y')."©. DestinySphere GmbH, ООО Геймспейс. All Rights Reserved.<br>Оптимизировано для разрешения экрана 1024 x 768 и броузера Microsoft Internet Explorer версии 6.0 и выше.";
+
+$lang['counters'] = "
+<!--LiveInternet counter-->
+<script type=\"text/javascript\"><!--
+document.write(\"<img src='http://counter.yadro.ru/hit?r\"+
+escape(document.referrer)+((typeof(screen)==\"undefined\")?\"\":
+\";s\"+screen.width+\"*\"+screen.height+\"*\"+(screen.colorDepth?
+screen.colorDepth:screen.pixelDepth))+\";u\"+escape(document.URL)+
+\";\"+Math.random()+
+\"' width=1 height=1 alt=''>\")//--></script>
+<!--/LiveInternet-->
+
+<!-- SpyLOG f:0211 -->
+<script language=\"javascript\"><!--
+Mu=\"u5095.09.spylog.com\";Md=document;Mnv=navigator;Mp=0;
+Md.cookie=\"b=b\";Mc=0;if(Md.cookie)Mc=1;Mrn=Math.random();
+Mn=(Mnv.appName.substring(0,2)==\"Mi\")?0:1;Mt=(new Date()).getTimezoneOffset();
+Mz=\"p=\"+Mp+\"&rn=\"+Mrn+\"&c=\"+Mc+\"&t=\"+Mt;
+if(self!=top){Mfr=1;}else{Mfr=0;}Msl=\"1.0\";
+//--></script><script language=\"javascript1.1\"><!--
+Mpl=\"\";Msl=\"1.1\";Mj = (Mnv.javaEnabled()?\"Y\":\"N\");Mz+='&j='+Mj;
+//--></script><script language=\"javascript1.2\"><!--
+Msl=\"1.2\";Ms=screen;Mpx=(Mn==0)?Ms.colorDepth:Ms.pixelDepth;
+Mz+=\"&wh=\"+Ms.width+'x'+Ms.height+\"&px=\"+Mpx;
+//--></script><script language=\"javascript1.3\"><!--
+Msl=\"1.3\";//--></script><script language=\"javascript\"><!--
+My=\"\";My+=\"<a href='http://\"+Mu+\"/cnt?cid=509509&f=3&p=\"+Mp+\"&rn=\"+Mrn+\"' target='_blank'>\";
+My+=\"<img src='http://\"+Mu+\"/cnt?cid=509509&\"+Mz+\"&sl=\"+Msl+\"&r=\"+escape(Md.referrer)+\"&fr=\"+Mfr+\"&pg=\"+escape(window.location.href);
+My+=\"' border=0 width=1 height=1 alt='SpyLOG'>\";
+My+=\"</a>\";Md.write(My);//--></script><noscript>
+<a href=\"http://u5095.09.spylog.com/cnt?cid=509509&f=3&p=0\" target=\"_blank\">
+<img src=\"http://u5095.09.spylog.com/cnt?cid=509509&p=0\" alt='SpyLOG' border='0' width=1 height=1>
+</a></noscript>
+<!-- SpyLOG -->
+
+<!--begin of Rambler's Top100 code -->
+<a href=\"http://top100.rambler.ru/top100/\" target=_blank>
+<img src=\"http://counter.rambler.ru/top100.cnt?1161020\" alt=\"\" width=1 height=1 border=0></a>
+<!--end of Top100 code-->
+<!--begin of Top100 logo-->
+<a href=\"http://top100.rambler.ru/top100/\" target=_blank>
+<img src=\"http://top100-images.rambler.ru/top100/banner-88x31-rambler-black2.gif\" alt=\"Rambler's Top100\" width=1 height=1 border=0></a>
+<!--end of Top100 logo -->
+
+<!-- HotLog -->
+<script language=\"javascript\">
+hotlog_js=\"1.0\";
+hotlog_r=\"\"+Math.random()+\"&s=139920&im=131&r=\"+escape(document.referrer)+\"&pg=\"+
+escape(window.location.href);
+document.cookie=\"hotlog=1; path=/\"; hotlog_r+=\"&c=\"+(document.cookie?\"Y\":\"N\");
+</script><script language=\"javascript1.1\">
+hotlog_js=\"1.1\";hotlog_r+=\"&j=\"+(navigator.javaEnabled()?\"Y\":\"N\")</script>
+<script language=\"javascript1.2\">
+hotlog_js=\"1.2\";
+hotlog_r+=\"&wh=\"+screen.width+'x'+screen.height+\"&px=\"+
+(((navigator.appName.substring(0,3)==\"Mic\"))?
+screen.colorDepth:screen.pixelDepth)</script>
+<script language=\"javascript1.3\">hotlog_js=\"1.3\"</script>
+<script language=\"javascript\">hotlog_r+=\"&js=\"+hotlog_js;
+document.write(\"<a href='http://click.hotlog.ru/?139920' target='_blank'><img \"+
+\" src='http://hit6.hotlog.ru/cgi-bin/hotlog/count?\"+
+hotlog_r+\"&' border=0 width=1 height=1 alt='HotLog'></a>\")</script>
+<noscript><a href=http://click.hotlog.ru/?139920 target=_blank><img
+src=\"http://hit6.hotlog.ru/cgi-bin/hotlog/count?s=139920&im=131\" border=0
+width=1 height=1 alt='HotLog'></a></noscript>
+<!-- /HotLog -->
+
+<!--Rating@Mail.ru COUNTER-->
+<script language=\"JavaScript\" type=\"text/javascript\"><!--
+d=document;var a='';a+=';r='+escape(d.referrer)
+js=10//--></script><script language=\"JavaScript1.1\" type=\"text/javascript\"><!--
+a+=';j='+navigator.javaEnabled()
+js=11//--></script><script language=\"JavaScript1.2\" type=\"text/javascript\"><!--
+s=screen;a+=';s='+s.width+'*'+s.height
+a+=';d='+(s.colorDepth?s.colorDepth:s.pixelDepth)
+js=12//--></script><script language=\"JavaScript1.3\" type=\"text/javascript\"><!--
+js=13//--></script><script language=\"JavaScript\" type=\"text/javascript\"><!--
+d.write('<IMG src=\"http://d6.c2.ba.a0.top.list.ru/counter'+
+'?id=665247;js='+js+a+';rand='+Math.random()+
+'\" height=1 width=1/>')
+if(11<js)d.write('<'+'!-- ')//--></script><noscript><img
+src=\"http://d6.c2.ba.a0.top.list.ru/counter?js=na;id=665247\"
+height=1 width=1 alt=\"\"/></noscript><script language=\"JavaScript\" type=\"text/javascript\"><!--
+if(11<js)d.write('--'+'>')//--></script>
+<!--/COUNTER-->
+
+<a href=\"http://www.yandex.ru/cy?base=0&host=www.destinysphere.ru\" target=_blank>
+<img src=\"http://www.yandex.ru/cycounter?www.destinysphere.ru\" width=1 height=1 alt=\"Яндекс цитирования\" border=0></a>
+";
+
+?>

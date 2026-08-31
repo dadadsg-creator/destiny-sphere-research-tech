@@ -1,0 +1,32 @@
+<?
+$lang = array();
+
+$lang['TITLE'] = 'DestinySphere :: Entrance to the game';
+$lang['TITLEIMAGE'] = '<a href="../index.php"><span class="maintitle"><img src="images/logo_ds.gif" border="0" alt="Destiny Sphere main page" vspace="1" width="196" height="60" /></span></a><a target="_blank" href="http://www.rambler.ru"></a>';
+$lang['ENCODING'] = 'windows-1251';
+$lang['LOGIN'] = 'Login';
+$lang['ERROR'] = 'The following errors have been found:';
+$lang['USERNAME'] = 'Nick name:';
+$lang['PASSWORD'] = 'Password:';
+$lang['SENDPASSWORD_HREF'] = '';
+$lang['SENDPASSWORD'] = 'I forgot my password!';
+$lang['REGISTRATION'] = 'Registration';
+$lang['TEXT2'] = '';
+$lang['TEXT3'] = ' users are playing now.';
+$lang['TEXT4'] = '<a href="http://www.macromedia.com/software/flash/about/" target="_blank">Macromedia Flash 6.0.65.0</a>.<br />';
+$lang['TEXT5'] = 'Tell your friends about us!';
+$lang['EMAIL'] = 'e-mail:';
+$lang['TEXT6'] = 'Message text:';
+$lang['TEXT7'] = 'Hi!
+                            
+Free multiplayer web-game "Destiny Sphere".
+http://www.destinysphere.ru
+
+';
+
+$lang['TEXT8'] = 'Send';
+$lang['COPYRIGHT'] = 'Copyright 2003-2004 by DestinySphere GmbH';
+$lang['TEXT9'] = '';
+
+
+?>

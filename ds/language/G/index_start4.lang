@@ -1,0 +1,7 @@
+<?
+
+$lang = array();
+
+$lang['TEXT1'] = 'In einer Spielwelt registrieren';
+
+?>

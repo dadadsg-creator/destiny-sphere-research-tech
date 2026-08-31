@@ -1,0 +1,159 @@
+<?php
+
+$lang = array();
+
+$lang['TITLE'] = 'DestinySphere :: Вход';
+$lang['ENCODING'] = 'windows-1251';
+
+$lang['CABINET_DESCRIPT'] = '<b>Вход в игровой магазин</b>';
+$lang['CABINET_SUBMIT'] = 'ПРОЙТИ В МАГАЗИН';
+
+$lang['ACCOUNT'] = 'Аккаунт';
+$lang['NAME'] = 'Имя';
+$lang['EMAIL'] = 'Почта';
+$lang['LOGOUT'] = 'выход';
+
+$lang['PROTECTION'] = 'Защитный код:';
+$lang['PROTECTION_HINT'] = ' (включите отображение картинок)';
+
+$lang['TEXT1'] = 'Войти в игру';
+
+$lang['GAME_WORLD'] = 'Игровой мир';
+$lang['NEW_WORLD_TEXT'] = 'NEW_WORLD_TEXT';
+$lang['NEW_WORLD_LINK'] = 'NEW_WORLD_LINK';
+
+$lang['SUBMIT'] = 'вход';
+$lang['WORLD_UNION_INFO'] = '<span style="font-size:14px;" class="wnd_gen_txt_large"><fontcolor="red"><b>Achtung!</b></font> Sie koennen <b>kostenlos</b> </span><br>'; 
+$lang['WORLD_UNION_HREF'] = '<a href="FreeTransfer.php" class="wnd_header_txt_large" target="_blank">Ueberfahrt haeuslich Weben bestellen</a>';
+
+$lang['PERSON'] = 'Уважаемый(ая) ';
+
+$lang['BAN_TITLE'] = 'Ваш аккаунт заблокирован!';
+$lang['TEXT_BAN'] = 'Ваш игровой аккаунт заблокирован за нарушение вами правил пользования сервисом.<br> За разъяснениями вы можете обратиться по адресу <a class="wnd_header_txt_large" href="mailto:dv@destinysphere.com">dv@destinysphere.com</a>';
+
+$lang['BAN_REASON'] = 'Причина:';
+$lang['BAN_ENDDATE'] = 'Дата окончания:';
+
+$lang['MAIL_ACTIVATION_TITLE'] = 'Требуется активация!';
+$lang['TEXT_MAIL_ACTIVATION_1'] = 'Не забудьте активировать ваш игровой аккаунт.<br> Для этого нажмите на ссылку из письма, которое мы отправили на ваш регистрационный е-мейл.';
+$lang['TEXT_MAIL_ACTIVATION_2'] = 'Если вы не получили e-mail со ссылкой активации, сделайте следующее:<br>
+<div align="left">1) Выберите игровой мир<br>
+2) Дайте название вашей домашней соте (название необходимо писать латинскими буквами, а не кириллицей.)<br>
+3) Добавьте  вашу соту в выбранный игровой мир, соответствующей кнопкой.<br>
+4) Напишите сообщение о том что вам не пришла активационная ссылка в окне ниже, для службы поддержки. <br>
+5) Ссылку имеет смысл ждать в течении часа, если она не пришла, сделайте вышеописанное.<br>
+6) Если  при регистрации вы ошиблись в написании вашего e-mail, то помимо просьбы прислать повторную ссылку укажите правильный e-mail и мы поменяем его.</div>';
+
+$lang['MAIL_ACTIVATION_DAYS'] = 'Вы должны активировать ваш аккаунт до ';
+
+$lang['REGISTRATION'] = 'Выбор игрового мира для регистрации';
+
+$lang['RACE_INFO_HREF'] = '../?p=game_races';
+$lang['RACE'] = 'Раса:';
+
+$lang['COMB_NAME'] = 'Название вашей домашней соты:';
+$lang['ADD'] = 'создать';
+$lang['RECOMENDED_FOR_NUBIE'] = 'Для новых игроков рекомендуются миры:';
+
+$lang['RACE_INFO'] = 'Информация о свойствах и характеристиках каждой расы';
+
+$lang['PREMIUM'] = 'Премиум-аккаунт &mdash; Платные услуги';
+$lang['SHOP'] = 'Магазин';
+$lang['CRED_KAUF'] = 'Золотые кредиты';
+
+$lang['VALID_TILL'] = 'Премиум-аккаунт действителен еще ';
+$lang['DAYS'] = ' дней';
+$lang['HOURS'] = ' часов';
+
+$lang['SUPPORT_MESSAGE'] = 'Сообщение';
+$lang['SUPPORT_CAPTION'] = 'Служба поддержки';
+$lang['MISC'] = 'Переезды и ДВ';
+$lang['SEND'] = 'отправить';
+
+$lang['PREMIUM_PRESENT_HREF'] = 'index_start.php';
+$lang['PREMIUM_PRESENT'] = 'Получить!';
+
+$lang['NEXT'] = 'далее';
+$lang['RECOMENDED_FOR_NUBIE_FOOTNOTE'] = 'Рекомендуется для новых игроков';
+$lang['COMB_NAME_HINT'] = 'Сота - это игровое поле. Придумайте любое название. Разрешается использование цифр, символа подчеркивания и букв латинского алфавита.';
+
+$lang['PREMIUM_PRESENT_TEXT'] = 'Получить в подарок '.constant('PREMIUM_PRESENT_DAYS').' дня премиума!';
+
+$lang['SMS'] = 'SMS-сервис';
+
+$lang['CHOOSE_ANSWER'] = 'Вы не выбрали ни один вариант ответа!';
+$lang['POLL'] = 'Голосование';
+$lang['HUM'] = 'чел';
+$lang['VOTE'] = 'голосовать';
+$lang['REFRAIN'] = 'воздержаться';
+$lang['CONFIRM_VOTE'] = 'У вас больше не будет возможности ответить на этот вопрос. Вы точно хотите воздержаться от ответа на него?';
+
+
+$lang['PLAY_IN_ALL_WORLD'] = 'ХОЧЕШЬ ИГРАТЬ ВО ВСЕХ МИРАХ?...';
+$lang['PLAY_IN_WORLD'] = 'КУПИТЬ ВОЗМОЖНОСТЬ ИГРАТЬ ЕЩЕ В ОДНОЙ СФЕРЕ';
+
+//$lang['WORLD_FREE_TRANSFER_INFO'] = '<span style="font-size:12px;"><font color="red"><b>Внимание!</b></font> Вы можете <b>бесплатно</b> </span><br>';
+$lang['WORLD_FREE_TRANSFER_HREF'] = '<a href="FreeWorldTransfer.php" target="_blank">бесплатный переезд в другой мир</a>';
+
+
+$lang['PREMIUM_REGISTRATION_HREF'] = 'http://www.destinysphere.de';
+$lang['PREMIUM_REGISTRATION'] = 'Зарегистрироваться!';
+$lang['PREMIUM_REGISTRATION_TEXT'] = 'Зарегистрируйтесь <font color=red>БЕСПЛАТНО</font> в премиум-разделе и получите в подарок 10 дней премиума!';
+
+$lang['PREMIUM_SUPPORT'] = 'Если у вас возникли какие-либо проблемы, вы можете отправить сообщение в службу поддержки:';
+$lang['PREMIUM_BANNER'] = 'http://dsgame.rambler.ru/?p=premium_info_page';
+
+$lang['EXISTING_WORLDS'] = 'Существующие игровые миры';
+
+$lang['LEFT'] = 'Осталось';
+$lang['PLACE_FOR_REG'] = 'мест для заселения.';
+
+$lang['DV_REQUEST'] = '<a href="./DV_Request.php" class="wnd_header_txt_large" target="_blank">дисциплинарное ведомство</a>';
+
+$lang['DOWN'] = '(закрыта)';
+
+$lang['COPYRIGHT'] = '2003-'.date('Y').'. © DestinySphere GmbH, ООО Сфера Судьбы. All Rights Reserved.';
+
+$lang['ABOUT'] = 'О создателях';
+$lang['ABOUT_HREF'] = '../index.php?p=about';
+
+$lang['COMB_TRANSFER_HREF'] = '<a href="FreeTransfer.php" class="wnd_header_txt_large" target="_blank">бесплатный переезд домашней соты >></a>';
+
+$lang['NEW_USER_HELP'] = '
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Уважаемые игроки!</b> Наша игра - это <b>реал-тайм военно-экономическая стратегия</b>. 
+Нужно постепенно отстраивать свой мир, копить войска, развивать археологию и науку, открывать центральные ворота, 
+ну а дальше откроются дополнительные возможности для торговли, организации альянса, развития шпионажа, 
+постройки культовых зданий, и главное - вас тут же сотрут в порошок соседи, и тогда игра приобретет эпическую динамику. 
+В качестве первого шага прочитайте маленький хелп, который вам откроется при входе в игру, 
+и попробуйте построить первый домик.<br>  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbspДля игроков, которые не любят шастать в потёмках, прибита кнопочка "i" на игровом интерфейсе. 
+Там вы найдете <i><u><a href="./help/?name=INFO_GAME_MAIN" target="_blank">информацию об игре</a></u></i>. 
+Рекомендуем также полазить по нашим <i><u><a href="../" target="_blank">порталам</a></u></i>. 
+Если у вас возникнут проблемы или пожелания, пожалуйста, напишите нам с <i><u><a href="#support">формы обращения на саппорт</a></u></i>.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Приятной игры!</b>';
+
+
+$lang['PORTAL'] = 'Портал';
+$lang['FORUM'] = 'Форум';
+$lang['GAZETA'] = 'Газета';
+$lang['BILLING'] = 'Биллинг';
+
+$lang['REFLINK_TEXT'] = 'Ваша реферальная ссылка';
+$lang['REFLINK_INFO'] = 'Подробнее тут';
+
+$lang['CAN_CHANGE_MAIL'] = 'Вы можете сменить регистрационный email, вам будет выслана ссылка для активации аккаунта.';
+$lang['NEW_MAIL'] = 'Новый e-mail';
+$lang['CHANGE'] = 'изменить';
+$lang['CHANGE_MAIL'] = 'Если адрес e-mail указан верно, но активационное письмо вам не пришло, то мы можем выслать его повторно, для этого нажмите на кнопку';
+$lang['SEND_MAIL'] = 'выслать';
+$lang['ABOUT_REF_LINK'] = '';
+
+$lang['PRESSA'] = 'ПРЕССА';
+$lang['CONTACT'] = 'КОНТАКТЫ';
+$lang['ABOUT_AS'] = 'О НАС';
+
+$lang['WORLD_TRANSFER_QUEST_HREF'] = '<a href="FreeWorldTransferQuest.php" class="wnd_header_txt_large" target="_blank">копирование соты в турнирный мир>></a>';
+$lang['SPONSORPAY_TITLE'] = "Получайте игровые деньги бесплатно"; 
+$lang['SPONSORPAY_TEXT'] = 'Участвуйте в рекламных акциях и получайте игровые деньги бесплатно';
+
+?>

@@ -1,0 +1,137 @@
+<?php
+
+$lang = array();
+
+$lang['TITLE'] = 'DestinySphere :: Видео "Destiny Sphere"';
+$lang['ENCODING'] = 'wondows-1251';
+
+$lang['TEXT1_TITLE'] = 'Видео "Destiny Sphere" с выставки Игромир 2006';
+
+$lang['COPYRIGHT'] = '2003-'.date('Y').'. © DestinySphere GmbH, ООО Геймспейс. All Rights Reserved.';
+
+$lang['ABOUT'] = 'О создателях';
+$lang['ABOUT_HREF'] = '../index.php?p=about';
+
+$lang['COUNTERS'] = "<div align=\"center\">
+<!-- Google Code for signup Conversion Page -->
+<script language=\"JavaScript\" type=\"text/javascript\">
+<!--
+var google_conversion_id = 1048942016;
+var google_conversion_language = \"ru\";
+var google_conversion_format = \"1\";
+var google_conversion_color = \"CCFF00\";
+if (1.0) {
+var google_conversion_value = 1.0;
+}
+var google_conversion_label = \"signup\";
+//-->
+</script>
+<script language=\"JavaScript\"
+src=\"http://www.googleadservices.com/pagead/conversion.js\">
+</script>
+<noscript>
+<img height=1 width=1 border=0 src=\"http://www.googleadservices.com/pagead/conversion/1048942016/imp.gif?value=1.0&label=signup&script=0\">
+</noscript>
+
+<!-- Start of Stuffed Tracker 2.5.2 code for http://destinysphere.ru -->
+<script type=\"text/javascript\">
+var nsSiteId=1;
+var nsTrackPath='http://analyzer.destinysphere.ru/track/event.html?';
+var nsTrackMode='event';
+var nsCode=1;
+var nsEvent=1;
+var nsEventItm='';
+</script>
+<script type=\"text/javascript\" src=\"http://analyzer.destinysphere.ru/track.js\"></script>
+<noscript>
+<p style=\"display:none\"><img src=\"http://analyzer.destinysphere.ru/track/event.html?st=1&amp;eid=1&amp;code=1\" width=\"1\" height=\"1\" alt=\"\" style=\"display:none\"/></p>
+</noscript>
+<!-- End of Stuffed Tracker code -->
+
+<!--LiveInternet counter-->
+<script type=\"text/javascript\"><!--
+document.write(\"<img src='http://counter.yadro.ru/hit?r\"+
+escape(document.referrer)+((typeof(screen)==\"undefined\")?\"\":
+\";s\"+screen.width+\"*\"+screen.height+\"*\"+(screen.colorDepth?
+screen.colorDepth:screen.pixelDepth))+\";u\"+escape(document.URL)+
+\";\"+Math.random()+
+\"' width=1 height=1 alt=''>\")//--></script>
+<!--/LiveInternet-->
+
+<!-- SpyLOG f:0211 -->
+<script language=\"javascript\"><!--
+Mu=\"u5095.09.spylog.com\";Md=document;Mnv=navigator;Mp=0;
+Md.cookie=\"b=b\";Mc=0;if(Md.cookie)Mc=1;Mrn=Math.random();
+Mn=(Mnv.appName.substring(0,2)==\"Mi\")?0:1;Mt=(new Date()).getTimezoneOffset();
+Mz=\"p=\"+Mp+\"&rn=\"+Mrn+\"&c=\"+Mc+\"&t=\"+Mt;
+if(self!=top){Mfr=1;}else{Mfr=0;}Msl=\"1.0\";
+//--></script><script language=\"javascript1.1\"><!--
+Mpl=\"\";Msl=\"1.1\";Mj = (Mnv.javaEnabled()?\"Y\":\"N\");Mz+='&j='+Mj;
+//--></script><script language=\"javascript1.2\"><!--
+Msl=\"1.2\";Ms=screen;Mpx=(Mn==0)?Ms.colorDepth:Ms.pixelDepth;
+Mz+=\"&wh=\"+Ms.width+'x'+Ms.height+\"&px=\"+Mpx;
+//--></script><script language=\"javascript1.3\"><!--
+Msl=\"1.3\";//--></script><script language=\"javascript\"><!--
+My=\"\";My+=\"<a href='http://\"+Mu+\"/cnt?cid=509509&f=3&p=\"+Mp+\"&rn=\"+Mrn+\"' target='_blank'>\";
+My+=\"<img src='http://\"+Mu+\"/cnt?cid=509509&\"+Mz+\"&sl=\"+Msl+\"&r=\"+escape(Md.referrer)+\"&fr=\"+Mfr+\"&pg=\"+escape(window.location.href);
+My+=\"' border=0 width=1 height=1 alt='SpyLOG'>\";
+My+=\"</a>\";Md.write(My);//--></script><noscript>
+<a href=\"http://u5095.09.spylog.com/cnt?cid=509509&f=3&p=0\" target=\"_blank\">
+<img src=\"http://u5095.09.spylog.com/cnt?cid=509509&p=0\" alt='SpyLOG' border='0' width=1 height=1>
+</a></noscript>
+<!-- SpyLOG -->
+<!--begin of Rambler's Top100 code -->
+<a href=\"http://top100.rambler.ru/top100/\" target=_blank>
+<img src=\"http://counter.rambler.ru/top100.cnt?498652\" alt=\"\" width=1 height=1 border=0></a>
+<!--end of Top100 code-->
+<!--begin of Top100 logo-->
+<a href=\"http://top100.rambler.ru/top100/\" target=_blank>
+<img src=\"http://top100-images.rambler.ru/top100/banner-88x31-rambler-black2.gif\" alt=\"Rambler's Top100\" width=1 height=1 border=0></a>
+<!--end of Top100 logo -->
+<!-- HotLog -->
+<script language=\"javascript\">
+hotlog_js=\"1.0\";
+hotlog_r=\"\"+Math.random()+\"&s=139920&im=131&r=\"+escape(document.referrer)+\"&pg=\"+
+escape(window.location.href);
+document.cookie=\"hotlog=1; path=/\"; hotlog_r+=\"&c=\"+(document.cookie?\"Y\":\"N\");
+</script><script language=\"javascript1.1\">
+hotlog_js=\"1.1\";hotlog_r+=\"&j=\"+(navigator.javaEnabled()?\"Y\":\"N\")</script>
+<script language=\"javascript1.2\">
+hotlog_js=\"1.2\";
+hotlog_r+=\"&wh=\"+screen.width+'x'+screen.height+\"&px=\"+
+(((navigator.appName.substring(0,3)==\"Mic\"))?
+screen.colorDepth:screen.pixelDepth)</script>
+<script language=\"javascript1.3\">hotlog_js=\"1.3\"</script>
+<script language=\"javascript\">hotlog_r+=\"&js=\"+hotlog_js;
+document.write(\"<a href='http://click.hotlog.ru/?139920' target='_blank'><img \"+
+\" src='http://hit6.hotlog.ru/cgi-bin/hotlog/count?\"+
+hotlog_r+\"&' border=0 width=1 height=1 alt='HotLog'></a>\")</script>
+<noscript><a href=http://click.hotlog.ru/?139920 target=_blank><img
+src=\"http://hit6.hotlog.ru/cgi-bin/hotlog/count?s=139920&im=131\" border=0
+width=1 height=1 alt='HotLog'></a></noscript>
+<!-- /HotLog -->
+<!--Rating@Mail.ru COUNTER--><script language=\"JavaScript\" type=\"text/javascript\"><!--
+d=document;var a='';a+=';r='+escape(d.referrer)
+js=10//--></script><script language=\"JavaScript1.1\" type=\"text/javascript\"><!--
+a+=';j='+navigator.javaEnabled()
+js=11//--></script><script language=\"JavaScript1.2\" type=\"text/javascript\"><!--
+s=screen;a+=';s='+s.width+'*'+s.height
+a+=';d='+(s.colorDepth?s.colorDepth:s.pixelDepth)
+js=12//--></script><script language=\"JavaScript1.3\" type=\"text/javascript\"><!--
+js=13//--></script><script language=\"JavaScript\" type=\"text/javascript\"><!--
+d.write('<a href=\"http://top.mail.ru/jump?from=665247\"'+
+' target=_blank><img src=\"http://top.list.ru/counter'+
+'?id=665247;t=50;js='+js+a+';rand='+Math.random()+
+'\" alt=\"Рейтинг@Mail.ru\"'+' border=0 height=1 width=1/><\/a>')
+if(11<js)d.write('<'+'!-- ')//--></script><noscript><a
+target=_blank href=\"http://top.mail.ru/jump?from=665247\"><img
+src=\"http://top.list.ru/counter?js=na;id=665247;t=50\"
+border=0 height=1 width=1
+alt=\"Рейтинг@Mail.ru\"/></a></noscript><script language=\"JavaScript\" type=\"text/javascript\"><!--
+if(11<js)d.write('--'+'>')//--></script><!--/COUNTER-->
+
+<a href=\"http://www.yandex.ru/cy?base=0&host=www.destinysphere.ru\" target=_blank>
+<img src=\"http://www.yandex.ru/cycounter?www.destinysphere.ru\" width=1 height=1 alt=\"Яндекс цитирования\" border=0></a>
+
+";
+?>

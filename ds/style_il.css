@@ -1,0 +1,35 @@
+*{
+	font-family: Tahoma;
+	font-size: 12px;
+	color: #ffffff;
+}
+
+BODY {
+	background-color: #111111;
+	border: 0px;
+	margin: 0; 
+	margin-left: 0; 
+	margin-top: 0; 
+	margin-bottom: 0;
+	margin-right: 0;
+}
+
+.div01 {
+	background-image: url(img/promo/bg/bg_main.jpg);
+	background-repeat: no-repeat;
+	height: 900px;
+	background-position: center;
+}
+
+.bg_main_left {
+	background-image: url(img/promo/bg/bg_main_left.gif);
+	background-repeat: repeat-y;
+	background-position: right;
+}
+
+.bg_main_right {
+	background-image: url(img/promo/bg/bg_main_right.gif);
+	background-repeat: repeat-y;
+	background-position: left;
+}
+

@@ -1,0 +1,12 @@
+<?
+
+$lang = array();
+
+$lang['ENCODING'] = 'iso-8859-1';
+$lang['TITLE'] = ':: DestinySphere :: KOSTENLOSES MMO-Web-Strategiespiel basierend auf Macromedia Flash-Technologie';
+$lang['LOGO_ALT'] = 'DestinySphere Startseite';
+$lang['TEXT1'] = 'Vielen Dank f&uuml;r Deine Empfehlung !';
+$lang['TEXT2'] = 'Wir w&uuml;nschen Dir und Deinen Freunden noch viel Spass und viel Erfolg bei <em>DestinySphere </em>!';
+$lang['TEXT3'] = 'Fenster schlie&szlig;en';
+
+?>

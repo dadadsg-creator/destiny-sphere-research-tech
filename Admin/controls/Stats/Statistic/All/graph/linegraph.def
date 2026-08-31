@@ -1,0 +1,41 @@
+line {
+  color = #ff5500
+  background-color = #ff8833
+}
+
+graph {
+  padding-left   = 30
+  padding-top    = 80
+  padding-right  = 80
+  padding-bottom = 80
+  background-color = #444E6C
+  background-transparent = no
+  border-width = 0
+  area-height = 300
+  area-width = 500
+  title-color = #fff
+  title = Line Graph
+  transparency = 50
+}
+
+axis {
+  position = all,-top
+  step-size = 5
+  y-step = 5
+  y-step-mode = dynamic
+  gridlines = yes
+  scale-color = #fff
+  border-color = #7184A5
+  background-color = #56657F
+  deepness = 25
+}
+
+scale {
+  x-round = 0
+  y-round = 1
+}
+
+window {
+	length = 500
+	width = 500
+}
