@@ -53,7 +53,7 @@ class MP_GameLeads extends MP_Patch
     //echo "activatePrice={$activatePrice},pressPrice={$pressPrice},gatePrice={$gatePrice} datec=$datec, $starttm  curdate=$curdate,$enddate, delta=".($enddate-$starttm)."\n";
       if ($enddate > $starttm)
       {
-        $secretkey = 'khyioiohjh';
+        $secretkey = 'REDACTED_API_SECRET';
       $data = array();
 
       $data['pid'] = self::$partner_id;

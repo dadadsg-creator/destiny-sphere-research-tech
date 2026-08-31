@@ -31,20 +31,20 @@ class ClassFactory {
                     $dbname = "destiny1";
                     $host = "gamedb1.destinysphere.ru";
                     $user = 'dsgame';
-                    $pass = '0z0z0&a1a1a';
+                    $pass = 'REDACTED_DB_PASSWORD';
                 }*/
                 
                 $dbname = "destiny1";
                     $host = "gamedb2.destinysphere.ru";
                     $user = 'dsgame';
-                    $pass = '0z0z0&a1a1a';
+                    $pass = 'REDACTED_DB_PASSWORD';
                 
             } else {    
 
                 if ( $dbname == "forum" || $dbname == "forum_ru") {
                     
                     $user = 'rouslan';
-                    $pass = 'rous12lan34';
+                    $pass = 'REDACTED_DB_PASSWORD';
                     $host = "forum.destinysphere.ru";
                 }
             }

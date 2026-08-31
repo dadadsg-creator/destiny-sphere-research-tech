@@ -391,7 +391,7 @@ define ( 'DB_SLOW_QUERY_TIMELIMIT', 1); //Временное ограничение в секундах после
 
 define ('SESSION_METHOD',  'file'); //Использование места для хранения сессий(MEM 'memC', MySQL 'db', files 'file')
 
-define ('FREETOPAY_ApiSecretKeyA', 'Y6b4jeGFb0ic');
-define ('FREETOPAY_ApiSecretKeyB', 'Chc0GSLZqwno');
+define ('FREETOPAY_ApiSecretKeyA', 'REDACTED_API_SECRET');
+define ('FREETOPAY_ApiSecretKeyB', 'REDACTED_API_SECRET');
 
 ?>
