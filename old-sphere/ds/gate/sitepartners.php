@@ -12,7 +12,7 @@ $_REQUEST['name']  = str_replace("'","\'", $_REQUEST['name']);
 
 $_REQUEST['contact_person'] = iconv("utf-8", "windows-1251", $_REQUEST['contact_person']); 
 
-$secretWord = 'partnerka_zaebala';
+$secretWord = 'REDACTED_API_SECRET';
 $correctsign = md5($secretWord.$_REQUEST['email']);
 
 if ($correctsign != $_REQUEST['sign'])

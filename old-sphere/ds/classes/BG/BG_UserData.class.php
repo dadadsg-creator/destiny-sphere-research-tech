@@ -9,7 +9,7 @@
  *
  */
 
-define('secret_word_user', '5GhkdoWM94mI');
+define('secret_word_user', 'REDACTED_API_SECRET');
 
 class BG_UserData extends BG_Common
 {

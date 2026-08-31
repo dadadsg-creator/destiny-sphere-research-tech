@@ -2,7 +2,7 @@
 require_once('../Main.php');
 SU_DebugTools::LogAll('request='.var_export($_REQUEST, true),'sponsorpay.log');
 
-$token = 'voranerpsolao2003';
+$token = 'REDACTED_API_SECRET';
 
 if (!UC_SponsorPay::isExistsTransID(addslashes($_REQUEST['_trans_id_'])))
 {

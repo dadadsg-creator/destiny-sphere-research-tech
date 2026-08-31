@@ -39,7 +39,7 @@ $GLOBALS['dbWorldAccess'] = array
 			'host' => 'gamedb16.destinysphere.ru',
 			'dbname' => 'destiny1',
 			'user' => 'defo',
-			'password' => '14528914',
+			'password' => 'REDACTED_DB_PASSWORD',
 			'server' => 'BIG_ALPHA'			
 		)
 );

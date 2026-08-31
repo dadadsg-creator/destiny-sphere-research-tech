@@ -19,7 +19,7 @@ require_once($_SERVER['DOCUMENT_ROOT']."/ds/config/gp_config.php");
 
 class BG_Common
 {
-	private $secret_password = 'secretmasafaka';
+	private $secret_password = 'REDACTED_API_SECRET';
 	private  $result_data = array();
 
 	protected $error_status = 0;

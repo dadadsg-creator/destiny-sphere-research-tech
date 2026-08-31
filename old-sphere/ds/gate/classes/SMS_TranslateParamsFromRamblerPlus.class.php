@@ -3,7 +3,7 @@
 require_once($_SERVER['DOCUMENT_ROOT'].'/ds/gate/classes/SMS_TranslatorInterface.class.php');
 
 /**
- * Класс для перевод праметров от Plastic Media
+ * пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ Plastic Media
  *
  */
 class SMS_TranslateParamsFromRamblerPlus
@@ -21,11 +21,11 @@ class SMS_TranslateParamsFromRamblerPlus
 		$paramsXPM = simplexml_load_string(stripcslashes($params['xml_data']));
 	
 /*
-	account номер абонента(в федеральном формате с кодом страны) 	-> 'phone'
-	service_number короткий номер (integer) 					 	-> 'shortcode'
-	company номер оператора						 					-> 'group'
-	transaction номер транзакции(integer) 							-> 'trans_id'
-	message сообщение абонента вместе с префиксом в кодировке UTF8  -> 'body'
+	account пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ(пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ) 	-> 'phone'
+	service_number пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ (integer) 					 	-> 'shortcode'
+	company пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ						 					-> 'group'
+	transaction пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ(integer) 							-> 'trans_id'
+	message пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ UTF8  -> 'body'
 */
 	
 		$data = array();
@@ -50,10 +50,10 @@ class SMS_TranslateParamsFromRamblerPlus
 		
 		$data['trans_id'] = (string)$paramsXPM[0]->ExtTransactionId;
 		
-		// Работаем с $paramsXPM[0]->Custom;
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ $paramsXPM[0]->Custom;
 		$subject = $paramsXPM[0]->Custom; 
 		
-		// Получаем номер игрока
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 		$pattern = "/msisdn=(\S+)/";
 		preg_match($pattern, $subject, $matches);
 		$data['phone'] = $matches[1];
@@ -64,7 +64,7 @@ class SMS_TranslateParamsFromRamblerPlus
 		}
 		
 		
-		// Получаем Короткий номер
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 		$pattern = "/isnn=(\S+)/";
 		preg_match($pattern, $subject, $matches);
 		$data['shortcode'] = $matches[1];
@@ -74,7 +74,7 @@ class SMS_TranslateParamsFromRamblerPlus
 			return false;
 		}
 		
-		// Получаем опертора
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		$pattern = "/op=(\S+)/";
 		preg_match($pattern, $subject, $matches);
 		$data['group'] = $matches[1];
@@ -84,7 +84,7 @@ class SMS_TranslateParamsFromRamblerPlus
 			return false;
 		}
 		
-		// Получаем сам текс смски
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 		$pattern = "/text=\'(.+)\'/s";
 		preg_match($pattern, $subject, $matches);
 		$data['body'] = $matches[1];		
@@ -94,9 +94,9 @@ class SMS_TranslateParamsFromRamblerPlus
 			return false;
 		}
 		
-		$secret =  md5($paramsXPM[0]->TransactionId.':'.$paramsXPM[0]->ExtTransactionId.':'.$paramsXPM[0]->Amount.':'.$paramsXPM[0]->Custom.':'.$paramsXPM[0]->Service.':annita');
+		$secret =  md5($paramsXPM[0]->TransactionId.':'.$paramsXPM[0]->ExtTransactionId.':'.$paramsXPM[0]->Amount.':'.$paramsXPM[0]->Custom.':'.$paramsXPM[0]->Service.':REDACTED_API_SECRET');
 
-		// Проверяем подпись
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		if ($paramsXPM[0]->Digest != $secret) {
 			$this->error = 'WRONG_DIGEST';
 			return false;

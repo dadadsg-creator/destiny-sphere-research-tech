@@ -149,7 +149,7 @@ class UserAction extends GameBase{
                 'moneypage' => array('https://billing.destinysphere.ru/LoginOutside.php', 
                 //'moneypage' => array('http://billing/LoginOutside.php', 
                 //'p=vitrina%26id_category=25%26id_partner=6'
-            "partner_id=".constant('BILLING_PARTNER_ID')."%26user_id=".$_SESSION['uid']."%26hash=".md5(md5($_SESSION['s_pass']."5GhkdoWM94mI")).'%26mode=gold'
+            "partner_id=".constant('BILLING_PARTNER_ID')."%26user_id=".$_SESSION['uid']."%26hash=".md5(md5($_SESSION['s_pass']."REDACTED_API_SECRET")).'%26mode=gold'
                 ),
                 'clickonallyicon' => array('https://billing.destinysphere.ru/index.php', 'p=vitrina%26id_category=27%26id_partner=6'),
                 'artefactactivate' => array(constant('GAME_HOST').'/ds/quiz.php', 'art={id}'),

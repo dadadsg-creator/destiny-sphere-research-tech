@@ -3,7 +3,7 @@ ini_set('memory_limit', '512M');
 set_time_limit(0);
 require_once('../Main.php');
 //SU_DebugTools::LogAll('request='.var_export($_REQUEST, true),'sponsorpay.log');
-$pkey = 'dsgstat';
+$pkey = 'REDACTED_API_SECRET';
 
 $reqdata = simplexml_load_string($_REQUEST['xml']);
 $rcvpkey = $_REQUEST['pkey'];

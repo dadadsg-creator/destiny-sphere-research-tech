@@ -22,14 +22,14 @@ $dbWorldAccess = array (
 			'host' => '192.168.0.10',
 			'dbname' => 'destiny1',
 			'user' => 'rouslan',
-			'password' => 'rous12lan34',
+			'password' => 'REDACTED_DB_PASSWORD',
 			'server' => 'master'
 		),
 		1 => array (
 			'host' => '192.168.0.10',
 			'dbname' => 'release',
 			'user' => 'rouslan',
-			'password' => 'rous12lan34',
+			'password' => 'REDACTED_DB_PASSWORD',
 			'server' => 'release'
 		)
 

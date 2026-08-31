@@ -112,7 +112,7 @@ $lang['NOT_EHOUGH_MONEY_BUT_CAN_EXCHANGE'] = 'У вас недостаточно серебряных кред
 
 $lang['NOT_EHOUGH_MONEY_BUT_CAN_TRANSFER_FOM_WORLD'] = 'У вас недостаточно кредитов в магазине для предоставления данной услуги,<br>но вы можете перевести кредиты из мира';
 $lang['NOT_EHOUGH_MONEY'] = 'Недостаточно денег на счете для совершения данной операции.<br>Свой счет можно пополнить в 
-<a href=\'https://billing.destinysphere.ru/LoginOutside.php?partner_id='.constant('BILLING_PARTNER_ID').'&user_id='.$_SESSION['uid'].'&hash='.md5(md5($_SESSION['s_pass'].'5GhkdoWM94mI')).'\' target="monitor">
+<a href=\'https://billing.destinysphere.ru/LoginOutside.php?partner_id='.constant('BILLING_PARTNER_ID').'&user_id='.$_SESSION['uid'].'&hash='.md5(md5($_SESSION['s_pass'].'REDACTED_API_SECRET')).'\' target="monitor">
 <font color="Blue">БИЛЛИНГЕ</font></a>';
 $lang['PEMIYM_FOR_USER'] = 'Для кого:';
 $lang['FOR_USER'] = 'для игрока';

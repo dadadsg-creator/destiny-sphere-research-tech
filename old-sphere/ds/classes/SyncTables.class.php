@@ -16,7 +16,7 @@ class SyncTables
 	 */
 	public $settings = array (
 		"master"=>array('host' => 'localhost', 'dbname' => 'destiny1', 'user' => 'dsgame', 'password' => ''),
-		"slave"=>array('host' => 'ltdb.destinysphere.net', 'dbname' => 'destiny1', 'user' => 'annita', 'password' => 'vintorez_20_9X39'),
+		"slave"=>array('host' => 'ltdb.destinysphere.net', 'dbname' => 'destiny1', 'user' => 'annita', 'password' => 'REDACTED_DB_PASSWORD'),
 	); 
 	
 	
