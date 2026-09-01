@@ -1,0 +1,1233 @@
+# Протокол обмена данными Flash-клиент ↔ PHP-сервер
+
+> **Как читать этот документ.** Flash-клиент (`ds/flash/ds3.swf`) скомпилирован,
+> исходников ActionScript в репозитории нет. Всё, что написано ниже, —
+> реконструкция протокола **со стороны сервера**: разобран PHP-код, который
+> принимает, разбирает и формирует XML/строки, которыми обменивается клиент
+> с `ds/useraction.php`. Реального перехваченного трафика (HTTP-дампов,
+> pcap, decompiled AS3) в этом ревью не использовалось — только чтение кода.
+> Везде, где формат конкретного тега восстановлен по аналогии/имени класса,
+> а не подтверждён буквальным совпадением строки в коде, это явно помечено
+> словами «предположительно» / «реконструкция» / «не подтверждено».
+>
+> **Обновление.** Отдельным проходом несколько мест ниже дополнительно
+> подтверждены (или, наоборот, поставлены под сомнение) двумя источниками,
+> не использовавшимися при первом чтении: настоящими (не декомпилированными)
+> AS2-исходниками клиента и буквальными захваченными протокольными дампами —
+> оба найдены в `old-sphere/SPHERE_client/` (SVN-копия разработчика клиента).
+> Ссылки на исходники клиента помечены `client-source: файл.as:строка`
+> (подробный разбор — [client-engine-and-protocol.md](client-engine-and-protocol.md));
+> ссылки на буквальные дампы запрос/ответ (`.txt`-файлы вида
+> `autentification.txt`, `outside.txt`, `refresh.txt`) помечены
+> `client-capture: файл.txt`. Это не отменяет исходную оговорку выше —
+> основной объём документа по-прежнему реконструкция по PHP-коду, — но
+> там, где дамп/исходник клиента что-то подтвердил или опроверг буквально,
+> это явно отмечено.
+>
+> Прочитаны полностью: `ds/classes/UserAction.class.php`,
+> `ds/classes/UA/UA_Action.class.php`, `ds/classes/OutputHandler.class.php`
+> (устаревший, см. §2.4), `ds/classes/SU/SU_OutputHandler.class.php` (реально
+> используемый), `ds/classes/domXML.class.php`, `ds/classes/SU/SU_ClientKey.class.php`,
+> `ds/classes/SU/SU_FlashVersionControlInUseraction.class.php`,
+> `ds/classes/SU/SU_GameSessionWork.class.php` (частично),
+> `ds/useraction.php`, `ds/CodeDecode.class.php`, `ds/include/DecodeInput.inc.php`,
+> `ds/include/ErrorHandlers.inc.php`, `ds/classes/GE/GE_Login.class.php`,
+> `ds/detect_player.php`, `ds/classes/detect_player.php`,
+> `ds/classes/UA/UA_GetCabinet.class.php` (метод `open()` — полностью,
+> остальное выборочно), `ds/classes/UA/UA_Attack.class.php` (полностью),
+> `ds/classes/UA/UA_ConstructBuilding.class.php` (полностью),
+> `ds/classes/UA/UA_CreateAlliance.class.php` (полностью),
+> `ds/classes/UA/UA_SendMessage.class.php` (частично),
+> `ds/classes/UA/UA_Research.class.php`/`UA_NewResearch.class.php` (частично),
+> `ds/classes/UA/UA_Load.class.php` (полностью, реконструкция XML-дерева),
+> `ds/classes/UA/UA_Empty.class.php` (полностью),
+> `ds/classes/UA/UA_GetBuildMenu.class.php` (полностью),
+> `ds/classes/UA/UA_Refresh.class.php` (частично),
+> `ds/classes/UA/UA_Building.class.php` (частично),
+> `ds/classes/TI/TI_BaseMenu.class.php`, `ds/classes/TL/TL_BaseMenu.class.php`,
+> `ds/classes/TI/TI_TradePanel.class.php`, `ds/classes/TL/TL_TradePanel.class.php`,
+> `ds/classes/PN/PN_TradePanel.class.php` (частично). Список всех 96 файлов
+> `ds/classes/UA/` — полный (см. §6). Кодировка большинства файлов — Windows-1251,
+> читались через `iconv -f CP1251 -t UTF-8`.
+
+Смежные документы: общий обзор `ds/classes/` и роль `UA_*`/`TI_*`/`TL_*`/`PN_*`
+в игровом цикле — [game-engine.md](game-engine.md), §3.5; встраивание Flash-клиента
+в HTML, `flash_code.php`, `FlashVars`, версии `.swf` — [frontend-templates.md](frontend-templates.md), §1.
+
+---
+
+## 1. Общая картина: три независимых протокола
+
+В коде фактически живут **три несвязанных друг с другом протокола**, которые
+легко перепутать, потому что все они называются «вход в игру»:
+
+| # | Протокол | Транспорт | Где реализован |
+|---|---|---|---|
+| 1 | **Веб-логин** (до того, как вообще загружен `ds3.swf`) | Обычная HTML-форма, `POST`, редиректы (`Header("Location: ...")`) | `ds/index_login.php` → `GE_Login` (§3) |
+| 2 | **Детект Flash Player / браузера** (диагностика, необязательная) | `GET`-параметр `set_swf=...`, ответ — HTML-страница | `ds/detect_player.php` + `detect_player.swf` (§4) |
+| 3 | **Игровой XML-протокол** (собственно то, что обычно понимают под «протоколом клиент-сервер Сферы Судьбы») | `POST xmldata=<xml>` на `ds/useraction.php`, ответ — не XML-документ, а Flash `LoadVars`-строка вида `mark=value&mark=value...`, где отдельные значения — XML-фрагменты | `ds/classes/UserAction.class.php` + ~96 классов `UA_*` (§5-8) |
+
+Ниже эти три протокола разобраны по очереди, но основной объём документа —
+про (3), так как это единственный live-протокол, работающий постоянно, пока
+игрок находится в игре.
+
+---
+
+## 2. Игровой XML-протокол: транспорт и обёртки
+
+### 2.1. Запрос клиента
+
+- **URL:** `ds/useraction.php` (единственная точка входа для всех игровых команд,
+  см. `ds/useraction.php:1-6`, комментарий в шапке файла: «Скрипт, к которому
+  FLASH обращается со всеми запросами»).
+- **Метод:** `POST`. Content-Type тела запроса нигде явно не выставляется
+  ни на клиенте (не виден — SWF скомпилирован), ни на сервере — код читает
+  данные строго через `$_POST["xmldata"]` и `$_POST["ck"]`, то есть
+  предполагается обычная форма `application/x-www-form-urlencoded`
+  (или `multipart/form-data`; PHP одинаково заполнит `$_POST` в обоих
+  случаях) — это стандартный способ, которым Flash `URLLoader`/`LoadVars`
+  отправляет `POST` с `URLVariables`.
+- **Обязательные поля тела запроса:**
+  - `xmldata` — сама команда, см. §2.2. Единственное альтернативное значение —
+    буквальная строка `logout` (без XML) для выхода из игры
+    (`UserAction.class.php:120-127`).
+  - `ck` — «клиентский ключ» — анти-replay/анти-CSRF токен, сверяется с
+    `$_SESSION['client_key']` в `SU_ClientKey::checkKey()`
+    (`ds/classes/SU/SU_ClientKey.class.php:26-70`). При несовпадении (и если
+    присланный ключ не входит в список последних 5-10 «устаревших, но ещё
+    принимаемых» ключей `old_client_keys`/`old_client_keys_arch`) сервер
+    разлогинивает клиента и отвечает `loadkey=<?xml version="1.0" encoding="utf-8"?>\n<key valid="0" addr="index_login.php"/>`.
+    Ключ **не передаётся внутри XML** — это отдельное POST-поле верхнего уровня.
+  - Сессия (PHP session id) — передаётся либо обычной cookie, либо (если
+    cookie нет — исторически проблема Flash Player со сторонними cookie)
+    отдельным полем запроса с именем, равным `session_name()`
+    (`SU_GameSessionWork::SessionContinue()`,
+    `ds/classes/SU/SU_GameSessionWork.class.php:52-60`). Именно поэтому
+    `flash_code.php` прокидывает во `FlashVars` «имя и значение сессионной
+    куки» отдельно (см. [frontend-templates.md](frontend-templates.md) §1.2) —
+    клиент обязан уметь передать SID и как cookie, и как обычный параметр.
+- **XML внутри `xmldata` — это одна корневая команда, без общего конверта.**
+  Сервер сам оборачивает присланную строку в XML-пролог:
+  ```php
+  $xmldata = '<?xml version="1.0" encoding="ISO-8859-1"?>' . $xmldata;
+  $tree = domxml_open_mem($xmldata);
+  $params["root"] = $tree->document_element();
+  ```
+  (`UserAction.class.php:127-141`). То есть клиент присылает **ровно один**
+  корневой элемент вида `<tagname attr1="v1" attr2="v2"/>` (возможно, с
+  дочерними тегами — см. `createalliance`/`sendmessage` в §7) — без каких-либо
+  оберток `<request>`/`<command>`/`<envelope>`, без явного `sid`/`session`
+  атрибута внутри XML (сессия и анти-replay ключ едут отдельными полями
+  формы, не в XML). Имя корневого тега (`root->tagname`) — это и есть
+  «команда»; по нему определяется класс-обработчик (см. §6).
+- **Внутренние преобразования входной строки** (`UserAction.class.php:83-118`):
+  1. `decode($request)` — **фактически no-op** в текущей версии кода.
+     `ds/include/DecodeInput.inc.php:24` — функция `decode()` первой же
+     строкой делает `return $string;`, всё остальное тело (XOR-шифрование
+     через побитовый `^` с константой `29121986` и разворотом массива)
+     не выполняется — мёртвый код, оставшийся от более старой схемы
+     обфускации трафика. Рядом в дереве лежит ещё один, независимый
+     артефакт той же идеи — `ds/CodeDecode.class.php` (класс `Coder`,
+     XOR с ключом `26061963`) — судя по всему, ещё более старая версия
+     того же приёма, тоже никем не вызывается из рабочего пути. **Вывод:
+     несмотря на следы исторического шифрования, актуальный протокол
+     передаёт XML открытым текстом.**
+  2. `stripcslashes($xmldata)` — снимает C-style экранирование бэкслэшами.
+  3. `str_replace("&", "", $xmldata)` — **вырезает все символы `&` из
+     присланной строки целиком**. Значит, ни XML-сущности (`&amp;`, `&lt;`
+     и т.п.), ни буквальный символ `&` в значениях атрибутов клиент передать
+     не может — они будут молча вырезаны ещё до парсинга XML. Это жёсткое
+     ограничение алфавита допустимых значений (важно для текста писем/имён
+     соты/альянса — см. §7.4).
+  4. Проверка защиты от двойной отправки (F5): пара
+     `$_SESSION['LAST_PROCESSED_KEY']` / `$_SESSION['LAST_PROCESSED_COMMAND']`
+     сравнивается с текущим `ck` (через `SU_ClientKey::GetLastRecivedKey()`)
+     и текущим декодированным `xmldata`; если оба совпадают с последними
+     обработанными — команда молча игнорируется, `getRequest()` возвращает
+     `true` без побочных эффектов (`UserAction.class.php:96-118`).
+
+### 2.2. Пример реконструированной команды (не перехват трафика!)
+
+```xml
+<!-- РЕКОНСТРУКЦИЯ ПО КОДУ. Реальный трафик не захватывался. -->
+<attack destination="4.12.3" speed="100" res="ALL_RES" id_army="481233"/>
+```
+Это и есть всё содержимое POST-поля `xmldata` — без пролога, без обёртки,
+без атрибутов сессии. Пролог `<?xml version="1.0" ...?>` и атрибуты
+сессии/ключа добавляет/проверяет сервер отдельно от самого XML.
+
+### 2.3. Особая команда `logout`
+
+Если всё содержимое `xmldata` — буквальная строка `logout` (не XML),
+сервер сразу отвечает и завершает работу:
+```
+loadkey=<?xml version="1.0" encoding="utf-8"?>
+<key valid="0" addr="index_start.php?ck=<CLIENT_KEY>"/>
+```
+(`UserAction.class.php:120-127`) — обычная обработка команд (`ds_useractiontype`,
+`UA_*`) не запускается вовсе.
+
+### 2.4. Ответ сервера: это не XML-документ, а Flash `LoadVars`-строка
+
+Ключевой и не вполне очевидный факт: **HTTP-ответ `ds/useraction.php` — это
+не единый XML-документ**, а плоская строка вида
+```
+mark1=value1&mark2=value2&mark3=value3...
+```
+— классический формат Flash `LoadVars`/`URLVariables.decode()` (пары
+`имя=значение`, разделённые `&`), где **значения отдельных «переменных»
+сами являются XML-фрагментами**. Формируется он классом
+`SU_OutputHandler` (`ds/classes/SU/SU_OutputHandler.class.php`) — синглтон
+с внутренним «буфером»-строкой:
+
+```php
+function addString($str, $mark='xmldata') {
+    $this->addReadyString($mark.'='.$str);
+}
+function addReadyString($str) {
+    if (!empty($this->data) && ($this->data != '&')) $this->data .= '&';
+    $this->data .= $str;
+}
+```
+За время обработки одной команды разные части кода (сам `UserAction`,
+`UA_*`-обработчик, вложенные `PN_*`/`TL_*`) многократно вызывают
+`SU_OutputHandler::Singleton()->addString(...)`/`addReadyString(...)`,
+добавляя в общий буфер новые `mark=value` пары. В самом конце
+`ds/useraction.php` вызывает `fetchAll()`, который:
+1. `urldecode()` всего накопленного буфера целиком;
+2. `html_entity_decode()`;
+3. точечные ручные замены нескольких HTML-сущностей для языка с ID=5
+   (видимо, литовская локаль, `&#260;` → `А` и т.п.) и `&apos;` → `'`;
+4. конвертация кодировки через `iconv($enc, 'utf-8', $data)`, где `$enc`
+   выбирается по `$_SESSION['lang']`: `1,2→cp1250`, `3→cp1251` (по
+   умолчанию), `4→ISO-8859-1`, `5→cp1257`.
+
+Итоговая UTF-8-строка просто `echo`-ится как тело HTTP-ответа
+(`ds/useraction.php`, в самом конце скрипта). Явного `Content-Type`
+в просмотренном коде не найдено — используется дефолтный PHP `text/html`
+(не подтверждено, что где-то ещё выше по стеку/в `.htaccess`/веб-сервере
+он переопределяется — не проверялось).
+
+**Важный технический нюанс для тех, кто будет писать новый клиент/сервер:**
+внутри `domXML`-обёртки (`nodeXML::set_attribute()`,
+`ds/classes/domXML.class.php:112-116`) каждое значение атрибута перед
+записью в DOM проходит `urldecode()`, а затем `urlencode()`:
+```php
+function set_attribute($name, $value){
+    $value = urldecode($value);
+    $this->selfNode->setAttribute($name, urlencode($value));
+}
+```
+То есть в самом «сыром» XML, который лежит в буфере до `fetchAll()`,
+значения атрибутов — percent-encoded. Именно поэтому глобальный
+`urldecode()` в `encodeData()`/`fetchAll()` **обязателен** — без него
+клиент получил бы `%D0%9A%D0%B0%D0%B4...` вместо кириллицы. Это же
+объясняет, почему многие `TL_*`/`UA_*` вручную зовут `urlencode(...)`
+перед `set_attribute(...)` (см. `UA_Load.class.php`, атрибуты `ln`, `icon`
+и т.п.) — двойное urlencode/urldecode «гасится» на выходе в один проход.
+**Для нового клиента/сервера этот танец воспроизводить не нужно** — это
+просто способ протащить произвольные байты (кириллицу в cp1251, `&`, `%`,
+пробелы) через DOM и через `&`-разделённый `LoadVars`-формат, не сломав
+парсинг; при проектировании нового протокола естественнее сразу отдавать
+корректный UTF-8/XML без этого слоя.
+
+### 2.5. Таблица «имя переменной верхнего уровня → что внутри»
+
+Ниже — все обнаруженные в прочитанном коде `mark`-имена верхнеуровневых
+полей ответа (не исчерпывающий список — команды, которые не разбирались
+построчно, могут добавлять свои). Формат значения указан по факту чтения
+кода, который его формирует.
+
+| `mark` | Формат значения | Кто добавляет | Когда присутствует |
+|---|---|---|---|
+| `loadkey` | XML `<key valid="0\|1" addr="URL" newkey="123" target_load="_blank"?/>` | `UserAction::getRequest()` (всегда, кроме прямых ссылок/logout — см. ниже), `SU_ClientKey::checkKey()`, `clientDirectLinks`-ветка | Почти всегда. `valid="0"` = «сессия недействительна / переход по прямой ссылке», `addr` — куда переходить. Атрибут `newkey="123"` **захардкожен как строка "123"** во всех наблюдаемых местах — похоже на мёртвый/неиспользуемый атрибут (см. «Открытые вопросы») |
+| `ck` | Голая строка (новый анти-replay токен, 10 символов) | `SU_ClientKey::setKey()` | В каждом обычном ответе (устанавливается в `ds/useraction.php` перед вызовом `UserAction::getRequest()`) |
+| `overload` | `"0"` (нет перегрузки) или число секунд задержки, либо (при жёсткой блокировке инстанса) `<lockReason>|<lockTime>` — но это отдельный, обрывающий обработку `die()`-ответ | `UserAction.class.php`, `DS_ClientLockHandler()`, `DS_DBTimeOutHandler()` | Всегда (не-CLI режим) |
+| `newbee` | `"1"`/`"0"` | `ds/useraction.php` | Всегда |
+| `xmldata` | XML-фрагмент — содержимое конкретной панели/меню (структура зависит от того, какой `PN_*`/`UA_*` сработал) | `UA_*`/`PN_*` через `TL_*::Form()` | Почти всегда, кроме команд, которые ничего не рисуют (напр. чистый `logout`) |
+| `combres` | XML `<combres><KADERIUM current="123" max="500"/>...<GOLD_CREDIT current="5.00"/></combres>` | `UA_Refresh::_updateCombRes()` | При любом рефреше соты (после почти любого действия) |
+| `helper` | XML `<army id_army="N" inaction="1" lastcoord="..." lastspeed="..." res="...">...</army>` — состояние армии для непрерывного обновления UI у премиум-аккаунтов | `UA_Attack::_sendHelper()` (и, вероятно, аналоги в других UA — не проверялось) | Только если `$_SESSION['profi_game']` включён |
+| `outside` | XML `<swfloader url="flash/alert.swf|dialog_alert.swf" title="..." override="1">...<txt><![CDATA[...]]></txt>...</swloader>` (внимание: закрывающий тег в коде — `</swloader>`, с опечаткой, без «f», см. §9 — **теперь дважды подтверждено буквальными захваченными дампами `outside.txt`/`outsidehtml.txt`, не только чтением PHP-кода**; те же дампы добавляют атрибуты `res`/`speed`/`destination`/`id_army`) | Множество `UA_*` при алертах/подтверждениях | При модальных предупреждениях/запросах подтверждения |
+| `loaddata` | Большой статический XML `<load v="N">...</load>` — см. §7.6 | `UA_Load::performAction()` | Только для команды `load` |
+| `refresh_rate` | Число секунд до следующего разрешённого рефреша | `UA_Refresh::performAction()` | При рефреше |
+| `mode` | Unix-timestamp (мс) окончания премиума или `0` | `UA_Refresh` | При рефреше |
+| `newmessage` | `"1"` если есть непрочитанные письма | `UA_Refresh` | При рефреше (кроме `noscan` режимов) |
+| `ce` | Число обработанных ивентов | `ds/useraction.php` | Только в CLI/демон-режиме (`RD_RefreshDemon`) |
+| `nick`, `complex`, `world`, `league` | Обычные (не XML!) текстовые пары `имя: значение` | `UA_Load`, а также конструктор `UA_Action` при автопереселении с захваченной колонии | Только при входе в игру (`load`) / принудительном возврате домой |
+| `delta` | Число мс до следующего антибот-вопроса | `ds/useraction.php` | Только при входе в игру (`load`), и только если в мире включён `ENABLE_ANTIBOT` |
+| `xmlerror` | XML `<error y="ERROR\|WARNING\|MESSAGE\|ASSERT\|0">текст</error>` | `ds_error()`/`DS_Error()`, `DS_AssertHandler()`, `DS_ErrorHandler()` (`ds/include/ErrorHandlers.inc.php`) | При ошибках — как правило, обрывает обычный ответ через `die()`, то есть остальные `mark=value` из текущего запроса теряются |
+
+### 2.6. Обработка ошибок
+
+Все ошибки в итоге сводятся к одной из функций в
+`ds/include/ErrorHandlers.inc.php`:
+
+- **`DS_Error($str, $logIt, $witExit, $withOutput, $isUserMessage)`**
+  (алиас `ds_error()`) — основной способ сообщить об ошибке из игровой
+  логики. При `$isUserMessage=true` тип ошибки в XML — `MESSAGE` (для
+  пользовательских, не «системных» сообщений), иначе `ERROR` (с `die()`,
+  если `$witExit`) либо `WARNING` (просто `echo`, без остановки скрипта).
+  Опционально пишет в лог `SystemErrors.log` и (заглушено, `return;` в
+  начале `ExportErrorData()`) — раньше ещё экспортировал в CSV.
+- **`DS_AssertHandler($file, $line, $code)`** — обработчик проваленных
+  `assert()` (в коде их огромное количество, это основной механизм
+  инвариантов). Формирует `<error y="ASSERT">ERROR! Type: ASSERT File: ... Line: ...</error>`
+  и завершает скрипт. Из-за количества `assert()`-проверок в `UA_*`-классах
+  (см. примеры в §7) любое неожиданное значение атрибута с высокой
+  вероятностью приводит именно к такому ответу, а не к «мягкой» игровой
+  ошибке.
+- **`DS_ErrorHandler($errno, $errmsg, $file, $line)`** — глобальный
+  PHP `set_error_handler`. Для `E_WARNING`/`E_NOTICE`/`E_STRICT` — только
+  логирование, без остановки; для остальных уровней — `<error y="0">...</error>`
+  и `die()`.
+- **`DS_ClientLockHandler(...)`** / **`DS_DBTimeOutHandler()`** — не
+  ошибка конкретной команды, а сигнал о блокировке инстанса игрока другим
+  параллельным запросом (антидубль-локер `SU_Locker`) или таймауте
+  БД: ответ **целиком** заменяется на `overload=<REASON>|<SECONDS>&ck=<key>`.
+
+Итого: у клиента, если сопоставлять с привычными «кодами ошибок», их
+фактически три уровня: (1) мягкая игровая ошибка/уведомление — приходит
+как **обычный** `xmldata`/`outside`-ответ с системным сообщением внутри
+интерфейса, без разрыва протокола; (2) `xmlerror=<error y="...">` —
+жёсткий обрыв текущего ответа; (3) `overload=...` — сервер занят/залочен,
+конкретной команде отвечать не о чем, просьба повторить позже.
+
+---
+
+## 3. Веб-логин (до Flash): `GE_Login`
+
+Логин в игру происходит **до** какой-либо загрузки `ds3.swf` и вообще не
+использует XML-протокол §2. Это обычная HTML-страница с формой:
+
+- `ds/index_login.php` (и локализованные варианты `index_login_de.php`)
+  создают `new GE_Login()`.
+- Конструктор `GE_Login::__construct()` (`ds/classes/GE/GE_Login.class.php:64-100`)
+  разбирает `array_merge($_POST, $_GET)` вручную (метод `_reciveParams`):
+  - `login` — логин (к нему может быть приклеена версия клиента через `__`,
+    если передано поле `version`);
+  - `pass` — пароль;
+  - `enter` — значение `"Login"` запускает ветку входа; отсутствие —
+    показ формы (`selectAction()`); `logout` в параметрах — разлогин.
+  - Есть отдельные ветки для внешних SSO — `ds.klase.lt` (литовский портал
+    `klase.lt`, OAuth) и `ds.meta.ua` (украинский портал `meta.ua`) —
+    определяются по `HTTP_HOST`, не относятся к стандартному логину/паролю.
+- **Проверка логина/пароля:** `VD_User::Validate($login, $password, $common)`
+  (класс `VD_User`, не разбирался построчно) — при ошибке показывается
+  форма логина с кодом ошибки (`selectAction($errorCode)`), Smarty-шаблон
+  `templates/index_login.tpl` (или `templates/classic/index_login.tpl` —
+  выбор зависит от `TEMPLATES_PATH`, см. [frontend-templates.md](frontend-templates.md) §4.1).
+- **Успешный вход** (`_execLogin()`, строки 232-274): заполняет `$_SESSION`
+  (`uid`, `lang`, `language`, `time_delta`, `s_login`, `s_pass`, `partner`,
+  `LOGIN_ADM_ENTER=false`, `profi_game` — 1 если премиум/пробный премиум,
+  иначе 0), пишет историю входов (`ME_LoginHistory::Exec`), генерирует
+  анти-replay ключ через `SU_ClientKey::setKey(false)` (без немедленной
+  отправки клиенту — просто кладёт в `$_SESSION['client_key']`) и **делает
+  обычный HTTP-редирект**:
+  ```
+  Location: index_start.php?ck=<CLIENT_KEY>[&<SESSION_COOKIE_NAME>=<SID>]
+  ```
+  (SID в URL добавляется, только если браузер не прислал сессионную cookie
+  сам — опять то же соображение про ограничения Flash/старых браузеров
+  с cookie).
+- `index_start.php` (не разбирался подробно в этом ревью — вне периметра
+  задачи) — отвечает за выбор мира/соты и, по всей видимости, за
+  дальнейший переход на `game.php`/`index.php`, которые уже встраивают
+  `ds3.swf` через `flash_code.php` (см. [frontend-templates.md](frontend-templates.md) §1.2)
+  с полным `FlashVars`-контекстом (`ck`, `windowKey`, `id_comb`, `race`,
+  `lang`, `VERS`, имя/значение сессионной cookie и т.д.).
+- **Logout** сделан симметрично — `GE_Login::execLogout()` дёргает
+  `SU_GameSessionWork::SessionDestroy()` и редиректит на главную
+  (или `http://meta.ua` / `/` для внешних SSO-порталов).
+
+**Важно:** этот протокол — это обычный синхронный веб-логин один-в-один
+как в 2005 году: HTML-форма → `POST` с полями `login`/`pass`/`enter` →
+303/302-редирект. Никакого XML тут нет; `ck`, который здесь генерируется,
+— это тот же самый ключ, который потом проверяется на каждой команде
+игрового протокола (§2.1).
+
+### 3.1. Новая находка: `turing=` — капча-подобный "вопрос-ответ" при логине
+
+**client-capture.** Отдельным проходом были прочитаны буквальные
+захваченные ответы сервера на вход в игру, найденные бандлом рядом с
+клиентскими исходниками в `old-sphere/SPHERE_client/`:
+`autentification.txt`, `autentification2.txt`, `autentification3.txt`,
+`autentificationout.txt`, `unlogin.txt` (всего 18 просмотренных `.txt`-
+дампов протокола, ни один не содержит подстроки `SIDIX` — см. ниже).
+Эти файлы показывают ранее не задокументированный маркер **`turing=`** —
+судя по всему, CAPTCHA-подобный механизм "вопрос-ответ" в процессе входа,
+с как минимум тремя разными сериализациями в трёх разных файлах (похоже
+на три снимка разных версий одного и того же экрана логина):
+
+- `autentification.txt`:
+  ```
+  turing=<question qid="200" ask="<![CDATA[...]]>"><answer ask="God" aid="101"/>...</question>
+  ```
+- `autentification2.txt`: похожая структура, но `qid="666"`.
+- `autentification3.txt`: третий вариант сериализации — с `<qtxt>`
+  вместо атрибута `ask`, и текстом ответа как CDATA-содержимым, а не
+  атрибутом:
+  ```
+  turing=<qtxt><![CDATA[...]]></qtxt><answer aid="101"><![CDATA[answer1]]></answer>
+  ```
+- `autentificationout.txt`: `<answer res="1" />` — похоже на подтверждение
+  того, что ответ на вопрос принят сервером.
+- `unlogin.txt` (буквальный дамп разрыва сессии): `<key valid="0"
+  addr="index_login2222.php"/>` — обратите внимание, **без** атрибута
+  `newkey` (ср. §2.5, где `newkey="123"` встречается захардкоженным почти
+  везде — здесь его нет вовсе, ещё один аргумент в пользу того, что это
+  мёртвый/непоследовательно используемый атрибут, см. открытый вопрос №3).
+
+Механизм `turing=` нигде не упоминается ни в одном из прочитанных PHP-
+классов `GE_Login`/`UA_*` (см. §3 выше и §5-8) — вероятно, реализован в
+классе, не входившем в периметр чтения (`VD_User::Validate` — не
+разбирался построчно, см. §3). Название явно намекает на "тест Тьюринга"
+как маркетинговое/внутреннее имя капчи, а не на что-либо связанное с
+Аланом Тьюрингом буквально.
+
+**Важно — что это НЕ подтверждает.** [client-engine-and-protocol.md](client-engine-and-protocol.md)
+§2.1 высказывает предположение, что имя сессионной cookie веб-логина
+может буквально совпадать с `SIDIX` — именем поля, которое клиент
+добавляет к запросам уже идущего игрового XML-протокола
+(`reqvestdata.as`/`loader.as`). Эти 18 буквальных дампов **не содержат
+подстроки `SIDIX` ни разу** — то есть они не подтверждают эту гипотезу,
+но и не опровергают её (дампы просто не про этот механизм). `SIDIX` в
+игровом протоколе и `turing=` в логине — это два независимых, не связанных
+друг с другом механизма; называть их одним и тем же не стоит.
+
+---
+
+## 4. Детект Flash Player / браузера: `detect_player`
+
+Это отдельная, необязательная диагностическая страница, идущая **после**
+логина, но **до** (или параллельно с) основной игрой — не часть XML-протокола.
+
+- Живая версия — `ds/detect_player.php` (316 строк) + Smarty-шаблон
+  `templates/detect_player.tpl` (или `templates/classic/detect_player.tpl`).
+  Требует активную сессию (`SU_GameSessionWork::SessionContinue()`), иначе
+  редирект на `index_login.php`.
+- В `ds/classes/detect_player.php` (791 строк) лежит **более старая версия
+  того же самого скрипта** (тот же класс `DetectSystem`, та же логика) —
+  судя по расположению не в стиле `Класс.class.php` и по содержимому,
+  это исторический дубликат/черновик, а не часть текущего пути загрузки
+  классов через `__autoload()` (см. [game-engine.md](game-engine.md) §1) —
+  живым кодом не используется (не вызывается ни из одного найденного `require`/`include`).
+- **Как работает handshake:**
+  1. Страница без `GET`-параметра `set_swf` рендерит шаблон, который
+     встраивает `detect_player.swf` (лёгкий отдельный SWF, не `ds3.swf`).
+  2. `detect_player.swf`, определив на клиенте установленную версию Flash
+     Player, ОС и браузер, делает **повторный GET-запрос** на ту же
+     страницу с параметром `set_swf=<данные через запятую/пробел>`
+     (реконструкция по коду: `preg_split("/[\s,]+/", $_GET['set_swf'])`,
+     `DetectSystem::__construct()`). По коду надёжно видно, что:
+     - индекс `[0]` сравнивается со строкой `"WIN"` (ОС);
+     - индекс `[1]` используется как основная «версия Flash» для проверки
+       порогов (Flash < 6/7/8 в зависимости от браузера).
+     - индексы `[2]`/`[3]` тоже читаются (`flashvers2 = $this->flashversion[3]`
+       в ветках Mozilla/Netscape/Opera), но реально нигде в сравнениях не
+       участвуют — похоже на мёртвый/неиспользуемый остаток формата.
+     Точный формат строки, которую реально шлёт `detect_player.swf` (что именно
+     на позициях 0-3, разделитель — запятая или пробел) **не подтверждён**
+     напрямую (клиент скомпилирован) — восстановлен только со стороны
+     потребителя данных.
+  3. Сервер (класс `DetectSystem`, метод `proceed()`) сверяет пару
+     (браузер+его версия, версия Flash) с зашитой в код матрицей
+     совместимости (детали — см. [frontend-templates.md](frontend-templates.md) §1.4:
+     IE 5/6/7 ОК, Flash <6 критично/6 понижено/7+ ОК; Mozilla/Netscape/Opera
+     — везде минимум «пониженная совместимость»; плюс отдельно проверяются
+     `get_browser()`-флаги `tables`/`javascript`/`iframes`/`cookies`).
+  4. Результат — **обычная HTML-страница** (Smarty, не JSON/XML), с
+     `<meta refresh>` через 0 секунд (если ошибок нет) либо 10 секунд (если
+     есть), которая в итоге всё равно ведёт в игру — то есть страница
+     информационная, не блокирующая: даже с «плохой» совместимостью
+     пользователя пускают дальше.
+  5. Отдельно сервер запоминает присланное значение как есть:
+     `$_SESSION['FLASH_VERSION'] = $_GET['set_swf'];` — используется ли
+     это где-то ещё далее (например, в `SU_FlashVersionControlInUseraction`,
+     см. ниже) **не подтверждено** — сама эта система контроля версий в
+     игровом протоколе выключена (см. §5.2).
+
+---
+
+## 5. Маршрутизация команд в `UserAction`
+
+### 5.1. Общий шаблон обработки (`UA_Action`)
+
+Каждая распознанная команда проходит фиксированную последовательность
+методов общего предка `UA_Action` (`ds/classes/UA/UA_Action.class.php`):
+
+```
+checkGlobalParams() → checkLocalParams() → checkAction() → performAction()
+```
+
+- **`checkGlobalParams()`** — общая для всех: если тег команды не входит
+  в список `$this->abpa` (см. ниже), сбрасывает кеш `$_SESSION["allow_buildings"]`/`allow_units"`
+  (список того, что игроку разрешено строить/производить — пересчитывается
+  заново при следующем обращении к соответствующему меню).
+- **`checkLocalParams()`** — у каждого `UA_*`-класса своя реализация:
+  разбор конкретных атрибутов/дочерних тегов XML-команды в поля объекта
+  (`$this->root->get_attribute(...)`, `$this->root->get_elements_by_tagname(...)`).
+- **`checkAction()`** — бизнес-правило «можно ли сейчас» (часто целиком
+  делегируется в `GL_*`-класс).
+- **`performAction()`** — собственно исполнение + формирование ответа
+  через `SU_OutputHandler`.
+
+На любом шаге `false` прерывает цепочку, к ответу подмешиваются
+последние известные `refresh`/`combres` из `$_SESSION` (чтобы клиент не
+остался с «подвисшим» состоянием интерфейса) и вызывается `ds_error(...)`.
+
+### 5.2. `$abpa` — команды, не влияющие на доступность других действий
+
+`UA_Action::$abpa` (`UA_Action.class.php:74-80`) — единственный публично
+видимый в коде список **буквальных значений `tagname`** (не имён классов!),
+поэтому это самый надёжный источник подтверждённых имён тегов:
+
+```
+getbuildmenu, navigate, empty, activatebuild, cancelactivatebuild,
+research, cancelresearch, complexview, archeologyteam, dropartefact,
+detachartefact, attachartefact, createarmy, transferunit, sendmessage,
+createalliance, deletemessage, joinalliance, leavealliance,
+expelalliance, attack, cancelattack, getbattleinfo, defendcanceldefend,
+colonize, changeleader, changepassword
+```
+
+Обратите внимание на несовпадения с именами классов:
+`UA_ActivateBuilding` → тег `activatebuild` (не `activatebuilding`),
+`UA_ChangeAllianceLeader` → тег `changeleader`,
+`UA_ChangeAllianceJoinpassword` → тег `changepassword` — то есть **имя тега
+не всегда является просто именем класса в нижнем регистре**, часть тегов
+сокращена. Это подтверждает, что связку «тег → класс» нельзя надёжно
+угадывать по имени файла — она хранится в таблице `ds_useractiontype`,
+недоступной в этом ревью (см. «Открытые вопросы»).
+
+Дополнительно найдены буквальные сравнения `$this->root->tagname == "getbuildmenu"`
+и `== "refresh"` в `UserAction.class.php` (антиперегрузочная проверка, §5.4) —
+это ещё два надёжно подтверждённых тега.
+
+### 5.3. Защита от «поддельного премиума»
+
+`UserAction.class.php:180-215` — отдельный блок, не пускающий не-премиум
+игроков (`!$_SESSION['profi_game']`) повторно слать «дорогие» действия
+без промежуточного обновления меню:
+
+```
+alertTags = archeologyteam, attachartefact, detachartefact, sell, buy,
+            transferresource, defend, canceldefend, cancelattack, createarmy
+resetTags = getbuildmenu
+```
+Если тег из `alertTags` пришёл, когда флаг `$_SESSION['PEREMIUM_CHEATER_ALLERT']`
+уже был выставлен предыдущим таким же тегом (то есть между двумя «дорогими»
+действиями не было промежуточного `getbuildmenu`) — команда молча
+игнорируется (`return true` без выполнения). Это подтверждает ещё 4 новых
+тега: `sell`, `buy`, `transferresource`, `defend`, `canceldefend`.
+
+### 5.4. Защита от перегрузки БД
+
+Отдельно, только для тегов `getbuildmenu` и `refresh`, и только если
+`!$_SESSION['profi_game']` (условие `isset($dontChekOverload)` в коде
+всегда ложно в показанном месте — переменная нигде не объявлена перед
+использованием, то есть эта ветка по факту **не выполняется в показанном
+виде** — реконструкция, возможно `$dontChekOverload` определяется где-то
+раньше по стеку вызовов и не была найдена; отмечено как открытый вопрос).
+Логика при срабатывании: подсчитать активные транзакции Postgres
+(`pg_stat_activity`) и, если больше `MAX_TRANSACTION` из настроек мира, —
+не выполнять команду, вернуть заранее закешированный `refresh` из сессии
+и `overload=<OVERLOAD_DELAY>`.
+
+### 5.5. Определение класса-обработчика
+
+```sql
+SELECT * FROM ds_useractiontype WHERE tagname = '<root->tagname>'
+```
+(`UserAction.class.php:288-294`, результат кешируется как `GLOBAL_CACHE`).
+Поле `actionhandler` из найденной строки — это имя класса (`UA_*`),
+который создаётся через `new $className` (автозагрузка PHP,
+см. [game-engine.md](game-engine.md) §1). **Эта таблица недоступна** в
+рамках статического анализа — полный список тегов и их соответствие
+классам не может быть восстановлен без дампа БД (см. «Открытые вопросы»).
+
+---
+
+## 6. Полный список классов `UA_*` (96 файлов)
+
+Ниже — **весь** каталог `ds/classes/UA/` на момент среза кода (плюс один
+файл `.back` — не активный, `UA_TradeAuctionFilter.class.php.back`).
+Это список **потенциальных обработчиков команд**, а не список тегов —
+конкретное имя тега для большинства из них не подтверждено буквально
+(см. §5.2 про несовпадения имён). Курсивом — те, что разобраны подробно
+в §7; жирным — тег подтверждён буквально в коде (§5.2/§5.4).
+
+```
+UA_Action (базовый), UA_ActivateAll, UA_ActivateBuilding**(activatebuild)**,
+UA_Alliance (базовый для альянсовых команд), UA_AlliancePeace,
+UA_ArcheologyTeam**(archeologyteam)**, UA_ArmyUseArtefacts,
+UA_AttachBuildingArtefact**(attachartefact)**, *UA_Attack**(attack)**,
+UA_Building (базовый для строительных команд), UA_Buy**(buy)**,
+UA_BuyArtefacts, UA_BuyOld, UA_CalcTravel, UA_CancelActivateBuilding**(cancelactivatebuild)**,
+UA_CancelAttack**(cancelattack)**, UA_CancelBuilding, UA_CancelColonize,
+UA_CancelDefend**(canceldefend)**, UA_CancelResearch**(cancelresearch)**,
+UA_CancelTerraform, UA_CancelTrainUnit, UA_CancelTrainWarUnit,
+UA_CancelUpgradeBuilding, UA_ChangeAllianceJoinpassword**(changepassword)**,
+UA_ChangeAllianceLeader**(changeleader)**, UA_Colonize**(colonize)**,
+UA_ComfirmAttack, UA_ComplexView**(complexview)**, *UA_ConstructBuilding*,
+*UA_CreateAlliance**(createalliance)***, UA_CreateArmy**(createarmy)**,
+UA_DeactivateBuilding, UA_Defend**(defend)**, UA_DeleteMessage**(deletemessage)**,
+UA_DeleteMessage2, UA_DetachBuildingArtefact**(detachartefact)**,
+UA_DismissArmies, UA_DropArtefact**(dropartefact)**, UA_DropBuilding,
+*UA_Empty**(empty)***, UA_ExpelAlliance**(expelalliance)**,
+UA_GetBattleInfo**(getbattleinfo)**, *UA_GetBuildMenu**(getbuildmenu)***,
+*UA_GetCabinet*, UA_GetCombArts, UA_GetCombWarUnitsBuilds, UA_GetNubHelp,
+UA_GetPayService, UA_GetRedBatton, UA_GetRemoteWarBase, UA_GetRewards,
+UA_GoToSpyMenu, UA_HideArmy, UA_JoinAlliance**(joinalliance)**,
+UA_LeaveAlliance**(leavealliance)**, UA_LeaveCaprureColony, *UA_Load*,
+UA_MarkMailAsRead, UA_MoveArmyToComb, UA_Navigate**(navigate)**,
+*UA_NewResearch**(research)***, UA_PartialRefresh, UA_PowerShildActivate,
+UA_PowerShildStart, UA_PrivatePeace, *UA_Refresh**(refresh)***, UA_Refresh2,
+UA_Refresh3, UA_ReincarnateUnit, UA_ReligionCancel, UA_ReligionConnect,
+UA_RenameArmy, UA_Research (базовый для UA_NewResearch/UA_CancelResearch),
+UA_RestoreProtection, UA_Retreat, UA_Sell**(sell)**, UA_SellOld,
+*UA_SendMessage**(sendmessage)***, UA_SendMessage2, UA_ShowMail,
+UA_SpyGetLog, UA_SpySendZonds, UA_Terraforming, UA_TradeAuctionFilter,
+UA_TrainSpyUnit, UA_TrainUnit, UA_TrainWarUnit,
+UA_TransferResource**(transferresource)**, UA_TransferUnit**(transferunit)**,
+UA_Unit, UA_UpgradeBuilding, UA_VacationSendPass, UA_VacationStart,
+UA_VacationStop
+```
+
+---
+
+## 7. Разбор показательных команд
+
+Для каждой команды: класс → что разбирает `checkLocalParams()` (входные
+атрибуты/теги) → что формирует `performAction()` (структура ответа).
+Все примеры XML — **реконструкция по PHP-коду**, не перехваченный трафик.
+
+### 7.1. `load` — вход в игру (`UA_Load.class.php`, 788 строк)
+
+Единственная команда, для которой в коде есть явная привязка «это вход
+в игру»: `ds/useraction.php` определяет `$gameenter = strpos($protocol, '<load locations') !== false`.
+
+**Вход:**
+```xml
+<!-- РЕКОНСТРУКЦИЯ -->
+<load locations="3"/>
+```
+Атрибут `locations` — единственный, читается как `$this->root->get_attribute("locations")`.
+Значение управляет тем, какие блоки статических данных возвращать:
+`3` — включает список `id_comb` игрока плюс всё, что даёт `0`/`1`;
+`0`/`1`/`3` — здания, артефакт-скоупы, интерфейс, типы грунта/ячеек,
+кольца, юниты, `messagescope`; `0`/`2`/`3` — дополнительно `$_SESSION['cells']=1`
+(при следующем `refresh()` подтянуть данные по ячейкам).
+
+**Ответ** — mark `loaddata`, корень `<load v="N">` (`N` = версия
+`localdata` из `ds/flash/version.ini`, см. [frontend-templates.md](frontend-templates.md) §1.3),
+дочерние элементы (по фактическим `new_child`-вызовам в коде):
+```xml
+<!-- РЕКОНСТРУКЦИЯ, урезано -->
+<load v="118">
+  <comb id="1023,1024,1030"/>                          <!-- только при locations=3 -->
+  <b id="12" name="CENTRAL_GATE" type="..." unique="0" ln="..." p="120">описание</b>
+  ...                                                   <!-- по одному <b> на здание -->
+  <artscope id="3" ln="..." size="1,2,3" bonus="..."/>
+  <artsize .../> <artbonus .../> <att .../>
+  <interface .../> <groundtype .../> <celltype .../>
+  <artefact .../> <ring .../> <unit .../>
+  <messagescope id="PRIVATE" ln="..."/>
+  <dataintegrity id="dataintegrity" ln="OK"/>
+</load>
+```
+Далее (если `$_SESSION["s_xmldata"]` пуст) `UA_Load` сам вызывает
+`$this->refresh(0, $_SESSION['cells'], 1)` — то есть при входе в игру
+клиент сразу получает ещё и обычные `xmldata`/`combres` (текущий вид
+соты и её ресурсы), плюс (только на `load`) сырые пары `nick=...&complex=...&world=...&league=...`.
+
+### 7.2. `empty` — пинг при перезагрузке страницы (`UA_Empty.class.php`)
+
+Комментарий в коде: «команда посылается клиентом при перезагрузке
+страницы». Атрибутов не разбирает вовсе (`checkLocalParams()` не
+переопределён — используется заглушка `UA_Action::checkLocalParams()`,
+возвращающая `true`). Вся логика — в `performAction()`: проверяет,
+разрешён ли рефреш прямо сейчас (`isAllowRefresh(uiid)` в БД), и делает
+либо минимальный, либо полный `$this->refresh(...)`.
+```xml
+<!-- РЕКОНСТРУКЦИЯ -->
+<empty/>
+```
+
+### 7.3. `refresh` — обновление состояния соты (`UA_Refresh.class.php`)
+
+**Вход:** единственный явно читаемый атрибут — `cell` (запросить полные
+данные по ячейкам, иначе значение может быть подмешано из `$_SESSION['cells']`).
+```xml
+<!-- РЕКОНСТРУКЦИЯ -->
+<refresh cell="1"/>
+```
+**Ответ** — несколько marks сразу:
+- `combres` — ресурсы соты (собирается **вручную через `domxml_new_xmldoc()->add_root("combres")`**,
+  а не через `domxml_open_mem()` с XML-строкой-заглушкой, как в большинстве
+  других мест — второй встретившийся способ инициализировать DOM):
+  ```xml
+  <!-- РЕКОНСТРУКЦИЯ -->
+  <combres>
+    <KADERIUM current="1200" max="5000"/>
+    <NANO_CRYSTAL current="340" max="2000"/>
+    <GOLD_CREDIT current="15.00"/>
+    <SILVER_CREDIT current="1024.50"/>
+  </combres>
+  ```
+  (по одному дочернему элементу на каждый ресурс/валюту с атрибутами
+  `current`/`max` — имя элемента равно внутреннему имени ресурса,
+  `GB_ResourcesList::$allCombResources`).
+- `xmldata` — вид соты, собирается отдельным контроллером `CR_CombView`
+  (не разбирался подробно — вне периметра задачи).
+- `newmessage=1`, `refresh_rate=<сек>`, `mode=<timestamp окончания премиума|0>`.
+
+### 7.4. `attack` — атака / отправка армии (`UA_Attack.class.php`, 661 строка)
+
+**Вход** — только атрибуты корневого тега:
+
+| Атрибут | Тип/формат | Смысл |
+|---|---|---|
+| `destination` | строка вида `ring.combcomplex.combnumber` (regex `^[0-9]+\.[0-9]+\.[0-9]+$`, ≤50 символов) | координаты цели |
+| `speed` | число 0-100 | скорость в процентах от максимума (сервер делит на 100 → `GB_MoveSpeed`) |
+| `res` | `ALL_RES` либо конкретное имя ресурса из `GB_ResourcesList::$stealingResources` | какой ресурс грабить |
+| `id_army` | целое >0 | ID армии/юнит-контейнера (`ds_unitcontainer`) |
+| `confirm` | `"1"` (опционально) | подтверждение повторной отправки той же команды после диалогового предупреждения (разрыв мира/переход в лигу/снятие защиты новичка) |
+
+```xml
+<!-- РЕКОНСТРУКЦИЯ -->
+<attack destination="4.12.3" speed="100" res="ALL_RES" id_army="481233"/>
+```
+
+**Ответ** зависит от исхода:
+- Если атака невозможна (закрыты ворота, перемирие и т.п.) —
+  `DE_SystemMessages::AddMessageFromAction(...)` + обычный `refresh()`
+  (сообщение об ошибке приходит как часть игровых системных сообщений
+  внутри `xmldata`, отдельного кода ошибки в XML нет).
+- Если требуется подтверждение (например, атака игрока из альянса, с
+  которым заключён личный мир) — mark `outside`:
+  ```xml
+  <!-- РЕКОНСТРУКЦИЯ -->
+  outside=<?xml version="1.0" encoding="utf-8"?>
+  <swfloader url="flash/alert.swf" override="1" title="" action_id="1">
+    <txt><![CDATA[Вы уверены? Мир с альянсом X будет расторгнут.]]></txt>
+    <answer><![CDATA[<attack res="ALL_RES" speed="100" destination="4.12.3" id_army="481233" confirm="1" />]]></answer>
+  </swloader>
+  ```
+  Обратите внимание: сервер сам формирует **готовую следующую команду**
+  внутри `<answer>` — клиент должен просто переслать её как есть, если
+  игрок подтвердил диалог. Это общий паттерн подтверждений в протоколе.
+- При успехе — `refresh(2, "", "", 1, true)` (обновление ресурсов/сообщений
+  без полной пересборки вида соты) и, только для `profi_game`, mark
+  `helper` с текущим состоянием армии:
+  ```xml
+  <!-- РЕКОНСТРУКЦИЯ -->
+  helper=<?xml version="1.0" encoding="utf-8"?>
+  <army id_army="481233" inaction="1" lastcoord="4.12.3" lastspeed="100" res="ALL_RES">
+    <transfers/>
+    <actions><possible id_action="CANCEL_ATTACK" actionname="..."/>Армия атакует ...</actions>
+  </army>
+  ```
+
+### 7.5. `constructbuilding` *(имя тега не подтверждено буквально)* — постройка здания (`UA_ConstructBuilding.class.php`)
+
+**Вход:**
+
+| Атрибут | Смысл |
+|---|---|
+| `c` | список номеров ячеек через запятую (`"12,45,90"`) — можно заказать постройку одного и того же здания сразу на нескольких ячейках одной командой; сервер их разворачивает (`array_reverse`) и обрабатывает по одной, пока хватает ресурсов/лимита одновременных строек |
+| `b` | ID здания (`ds_building.id_building`) |
+
+```xml
+<!-- РЕКОНСТРУКЦИЯ -->
+<constructbuilding c="12,45,90" b="7"/>
+```
+**Проверки** (`checkAction()`, все через `assert()`, то есть провал —
+это `xmlerror`, а не мягкое сообщение): доступность здания расе,
+уникальность, требуемые здания-предпосылки, здание не отключено в мире,
+допустимость этого типа грунта/ячейки, хватает науки, лимит одновременных
+строек. Отдельно, **не** через `assert`, а как «мягкая» проверка — хватает
+ли ресурсов (`isResourcesEnough`) — при нехватке шлётся системное
+сообщение `BUILD_NOT_ENOUGHT_RESOURCES` и просто `refresh()`, без обрыва
+протокола.
+
+**Ответ:** обычный `refresh(2, "", 1, 1)` (обновить вид соты + ресурсы);
+если после этой постройки достигнут максимум одновременных строек — ещё
+и `outside`-алерт с текстом `MAX_SYMULTANEOSLY_BUILDINDS`.
+
+### 7.6. `createalliance` — создание альянса (`UA_CreateAlliance.class.php`)
+
+Единственная среди разобранных команд, где параметры — **дочерние
+элементы**, а не атрибуты, и текст внутри них — UTF-8, дополнительно
+пропущенный через `utf8_decode()` на сервере (то есть, судя по всему,
+клиент кладёт в текстовый узел байты, которые сервер трактует как
+Latin-1-«испорченный» UTF-8 — типичный паттерн двойного
+кодирования/декодирования между Flash `XML`/`String` и PHP):
+
+```xml
+<!-- РЕКОНСТРУКЦИЯ -->
+<createalliance>
+  <tag>ABC</tag>
+  <name>Великий Альянс</name>
+  <joinpassword>secret123</joinpassword>
+</createalliance>
+```
+- `<tag>` — краткий тег альянса, сервер сам транслитерирует строчные
+  кириллические/латинские буквы в заглавные через `strtr()` с явной
+  таблицей символов (не `mb_strtoupper`).
+- `<name>` — полное название.
+- `<joinpassword>` — пароль вступления (хранится в открытом виде в
+  `ds_alliance.joinpassword`, не хэшируется — заметно по прямой вставке
+  в `INSERT` без каких-либо `md5()`/`crypt()`).
+Валидация — `VD_Alliance::Validate(...)` (не разбирался отдельно).
+**Ответ** — обычный `refresh(2, "", "", "", true)`, ошибки/успех — как
+системные сообщения внутри `xmldata` (коды `CREATE_ALLIANCE_MESS` при
+успехе, произвольные коды из `VD_Alliance::FetchErrorCode()` при провале).
+
+### 7.7. `sendmessage` — отправка письма/чата (`UA_SendMessage.class.php`)
+
+**Вход** — смесь атрибутов и дочерних тегов:
+
+| Поле | Вид | Смысл |
+|---|---|---|
+| `id_messagescope` (атрибут) | int | тип адресации: `PRIVATE` (личное), альянсовые скоупы (`INTERNAL_ALLIANCE`/`EXTERNAL_ALLIANCE`) и т.п. — расшифровывается через `DS_Message::GetMessageScopeNameByID()` |
+| `id_message` (атрибут, опц.) | int | ID письма, на которое отвечают/которое пересылают |
+| `<to>` (дочерний тег) | текст | логин получателя (только для `PRIVATE`) |
+| `<subject>` (дочерний тег) | текст | тема |
+| `<messagetext>` (дочерний тег) | текст | тело письма |
+
+```xml
+<!-- РЕКОНСТРУКЦИЯ -->
+<sendmessage id_messagescope="1">
+  <to>SomePlayer</to>
+  <subject>313070432074656D6120</subject>
+  <messagetext>313070432074656B73742031</messagetext>
+</sendmessage>
+```
+**Важная находка — нестандартная кодировка текста писем.** Помимо обычного
+`utf8_decode($node->get_content())` (используется для «рабочих» полей
+`$subject`/`$messagetext`, которые идут в игровую логику как cp1251),
+для полей `original_subject`/`original_messagetext` (видимо, для более
+поздних UTF-8-осознанных получателей/логов) сервер использует **свой
+собственный** декодер `convert_to_utf8()`:
+```php
+// разбивает строку на куски по 3 символа, трактует каждый как HEX-код символа
+for ($i=0; $i<$c; $i+=3) {
+    $s = substr($str, $i, 3);
+    $res .= $this->unichr(hexdec($s));
+}
+```
+То есть на этом пути текст в дочернем узле — это **последовательность
+3-значных шестнадцатеричных кодов символов** (например символ с кодом
+`0x431` («б» в Unicode) был бы закодирован как `"431"`), без разделителей,
+а не обычный UTF-8/entity-escaped текст. Учитывая, что `&`-символ вообще
+вырезается на входе (§2.1) и что три шестнадцатеричных цифры дают предел
+`0xFFF` (4095) — теоретически это могло быть решением проблемы «как
+передать кириллицу/спецсимволы через уже урезанный XML, не используя `&`
+и оставаясь в BMP до 0xFFF» на стороне клиента. Расхождение между двумя
+одновременно используемыми декодерами (`utf8_decode()` для игровой логики
+vs. `convert_to_utf8()` для «original»-полей) в коде не объяснено —
+похоже на два разных инженерных решения одной проблемы, оставленных оба
+сразу (см. «Открытые вопросы»).
+**Ответ:** нет отдельного XML-ответа для самой отправки — это
+`performAction()` возвращает `true` без явного `refresh()` (закомментировано
+`return true;//$this->_refresh();`), то есть письмо просто применяется к
+БД, а обновление интерфейса почты клиент должен запросить отдельной
+командой `getbuildmenu`/просмотром папки.
+
+### 7.8. `research` — начать исследование (`UA_NewResearch.class.php`, тег подтверждён через `$abpa`)
+
+**Вход:** единственный атрибут `id` — **имя** науки (`ds_science.sciencename`
+строка, не числовой ID):
+```xml
+<!-- РЕКОНСТРУКЦИЯ -->
+<research id="ADVANCED_METALLURGY_2"/>
+```
+Сервер сам резолвит имя в числовой `scienceid` (`getScienceID()`,
+не разбирался отдельно). Родственный класс `UA_CancelResearch` (тег
+`cancelresearch`) отменяет активное исследование — вероятно, без
+параметров вовсе (не проверялось).
+**Проверки** (`checkAction()`): нет активного исследования на этой соте
+и у пользователя вообще, есть хотя бы 1 учёный на любой из сот игрока
+(суммируется через `DC_UserInstanceCombs`), ветка/наука не отключена в
+мире, наука ещё не изучена, есть здания-предпосылки, хватает
+науки-предпосылки. **Ответ:** обычный `refresh()`, тикающее исследование
+дальше обрабатывается асинхронно через `EH_*`-обработчик события (см.
+[game-engine.md](game-engine.md) §3.1 по аналогии с постройкой зданий).
+
+### 7.9. `getbuildmenu` — универсальный диспетчер панелей (`UA_GetBuildMenu.class.php`)
+
+Это, по сути, не «одна команда», а **общий RPC-механизм** для запроса
+содержимого практически любого окна интерфейса — самая важная находка
+в части архитектуры протокола. Атрибут `tab` содержит **буквальное имя
+серверного класса-панели** (без префикса `PN_`, который дописывается
+сервером, если отсутствует):
+
+```php
+$testTMP = strpos($this->tab, 'PN_');
+if (!is_int($testTMP)) { $this->tab = 'PN_'.$this->tab; }
+...
+$panel = new $this->tab;      // напрямую инстанцируется класс, имя которого прислал клиент
+```
+(`UA_GetBuildMenu.class.php`, конец `performAction()`). То есть клиент
+буквально указывает, какой PHP-класс на сервере должен отработать —
+дальше этому объекту прокидывается десятка полтора обобщённых
+опциональных параметров (не все нужны для всех панелей — конкретная
+панель использует свои):
+
+| Атрибут | Назначение (используется разными панелями) |
+|---|---|
+| `c` | номер ячейки клика (либо литерал `"warbase"` — сервер сам ищет ячейку военной базы, `id_building=26`) |
+| `tab` | имя панели (`PN_*` без префикса) |
+| `sort`, `sort_place`, `sort_type`, `sort_name` (список через запятую) | параметры сортировки (биржа, списки) |
+| `page` | номер страницы (пагинация) |
+| `own_trades`, `own_bets`, `buy_by` (список), `order`, `days` | фильтры биржи/торгов |
+| `trader`, `personal` | поиск/фильтр по трейдеру |
+| `sorttype`, `sortsize`, `sortscope` | фильтры меню артефактов |
+| `fromd`, `opp`, `sot`, `stat`, `winner` | фильтры списка боёв |
+| `type`, `id`, `name` | меню почты (тип папки/ID письма/поиск) |
+| `colony` (список), `types` (список), `datefrom`, `dateto` | фильтры лога шпионажа |
+| `id_message`, `reply_to`, `forward_to` | контекст письма при ответе/пересылке |
+
+```xml
+<!-- РЕКОНСТРУКЦИЯ: открыть биржевую панель, отсортированную по цене -->
+<getbuildmenu c="45" tab="TradePanel" sort="price" page="1"/>
+```
+**Ответ:** каждая панель (`PN_*`) сама решает, что писать — как правило,
+mark `xmldata` с XML, специфичным для конкретного окна (структура
+задаётся парой `TI_*`(входной DTO)/`TL_*`(сериализатор), см. §8).
+
+### 7.10. `getcabinet` *(имя тега не подтверждено)* — веб-кабинет внутри игры (`UA_GetCabinet.class.php`, метод `open()`)
+
+Это не игровая панель конкретной соты, а мини-версия «личного кабинета»
+(биллинг/премиум/переводы между мирами), встроенная прямо в игровой XML-
+протокол (отдельно от полноценного веб-кабинета `UC_*`, см.
+[game-engine.md](game-engine.md), таблица префиксов).
+
+**Вход:** атрибут `command` (по умолчанию `"open"`), плюс контекстные
+атрибуты для конкретных под-команд:`gold`/`silver` (суммы) для
+`giftMoney`/`moneyFormWorld`/`moneyToWorld`/`changeGoldTOSelver`,
+`worldId` (формат `"<id_world>_<dbId>"`) для межмирового перевода.
+```xml
+<!-- РЕКОНСТРУКЦИЯ -->
+<getcabinet command="open"/>
+```
+
+**Ответ (`command="open"`) — образцовый пример ручной сборки DOM**
+(именно это запрашивал разбор в задании — техника `$root->new_child(...)`):
+```php
+$xml = '<?xml version="1.0" encoding="utf-8"?><cabinet />';
+$docXML = domxml_open_mem($xml);
+$root = $docXML->document_element();
+$root->set_attribute("action", "enter");
+$root->set_attribute("billing_url", "/ds/billing.php?SID=".session_id());
+
+$user = $root->new_child("user");
+$user->set_attribute("name", $this->user->getName());
+$user->set_attribute("email", '');
+
+$worlds = $user->new_child("allow_worlds");
+// ... цикл: $world = $worlds->new_child("world"); $world->set_attribute(...);
+
+$stat = $root->new_child("current_stat");
+$gold = $stat->new_child("money_gold"); $gold->set_attribute("value", $goldVal);
+$silver = $stat->new_child("money_silver"); $silver->set_attribute("value", $silverVal);
+
+// ... $root->new_child("service_list") с вложенными <head>/<sub> на каждую доступную услугу
+// ... $root->new_child("last_operation")
+// ... $root->new_child("popup")  — только если есть сообщение по итогам под-команды
+$alltabs = $root->new_child("alltabs");
+
+SU_OutputHandler::Singleton()->addString($docXML->dump_mem(), 'xmldata');
+```
+Итоговый (реконструированный) XML:
+```xml
+<!-- РЕКОНСТРУКЦИЯ -->
+<cabinet action="enter" billing_url="/ds/billing.php?SID=abc123...">
+  <user name="Игрок1" email="">
+    <allow_worlds>
+      <world name="Sphere One" id="3_0" gold="120" silver="4500"/>
+      <world name="Sphere Two" id="7_1" gold="0" silver="0"/>
+    </allow_worlds>
+  </user>
+  <current_stat>
+    <money_gold value="15"/>
+    <money_silver value="980"/>
+  </current_stat>
+  <service_list>
+    <head value="Премиум"/>
+    <sub id="PS_BUY_PREMIUM_360" name="Премиум на 360 дней"/>
+    <sub id="PS_BUY_PREMIUM_180" name="Премиум на 180 дней"/>
+  </service_list>
+  <last_operation date="2026-08-20" text="[b]GC[/b]: 15"/>
+  <alltabs/>
+</cabinet>
+```
+
+---
+
+## 8. Паттерн `TI_*`/`TL_*`/`PN_*` (сериализация панелей)
+
+`UA_GetBuildMenu` (§7.9) инстанцирует нужный `PN_*` и зовёт его
+`getPanel()`. Внутри `PN_*` типичная последовательность — собрать DTO
+`TI_*` (по одному сеттеру на каждый кусок данных), затем вызвать
+статический метод `TL_*::Form()`/`FormMenu()`, который сериализует DTO в
+XML-строку, и положить результат в буфер mark `xmldata`. Показательная
+пара — биржа (`TI_TradePanel`/`TL_TradePanel`/`PN_TradePanel`):
+
+```php
+// PN_TradePanel::getPanel() (фрагмент)
+SU_OutputHandler::Singleton()->addString(TL_TradePanel::FormMenu($this->transportInput), 'xmldata');
+```
+
+Внутри `TL_TradePanel::FormMenu()` используются **сразу два разных
+подхода** к сборке XML в одном методе — важная находка для понимания
+стиля кода:
+1. DOM через `domXML`/`new_child()` — для «обвязки» (`<trade>` корень +
+   `<alltabs>` через унаследованный от `TL_BaseMenu::GetBuildingTabs()`).
+2. **Прямая конкатенация строк** (`$out .= "<article .../>"`) для
+   основного, объёмного и «горячего» содержимого (матрица цен, список
+   товаров/юнитов/артефактов на продажу) — а затем грубая подмена через
+   `str_replace('<trade>', $out, $doc->dump_mem())`, то есть готовый
+   вручную собранный XML-текст **вставляется как замена самозакрывающегося
+   тега** `<trade>` в XML, полученный из DOM-сериализации. Это не
+   единый, стилистически цельный сериализатор — местами DOM, местами
+   sprintf-подобная склейка строк с ручным экранированием (или без него).
+
+Реконструкция ответа биржи (мark `xmldata`):
+```xml
+<!-- РЕКОНСТРУКЦИЯ -->
+<trade turn="1.5" time2trade="99" minquntity="1" notrend="1" nonalog="1" nopersonaly="1" anonymous="1">
+  <matrix>
+    <trades>1_1,1_2</trades>
+    <reses>KADERIUM:1.2:1_1,NANO_CRYSTAL:0.9:1_2</reses>
+    <data>10-50-5,X</data>
+  </matrix>
+  <articles>
+    <article cat="1_1" id="3" libname="KADERIUM" amount="1 000" power="high"/>
+    <article cat="2_1" libname="warrior" id="12" amount="50" upkeep="F:0.500000" power="med"/>
+  </articles>
+  <scopes>
+    <allow id_tradescope="1" tradescopename="GLOBAL_TRADING"/>
+  </scopes>
+  <alltabs>
+    <tab id="TradePanel" ln="..." icon="..." cur="1"/>
+    <tab id="ArmyOverview" ln="..." icon="..."/>
+  </alltabs>
+</trade>
+```
+Общий вывод для реализации нового клиента/сервера: **у каждой панели
+свой, никак не унифицированный набор тегов** — единого XSD/схемы нет,
+и её невозможно вывести иначе, чем построчным чтением конкретного
+`TL_*`/`PN_*` для каждой нужной панели (в этом ревью разобрана только
+малая часть из 39 файлов `PN_*`/15 `TL_*`).
+
+---
+
+## 9. `domXML` — обёртка над `DOMDocument` (PHP4→PHP5 совместимость)
+
+`ds/classes/domXML.class.php` — тонкая обёртка, эмулирующая **старый PHP4
+DOM API** (`domxml_open_mem()`, `->new_child()`, `->get_attribute()`,
+`->get_elements_by_tagname()`, `->document_element()`) поверх стандартного
+`DOMDocument` из PHP5+. Именно эта эмуляция используется буквально всем
+`UA_*`/`TL_*`/`PN_*`-кодом — то есть весь протокол проектировался ещё под
+PHP4-стиль работы с XML, а миграция на PHP5 сделана точечно, без
+переписывания вызывающего кода. Два способа создать документ:
+- `domxml_open_mem($xmlString)` — распарсить готовую строку-заготовку
+  (`<?xml ...?><tagname/>`), затем достраивать `document_element()->new_child(...)`.
+- `domxml_new_xmldoc("1.0")->add_root("tagname")` — создать документ и
+  сразу корневой элемент программно, без строки-заготовки (используется
+  реже, например в `UA_Refresh::_updateCombRes()`, см. §7.3).
+
+Примечание по опечатке: закрывающий тег во всех `outside`/`alertmsg`-примерах
+в коде — `</swloader>` (без второй «f»), при открывающем `<swfloader ...>`.
+Это не опечатка в данном документе, а буквальная опечатка, повторяющаяся
+во всём просмотренном коде.
+
+**Обновление (client-capture: `outside.txt`, `outsidehtml.txt`).**
+Опечатка теперь подтверждена **буквально в реальном трафике**, дважды, не
+только чтением PHP-кода — то есть это не гипотетический артефакт
+("а вдруг декомпилятор клиента ошибся"), а факт: сервер по проводу
+действительно посылает несимметричные `<swfloader ...>...</swloader>`.
+Открытым остаётся только вопрос, как именно клиент это переваривает —
+со стороны реального AS2-кода (`parser.outside_action()`,
+client-source) видно, что клиент **не проверяет имя корневого тега
+вообще** (не ищет `nodeName=="swfloader"`), а просто берёт первый узел
+после XML-пролога — то есть опечатка, по всей видимости, безобидна
+именно потому, что имя тега нигде не сравнивается буквально (подробнее —
+[client-engine-and-protocol.md](client-engine-and-protocol.md) §5, §8.7).
+`outsidehtml.txt` дополнительно раскрывает ранее не задокументированные
+атрибуты `<swfloader>` — `override`, `res`, `speed`, `destination`,
+`id_army` — и показывает, что `<txt>` внутри всегда дочерний CDATA-элемент,
+а не атрибут.
+
+---
+
+## 10. Механизм «прямых ссылок» (`clientDirectLinks`)
+
+`UserAction.class.php:143-168` — до основной маршрутизации через
+`ds_useractiontype` перехватываются три специальных тега:
+
+```php
+$clientDirectLinks = array(
+    'moneypage' => array(
+        'https://billing.destinysphere.ru/LoginOutside.php',
+        "partner_id=".constant('BILLING_PARTNER_ID')."%26user_id=".$_SESSION['uid']
+            ."%26hash=".md5(md5($_SESSION['s_pass']."<СЕКРЕТ>"))."%26mode=gold"
+    ),
+    'clickonallyicon' => array(
+        'https://billing.destinysphere.ru/index.php',
+        'p=vitrina%26id_category=27%26id_partner=6'
+    ),
+    'artefactactivate' => array(
+        constant('GAME_HOST').'/ds/quiz.php',
+        'art={id}'
+    ),
+);
+
+if (key_exists($this->root->tagname, $clientDirectLinks)) {
+    $id = $this->root->get_attribute("id");
+    $back = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<key valid=\"0\" addr=\"".$clientDirectLinks[$this->root->tagname][0]."?[url_params]\" target_load=\"_blank\"/>";
+    $this->oh->addString($back, 'loadkey');
+    SU_ClientKey::setKey();
+    $str = $this->oh->fetchAll();
+    $str = str_replace('[url_params]', $clientDirectLinks[$this->root->tagname][1], $str);
+    $str = str_replace('{id}', $id, $str);
+    die($str);
+}
+```
+
+**Зачем это нужно:** Flash внутри `SWF` не может (и не должен) сам
+показывать полноценные внешние веб-страницы биллинга/квизов — вместо
+этого он посылает специальную «псевдокоманду» (`moneypage`,
+`clickonallyicon` или `artefactactivate`), которая **не проходит** обычный
+конвейер `checkGlobalParams→...→performAction` и не обращается к
+`ds_useractiontype`, а сразу превращается в ответ вида
+```
+loadkey=<?xml version="1.0" encoding="utf-8"?>
+<key valid="0" addr="https://billing.destinysphere.ru/LoginOutside.php?partner_id=6&user_id=12345&hash=<md5>&mode=gold" target_load="_blank"/>
+```
+Атрибут `target_load="_blank"` — сигнал клиенту открыть URL **в новой
+вкладке/окне браузера**, а не заменять текущую страницу (в отличие от
+`valid="0"`-ответов без этого атрибута, которые означают «сессия
+недействительна, перейди на `addr` в этом же окне» — см. §2.5). Таким
+образом одна и та же XML-конструкция `<key valid=... addr=...>`
+используется для двух разных семантик: «разлогинен, иди логиниться» и
+«вот тебе ссылка на биллинг, открой в новой вкладке» — различаются только
+наличием `target_load`.
+
+`artefactactivate` — механизм активации кода/бонуса артефакта: клиент
+шлёт `<artefactactivate id="<КОД>"/>`, сервер подставляет `id` в
+`art={id}` и отдаёт ссылку на `GAME_HOST/ds/quiz.php?art=<КОД>` — то есть
+это не биллинг, а переход на отдельный (не разбирался в этом ревью)
+`ds/quiz.php`, который, судя по названию и соседству с `TMP_QuizController`
+(см. [game-engine.md](game-engine.md), таблица префиксов, `TMP`), скорее
+всего часть сезонного/викторинного функционала, а не собственно активации
+артефактов в привычном смысле — **не подтверждено**, требует отдельного
+чтения `ds/quiz.php`.
+
+```xml
+<!-- РЕКОНСТРУКЦИЯ входа -->
+<moneypage/>
+```
+```
+<!-- РЕКОНСТРУКЦИЯ ответа -->
+loadkey=<?xml version="1.0" encoding="utf-8"?>
+<key valid="0" addr="https://billing.destinysphere.ru/LoginOutside.php?partner_id=6&user_id=12345&hash=9f8c...&mode=gold" target_load="_blank"/>
+```
+
+---
+
+## 11. Итоговая таблица разобранных команд
+
+| Тег (подтверждён?) | Класс `UA_*` | Система | Ключевые входные атрибуты/теги | Ответ (marks) |
+|---|---|---|---|---|
+| `load` (подтв. по подстроке в `useraction.php`) | `UA_Load` | Вход в игру | `locations` (0-3) | `loaddata`, `xmldata`, `combres`, `nick/complex/world/league`, опц. `delta` |
+| `empty` (подтв., `$abpa`) | `UA_Empty` | Тех. пинг при перезагрузке | — | `xmldata`, `combres`, `refresh_rate`, `mode` |
+| `refresh` (подтв., буквальное сравнение) | `UA_Refresh` | Синхронизация состояния | `cell` | `xmldata`, `combres`, `newmessage`, `refresh_rate`, `mode` |
+| `getbuildmenu` (подтв., буквальное сравнение + `$abpa`) | `UA_GetBuildMenu` | Универсальный диспетчер панелей | `c`, `tab` (+ ~15 доп. фильтров, см. §7.9) | `xmldata` (формат зависит от `tab`) |
+| `attack` (подтв., `$abpa`) | `UA_Attack` | Бой | `destination`, `speed`, `res`, `id_army`, `confirm` | `xmldata`, `combres`, опц. `outside`, опц. `helper` |
+| `constructbuilding` (не подтв., реконструкция по имени класса) | `UA_ConstructBuilding` | Постройка | `c` (список ячеек), `b` (ID здания) | `xmldata`, `combres`, опц. `outside` |
+| `createalliance` (подтв., `$abpa`) | `UA_CreateAlliance` | Альянсы | дочерние `<tag>`, `<name>`, `<joinpassword>` | `xmldata`, `combres` |
+| `sendmessage` (подтв., `$abpa`) | `UA_SendMessage` | Почта/чат | `id_messagescope`, `id_message`, дочерние `<to>`, `<subject>`, `<messagetext>` | нет отдельного ответа (только запись в БД) |
+| `research` (подтв., `$abpa`) | `UA_NewResearch` | Наука | `id` (имя науки, строка) | `xmldata`, `combres` |
+| `cancelresearch` (подтв., `$abpa`) | `UA_CancelResearch` | Наука | не разбирался | — |
+| `getcabinet` (не подтв., реконструкция по имени класса) | `UA_GetCabinet` | Внутриигровой веб-кабинет/биллинг | `command` (`open`/`giftMoney`/`moneyFormWorld`/`moneyToWorld`/`changeGoldTOSelver`/`callsubmenu`/`confirmsubmenu`/`getAllStatistic`), `gold`, `silver`, `worldId` | `xmldata` (`<cabinet>`) |
+| *(через `getbuildmenu` c `tab="TradePanel"`)* | `PN_TradePanel`/`TI_TradePanel`/`TL_TradePanel` | Торговля/биржа | параметры фильтров биржи (§7.9) | `xmldata` (`<trade>`) |
+| `moneypage`, `clickonallyicon`, `artefactactivate` (подтв., буквальный массив) | *(не UA, отдельная ветка)* | Переход в биллинг/викторину | `id` (только для `artefactactivate`) | `loadkey` с внешним URL, обрывает обработку |
+| `logout` *(не XML, буквальная строка)* | *(не UA)* | Выход | — | `loadkey` с `addr=index_start.php?ck=...`, обрывает обработку |
+
+Веб-логин (`GE_Login`, вне XML-протокола) и детект-хендшейк
+(`detect_player`, вне XML-протокола) разобраны отдельно в §3 и §4.
+
+---
+
+## 12. Открытые вопросы
+
+Явно требуют либо доступа к БД (дамп `ds_useractiontype` и смежных
+справочников), либо реального перехвата трафика/декомпиляции `ds3.swf`
+(инструментов Flash-декомпиляции в этом ревью не применялось):
+
+1. **Полный список ~96 команд и их точные тег-имена недоступны.**
+   Таблица `ds_useractiontype` (тег → класс `actionhandler`) хранится в
+   БД, дампа БД в репозитории нет. В §5.2/§5.4 набралось около 30
+   тегов, подтверждённых буквальным совпадением строки в PHP-коде
+   (списки `$abpa`, `alertTags`, `resetTags`, `clientDirectLinks`, два
+   явных сравнения `tagname == "..."`). Для оставшихся ~65 классов
+   `UA_*` имя тега — только предположение по имени класса, причём
+   подтверждённые случаи (`activatebuild`, `changeleader`,
+   `changepassword`) прямо показывают, что угадывание по имени класса
+   регулярно ошибается (сокращения).
+2. **Точный формат `set_swf=...` в `detect_player`** (разделитель,
+   что именно на позициях 0-3, есть ли позиции после 3-й) восстановлен
+   только со стороны потребителя (`DetectSystem::proceed()`), не со
+   стороны отправителя (`detect_player.swf` не декомпилировался).
+3. **Атрибут `newkey="123"` в `<key>` (mark `loadkey`)** во всех
+   просмотренных местах — захардкоженная строка `"123"`, а не реальный
+   новый ключ (реальная ротация ключа идёт отдельным полем `ck`, см.
+   §2.5). Не установлено, обрабатывает ли клиент этот атрибут вообще,
+   или это мёртвый параметр, оставшийся от более старой версии протокола,
+   где ключ передавался именно через него. **Корроборирующая находка**
+   (client-capture: `unlogin.txt`, см. §3.1): буквальный дамп разрыва
+   сессии показывает `<key valid="0" addr="index_login2222.php"/>` вообще
+   **без** атрибута `newkey` — то есть он не просто захардкожен, а ещё и
+   непоследовательно присутствует (есть не во всех вариантах ответа),
+   что усиливает гипотезу "мёртвый/недоделанный атрибут", но окончательно
+   не доказывает её.
+4. **Два независимых декодера текста писем** (`utf8_decode()` для
+   игровых полей vs. собственный `convert_to_utf8()`, разбирающий
+   3-значные HEX-коды символов, для «original»-полей, §7.7) — не ясно,
+   какой из них реально соответствует тому, что шлёт актуальная версия
+   клиента, использовались ли оба одновременно для разных полей одной
+   и той же команды на практике, или один из них — мёртвый код от более
+   старой версии клиента. Требует реального перехвата трафика с
+   отправкой сообщения на кириллице/с эмодзи/спецсимволами.
+5. **Условие `isset($dontChekOverload)` в защите от перегрузки БД**
+   (`UserAction.class.php`, §5.4) — переменная `$dontChekOverload` в
+   показанном коде нигде не объявляется до использования; либо это
+   мёртвая ветка (никогда не `true`), либо переменная приходит через
+   `global`/подключаемый файл выше по стеку вызовов, не найденный в
+   этом ревью.
+6. **Точный набор атрибутов, которые реально понимает и рисует
+   `ds3.swf`**, не может быть подтверждён без декомпиляции: сервер во
+   многих местах готов принять или отдать значения (например, все
+   ~15 фильтров `getbuildmenu`, §7.9), но использует ли их конкретная
+   версия живого клиента — доподлинно неизвестно без сверки с SWF.
+7. **`ds/quiz.php`** (целевой URL для `artefactactivate`, §10) не
+   читался в рамках этой задачи — его протокол (если он вообще
+   принимает что-то от Flash, а не является чистой HTML-страницей)
+   не описан.
+8. **Content-Type ответа `ds/useraction.php`** не найден явно
+   выставленным в просмотренном коде — не исключено, что он
+   переопределяется где-то в `Main.php`/веб-сервере/`.htaccess`,
+   не входивших в периметр детального чтения.
+9. **Реальные значения кодов ошибок/`errorname`** (строки вида
+   `SYSTEM ERROR UA_CreateAlliance::checkLocalParams1` и коды системных
+   сообщений типа `ATTACK_MESS4`, `CANCEL_NEWB_DEFEND`) берутся из
+   таблиц `ds_systemmessage`/`ds_localizedtextlanguage` в БД — сам текст,
+   который в итоге увидит игрок, недоступен без дампа БД; в документе
+   приведены только внутренние ключи сообщений.
+10. **CR_CombView / формат `xmldata` для «вида соты»** (используется
+    почти в каждом `refresh()`) не разбирался построчно — за пределами
+    периметра выбранных 10-15 команд; его структура (список зданий,
+    ячеек, координат построек) не задокументирована здесь и потребует
+    отдельного чтения `ds/classes/CR/CR_CombView.class.php`.
