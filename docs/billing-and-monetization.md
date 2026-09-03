@@ -418,6 +418,337 @@ SponsorPay в 2010-х был офферволл-агрегатором (игро
 `commitOrder`) была удалена вместе со своей точкой входа. Отмечено как
 открытый вопрос.
 
+## 9. Денежный движок на уровне БД (`ds_money_account*`, PL/pgSQL)
+
+> Раздел написан по итогам отдельного разбора `schema.sql`
+> (`pg_dump --schema-only` живой игровой PostgreSQL БД, файл не в
+> репозитории, только структура — 499 таблиц, 451 функция, 387 триггеров),
+> в дополнение к разделу 1 выше ("Внутренняя валюта GC/SC"), который
+> описывал денежный движок только до уровня PHP-классов `ds/classes/MU/`.
+> Обозначения файла: `schema.sql:NNN`. Пересчёт **рыночных курсов биржи**
+> (отдельная, товарная механика) — не здесь, а в
+> [mechanics-economy-trade.md, раздел 5.10](mechanics-economy-trade.md).
+
+Задание требовало сверить, где реально живёт «источник истины» денежного
+учёта — в PostgreSQL или в PHP. Короткий ответ: **гибридно и не так, как
+можно было бы ожидать по именам функций** — часть, которая по названию
+выглядит центральной (`money_account_transfer_money`), на деле пустая
+заглушка, а часть, которая выглядит вспомогательной (CHECK-ограничения,
+триггеры аудита), реально и жёстко удерживает целостность баланса.
+
+### 9.1 Модель счёта
+
+`ds_money_account` (`schema.sql:16317-16327`) — один счёт на пару
+`(id_user, world_identifier)`, с UNIQUE-ограничением на эту пару
+(`ds_money_account_idx`, `schema.sql:24902`) и CHECK'ами
+`gc_amount >= 0` / `sc_amount >= 0` — то есть **уход баланса в минус
+физически невозможен на уровне БД**, а не только за счёт проверки в PHP
+(ниже, §9.4, `MU_ExecTransfer::Exec` дополнительно и явно проверяет
+`assert($amountFrom >= $summ->getAmount())` до списания, но даже если бы
+эта проверка была обойдена, CHECK-ограничение всё равно остановит
+операцию с ошибкой на уровне БД). `world_identifier` по умолчанию — `'UC'`
+(предположительно "User Cabinet" — общий кабинетный счёт, не привязанный к
+конкретному игровому миру) — это значение жёстко прописано в
+`money_create_account_with_user()` (см. §9.3).
+
+Сопутствующие таблицы: `ds_money_account_balance` — периодические снэпшоты
+баланса с полем `gc_disbalance`/`sc_disbalance` (см. §9.2);
+`ds_money_account_history` — лог **дельт** баланса, пишется автоматически
+триггером, не приложением (см. §9.4); `ds_money_account_payments` — лог
+**платежей** (тоже дельты, но привязанные к `id_list`/операции, см. §9.5) —
+заполняется явно из PHP. History и payments — это два разных, независимо
+ведущихся журнала одной и той же последовательности изменений баланса
+(один пишется триггером на `ds_money_account`, другой — вручную из
+`MU_SearchOperations::InsertPayment`), и именно их взаимную сверку
+проверяет `money_accaunt_balance()` (§9.2).
+
+### 9.2 Сверка баланса — `money_accaunt_balance` (админский аудит, не часть игрового флоу)
+
+`money_accaunt_balance(id_user, world_identifier, with_insert_result)`
+(`schema.sql:2572-2702`) сравнивает три независимых источника:
+
+1. последний снэпшот (`ds_money_account_balance`, максимум по `add_date`
+   для этого счёта);
+2. сумму дельт из `ds_money_account_payments` после этого снэпшота (то,
+   что PHP явно залогировал как платежи);
+3. сумму дельт из `ds_money_account_history` после этого снэпшота (то, что
+   триггер на `UPDATE ds_money_account` реально зафиксировал).
+
+Если сумма (2) не совпадает с суммой (3) — функция сразу возвращает
+`'BAD_CHEKSUMM'` и **гасит счёт** (`is_active = false`), даже не проверяя
+реальный баланс: это ловит ситуацию, когда баланс поменяли **в обход**
+`MU_SearchOperations::InsertPayment` (кто-то выполнил `UPDATE
+ds_money_account` без парного `INSERT INTO ds_money_account_payments`,
+например прямым SQL из админки или багом). Если чек-суммы сходятся, но
+`снэпшот.amount + Δплатежи != текущий amount` — счёт тоже гасится, с кодом
+`'DISBALANCE'`. Это аудит методом двойной записи: обе «стороны» (payments и
+history) должны сходиться с одним и тем же текущим значением на счету —
+если что-то не так на любом из трёх уровней, счёт блокируется для
+дальнейших операций (см. §9.4 — заблокированный счёт не размораживается
+автоматически, только вручную).
+
+**Вызывается только из админки, не из игрового флоу**: `with_insert_result=1`
+(пишет новый снэпшот) — из `ds/classes/MU/MU_CheckAccountsSearch.class.php:78`
+(Admin-контрол «проверка счетов»); `with_insert_result=0` (только проверка,
+без снэпшота) — из `Admin/controls/GameSettings/TradeAdmin/classes/ChechSearch.class.php:80`
+и его дубликата `ds/TradeAdmin/classes/ChechSearch.class.php:78`. То есть
+это диагностический инструмент поддержки/анти-фрода, который администратор
+запускает точечно на конкретного игрока, а не фоновая проверка, встроенная
+в каждый платёж.
+
+### 9.3 Создание счёта — два независимых триггера, не дубли
+
+`money_create_accaunt_with_userinstance` и `money_create_account_with_user`
+на первый взгляд похожи на дубли по знакомому паттерну — на деле они **не
+дублируют** друг друга, а реагируют на два разных события жизненного цикла
+аккаунта, и оба вызывают один и тот же идемпотентный
+`create_money_account(id_user, world)` (`schema.sql:653-680` — `SELECT ...
+WHERE id_user=... AND world_identifier=...`, и `INSERT`, только если строки
+ещё нет):
+
+| Триггер-функция | Триггер / событие | `world` для `create_money_account` |
+|---|---|---|
+| `money_create_account_with_user` (`schema.sql:2892-2902`) | `ds_user_tr`, `AFTER INSERT ON ds_user` (`schema.sql:31840`) | жёстко захардкожен `'UC'` |
+| `money_create_accaunt_with_userinstance` (`schema.sql:2867-2885`) | `ds_userinstance_tr`, `AFTER INSERT ON ds_userinstance` (`schema.sql:31868`) | реальный `world_identifier` мира (подзапрос к `ds_world` по `NEW.id_world`) |
+
+То есть при регистрации пользователя (`ds_user`) сразу заводится один общий
+«кабинетный» счёт `UC`, а при **первом входе в конкретный игровой мир**
+(`ds_userinstance` — привязка пользователя к миру, не сам пользователь)
+заводится отдельный счёт для этого мира. Это уточняет модель из раздела 1
+выше («GC/SC — атрибут аккаунта пользователя внутри мира»): на самом деле
+счетов у пользователя **несколько** — по одному на каждый мир, где у него
+есть `userinstance`, плюс один общий `UC`-счёт, а не один общий счёт на
+пользователя. `create_money_account` защищён от гонки только проверкой
+«`SELECT`, затем `INSERT`» (не атомарный `INSERT ... ON CONFLICT`), но
+опирается на UNIQUE-ограничение `ds_money_account_idx` (§9.1) как на
+страховку — конкурентный повторный вызов упадёт с ошибкой уникальности, а
+не создаст дубль счёта.
+
+Мелкая находка: `money_create_account_with_user()` объявлена `LANGUAGE
+plpgsql IMMUTABLE` (`schema.sql:2893`) — некорректная маркировка для
+триггерной функции с побочным эффектом (`INSERT`), несовместимая с
+контрактом `IMMUTABLE` в PostgreSQL. Практических последствий это, судя по
+всему, не имеет (PostgreSQL не проверяет `IMMUTABLE` строго для триггеров),
+похоже на скопированную по невнимательности аннотацию.
+
+### 9.4 Перевод денег между счетами — DB-функция это заглушка, реальный движок в PHP
+
+`money_account_transfer_money(id_user_from, world_from, id_user_to,
+world_to, summ, money_name)` по имени и сигнатуре выглядит как раз тем,
+что нужно для перевода денег между двумя счетами. На деле это **пустая
+функция-заглушка** (`schema.sql:2811-2820`):
+
+```sql
+CREATE FUNCTION public.money_account_transfer_money(...) RETURNS integer
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+
+BEGIN
+
+
+END;
+$$;
+```
+
+Тело буквально пустое (`DECLARE`/`BEGIN`/`END` без единой инструкции),
+функция всегда возвращает `NULL`. Поиск по всему `old-sphere/` не находит
+ни одного обращения к `money_account_transfer_money` — она не вызывается
+из PHP вообще.
+
+**Реальный перевод денег между двумя аккаунтами реализован в PHP** —
+`MU_ExecTransfer::Exec($listID, MU_EntityOperation $operation)`
+(`ds/classes/MU/MU_ExecTransfer.class.php:5-60`):
+
+```
+accountFrom = MU_SearchOperations::GetAccountData(memberFrom)   # с автосозданием через create_money_account, если счёта ещё нет
+accountTo   = MU_SearchOperations::GetAccountData(memberTo)
+assert(memberFrom.world == memberTo.world)                # перевод только внутри одного мира
+assert(memberFrom.userID != memberTo.userID)
+assert(accountFrom.IS_ACTIVE && accountTo.IS_ACTIVE)       # см. §9.2 — заблокированный аудитом счёт не может участвовать в переводе
+assert(amountFrom >= summ.amount)
+
+MU_SearchOperations::DeltaAccount(memberFrom, summ, 'MINUS')   # UPDATE ds_money_account SET gc/sc_amount = gc/sc_amount - N
+MU_SearchOperations::InsertPayment(memberFrom, summ, 'MINUS', listID)
+
+MU_SearchOperations::DeltaAccount(memberTo, summ, 'PLUS')
+MU_SearchOperations::InsertPayment(memberTo, summ, 'PLUS', listID)
+```
+
+`MU_SearchOperations::DeltaAccount()` (`ds/classes/MU/MU_SearchOperations.class.php:5-29`)
+строит `UPDATE ds_money_account SET gc_amount = gc_amount ± N WHERE
+id_user=... AND world_identifier=...` — сам перевод состоит из **двух
+последовательных прямых `UPDATE`**, каждый проходящий через триггер
+`money_account_update_history` (ниже) — единственная часть операции,
+которая реально выполняется в БД автоматически, а не по явной команде PHP.
+
+Каждое изменение `gc_amount`/`sc_amount` на `ds_money_account`
+перехватывается BEFORE UPDATE-триггером `ds_money_account_update_history`
+→ `money_account_update_history()` (`schema.sql:2827-2860`,
+`schema.sql:29271`):
+
+```
+if изменились id_user/world_identifier/add_date: RAISE EXCEPTION      -- эти поля неизменяемы
+delta_gc = NEW.gc_amount - OLD.gc_amount
+delta_sc = NEW.sc_amount - OLD.sc_amount
+if delta_gc != 0 OR delta_sc != 0:
+    if OLD.is_active == false: RAISE EXCEPTION 'Cant work with no active accaunt User: % World: %'
+    INSERT INTO ds_money_account_history (id_user, gc_amount_delta, sc_amount_delta, world_identifier, id_accaunt) VALUES (...)
+```
+
+**Аудиторский журнал (`ds_money_account_history`) ведёт сама БД**,
+независимо от того, что параллельно пишет PHP в
+`ds_money_account_payments` — именно расхождение между этими двумя
+независимо ведущимися журналами и ловит `money_accaunt_balance()` (§9.2).
+Блокировка счёта (`is_active = false`, выставляемая как раз в
+`money_accaunt_balance()`) на уровне БД жёстко запрещает любое дальнейшее
+изменение баланса — это защита сильнее, чем проверка
+`assert($accountDataFrom['IS_ACTIVE'])` в PHP: код, который не проверил
+`IS_ACTIVE` до `UPDATE`, всё равно получит ошибку от триггера.
+
+**Параллельная приложенческая блокировка** — `MU_ExecLockOperation::Lock()`
+(`ds/classes/MU/MU_ExecLockOperation.class.php`) берёт не блокировку
+БД-строки (`SELECT ... FOR UPDATE`), а собственный лок через
+`SU_Locker::Create('MONEY_ACCOUNT', 0)->lockWithTest($ID)` — тот же
+механизм, что и `ME_TurnCalc::lockComb()` для сот
+([mechanics-economy-trade.md, §2](mechanics-economy-trade.md)), только с
+типом `'MONEY_ACCOUNT'` вместо `'COMB'`, с тем же откатом на
+`USER_LOCK_DELAY`, если залочить не удалось.
+
+**Итог по разделу**: ключевая функция перевода денег между аккаунтами
+живёт **не в PostgreSQL**. `money_account_transfer_money` — мёртвая,
+никогда не реализованная DB-функция (возможно, задел на будущее, который в
+итоге сделали в PHP и забыли убрать SQL-заготовку). Реальная бухгалтерия —
+гибридная: **мутация баланса и низкоуровневая блокировка операции — в
+PHP** (`MU_ExecTransfer`/`MU_SearchOperations`/`MU_ExecLockOperation`), но
+**неприкосновенность инвариантов баланса (неотрицательность,
+неизменяемость счёта после блокировки, автоматический аудит-лог дельт)
+реально гарантирована на уровне БД** — CHECK-ограничениями (§9.1) и
+триггером `money_account_update_history`, а не только `assert()` в PHP.
+
+### 9.5 Логирование платежа — вручную из PHP, привязка к сделке проверяется в БД
+
+`MU_SearchOperations::InsertPayment()` (см. §9.4) сама пишет строку в
+`ds_money_account_payments`, беря `id_accaunt` прямым подзапросом к
+`ds_money_account`. Отдельная группа «детальных» таблиц-расширений одной
+записи в `ds_money_list` (одна строка = одна логическая денежная операция,
+`schema.sql:16455-16464`, создаётся через
+`MU_SearchOperations::InsertOperationLog`/`MU_EntityOperationLogRecord`, не
+разбирались построчно в этом заходе) — по одной на каждый тип операции:
+`ds_money_list_trade_payments`, `ds_money_list_trade_tax`,
+`ds_money_list_billing_payments`, `ds_money_list_enter`,
+`ds_money_list_exchange`, `ds_money_list_{from,to}_reserv`,
+`ds_money_list_interworld_{recive,send}`, `ds_money_list_pvp`,
+`ds_money_list_reserv`, `ds_money_list_service_payment` — тот же паттерн
+«базовая таблица + одна таблица-расширение на подтип», что и у
+`ds_combhasresource`/`ds_attribute` для ресурсов сот
+([mechanics-economy-trade.md, §1.2](mechanics-economy-trade.md)).
+
+Две из них имеют DB-level проверку целостности через триггер —
+`ds_money_list_trade_payments`/`ds_money_list_trade_tax` (торговая выплата
+продавцу и торговый налог, ср. `TRADE_PAYMENT`/`PAY_TRADE_TAX` из раздела 1
+выше и [mechanics-economy-trade.md, §5.6/§5.8](mechanics-economy-trade.md)):
+оба BEFORE INSERT-триггера — `ds_money_list_trade_payments_insert`
+(`schema.sql:1167-1189`) и `ds_money_list_trade_tax`
+(`schema.sql:1196-1218`, тело идентично первому построчно, лишь другое имя
+функции) — требуют, чтобы для `NEW.id_trade` существовала строка в
+`ds_trade_history` с `id_to_category = 4` (категория `MONEY`), иначе
+`RAISE EXCEPTION 'Cant find trade for this payment'`. Нельзя записать
+торговый платёж/налог, не имея за ним реальной денежной сделки в истории
+торгов — DB-уровневая защита от «платежей из воздуха», не дублируемая
+явной проверкой в самих PHP-классах `MU_ExecOperationTradePayment`/
+`MU_ExecOperationPayTradeTax` (эти два класса не разбирались построчно в
+этом заходе).
+
+### 9.6 Версионирование цен на «услуги» — `ds_money_payments_price`
+
+`MU_SearchOperations::GetActionPrice()` (раздел 1 выше) читает
+`ds_money_payments_price WHERE id_money_action=... AND is_current` — ровно
+одна активная цена на тип денежного действия в любой момент времени. Этот
+инвариант («только одна `is_current`-строка на действие») поддерживается
+**не в PHP**, а парой триггеров на `ds_money_payments_price`:
+
+- `ds_money_payments_price_tr1` (BEFORE INSERT →
+  `ds_money_payments_price_insert`, `schema.sql:1225-1239`) — перед
+  вставкой новой цены гасит (`is_current=false`) предыдущую активную цену
+  для этого `id_money_action`; PHP просто вставляет новую строку и не
+  обязан сам заботиться о деактивации старой;
+- `ds_money_payments_price_tr` (BEFORE DELETE, `FOR EACH STATEMENT` — на
+  весь `DELETE`, не построчно! → `tr_ds_money_payment_price_insert`,
+  `schema.sql:11589-11600`) — **безусловно** `RAISE EXCEPTION 'Cant update
+  or delete table ds_money_payments_price'` — таблица истории цен
+  **неудаляема на уровне БД** через обычный SQL, если только не в обход
+  триггеров. Та же безусловная защита предусмотрена (но не подключена) и
+  для `ds_money_account_history` — см. §9.7.
+
+### 9.7 Заготовки без единого подключённого триггера
+
+Отдельная находка: помимо мёртвой `money_account_transfer_money` (§9.4), в
+схеме есть ещё пять функций явно триггерного назначения (по имени и по
+`RETURNS trigger`), которые **не привязаны ни к одному триггеру ни на
+одной таблице** — поиск по всем `CREATE TRIGGER ... EXECUTE PROCEDURE` в
+`schema.sql` не находит для них ни одного использования:
+
+| Функция | `schema.sql` | Что делает тело функции (никогда не выполняется) |
+|---|---|---|
+| `money_accaunt_check_delete_payment` | 2709-2729 | При удалении строки из `ds_money_account_payments` — удаляет связанную строку из `ds_money_account_actions`, если это была последняя выплата по действию |
+| `money_accaunt_check_update_history` | 2736-2745 | Безусловный `RAISE EXCEPTION 'Cant update or delete this table!'` — похоже на заготовку защиты для `ds_money_account_history`, аналогичную реально подключённой защите `ds_money_payments_price` (§9.6) |
+| `money_accaunt_check_update_payments` | 2752-2759 | Тело — заглушка, `RETURN NEW`; проверка закомментирована прямо в исходнике функции (`--RAISE EXCEPTION 'Cant update or delete this table!'`) |
+| `money_accaunt_check_update_reserv` | 2766-2772 | Безусловный `RAISE EXCEPTION 'Cant update this update!'` |
+| `money_account_check_update_balance` | 2797-2804 | Пустой проход, `RETURN NEW` без всякой проверки |
+
+Примечательно: `money_accaunt_check_delete_payment` ссылается на таблицу
+`ds_money_account_actions`, которой **вообще нет в этом дампе схемы**
+(единственное упоминание этого имени во всём `schema.sql` — внутри тела
+самой этой неиспользуемой функции) — то есть даже если её когда-нибудь
+подключить как триггер, она немедленно упадёт с ошибкой «таблица не
+существует». Похоже на остаток более старой версии схемы, где
+`ds_money_account_payments` ссылалась на отдельную таблицу «действий»
+(`id_action`), впоследствии убранную или переименованную — в текущей
+`ds_money_account_payments` (`schema.sql:16393-16402`) колонки `id_action`
+тоже нет, только `id_list`.
+
+Это тот же паттерн «недоделанный/заброшенный вариант рядом с рабочим»,
+который уже задокументирован для PHP в
+[mechanics-economy-trade.md, раздел 3](mechanics-economy-trade.md)
+(`ME_KillArmysForUpkeep`/`...Old` vs `...2`) и для товарных курсов в
+[том же документе, раздел 5.10](mechanics-economy-trade.md)
+(`trade_courses_recount` vs `trade_courses_recount2`) — только здесь он
+проявляется как пять PL/pgSQL-функций, простаивающих в схеме без единого
+`CREATE TRIGGER`, который бы их когда-либо вызвал.
+
+### 9.8 Каталог типов действий — тоже диспетчеризуется из БД
+
+Не входило явно в список функций для разбора, но обнаружено по цепочке
+вызовов из `money_account_transfer_money`/`MU_ExecTransfer`:
+`ds_money_action_types` (`schema.sql:16421-16436`) — это не просто
+справочник имён (`action_name`, те самые `TRADE_PAYMENT`/
+`EXCHANGE_CREDITS`/`PAY_TRADE_TAX`/`MOVE_FROM_RESERV`, которые раздел 1
+этого документа перечисляет через `DE_MoneyActionType`), а **таблица
+диспетчеризации**: колонка `handler_class_name` — буквальное имя
+PHP-класса, который `MU_ControlExecOperations::ExecOperation()`
+инстанцирует через `new $handlerName($operation)`
+(`ds/classes/MU/MU_ControlExecOperations.class.php:11-13`) — то есть
+**какой именно `MU_Exec*`-обработчик выполнит операцию, определяется
+строкой в БД**, а не `switch`/маппингом, зашитым в PHP. Остальные колонки
+(`need_additionl_id`, `from_world`/`to_world`, `id_user_from`/`id_user_to`,
+`need_gate_key`, `log_action_table`, `have_price`) читаются в
+`MU_EntityOperation::validate()` как ограничения, специфичные для типа
+действия (например, `RECIVE_INTERWORLD_TRANSFER` обязан иметь заданными
+`transferFromWorld`/`transferToWorld`).
+
+Мелкая находка о рассинхроне PHP/БД по ходу разбора: колонка `have_price`
+в БД используется в `MU_EntityOperation::validate()`/`setSummFromActionPrice()`
+через `$this->actionType->isHavePrice()`, но в самом
+`DE_MoneyActionType::__construct()` присвоение `$this->havePrice = ...`
+**закомментировано целиком**
+(`ds/classes/DE/DE_MoneyActionType.class.php:139-145`) — то есть
+`isHavePrice()` в текущем коде всегда возвращает `null` независимо от
+реального значения `have_price` в БД. `schema.sql` — только структура, без
+данных, поэтому не установлено, есть ли в проде действия с `have_price =
+true`, для которых это давало бы практический эффект; отмечено как
+открытый вопрос, требующий доступа к данным конкретного мира.
+
 ## Безопасность: обнаруженные захардкоженные секреты
 
 Ниже — все места, где в коде монетизации/биллинга обнаружен захардкоженный

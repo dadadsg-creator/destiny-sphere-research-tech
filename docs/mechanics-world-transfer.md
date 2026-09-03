@@ -72,13 +72,125 @@ id_world_from, db_to, id_world_to, transfer_type, status, transfer_date, temp_co
 | 2 | перенос успешно завершён (финализирован) | `SI_SearchFinalizeTransfer::UpdateTransferStatus()` (`SI_SearchFinalizeTransfer.class.php:251-261`) |
 | 3 | ручной переезд из этого (уже отработанного) исходного мира заблокирован навсегда | `SI_SearchFinalizeTransfer::DisableManualTransfer()`, вставляет строку `transfer_type=5, status=3` (`:99-114`) |
 
-Отдельная таблица `ds_worldtransfer_allowed_user (id_userinstance, transfer_required, transfer_done)`
-хранит флаг «этому инстансу МОЖНО/НУЖНО переехать», выставляемый плановым обходом (1.4). Таблица
-`ds_worldtransfer_worlds_relation` (+`ds_worldtransfer_worlds_list`) описывает граф разрешённых
-направлений мир→мир: `only_for_premium`, `free` (бесплатно или только по персональному разрешению),
-`frequency` (минимальный интервал в часах между повторными переездами по этой конкретной паре миров),
-`priority` (порядок перебора при автоподборе цели). Таблица `ds_worldtransfer_log` — журнал одного
-технического исполнения переноса (см. 1.9), с булевыми флагами каждого этапа финализации.
+Отдельная таблица `ds_worldtransfer_allowed_user (id_userinstance, add_date, transfer_required,
+transfer_done)` хранит флаг «этому инстансу МОЖНО/НУЖНО переехать», выставляемый плановым обходом
+(1.4). Таблица `ds_worldtransfer_worlds_relation (id_world_from, id_world_to, only_for_premium, free,
+priority, frequency)` (+`ds_worldtransfer_worlds_list (id_worldtransfer_world, world_identifier)`,
+трёхбуквенный код мира) описывает граф разрешённых направлений мир→мир: `only_for_premium`, `free`
+(бесплатно или только по персональному разрешению), `frequency` (минимальный интервал в часах между
+повторными переездами по этой конкретной паре миров, БД-дефолт — **60 часов**, если для пары не
+задано иное), `priority` (порядок перебора при автоподборе цели). Таблица `ds_worldtransfer_log` —
+журнал одного технического исполнения переноса (см. 1.9), с булевыми флагами каждого этапа
+финализации (структура подтверждена по `schema.sql`: `id_worldtransfer_log, id_user, id_world,
+transfer_date, account_freezed, transfer_disabled, checksum_validated, added_to_delete_list,
+added_to_collection, transfer_status_updated, transfer_valid`).
+
+### 1.2.1. Сверка со схемой БД (`schema.sql`, pg_dump живой игровой БД) — триггеры на `ds_worldtransfer`
+
+Этот раздел добавлен по прямому чтению SQL: `pg_dump --schema-only` живого мира (файл `schema.sql`,
+в репозиторий не входит, read-only источник) даёт то, что не видно из PHP построчно — реальные
+PL/pgSQL-триггеры, привязанные к `ds_worldtransfer`/`ds_worldtransfer_allowed_user`/`ds_comb`/
+`ds_combname`/`ds_free_ring_transfer`. Два из них ощутимо уточняют, а местами расходятся с картиной
+из разделов 1.2–1.9, реконструированной только по PHP.
+
+**`worldtransfer_insert()` — `ds_worldtransfer` не append-log, INSERT может стать UPDATE.**
+`CREATE TRIGGER ds_worldtransfer_tr1 BEFORE INSERT ON ds_worldtransfer FOR EACH ROW EXECUTE
+PROCEDURE worldtransfer_insert()` (`schema.sql:31896`). Тело функции (`schema.sql:12025-12076`):
+при попытке вставить новую строку функция ищет уже существующую строку с тем же `(id_user, db_from,
+id_world_from)` и максимальным `transfer_date`. Если такая находится — **вставки не происходит**
+(`RETURN NULL`): вместо этого **все** строки с этим `(id_user, db_from, id_world_from)` получают
+`status = 2`, а затем именно та, «последняя» строка перезаписывается на месте: `status = NEW.status,
+db_to = NEW.db_to, id_world_to = NEW.id_world_to, transfer_date = now()`. Если подходящей строки нет —
+обычный `INSERT` (`RETURN NEW`).
+
+Практически это значит: `ds_worldtransfer` — не история попыток (одна строка на одну заявку), а
+«текущее состояние заказа на пару (пользователь, мир-источник)» — повторная заявка из уже
+использованного мира-источника не добавляет новую строку, а переписывает самую свежую существующую,
+независимо от её прежнего статуса (отменена, завершена, заблокирована). Ни один из читанных классов
+(`SU_FreeWorldTransfer`, `DS_RecieverWorld`, `SI_SearchFinalizeTransfer`) этого не учитывает — они
+просто делают `INSERT`, ожидая новую строку. Практическое следствие для шага 4 в разделе 1.9
+(`_disableSrcTransfer`, блокирующая вставка `transfer_type=5, status=3`): к этому моменту у
+пользователя уже есть строка с тем же `db_from`/`id_world_from` — это только что обработанный
+исходный заказ — поэтому «блокирующая вставка» на самом деле **не создаёт отдельную строку**, а
+переписывает эту же строку заказа на `status=3` (с `db_to`/`id_world_to` из блокирующей записи).
+Далее шаг 6 («`ds_worldtransfer.status` выставляется в `2`») должен адресовать её отдельным `UPDATE
+... WHERE id_worldtransfer = <PK>` (по первичному ключу, не через этот триггер), чтобы итоговое
+состояние совпало с описанным в разделе 1.9 — точный SQL этого шага не читался построчно в исходном
+анализе, поэтому это **предположение**, а не подтверждённый факт.
+
+Есть и побочный эффект: внутренний `UPDATE ... SET status = 2` внутри `worldtransfer_insert()` — это
+обычный `UPDATE`, поэтому он запускает соседний AFTER-триггер `ds_worldtransfer_stat()` (см. ниже) для
+каждой задетой строки. Если у задетой строки уже стоял `status = 2`, в лог `ds_worldtransfer_stat`
+всё равно добавляется новая запись — то есть при каждой новой попытке переезда из уже использованного
+мира-источника в `ds_worldtransfer_stat` может дублироваться запись об уже когда-то завершённом
+переезде. Не проверено, мешает ли это `_GetUserTransferData()` в разделе 1.9.1 (она ищет **любую**
+подходящую запись, возможно это не критично) — отмечено как риск, не как подтверждённый баг.
+
+**`ds_worldtransfer_stat()` — источник журнала для восстановления из «Чёрной Дыры», теперь с точной
+структурой.** `CREATE TRIGGER ds_worldtransfer_tr AFTER UPDATE ON ds_worldtransfer FOR EACH ROW
+EXECUTE PROCEDURE ds_worldtransfer_stat()` (`schema.sql:31889`). При `NEW.status = 2` вставляет строку
+`(id_user, db_from, db_to, id_world_from, id_world_to, transfer_date=now())` в `ds_worldtransfer_stat`
+(`schema.sql:1458-1471`, структура таблицы — `schema.sql:22937-22945`). Это и есть «журнал уже
+выполненных переносов», упомянутый в разделе 1.9.1 без структуры — раньше не было известно, какими
+именно колонками и по какому условию (`status=2`, через `UPDATE`, не `INSERT`) он наполняется.
+
+**`drop_transfer_to_drk2()` — НЕ про «Чёрную Дыру», и сейчас не подключена ни к одному триггеру.**
+Название наводит на мысль о «Чёрной Дыре» (`hell`, dbId=9, id_world=3, раздел 1.9.1), но это неверно —
+здесь задание на разбор ошибалось в гипотезе, и это стоит явно зафиксировать. Тело функции
+(`schema.sql:858-871`):
+
+```sql
+IF NEW.db_to = 'level_2_drk' AND NEW.id_world_to = 1 THEN
+    NEW.status = 2;
+    NEW.transfer_date = now() - '10 day'::interval;
+END IF;
+RETURN NEW;
+```
+
+`'level_2_drk'` — это не сокращение от «дыра», а буквальный `server`-лейбл записи `dbId=2` в массиве
+`$GLOBALS['dbWorldAccess']` (`ds/config/settings.php:59-68`): `dbname='drakon2'`, `server='level_2_drk'`
+— мир **«Дракон»**, второй уровень («level_2»): `drk` = «ДРаКон», не «дыРКа». Этого мира нет в
+текущем player-facing списке миров (раздел 1.12) — похоже на уже выведенный из эксплуатации мир
+прежней версии сайта/более старого среза конфигурации (сам `dbWorldAccess`-массив в `settings.php`,
+где это найдено, целиком относится к ветке `if ($uid==201 || …)`, то есть к конкретной, возможно
+устаревшей, версии сайта — см. `multi-world-architecture.md` про переключение версий по `posix_getuid()`).
+
+Функция задумана как «глушитель»: если новый заказ на перенос целится именно в
+`db_to='level_2_drk'`/`id_world_to=1`, она подменяет его перед вставкой на уже как бы «успешно
+завершённый 10 дней назад» — так `SU_ExecWorldTransfer` (который выбирает только `status=1`, раздел
+1.5) никогда не подхватит такую заявку, и она тихо «исчезает» без ошибки игроку. Правдоподобный трюк
+для отключения направления на уже не существующий мир без правки `ds_worldtransfer_worlds_relation`.
+
+**Но**: в этом дампе схемы нет ни одного `CREATE TRIGGER`, ссылающегося на `drop_transfer_to_drk2`
+(проверено по всему `schema.sql`, `grep` находит только определение функции) — то есть функция
+объявлена, но **не подключена** ни к `ds_worldtransfer`, ни к какой-либо другой таблице на момент
+снятия этого дампа. Мертва наравне с уже описанными в PHP примерами недостижимого кода (закомментированный
+`_freezUser()` в разделе 1.10, сломанный путь `EH_ArmyMovementTo`/`EH_EventCreate` в
+`mechanics-events-turns.md` §4.1). Если направление на «Дракон, уровень 2» ещё где-то физически
+присутствует в `ds_worldtransfer_worlds_relation`, заказы на него сейчас пройдут по обычному
+конвейеру, а не будут тихо гаситься этим триггером — не проверено, есть ли такая строка в живых
+данных (в этом срезе — только схема, без данных).
+
+**`insert_to_allowed_transfer()` — тоже orphaned-триггер, для `ds_worldtransfer_allowed_user`.**
+Функция объявлена (`schema.sql:1758-1789`) и реализует «не понижать `transfer_required` с `true` на
+`false`, а при совпадении id_userinstance — `UPDATE` вместо `INSERT`», но ни одного `CREATE TRIGGER`,
+использующего её, в дампе тоже нет. Живая защита от дублей — только на стороне PHP:
+`DS_RecieverWorld::AllowTransferForUser($UIID, $worldID, $dbId, $required)`
+(`DS_RecieverWorld.class.php:135-181`) сам делает `SELECT ... WHERE id_userinstance=X AND
+transfer_required=$r AND transfer_done=false` перед `INSERT`, но проверяет точное совпадение
+`transfer_required`, а не просто «есть ли уже строка». Если у инстанса раньше появилась строка с
+`transfer_required=false` (шаг «Разрешение», раздел 1.4.2, пункт 1), а затем срабатывает шаг
+«Требование» (`transfer_required=true`, пункт 2) — PHP-проверка не находит совпадения и вставляет
+**вторую** строку для того же `id_userinstance`, вместо того чтобы обновить первую (то, что умел бы
+делать orphaned-триггер, будь он подключён). Не проверено, ломает ли задвоение строк что-то ниже по
+цепочке — открытый вопрос.
+
+Отдельно, в том же файле, соседний метод `DS_RecieverWorld::RequireTransferForUser($UIID, $dbId)`
+(`DS_RecieverWorld.class.php:182-201`) содержит буквальную опечатку в SQL — `WHERE id_userinstance
+$UIID` без оператора `=`. Это должно приводить к синтаксической ошибке PostgreSQL при каждом реальном
+вызове; идущий следом `assert(empty($common->errormsg))` либо означает, что эта ветка на практике
+никогда не вызывается (не проверено, кто её зовёт), либо что ассерты отключены в проде и ошибка
+просто молча проглатывается — не выяснено в рамках этого прохода, стоит перепроверить отдельно.
 
 ### 1.3. Кто может инициировать перенос
 
@@ -446,6 +558,14 @@ INTO` вместо `INSERT INTO`, что дополнительно подтве
 существующего игрока между мирами**, а способ раздать «стартовый набор» построек новому инстансу —
 упомянуто здесь только чтобы не спутать с собственно межмировым переносом при последующем чтении кода.
 
+Отдельная находка по схеме БД, тоже касающаяся создания **нового** (не переносимого) инстанса:
+`WorldUtils::addNewInstance()` (`Admin/include/WorldUtils.php:409-411`, дублируется в
+`ds/classes/WorldUtils.class.php`) создаёт строку `ds_userinstance` не прямым `INSERT`, а вызовом
+PL/pgSQL-функции `SELECT insertUserInstance(id_user, id_race, id_world) AS uiid`
+(`schema.sql:2081-2100`), которая жёстко выставляет `LastRefresh = now()` при создании. Это закрывает
+открытый вопрос №9 из `mechanics-events-turns.md` §14 (где не было найдено место инициализации
+`lastrefresh` для нового игрока) — подробности и точная формулировка там же.
+
 ### 1.12. Player-facing подтверждения и расхождения (источник: `https://destinysphere.ru/?p=user_move`)
 
 Официальная справочная страница сайта для игроков (не код) описывает межмировой переезд с точки
@@ -809,6 +929,29 @@ in-memory карте `MU_InterworldController::$tmp[username][worldShortName] +=
   переживает** переезд по кольцу и должно быть заново построено на новом месте. Никакие другие
   здания/юниты/наука не трогаются вообще — в отличие от Части 1, тут физически нечему потеряться,
   кроме этого одного здания.
+- **Подтверждение и уточнение по схеме БД (`schema.sql`)** — каждое изменение координат/имени соты
+  автоматически логируется PL/pgSQL-триггером на уровне БД, независимо от того, кто вызвал `UPDATE`
+  (`SU_ChangCombCoords`, billing-шлюз из 3.3 или что-то ещё не разобранное):
+  - `comb_coords_change()` (`CREATE TRIGGER ds_comb_tr BEFORE UPDATE ON ds_comb`, `schema.sql:535-570`,
+    `:29236`) — при изменении `id_combcomplex`/`combnumber` пишет строку `(id_comb, old_combnumber,
+    new_combnumber, old_id_complex, new_id_complex, date)` в `ds_comb_coords_history`. Ровно то, что
+    ожидается от временного `combnumber=7`-обмена в `SU_ChangCombCoords::change()`: каждая сота даёт
+    **две** строки истории (промежуточная и финальная перестановка), не одну.
+  - `combname_change()` (`CREATE TRIGGER ds_combname_tr BEFORE UPDATE ON ds_combname`,
+    `schema.sql:577-627`, `:29243`) — при изменении `combname` логирует `(id_comb, old_combname,
+    new_combname, date)` в `ds_combname_history`, но **до того** ещё и сама валидирует новое имя на
+    уровне БД: уникальность без учёта регистра (`RAISE EXCEPTION 'New combname not unique!'`), длина
+    3–20 символов, разрешённые символы `^[a-zA-Z0-9_-]+$`. Это независимое, DB-level подтверждение
+    того, что делает `SI_ExecRestoreComb::_testCombName()` при восстановлении после межмирового
+    переноса (раздел 1.8) — конфликт имени соты в новом мире решается добавлением случайного
+    3-значного суффикса именно потому, что без этого сработало бы вот это самое исключение БД.
+  - `ds_free_ring_transfer_log()` (`CREATE TRIGGER ds_free_ring_transfer_tr AFTER INSERT OR UPDATE ON
+    ds_free_ring_transfer`, `schema.sql:1095-1108`, `:29257`) — как только у заявки в
+    `ds_free_ring_transfer` одновременно `transfer_complite = true` и заполнен `transfer_date`,
+    автоматически пишется строка `(id_user, id_world, transfer_date)` в отдельную таблицу
+    `ds_free_ring_transfer_log` — журнал уже исполненных переездов по кольцу, ранее в этом документе
+    не упоминавшийся (не путать с `ds_worldtransfer_log`/`ds_worldtransfer_stat` из Части 1 — это
+    отдельная, третья по счёту лог-таблица, специфичная для Части 3).
 
 ### 3.3. Код: платные варианты (без ограничения по частоте)
 

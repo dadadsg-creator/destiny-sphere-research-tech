@@ -865,6 +865,95 @@ mail.ru, Facebook) и отсутствие функций wall-posting/invite/sh
 — CDATA-дочерний элемент, а не атрибут (см. также
 `protocol-client-server.md` §9).
 
+### 8.8. Серверная сторона VK-логина — отдельный проход по `schema.sql` и PHP
+
+**Сервер: `schema.sql`, `old-sphere/ds/classes/{GE,DS}/*.php`, `old-sphere/
+ds/config/settings.php`.** Клиентская сторона VK-интеграции (`contact.as`,
+§8.5) была разобрана без привязки к серверу. Отдельным проходом это
+дополнено по свежему дампу схемы БД (`schema.sql`, вне `git`) и PHP-классам
+игрового движка — чтобы понять, куда клиент реально шлёт данные VK-логина.
+
+**Главная находка: у ВКонтакте нет ничего общего с таблицей `ds_oauthinfo`.**
+`ds_oauthinfo` (`schema.sql:16870-16875`: `open_key`, `secret_key`,
+`token_username`, `game_uid`) по именам колонок выглядит как классическое
+хранилище OAuth 1.0a-токенов (`open_key`/`secret_key` ~ `oauth_token`/
+`oauth_token_secret`) — и это действительно так, но её реальные потребители
+(`GE_SearchStart::GetUserIdByToken`/`GetUserByToken`/`GetUserIdByMetaUALogin`,
+`GE_SearchStart.class.php:36-67`) обслуживают только две **другие**
+интеграции:
+- **Klase.lt** (литовский портал) — `GE_Login.class.php:143-184`
+  (`_checkKlaseLogin()`): классический OAuth 1.0a, `GetToken($callback_url)`/
+  `GetUserData()` (глобальные функции, не входящие в разобранный набор
+  классов — не найдены нигде в архиве), куки `oauth_token`/
+  `oauth_token_secret`, затем `new GE_KlaseLogin($token)`. **Класс
+  `GE_KlaseLogin` нигде не найден в этом архиве** (`ds/classes/GE/
+  GE_KlaseLogin.class.php` отсутствует, хотя на него есть прямая ссылка в
+  коде) — не домысливать его поведение, известно только, что он принимает
+  `$token` с полями `->key`/`->secret` (по сигнатуре `GE_SearchStart::
+  GetUserByToken`, которая их читает).
+- **Meta.ua** (украинский портал) — `GE_MetaUALogin.class.php`, вызывает
+  `GE_SearchStart::GetUserIdByMetaUALogin($userinfo)` (поиск по
+  `token_username`).
+
+VKontakte в этой части схемы не участвует вообще.
+
+**Как реально привязан VK-аккаунт.** У `ds_user` есть отдельная колонка
+`id_user_vkontakte` — числовой VK ID прямо на записи пользователя (не в
+`ds_oauthinfo`). Три метода в `DS_User.class.php`:
+- `GetByIDVkontakte($id)` (`DS_User.class.php:574-594`) — `id_user` по VK ID;
+- `GetIDVkontakteByUserId($id)` (`:635-655`) — обратный поиск;
+- `InsertUserVkontakte($idVkontakte, $userName)` (`:657-699`) — создаёт
+  нового `ds_user` с `id_user_vkontakte` и **без пароля и email**
+  (`Password`/`Email` = `NULL`) — то есть это полноценная альтернативная
+  регистрация «через ВК», а не просто привязка к уже существующему
+  аккаунту.
+
+Кто это использует:
+- `GE_ExecGetPremiumPresent::GetPremPresentVk($userIdVkontakte)`
+  (`GE_ExecGetPremiumPresent.class.php:104-130`) — выдаёт премиум-подарок
+  владельцу привязанного VK-аккаунта. **Ни одного вызова этого метода не
+  найдено нигде в архиве** — похоже на мёртвый код или остаток
+  promo-кампании конкретного VK-приложения; не исключено, что вызывался
+  из отсутствующего в архиве `authorization.php` (см. ниже).
+- `UA_ComplexView.class.php:414-417` — при `VERSION_NAME == 'VKONTAKTE'`
+  добавляет `combData['VKUID'] = DS_User::GetIDVkontakteByUserId(...)` в
+  XML-ответ `combcomplex`/`refresh`. **Это закрывает открытый вопрос
+  документа о параметре `vk` в `sota.createComplex(ring, complex, vk)`**
+  (§8.4) — `vk` и есть `VKUID`, положенный сервером в ответ.
+- Админка: `Admin/controls/Players/{UserInfo,EditUser/UserInfo}/index.php`
+  упоминают `Vkontakte` — судя по всему, отображают привязанный VK ID в
+  карточке игрока (построчно не проверялось, вне периметра задачи).
+
+**`VERSION_NAME == 'VKONTAKTE'` — отдельная, полноценная версия сайта.**
+Наряду с `RU_UNLIM`/`LIMITED`/`RU_CLASSIC` (объявлены в
+`ds/config/settings.php:101,138,315`) и `LOCAL`/`LITHUANIA`/`TEST`/
+`DE_TEMP` (перечислены в `ds/chatAuthorize.php`, см. раздел про чат в
+[admin-panel.md](admin-panel.md) §2.4.1), в коде есть отдельная ветка
+`VERSION_NAME == 'VKONTAKTE'` (собственный `define()`-блок этой версии в
+снимке `settings.php` из этого архива отсутствует — видны только точки
+потребления константы), которая меняет игровые правила под VK-аудиторию:
+- email не обязателен при регистрации (`DE_User.class.php:112`);
+- приватный мир/сообщения адресуются по координатам базы, а не по
+  игровому нику (`UA_PrivatePeace.class.php:40-107`) — потому что у
+  VK-пользователя может не быть обычного логина;
+- письма несуществующим игровым логинам молча отбрасываются вместо ошибки
+  (`UA_SendMessage.class.php:414-417`);
+- «мирные часы» перед атакой обнуляются (`GL_CanAttackComb.class.php:
+  369-372`);
+- письмо-напоминание об неактивности перед авто-удалением аккаунта не
+  отправляется (`SU_DeleteDeadUsers.class.php:167`).
+
+**Открытый вопрос, а не находка: сама точка входа не найдена.**
+`SPHERE_client/DS_KONTAKT_MODULE/VKGATE.as:9` хардкодит `mainurl =
+"http://vk.destinysphere.ru/ds/authorization.php"` — это, судя по всему,
+и есть настоящий обработчик входа, который проверяет MD5-подпись VK API
+(см. §8.5) и вызывает `DS_User::InsertUserVkontakte`/`GetByIDVkontakte` +
+стартует сессию. **Файла `ds/authorization.php` нет нигде в этом архиве**
+(проверено поиском по всему репозиторию) — как и класс `GE_KlaseLogin`
+выше, это не домысливается, а честно отсутствует: либо не попал в
+переданный дамп, либо жил только на инфраструктуре `vk.destinysphere.ru`,
+которая не архивирована в этом репозитории.
+
 ---
 
 ## 9. Открытые вопросы
@@ -962,3 +1051,12 @@ mail.ru, Facebook) и отсутствие функций wall-posting/invite/sh
     ни в одну, ни в другую сторону; вместо неё в дампах логина нашёлся
     отдельный, ранее не задокументированный механизм `turing=`
     (см. `protocol-client-server.md` §3.1).
+13. **Реальный обработчик VK-логина (`ds/authorization.php`) и класс
+    `GE_KlaseLogin` не найдены в архиве** (см. §8.8) — на оба есть прямые
+    ссылки в клиентском (`VKGATE.as`) и серверном (`GE_Login.class.php`)
+    коде соответственно, но самих файлов в `old-sphere/` нет. Это значит,
+    что финальный шаг VK-логина — проверка MD5-подписи VK API и вызов
+    `DS_User::InsertUserVkontakte`/`GetByIDVkontakte` — восстановлен только
+    по косвенным уликам (какие методы существуют и что они делают), а не
+    прочитан напрямую. Не переносить в новый клиент/сервер без явной
+    отдельной реализации этого шага с нуля.
