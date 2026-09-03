@@ -10,3 +10,8 @@
 # OS/editor cruft
 Thumbs.db
 desktop.ini
+
+# SVN metadata (SPHERE_client/ is an SVN checkout) - pristine copies under
+# .svn/ hold pre-redaction originals of files we've since redacted; never
+# let these be committed even if SPHERE_client/ itself gets added later.
+.svn/

@@ -380,8 +380,8 @@ SponsorPay в 2010-х был офферволл-агрегатором (игро
 посмотреть витрину и т.п.), игра формирует "авторизованную" ссылку без
 повторного логина:
 
-- `ds/billing.php:21` — `Location: https://billing.destinysphere.ru/LoginOutside.php?partner_id={BILLING_PARTNER_ID}&user_id={uid}&hash={md5(md5($_SESSION['s_pass']."5GhkdoWM94mI"))}` (+ `mode`/`method`/`quantity` пробрасываются из query),
-- то же самое (тот же хардкод соли `5GhkdoWM94mI`) в
+- `ds/billing.php:21` — `Location: https://billing.destinysphere.ru/LoginOutside.php?partner_id={BILLING_PARTNER_ID}&user_id={uid}&hash={md5(md5($_SESSION['s_pass']."REDACTED_API_SECRET"))}` (+ `mode`/`method`/`quantity` пробрасываются из query),
+- то же самое (тот же хардкод соли, см. запись [P] в `REDACTED_CREDENTIALS.txt`) в
   `ds/classes/UserAction.class.php:152` (используется для ссылки "пополнить
   золото" внутри XML-протокола игрового клиента) и в
   `ds/language/R/user_cabinet_payment_services.lang:115` (ссылка "пополнить"
@@ -781,16 +781,18 @@ GitHub (заменена на `REDACTED_API_SECRET`/`REDACTED_DB_PASSWORD`) — 
 
 | Файл : строка | Значение (как есть в коде) | Что защищает |
 |---|---|---|
-| `ds/classes/BG/BG_Common.class.php:22` | `'secretmasafaka'` | **Главный секрет всего входящего биллингового шлюза** `ds/gate/billing_receiver.php` — подписывает/проверяет буквально все действия `BG_*` (начисление денег `money_enter`, выдача премиума `premium`, чтение баланса `balance`, списание `drawout_credits`, авторизация пользователя `user_auth*` и т.д., см. раздел 6). Единственная реальная защита этого шлюза, так как вторая проверка (GateKey) отключена безусловным `return;` на строке 147 того же файла. |
-| `ds/gate/sponsorpay.php:5` | `'voranerpsolao2003'` | Секрет для проверки подписи постбэка SponsorPay (используется как `$controlworld` в `UC_SponsorPay::checkSign()`, `ds/classes/UC/UC_SponsorPay.class.php:39-43`) — от него зависит, можно ли подделать зачисление денег через SponsorPay-постбэк. |
-| `ds/gate/classes/SMS_TranslateParamsFromRamblerPlus.class.php:97` | `'annita'` | Часть строки для проверки `Digest` во входящих данных от SMS-агрегатора Rambler+ (`md5($TransactionId.':'.$ExtTransactionId.':'.$Amount.':'.$Custom.':'.$Service.':annita')`) — то есть это факто общий секрет с Rambler+ для подтверждения SMS-оплаты. |
-| `ds/gate/sitepartners.php:15` | `'partnerka_zaebala'` | Секрет для удалённого API управления партнёрами (`add`/`upd`/`del` в `ds_partner`, включая процент вознаграждения) — `md5($secretWord.$_REQUEST['email'])`. Утечка этого значения потенциально позволяет создавать/менять партнёров и их проценты выплат удалённо. |
-| `ds/billing.php:21`, `ds/classes/UserAction.class.php:152`, `ds/language/R/user_cabinet_payment_services.lang:115` | `'5GhkdoWM94mI'` | Статичная "соль", добавляемая к паролю сессии при формировании SSO-хэша для перехода на `billing.destinysphere.ru/LoginOutside.php`. Ниже критичности остальных (нужен ещё и пароль пользователя), но всё равно статичный секрет в открытом виде, задействованный в авторизации на биллинге. |
-| `ds/gate/gameleads.php:6` | `'dsgstat'` | Секрет для входящего API статистики лидов (`ds/gate/gameleads.php`, отдаёт агрегированную статистику пользователей по XML) — проверяется как `$pkey` и как часть подписи `md5($pkey.$date_from.$date_to)`. |
+| `ds/classes/BG/BG_Common.class.php:22` | `REDACTED_API_SECRET` (см. [L]) | **Главный секрет всего входящего биллингового шлюза** `ds/gate/billing_receiver.php` — подписывает/проверяет буквально все действия `BG_*` (начисление денег `money_enter`, выдача премиума `premium`, чтение баланса `balance`, списание `drawout_credits`, авторизация пользователя `user_auth*` и т.д., см. раздел 6). Единственная реальная защита этого шлюза, так как вторая проверка (GateKey) отключена безусловным `return;` на строке 147 того же файла. |
+| `ds/gate/sponsorpay.php:5` | `REDACTED_API_SECRET` (см. [M]) | Секрет для проверки подписи постбэка SponsorPay (используется как `$controlworld` в `UC_SponsorPay::checkSign()`, `ds/classes/UC/UC_SponsorPay.class.php:39-43`) — от него зависит, можно ли подделать зачисление денег через SponsorPay-постбэк. |
+| `ds/gate/classes/SMS_TranslateParamsFromRamblerPlus.class.php:97` | `REDACTED_API_SECRET` (см. [N]) | Часть строки для проверки `Digest` во входящих данных от SMS-агрегатора Rambler+ (`md5($TransactionId.':'.$ExtTransactionId.':'.$Amount.':'.$Custom.':'.$Service.':'.REDACTED_API_SECRET)`) — то есть это факто общий секрет с Rambler+ для подтверждения SMS-оплаты. |
+| `ds/gate/sitepartners.php:15` | `REDACTED_API_SECRET` (см. [O]) | Секрет для удалённого API управления партнёрами (`add`/`upd`/`del` в `ds_partner`, включая процент вознаграждения) — `md5($secretWord.$_REQUEST['email'])`. Утечка этого значения потенциально позволяет создавать/менять партнёров и их проценты выплат удалённо. |
+| `ds/billing.php:21`, `ds/classes/UserAction.class.php:152`, `ds/language/R/user_cabinet_payment_services.lang:115` | `REDACTED_API_SECRET` (см. [P]) | Статичная "соль", добавляемая к паролю сессии при формировании SSO-хэша для перехода на `billing.destinysphere.ru/LoginOutside.php`. Ниже критичности остальных (нужен ещё и пароль пользователя), но всё равно статичный секрет в открытом виде, задействованный в авторизации на биллинге. |
+| `ds/gate/gameleads.php:6` | `REDACTED_API_SECRET` (см. [Q]) | Секрет для входящего API статистики лидов (`ds/gate/gameleads.php`, отдаёт агрегированную статистику пользователей по XML) — проверяется как `$pkey` и как часть подписи `md5($pkey.$date_from.$date_to)`. |
+
+Точные значения — в `REDACTED_CREDENTIALS.txt` (не в git), записи [L]/[M]/[N]/[O]/[P]/[Q].
 
 ### Дополнительное наблюдение о защите биллингового шлюза
 
-Даже если бы `secretmasafaka` был секретным, схема подписи в
+Даже если бы главный секрет шлюза (см. [L]) был секретным, схема подписи в
 `BG_Common::createSign()` (`ds/classes/BG/BG_Common.class.php:172-188`) —
 это простой `md5(отсортированные_параметры_как_k=v; + секрет)` без соли,
 временной метки или номера сессии внутри самой подписи (то, что защищает от
@@ -805,7 +807,7 @@ replay — это, по-видимому, только бизнес-логика
    (`94.242.35.153-155`, `94.242.60.30`) — внутренние адреса, а не публичный
    адрес billing.destinysphere.ru. Не установлено, вызывает ли биллинг-сайт
    этот шлюз напрямую (из той же сети) или через промежуточный сервис.
-2. **Как биллинг проверяет SSO-хэш** (`md5(md5(пароль.'5GhkdoWM94mI'))`) —
+2. **Как биллинг проверяет SSO-хэш** (`md5(md5(пароль.REDACTED_API_SECRET))`, см. [P]) —
    код самого billing.destinysphere.ru не в этом репозитории, поэтому нельзя
    подтвердить, что там пароли хранятся в том же формате double-md5.
 3. **Жива ли SponsorPay-интеграция вообще?** Точка входа для игрока

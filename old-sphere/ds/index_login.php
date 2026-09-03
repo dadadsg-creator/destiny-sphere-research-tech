@@ -21,7 +21,7 @@ if (stripos($_SERVER['HTTP_HOST'], 'ds.meta.ua')!==false)
   require '../sys/auth.class.php';
   //ini_set('display_errors', 1);
 //error_reporting(E_ALL);
-  $metaua_user = new GlobalClassAuth("hGVixZtDwdNKr1SPn8mt6meW","destinysphere");
+  $metaua_user = new GlobalClassAuth("REDACTED_API_SECRET","destinysphere");
   //die(var_export($metaua_user, true));
   //echo $u->sUserName;
   if ($metaua_user->sUserName)
