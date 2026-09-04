@@ -3,6 +3,8 @@ import { MapRenderer } from './map/renderer';
 import { GameSession } from './protocol/gameProtocol';
 import { parseRefresh } from './map/refreshData';
 import { parseBuild, type BuildRecord } from './map/buildData';
+import { BattleRenderer } from './battle/battleRenderer';
+import type { BattleRound } from './battle/battleData';
 
 // Синтетический набор построек для проверки renderBuildings() без живого
 // сервера — по одной штуке в углах и в центре соты, id — из buildingTypes.ts
@@ -14,6 +16,20 @@ const TEST_BUILDINGS: BuildRecord[] = [
   { num: 208, id: 17, art: '', status: 'OK' }, // FARM
   { num: 216, id: 26, art: '', status: 'OK' }, // MILITARY_BASE
 ];
+
+// Синтетический раунд боя для проверки BattleRenderer (?screen=battle) —
+// две армии защиты против одной атакующей, чтобы проверить группировку
+// по army (см. docs/client-combat-ui.md §4).
+const TEST_BATTLE_ROUND: BattleRound = {
+  sideA: [
+    { libname: 'TANK', amount: 12, army: 'Атакующий флот' },
+    { libname: 'SOLDIER', amount: 40, army: 'Атакующий флот' },
+  ],
+  sideD: [
+    { libname: 'GUARD', amount: 8, army: 'Гарнизон' },
+    { libname: 'KNIGHT', amount: 5, army: 'Союзник (альянс)' },
+  ],
+};
 
 // Точка входа HTML5-клиента Destiny Sphere.
 // Живая интеграция сети (Фаза 1) + карты (Фаза 2), см. CLIENT_PORTING_PLAN.md.
@@ -31,12 +47,21 @@ app.innerHTML = '';
 app.style.width = '900px';
 app.style.height = '400px';
 
-const wantsLive = new URLSearchParams(location.search).has('live');
+const params = new URLSearchParams(location.search);
+const wantsLive = params.has('live');
+const screen = params.get('screen'); // "battle" — тестовый экран боя вместо карты
 const login = import.meta.env.VITE_TEST_LOGIN as string | undefined;
 const pass = import.meta.env.VITE_TEST_PASS as string | undefined;
 const uiid = import.meta.env.VITE_TEST_UIID as string | undefined;
 
 async function main() {
+  if (screen === 'battle') {
+    const battleRenderer = await BattleRenderer.create(app);
+    await battleRenderer.renderRound(TEST_BATTLE_ROUND);
+    (window as any).__renderDone = true;
+    return;
+  }
+
   const renderer = await MapRenderer.create(app);
 
   if (!wantsLive || !login || !pass || !uiid) {
