@@ -93,10 +93,12 @@ export class GameSession {
    * это и есть сигнал ошибки.
    */
   async login(login: string, password: string): Promise<void> {
+    console.debug('[login debug] document.cookie до запроса =', typeof document !== 'undefined' ? document.cookie : '(n/a)');
     const body = new URLSearchParams({ login, pass: password, enter: 'Login' });
     const res = await this.rawPost('/ds/index_login.php', body);
     const target = new URL(res.url);
     const ck = target.searchParams.get('ck');
+    console.debug('[login debug] res.url=', res.url, 'document.cookie после =', typeof document !== 'undefined' ? document.cookie : '(n/a)');
     if (!ck) {
       throw new GameProtocolError('Логин не удался — сервер не перенаправил на index_start.php (неверный логин/пароль?).');
     }
@@ -107,6 +109,7 @@ export class GameSession {
   /** ds/index_start.php — выбор мира/инстанса по uiid. Возвращает адрес входа в игру (ds/index.php?...). */
   async enterWorld(uiid: string): Promise<string> {
     this.assertLoggedIn();
+    console.debug('[enterWorld debug] document.cookie до запроса =', typeof document !== 'undefined' ? document.cookie : '(n/a)', 'ck=', this.ck);
     const body = new URLSearchParams({ ck: this.ck!, start: '1', uiid });
     const res = await this.rawPost('/ds/index_start.php', body);
     const target = new URL(res.url);
