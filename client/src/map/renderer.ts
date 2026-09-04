@@ -5,16 +5,24 @@
  * и docs/client-map-and-grid.md (основной репозиторий документации).
  */
 import { Application, Container, Sprite, Assets } from 'pixi.js';
-import { buildHexGrid, mapPixelSize } from './hexGrid';
+import { buildHexGrid, buildingAnchor, mapPixelSize } from './hexGrid';
 import { parseGroundString, GROUND_LINKAGE } from './groundTypes';
+import { BUILDING_NAMES, buildingAssetKey } from './buildingTypes';
+import type { BuildRecord } from './buildData';
 
 export class MapRenderer {
   readonly app: Application;
   readonly worldLayer: Container;
+  readonly groundLayer: Container;
+  readonly buildLayer: Container;
 
   private constructor(app: Application) {
     this.app = app;
     this.worldLayer = new Container();
+    this.groundLayer = new Container();
+    this.buildLayer = new Container();
+    this.worldLayer.addChild(this.groundLayer);
+    this.worldLayer.addChild(this.buildLayer);
     this.app.stage.addChild(this.worldLayer);
   }
 
@@ -50,12 +58,53 @@ export class MapRenderer {
       // краям намеренно, как в оригинале (полосы засветки на стыках).
       sprite.width = 48;
       sprite.height = 26;
-      this.worldLayer.addChild(sprite);
+      this.groundLayer.addChild(sprite);
     }
 
     const size = mapPixelSize();
     this.worldLayer.x = (this.app.screen.width - size.width) / 2;
     this.worldLayer.y = (this.app.screen.height - size.height) / 2;
+  }
+
+  /**
+   * Отрисовать постройки по данным <build> (см. buildData.ts,
+   * docs/client-map-and-grid.md §4.3). Якорь — нижняя вершина ячейки
+   * (buildingAnchor из hexGrid.ts), спрайт центрирован по низу
+   * (anchor 0.5/1) — **предположение**: извлечённые FFDec PNG-кадры не
+   * хранят исходную registration point movie clip'а из .fla, точное
+   * визуальное совпадение с Flash-клиентом не подтверждено покадрово.
+   * id_building=0 (NO_BUILDING) и нераспознанные id пропускаются.
+   */
+  async renderBuildings(records: BuildRecord[]): Promise<void> {
+    this.buildLayer.removeChildren();
+
+    const cells = buildHexGrid();
+    const toLoad = new Map<string, string>();
+    for (const record of records) {
+      const buildingname = BUILDING_NAMES[record.id];
+      if (!buildingname || buildingname === 'NO_BUILDING') continue;
+      const key = buildingAssetKey(buildingname);
+      toLoad.set(key, `/assets/buildings/${key}.png`);
+    }
+    await Assets.load([...toLoad.entries()].map(([alias, src]) => ({ alias, src })));
+
+    for (const record of records) {
+      const buildingname = BUILDING_NAMES[record.id];
+      if (!buildingname || buildingname === 'NO_BUILDING') continue;
+      const cell = cells[record.num];
+      if (!cell) {
+        console.warn('[renderBuildings] неизвестный num ячейки:', record.num);
+        continue;
+      }
+
+      const key = buildingAssetKey(buildingname);
+      const sprite = Sprite.from(key);
+      sprite.anchor.set(0.5, 1);
+      const anchor = buildingAnchor(cell);
+      sprite.x = anchor.x;
+      sprite.y = anchor.y;
+      this.buildLayer.addChild(sprite);
+    }
   }
 
   destroy(): void {

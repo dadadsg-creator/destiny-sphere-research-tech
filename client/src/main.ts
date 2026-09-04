@@ -2,6 +2,18 @@ import './style.css';
 import { MapRenderer } from './map/renderer';
 import { GameSession } from './protocol/gameProtocol';
 import { parseRefresh } from './map/refreshData';
+import { parseBuild, type BuildRecord } from './map/buildData';
+
+// Синтетический набор построек для проверки renderBuildings() без живого
+// сервера — по одной штуке в углах и в центре соты, id — из buildingTypes.ts
+// (снято с живой БД, см. CLIENT_PORTING_PLAN.md, Фаза 2).
+const TEST_BUILDINGS: BuildRecord[] = [
+  { num: 0, id: 9, art: '', status: 'OK' }, // RESIDENTIAL_BUILDING
+  { num: 8, id: 15, art: '', status: 'OK' }, // CITY
+  { num: 108, id: 6, art: '', status: 'OK' }, // CENTRAL_GATE (центр соты)
+  { num: 208, id: 17, art: '', status: 'OK' }, // FARM
+  { num: 216, id: 26, art: '', status: 'OK' }, // MILITARY_BASE
+];
 
 // Точка входа HTML5-клиента Destiny Sphere.
 // Живая интеграция сети (Фаза 1) + карты (Фаза 2), см. CLIENT_PORTING_PLAN.md.
@@ -29,6 +41,7 @@ async function main() {
 
   if (!wantsLive || !login || !pass || !uiid) {
     await renderer.renderGround('G'.repeat(217));
+    await renderer.renderBuildings(TEST_BUILDINGS);
     (window as any).__renderDone = true;
     return;
   }
@@ -49,7 +62,9 @@ async function main() {
   console.log('refresh:', refresh.location, 'id_comb=', refresh.idComb, 'sota.length=', refresh.sota.length);
 
   await renderer.renderGround(refresh.sota);
-  console.log('MapRenderer готов, реальный грунт отрисован (location=' + refresh.location + ')');
+  const buildings = parseBuild(refresh.build);
+  await renderer.renderBuildings(buildings);
+  console.log('MapRenderer готов, реальный грунт+постройки отрисованы (location=' + refresh.location + ', построек=' + buildings.length + ')');
   (window as any).__renderDone = true;
 }
 

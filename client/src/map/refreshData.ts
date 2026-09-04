@@ -10,6 +10,8 @@ export interface RefreshData {
   gate: boolean;
   location: string | null;
   sota: string;
+  /** Сырая строка <build> — разбирается parseBuild() из buildData.ts. */
+  build: string;
 }
 
 export function parseRefresh(xml: string): RefreshData {
@@ -20,11 +22,14 @@ export function parseRefresh(xml: string): RefreshData {
   }
   const sotaEl = root.querySelector('sota');
   const sota = sotaEl?.textContent ?? '';
+  const buildEl = root.querySelector('build');
+  const build = buildEl?.textContent ?? '';
 
   return {
     idComb: root.getAttribute('id_comb'),
     gate: root.getAttribute('gate') === '1',
     location: root.getAttribute('location'),
     sota,
+    build,
   };
 }
