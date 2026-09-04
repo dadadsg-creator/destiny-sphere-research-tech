@@ -24,6 +24,7 @@ export interface GameProtocolOptions {
 export interface CookieJar {
   header(): string | undefined;
   update(setCookieHeaders: string[]): void;
+  set(name: string, value: string): void;
 }
 
 /** Простейший cookie jar для Node-тестов (не для браузера — там cookie сами). */
@@ -49,6 +50,10 @@ export class SimpleCookieJar implements CookieJar {
       }
     }
   }
+
+  set(name: string, value: string): void {
+    this.jar.set(name, value);
+  }
 }
 
 export class GameProtocolError extends Error {}
@@ -62,30 +67,41 @@ export class GameSession {
   constructor(opts: GameProtocolOptions) {
     this.baseUrl = opts.baseUrl.replace(/\/$/, '');
     this.cookieJar = opts.cookieJar;
-    this.fetchImpl = opts.fetchImpl ?? fetch;
+    // fetch как голая ссылка теряет привязку к window/globalThis — при
+    // вызове через this.fetchImpl(...) браузер бросает "Illegal invocation".
+    this.fetchImpl = opts.fetchImpl ?? fetch.bind(globalThis);
   }
 
   getClientKey(): string | null {
     return this.ck;
   }
 
-  /** ds/index_login.php — обычный веб-логин, POST login/pass/enter=Login. */
+  /**
+   * ds/index_login.php — обычный веб-логин, POST login/pass/enter=Login.
+   *
+   * ВАЖНО: `redirect:'manual'` тут не работает — по спецификации Fetch
+   * ответ с ручным редиректом в браузере ВСЕГДА "opaqueredirect"
+   * (status=0, заголовки недоступны), причём независимо от того,
+   * same-origin редирект или нет (в Node/undici ведёт себя иначе, поэтому
+   * баг не проявился в тестовом скрипте Фазы 1 — там `redirect:'manual'`
+   * действительно давал доступ к Location). Поэтому здесь редирект просто
+   * ПРОХОДИТСЯ (`redirect:'follow'`, по умолчанию), а `ck` читается из
+   * итогового `response.url` — сервер kладёт его в query string цели
+   * редиректа, так что после автоматического перехода он остаётся на
+   * месте. Если логин/пароль неверны, сервер не редиректит вовсе
+   * (возвращает форму логина 200 OK) — `ck` в `res.url` не найдётся,
+   * это и есть сигнал ошибки.
+   */
   async login(login: string, password: string): Promise<void> {
     const body = new URLSearchParams({ login, pass: password, enter: 'Login' });
     const res = await this.rawPost('/ds/index_login.php', body);
-
-    if (res.status !== 302) {
-      throw new GameProtocolError(`Логин не удался: ожидался 302, получен ${res.status}`);
-    }
-    const location = res.headers.get('location');
-    if (!location) {
-      throw new GameProtocolError('Логин: сервер не вернул Location-редирект — вероятно, неверный логин/пароль.');
-    }
-    const ck = new URL(location, this.baseUrl).searchParams.get('ck');
+    const target = new URL(res.url);
+    const ck = target.searchParams.get('ck');
     if (!ck) {
-      throw new GameProtocolError(`Логин: не нашли ck в редиректе (${location}).`);
+      throw new GameProtocolError('Логин не удался — сервер не перенаправил на index_start.php (неверный логин/пароль?).');
     }
     this.ck = ck;
+    this.seedSessionCookieFromUrl(target);
   }
 
   /** ds/index_start.php — выбор мира/инстанса по uiid. Возвращает адрес входа в игру (ds/index.php?...). */
@@ -93,17 +109,32 @@ export class GameSession {
     this.assertLoggedIn();
     const body = new URLSearchParams({ ck: this.ck!, start: '1', uiid });
     const res = await this.rawPost('/ds/index_start.php', body);
-    if (res.status !== 302) {
-      throw new GameProtocolError(`Вход в мир не удался: ожидался 302, получен ${res.status}`);
+    const target = new URL(res.url);
+    const ck = target.searchParams.get('ck');
+    if (!ck) {
+      const bodyText = await res.clone().text().catch(() => '(не удалось прочитать тело)');
+      console.error('[enterWorld debug] res.url=', res.url, 'res.status=', res.status, 'document.cookie=', typeof document !== 'undefined' ? document.cookie : '(n/a)', 'body=', bodyText.slice(0, 300));
+      throw new GameProtocolError('Вход в мир не удался — сервер не перенаправил на ds/index.php (неверный uiid?).');
     }
-    const location = res.headers.get('location');
-    if (!location) {
-      throw new GameProtocolError('Вход в мир: сервер не вернул Location-редирект.');
-    }
-    const abs = new URL(location, this.baseUrl + '/ds/');
-    const ck = abs.searchParams.get('ck');
-    if (ck) this.ck = ck;
-    return abs.toString();
+    this.ck = ck;
+    this.seedSessionCookieFromUrl(target);
+    return res.url;
+  }
+
+  /**
+   * Сервер добавляет `session_name()=session_id()` (в проде — `PHPSESSID`,
+   * подтверждено живым тестом Фазы 1) в query редиректа, если у входящего
+   * запроса ещё не было cookie сессии (легаси-фолбэк для Flash Player,
+   * см. docs/client-engine-and-protocol.md §2.1). Используем этот же
+   * параметр напрямую для ручного cookie jar (Node), вместо того чтобы
+   * полагаться на Set-Cookie с промежуточного прыжка редиректа — доступа
+   * к заголовкам промежуточных прыжков при `redirect:'follow'` в браузере
+   * нет в принципе.
+   */
+  private seedSessionCookieFromUrl(url: URL): void {
+    if (!this.cookieJar) return;
+    const sessId = url.searchParams.get('PHPSESSID');
+    if (sessId) this.cookieJar.set('PHPSESSID', sessId);
   }
 
   /**
@@ -150,7 +181,6 @@ export class GameSession {
       method: 'POST',
       headers,
       body: body.toString(),
-      redirect: 'manual',
       credentials: this.cookieJar ? undefined : 'include',
     });
 

@@ -15,7 +15,15 @@ async function main() {
   page.on('pageerror', (err) => console.error('[page error]', err));
 
   await page.goto(url, { waitUntil: 'networkidle0' });
-  await page.waitForFunction('window.__renderDone === true', { timeout: 15000 });
+  await page.waitForFunction(
+    'window.__renderDone === true || window.__renderError !== undefined',
+    { timeout: 20000 },
+  );
+  const err = await page.evaluate(() => (window as any).__renderError);
+  if (err) {
+    console.error('Страница сообщила об ошибке рендера:', err);
+    process.exitCode = 1;
+  }
   await page.screenshot({ path: outPath as `${string}.png` });
   console.log('Screenshot saved to', outPath);
 
