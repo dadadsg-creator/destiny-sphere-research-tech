@@ -116,8 +116,8 @@
 | WORM | BIO | OK | war_units.lib | 1 |
 | XAOZ | TECH | OK | war_units.lib | 1 |
 | ZHRITZA | PSI | OK | war_units.lib | 1 |
-| SPY_ZOND_EXPLORER | BIO;PSI;TECH | НЕ найден под этим именем — есть ZOND_BIO_1/2/3, ZOND_PSI_1/2/3, ZOND_TECH_1/2/3 (вероятно один из трёх номеров, какой конкретно — не проверено) | zond-файлы | - |
-| SPY_ZOND_SCOUT | BIO;PSI;TECH | НЕ найден под этим именем — см. выше, вероятно другой номер ZOND_<раса>_N | zond-файлы | - |
+| SPY_ZOND_EXPLORER | BIO;PSI;TECH | OK — резолвнуто (2026-09-04, `TL_SpyTrainUnit.class.php:17` + `xmlparsers.as:3459-3476`): линковка `ZOND_<раса>_2` | zond-файлы | - |
+| SPY_ZOND_SCOUT | BIO;PSI;TECH | OK — резолвнуто, линковка `ZOND_<раса>_1`. `ZOND_<раса>_3` подтверждённо не используется (мёртвая графика, сервер никогда не шлёт `type=3`) | zond-файлы | - |
 | MIMICRY | QUEST | НЕ найден точно — есть MIMICRY_DRONE / MIMICRY_MASTER / MIMICRY_SERVANT, соответствие неясно | - | - |
 | refractive | QUEST | НЕ найдено вообще (строчные буквы в имени — так записано в БД) | - | - |
 
