@@ -14,7 +14,11 @@ async function main() {
   page.on('console', (msg) => console.log('[page]', msg.text()));
   page.on('pageerror', (err) => console.error('[page error]', err));
 
-  await page.goto(url, { waitUntil: 'networkidle0' });
+  // 'load', не 'networkidle0' — Vite HMR держит открытый WebSocket, из-за
+  // которого networkidle0 никогда не срабатывает (см. повторявшиеся
+  // таймауты навигации в CLIENT_PORTING_PLAN.md). Готовность страницы всё
+  // равно определяется через window.__renderDone ниже, не через сеть.
+  await page.goto(url, { waitUntil: 'load', timeout: 45000 });
   await page.waitForFunction(
     'window.__renderDone === true || window.__renderError !== undefined',
     { timeout: 20000 },

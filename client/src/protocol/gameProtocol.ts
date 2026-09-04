@@ -93,12 +93,10 @@ export class GameSession {
    * это и есть сигнал ошибки.
    */
   async login(login: string, password: string): Promise<void> {
-    console.debug('[login debug] document.cookie до запроса =', typeof document !== 'undefined' ? document.cookie : '(n/a)');
     const body = new URLSearchParams({ login, pass: password, enter: 'Login' });
     const res = await this.rawPost('/ds/index_login.php', body);
     const target = new URL(res.url);
     const ck = target.searchParams.get('ck');
-    console.debug('[login debug] res.url=', res.url, 'document.cookie после =', typeof document !== 'undefined' ? document.cookie : '(n/a)');
     if (!ck) {
       throw new GameProtocolError('Логин не удался — сервер не перенаправил на index_start.php (неверный логин/пароль?).');
     }
@@ -106,12 +104,27 @@ export class GameSession {
     this.seedSessionCookieFromUrl(target);
   }
 
-  /** ds/index_start.php — выбор мира/инстанса по uiid. Возвращает адрес входа в игру (ds/index.php?...). */
+  /**
+   * ds/index_start.php — выбор мира/инстанса по uiid. Возвращает адрес входа в игру (ds/index.php?...).
+   *
+   * ВАЖНО: `ds/index.php` (куда сервер после успеха отдаёт 302, и куда
+   * браузерный `fetch()` с `redirect:'follow'` автоматически идёт дальше)
+   * проверяет `HTTP_REFERER` по белому списку подстрок — `index_start.php`,
+   * `index_queue.php`, `flash/ds3` (реальный Flash-клиент проходил эту
+   * проверку через referrer страницы с embed .swf) и т.д.,
+   * `ds/index.php:84-98`. Без совпадения — редирект на `index_login.php`
+   * (полностью успешный `enterWorld()`, но браузер сам добивает себя на
+   * следующем шаге редиректа — Referer по умолчанию = адрес нашей SPA,
+   * ни с чем из списка не совпадает). Явно указываем правдоподобный
+   * `referrer` с `index_start.php` в пути — распространяется на весь
+   * redirect-chain этого fetch(), включая финальный прыжок на index.php.
+   */
   async enterWorld(uiid: string): Promise<string> {
     this.assertLoggedIn();
-    console.debug('[enterWorld debug] document.cookie до запроса =', typeof document !== 'undefined' ? document.cookie : '(n/a)', 'ck=', this.ck);
     const body = new URLSearchParams({ ck: this.ck!, start: '1', uiid });
-    const res = await this.rawPost('/ds/index_start.php', body);
+    const referrer =
+      typeof location !== 'undefined' ? new URL('/ds/index_start.php', location.origin).toString() : undefined;
+    const res = await this.rawPost('/ds/index_start.php', body, referrer);
     const target = new URL(res.url);
     const ck = target.searchParams.get('ck');
     if (!ck) {
@@ -171,7 +184,7 @@ export class GameSession {
     }
   }
 
-  private async rawPost(path: string, body: URLSearchParams): Promise<Response> {
+  private async rawPost(path: string, body: URLSearchParams, referrer?: string): Promise<Response> {
     const headers: Record<string, string> = {
       'Content-Type': 'application/x-www-form-urlencoded',
     };
@@ -185,6 +198,7 @@ export class GameSession {
       headers,
       body: body.toString(),
       credentials: this.cookieJar ? undefined : 'include',
+      ...(referrer ? { referrer } : {}),
     });
 
     if (this.cookieJar) {
