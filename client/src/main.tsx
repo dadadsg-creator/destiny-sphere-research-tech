@@ -25,6 +25,9 @@ import { ResearchWindow } from './science/ResearchWindow';
 import { AuctionWindow } from './trade/AuctionWindow';
 import { SellWindow } from './trade/SellWindow';
 import { TransferWindow } from './trade/TransferWindow';
+import { AllianceManagementWindow } from './alliance/AllianceManagementWindow';
+import { AllianceMemberWindow } from './alliance/AllianceMemberWindow';
+import { PrivatePeaceWindow } from './alliance/PrivatePeaceWindow';
 import type { ArmyOverview } from './army/armyData';
 import type { ArmyCreationData } from './army/armyCreationData';
 import type { TrainUnitData } from './army/trainUnitData';
@@ -41,6 +44,9 @@ import type { ResearchData } from './science/researchData';
 import type { AuctionLot } from './trade/auctionData';
 import type { TradeMenuData } from './trade/tradeData';
 import type { TransferMenuData } from './trade/transferData';
+import type { AllianceManagementData } from './alliance/allianceData';
+import type { AllianceOverviewData } from './alliance/allianceMemberData';
+import type { PrivatePeaceData } from './alliance/privatePeaceData';
 import type { LocalUnit, LocalBuilding } from './data/localData';
 import type { TabDef } from './ui/tabs';
 
@@ -548,6 +554,40 @@ const TEST_TRANSFER: TransferMenuData = {
   ],
 };
 
+// Синтетические данные для проверки AllianceManagementWindow (?screen=alliance).
+const TEST_ALLIANCE_OWN: AllianceManagementData = {
+  inAlliance: true,
+  own: { id: '10', name: 'Наш альянс', tag: 'OUR', religion: null, status: 'LEADER', leave: '1' },
+};
+const TEST_ALLIANCE_JOIN: AllianceManagementData = {
+  inAlliance: false,
+  alliancesToJoin: [
+    { id: '20', name: 'Чужой альянс', tag: 'FRN', leader: 'SomeLeader' },
+  ],
+};
+
+// Синтетические данные для проверки AllianceMemberWindow (?screen=alliance-members).
+const TEST_ALLIANCE_MEMBERS: AllianceOverviewData = {
+  curPage: '1',
+  maxPage: '1',
+  leader: '1',
+  idAlliance: '10',
+  members: [
+    { name: 'Игрок1', userId: '1', ranking: '100', coord: '1.2.3', artefact: null, statusLn: 'Лидер', status: 'LEADER', deleteButtonDisabled: false },
+    { name: 'Игрок2', userId: '2', ranking: '80', coord: '1.2.4', artefact: null, statusLn: 'Участник', status: 'MEMBER', deleteButtonDisabled: false },
+    { name: 'Игрок3', userId: '3', ranking: '50', coord: '1.2.5', artefact: null, statusLn: 'Защищён', status: 'MEMBER', deleteButtonDisabled: true },
+  ],
+};
+
+// Синтетические данные для проверки PrivatePeaceWindow (?screen=private-peace).
+const TEST_PRIVATE_PEACE: PrivatePeaceData = {
+  requests: [{ idAlliance: '10', tag: '[OUR]', member: 'Enemy1', uid: '5' }],
+  members: [
+    { idAlliance: '20', tag: '[FRN]', member: 'Friend1', joined: '1', uid: '6' },
+    { idAlliance: '30', tag: '[NEW]', member: 'Newcomer', joined: '0', uid: '7' },
+  ],
+};
+
 // Точка входа HTML5-клиента Destiny Sphere.
 // Живая интеграция сети (Фаза 1) + карты (Фаза 2), см. CLIENT_PORTING_PLAN.md.
 //
@@ -610,6 +650,44 @@ async function main() {
         zondNames={TEST_ZOND_NAMES}
         onClose={() => console.log('[spying] close')}
         onSend={(params) => console.log('[spying] send_zond(', params, ')')}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'alliance' || screen === 'alliance-join') {
+    openWindow(
+      <AllianceManagementWindow
+        data={screen === 'alliance' ? TEST_ALLIANCE_OWN : TEST_ALLIANCE_JOIN}
+        onClose={() => console.log('[alliance] close')}
+        onExit={(id) => console.log('[alliance] exitAlliance(', id, ')')}
+        onCreate={(cmd) => console.log('[alliance] createAlliance(', cmd, ')')}
+        onJoin={(cmd) => console.log('[alliance] joinAlliance(', cmd, ')')}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'alliance-members') {
+    openWindow(
+      <AllianceMemberWindow
+        data={TEST_ALLIANCE_MEMBERS}
+        onClose={() => console.log('[alliance-members] close')}
+        onKick={(userId) => console.log('[alliance-members] kick(', userId, ')')}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'private-peace') {
+    openWindow(
+      <PrivatePeaceWindow
+        data={TEST_PRIVATE_PEACE}
+        onClose={() => console.log('[private-peace] close')}
+        onSend={(cmd) => console.log('[private-peace] getPPeace(', cmd, ')')}
       />,
     );
     (window as any).__renderDone = true;

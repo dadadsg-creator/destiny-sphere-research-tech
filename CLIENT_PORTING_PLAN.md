@@ -919,9 +919,47 @@ Preact** (решение владельца) — `client/` до этого не 
 артефактной локализации) там, где полная точность потребовала бы
 отдельной статической таблицы, ещё не разобранной.
 
-- [ ] **3.6 Альянсы/дипломатия** (источник: `client-economy-social-ui.md`)
-      — `alliance_menu_class.as`, `alliance_setting_class.as`,
-      `alliancememberclass.as`, `peace_aliance.as`, `peace_private.as`.
+- [x] **3.6 Альянсы/дипломатия — все 5 файлов: данные + 3 экрана**
+      (2026-09-05, источник `docs/client-economy-social-ui.md` §2.1-2.5).
+      Новая папка `client/src/alliance/`.
+  - `allianceData.ts` — `parseAllianceManagement()` (mark
+    `alliancemanagement`, `xmlparsers.as:556-589`) + валидаторы длины
+    имени/тега/пароля (точное совпадение с серверной `VD_Alliance`).
+    **Найденный дефект протокола оригинала (не наш)**: `connectAlliance`
+    в реальном исходнике шлёт технически некорректный XML (лишний `>`
+    после `</joinpassword>`) — здесь не воспроизведён, т.к. порт строит
+    структурированные команды, а не XML-строки напрямую.
+  - `allianceMemberData.ts` — `parseAllianceOverview()`/`canKick()` (mark
+    `allianceoverview`, `xmlparsers.as:526-555`) — кик виден только
+    лидеру, не для лидера-цели, и не для `delete_button_disabled` (что
+    именно выставляет этот флаг на сервере — открытый вопрос доклада).
+  - `allianceSettingData.ts` — `parseAllianceSettings()` (mark
+    `alliancesettings`). **Осознанно НЕ воспроизведён** баг оригинала
+    (поле пароля предзаполнено `"********"`, из-за чего ненужное нажатие
+    «Сменить пароль» реально меняет пароль на эту строку) — явно
+    задокументировано как решение не копировать конкретно этот UI-баг.
+  - `alliancePeaceData.ts` — `parseAlliancePeaceList()`/
+    `parseAlliancePeaceDetail()` (marks `alliancepeace`/
+    `alliancePeaceData`, `xmlparsers.as:658-849`) + команды по таблице
+    статусов `UA_AlliancePeace` (дословное совпадение имён атрибутов
+    `alliId`/`my_*`/`he_*`). **Подтверждённый баг сервера** (не наш):
+    `allowaction` — единственное, что скрывает кнопки Да/Нет,
+    `UA_AlliancePeace::checkAction()` всегда возвращает true — защита
+    только визуальная. Экран не написан — только данные.
+  - `privatePeaceData.ts` — `parsePrivatePeace()`/`buildGetPPeaceCommand()`
+    (mark `allianceprivatepeace`, `xmlparsers.as:610-654`) — сохранён
+    буквальный плейсхолдер `"DANONMUSTDIE"` для ещё-не-известного UID
+    (не баг, ожидаемое сервером значение).
+  - `AllianceManagementWindow.tsx`/`AllianceMemberWindow.tsx`/
+    `PrivatePeaceWindow.tsx` — 3 экрана поверх каркаса. Настройки
+    альянса и мир между альянсами (5 вкладок) — данные готовы, экраны
+    не написаны (самый насыщенный по находкам, но и самый объёмный по
+    UI поддомен — оставлен на будущее).
+  - Визуально проверено headless Edge на всех четырёх (`?screen=alliance
+    /alliance-join/alliance-members/private-peace`) — включая
+    нетривиальные случаи: лидер не кикается сам себя, участник с
+    `delete_button_disabled` не кикается никем, входящее предложение
+    мира отличимо от уже заключённого.
 - [ ] **3.7 Религия/археология/терраформинг/колонизация** —
       `religion_class.as`, `archeology_class.as`, `terraform_class.as`,
       `colonyzationclass.as`.
