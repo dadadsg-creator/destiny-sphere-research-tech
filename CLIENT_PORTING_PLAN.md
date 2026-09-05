@@ -1156,8 +1156,38 @@ Preact** (решение владельца) — `client/` до этого не 
     при `newQuest` непустом окно открывается на вкладке «Новые»
     (выделена/задизейблена), но таблица показывает `Задание В
     (finished_quest)` — сдвиг подтверждён на скриншоте.
-- [ ] **3.13 Настройки/справка** — `setting.as`, `settingmenu.as`,
+- [x] **3.13 Настройки/справка** — `setting.as`, `settingmenu.as`,
       `help_class.as`, `adviceclass.as`.
+  - `setting.ts` — порт key-value персистентности `setting.as` (в
+    оригинале — Flash `SharedObject` через `debug.link.setting_mov`,
+    здесь — `localStorage`, прямой браузерный аналог); ничего из этого
+    не уходит на сервер.
+  - `settingsMenuData.ts` — ключи и дефолты чекбоксов/радио из
+    `settingmenu.as` (`"CHECK_BOX"+name`/`"RADIO_"+name`, дефолты
+    подтверждены `window.as:711-882` `addcheck`/`addRadio`). Весь файл
+    не делает ни одного сетевого вызова. **Кнопка «Профиль» пропущена
+    сознательно** — гейтится `debug.link.PROFILEXIST`, но ведёт на
+    захардкоженный `http://www.microsoft.com` (`settingmenu.as:47`) —
+    очевидный тестовый остаток, не реальная функциональность.
+  - `helpUrl.ts` — порт `help_class.as` (URL веб-справки `/ds/help/?
+    name=<KEY>[&buildid=&race=]`, VK-префикс `http://ds.rambler.ru`),
+    плюс каталог ключей `HelpKey`, собранный по всем фазам 3.1-3.12.
+  - `adviceData.ts` — разбор ответа `getNubHelp` (`parser.as:323-362`,
+    `advice_action`, получает СЫРУЮ XML-строку из `obj.advice`, а не
+    раздиспетчеренный узел через общий switch). Тэги текста подсказки и
+    имени связанной ссылки не установлены достоверно — оригинал сам
+    обращается к ним позиционно (`childNodes[0].firstChild.nodeValue`),
+    не по имени тега; порт воспроизводит эту же позиционную логику
+    дословно, не более и не менее хрупко, чем оригинал.
+  - `SettingsWindow.tsx` — в отличие от прочих экранов этой сессии,
+    РЕАЛЬНО функционален (не демо на синтетике с логами) — читает и
+    пишет настоящий `localStorage` через `setting.ts`, т.к. это чисто
+    клиентская фича без протокола.
+  - `AdviceWindow.tsx` — визуально проверено headless Edge
+    (`?screen=advice`, `?screen=settings`): кнопки «Назад»/«Вперёд»
+    верно показаны при `number=3` из `total=5`, чекбоксы/радио —
+    дефолтные значения (всё выключено, качество «Низкое»), как в
+    оригинале при отсутствии сохранённых настроек.
 - [ ] **3.14 Встроенный в клиент личный кабинет** (`DS_Classes/MN_Menu/
       MN_Cabinet/*`, `cabinetmenuclass.as`, `allCacheStatistic.as`,
       `artefact_shop/artefact_shop_engine.as`) — это Flash-панель,
