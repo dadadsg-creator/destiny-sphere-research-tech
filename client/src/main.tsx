@@ -10,7 +10,9 @@ import type { BattleRound } from './battle/battleData';
 import { WindowHost } from './ui/WindowHost';
 import { openWindow } from './ui/windowStore';
 import { ArmyOverviewWindow } from './army/ArmyOverviewWindow';
+import { ArmyCreationWindow } from './army/ArmyCreationWindow';
 import type { ArmyOverview } from './army/armyData';
+import type { ArmyCreationData } from './army/armyCreationData';
 import type { TabDef } from './ui/tabs';
 
 // Синтетический набор построек для проверки renderBuildings() без живого
@@ -91,6 +93,22 @@ const TEST_TABS: TabDef[] = [
   { id: 'ARMY_CREATION', ln: 'Создать армию', cur: 0 },
 ];
 
+const TEST_TABS_CREATE: TabDef[] = [
+  { id: 'ARMY_OVERVIEW', ln: 'Обзор армий', cur: 0 },
+  { id: 'ARMY_CREATION', ln: 'Создать армию', cur: 1 },
+];
+
+// Синтетические данные для проверки ArmyCreationWindow (?screen=army-create).
+const TEST_ARMY_CREATION: ArmyCreationData = {
+  cur: 3,
+  max: 10,
+  units: [
+    { id: '3', libname: 'SOLDIER', amount: 500, prodoweight: 0 },
+    { id: '9', libname: 'TANK', amount: 40, prodoweight: 2 },
+    { id: '7', libname: 'GUARD', amount: 120, prodoweight: 0 },
+  ],
+};
+
 // Точка входа HTML5-клиента Destiny Sphere.
 // Живая интеграция сети (Фаза 1) + карты (Фаза 2), см. CLIENT_PORTING_PLAN.md.
 //
@@ -126,6 +144,20 @@ async function main() {
         onTabClick={(tabId) => console.log('[army] tab click ->', tabId)}
         onClose={() => console.log('[army] close')}
         onDismissAll={() => console.log('[army] dismissAll()')}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'army-create') {
+    openWindow(
+      <ArmyCreationWindow
+        data={TEST_ARMY_CREATION}
+        tabs={TEST_TABS_CREATE}
+        onTabClick={(tabId) => console.log('[army-create] tab click ->', tabId)}
+        onClose={() => console.log('[army-create] close')}
+        onCreate={(name, units) => console.log('[army-create] create_army(', name, units, ')')}
       />,
     );
     (window as any).__renderDone = true;
