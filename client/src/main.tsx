@@ -39,6 +39,7 @@ import { MailWindow } from './mail/MailWindow';
 import { CreateNewMailWindow } from './mail/CreateNewMailWindow';
 import { LogWindow } from './mail/LogWindow';
 import { SysMessageWindow } from './mail/SysMessageWindow';
+import { QuestWindow } from './quests/QuestWindow';
 import type { ArmyOverview } from './army/armyData';
 import type { ArmyCreationData } from './army/armyCreationData';
 import type { TrainUnitData } from './army/trainUnitData';
@@ -68,6 +69,7 @@ import type { BuildArtefactData } from './artefacts/buildArtefactData';
 import type { MailListData } from './mail/mailData';
 import type { CreateNewMailData } from './mail/createNewMailData';
 import type { LogWindowData } from './mail/logData';
+import type { QuestMenuData } from './quests/questData';
 import type { LocalUnit, LocalBuilding } from './data/localData';
 import type { TabDef } from './ui/tabs';
 
@@ -673,6 +675,16 @@ const TEST_REINCARNATE: ReincarnateData = {
 };
 const TEST_REINCARNATE_RESOURCES = [100000, 100000, 100000, 100000, 100000, 100000];
 
+// Синтетические данные для проверки QuestWindow (?screen=quest).
+// Специально: newQuest непусто → окно должно по умолчанию открыться на
+// вкладке id=2 (подпись "Новые"), но показать data.finishedQuest —
+// намеренно воспроизведённый сдвиг подписи/данных, см. questData.ts.
+const TEST_QUEST: QuestMenuData = {
+  currentQuest: [{ name: 'Задание А (current_quest)', desc: '', bonus: [{ name: 'Кадерий', icon: 'KADERIUM', value: '500' }] }],
+  newQuest: [{ name: 'Задание Б (new_quest)', desc: '', bonus: [{ name: 'Рабочий', icon: 'WORKER', value: '10' }] }],
+  finishedQuest: [{ name: 'Задание В (finished_quest)', desc: '', bonus: [{ name: 'Продиум', icon: 'PRODIUM', value: '100' }] }],
+};
+
 // Синтетические данные для проверки MailWindow (?screen=mail).
 const TEST_MAIL: MailListData = {
   type: 'in',
@@ -1166,6 +1178,12 @@ async function main() {
         onViewSpyLog={() => console.log('[sys-message] getSpyMenu()')}
       />,
     );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'quest') {
+    openWindow(<QuestWindow data={TEST_QUEST} onClose={() => console.log('[quest] close')} />);
     (window as any).__renderDone = true;
     return;
   }
