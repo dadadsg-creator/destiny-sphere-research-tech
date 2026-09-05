@@ -13,10 +13,12 @@ import { ArmyOverviewWindow } from './army/ArmyOverviewWindow';
 import { ArmyCreationWindow } from './army/ArmyCreationWindow';
 import { TrainUnitWindow } from './army/TrainUnitWindow';
 import { WarStatisticWindow } from './army/WarStatisticWindow';
+import { SpyingWindow } from './spying/SpyingWindow';
 import type { ArmyOverview } from './army/armyData';
 import type { ArmyCreationData } from './army/armyCreationData';
 import type { TrainUnitData } from './army/trainUnitData';
 import type { WarComplexData } from './army/warFactoryData';
+import type { SpyingData } from './spying/spyingData';
 import type { LocalUnit } from './data/localData';
 import type { TabDef } from './ui/tabs';
 
@@ -223,6 +225,34 @@ const TEST_WAR_COMPLEX: WarComplexData = {
   ]),
 };
 
+// Синтетические данные для проверки SpyingWindow (?screen=spying).
+const TEST_SPYING: SpyingData = {
+  turn: '24',
+  battleXp: '10',
+  numRing: '1',
+  actions: [
+    { id: 'RESEARCH', name: 'Исследовать', addrAllow: '1', timeAllow: '1' },
+    { id: 'SCOUT', name: 'Разведать', addrAllow: '1', timeAllow: '0' },
+  ],
+  time: { min: '1', max: '24', def: '4' },
+  speed: { min: '10', max: '150', def: '80' },
+  allowZonds: [
+    { typeNum: '1', id: 'Z1', allowCount: 15 },
+    { typeNum: '2', id: 'Z2', allowCount: 3 },
+  ],
+  ringAllow: [
+    { ringKey: 'RING_TECH', allowed: true },
+    { ringKey: 'RING_BIO', allowed: true },
+    { ringKey: 'RING_PSI', allowed: false },
+    { ringKey: 'RING_COLONIZE', allowed: false },
+  ],
+  activeGroups: [],
+};
+const TEST_ZOND_NAMES = new Map([
+  ['Z1', 'Зонд-Разведчик'],
+  ['Z2', 'Зонд-Исследователь'],
+]);
+
 // Точка входа HTML5-клиента Destiny Sphere.
 // Живая интеграция сети (Фаза 1) + карты (Фаза 2), см. CLIENT_PORTING_PLAN.md.
 //
@@ -272,6 +302,19 @@ async function main() {
         onClose={() => console.log('[train-unit] close')}
         onTrain={(idUnit, count) => console.log('[train-unit] trainWarUnit(', count, idUnit, ')')}
         onCancel={(idUnit) => console.log('[train-unit] cancel(', idUnit, ')')}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'spying') {
+    openWindow(
+      <SpyingWindow
+        data={TEST_SPYING}
+        zondNames={TEST_ZOND_NAMES}
+        onClose={() => console.log('[spying] close')}
+        onSend={(params) => console.log('[spying] send_zond(', params, ')')}
       />,
     );
     (window as any).__renderDone = true;

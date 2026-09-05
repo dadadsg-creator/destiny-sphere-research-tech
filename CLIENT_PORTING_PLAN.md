@@ -753,11 +753,39 @@ Preact** (решение владельца) — `client/` до этого не 
 готов) — данные есть, экраны не написаны, можно добрать при желании
 позже.
 
-- [ ] **3.2 Шпионаж/зонды/щиты** (источник: `client-combat-ui.md`) —
-      `spying_class.as`, `scannermenuclass.as`, `zondcreateclass.as`
-      (категория «В» — прогрессивная цена зондов, формула уже есть в
-      `client-side-computed-logic.md`), `powershieldclass.as`,
-      `protectshieldclass.as`.
+- [x] **3.2 Шпионаж/зонды/щиты — данные для всех 5 файлов + первый экран**
+      (2026-09-05, источник docs/client-combat-ui.md §7-11). Новая папка
+      `client/src/spying/` (по аналогии с `army/`/`battle/`).
+  - `spyingData.ts` — `parseSpying()` (mark `spying`, `xmlparsers.as:199-323`).
+  - `zondCreateData.ts` — `parseZondCreate()` (mark `zondcreate`,
+    `xmlparsers.as:3437-3499`) + `calculateProgressivePrice()` (категория
+    «В», формула из `client-side-computed-logic.md`/`client-combat-ui.md`
+    §11 — портирована, но **не подключена к экрану**, самого экрана
+    тренировки зондов ещё нет). Однобуквенные ключи цены (K/N/S/F/P/W/C,
+    запятая) — не путать с двухбуквенными `armycalculator` (§2).
+  - `powerShieldData.ts` — `parsePowerShield()` (mark `powershild` —
+    буквально без «e», не опечатка порта, так в оригинале,
+    `xmlparsers.as:1195-1222`). Экрана нет.
+  - `protectShieldData.ts` — `parseProtectShield()` (mark `protectedfield`,
+    `xmlparsers.as:1225-1238`) — механизм именно для ЗАХВАЧЕННЫХ колоний,
+    не то же самое, что силовой щит (подтверждено буквальным комментарием
+    разработчика в оригинале). Экрана нет.
+  - `scannerData.ts` — `parseSpyLog()` (mark `spylog`,
+    `xmlparsers.as:34-118`). Экрана нет.
+  - `client/src/spying/SpyingWindow.tsx` — единственный написанный экран
+    домена: выбор типа зонда, действия, кольца (только разрешённые),
+    условные поля по действию (координаты цели, если `addrAllow=="1"`;
+    длительность вместо скорости, если `timeAllow=="1"`) — портировано
+    буквально из `xmlparsers.as`, не из сокращённого резюме в докладе
+    (там имена полей — клиентские алиасы, не XML-атрибуты). Чекбокс
+    `ONE_ROUND_BATTLE` реален, но его эффект не установлен (открытый
+    вопрос №6 плана) — просто прокидывается, поведения не имеет.
+  - Визуально проверено headless Edge (`?screen=spying`) — переключение
+    действия корректно меняет видимые поля (длительность↔скорость,
+    появление/исчезновение координат цели), список колец показывает
+    только разрешённые.
+  - **Не сделано**: экраны для `zondcreateclass`/`powershieldclass`/
+    `protectshieldclass`/`scannermenuclass` — только данные.
 - [ ] **3.3 Здания/производство** — `build_menu.as`, `buildinfo.as`,
       `art_depot_menu.as`.
 - [ ] **3.4 Наука** — `researchmenu.as`, `tree_scients/setting.as`,

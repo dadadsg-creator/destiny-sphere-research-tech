@@ -280,3 +280,21 @@
   align-items: center;
   gap: 10px;
 }
+
+.ds-spying__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  font-size: 12px;
+}
+.ds-spying__label {
+  min-width: 130px;
+  color: #ccd3ea;
+}
+.ds-spying__choice {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
