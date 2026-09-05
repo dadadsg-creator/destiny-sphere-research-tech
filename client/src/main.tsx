@@ -14,11 +14,19 @@ import { ArmyCreationWindow } from './army/ArmyCreationWindow';
 import { TrainUnitWindow } from './army/TrainUnitWindow';
 import { WarStatisticWindow } from './army/WarStatisticWindow';
 import { SpyingWindow } from './spying/SpyingWindow';
+import { ZondCreateWindow } from './spying/ZondCreateWindow';
+import { PowerShieldWindow } from './spying/PowerShieldWindow';
+import { ProtectShieldWindow } from './spying/ProtectShieldWindow';
+import { ScannerWindow } from './spying/ScannerWindow';
 import type { ArmyOverview } from './army/armyData';
 import type { ArmyCreationData } from './army/armyCreationData';
 import type { TrainUnitData } from './army/trainUnitData';
 import type { WarComplexData } from './army/warFactoryData';
 import type { SpyingData } from './spying/spyingData';
+import type { ZondCreateData } from './spying/zondCreateData';
+import type { PowerShieldData } from './spying/powerShieldData';
+import type { ProtectShieldData } from './spying/protectShieldData';
+import type { SpyLogData } from './spying/scannerData';
 import type { LocalUnit } from './data/localData';
 import type { TabDef } from './ui/tabs';
 
@@ -253,6 +261,68 @@ const TEST_ZOND_NAMES = new Map([
   ['Z2', 'Зонд-Исследователь'],
 ]);
 
+// Синтетические данные для проверки ZondCreateWindow (?screen=zond-create).
+const TEST_ZOND_CREATE: ZondCreateData = {
+  battleXp: '10',
+  alert: null,
+  allowZond: [
+    { type: '1', id: 'Z1', count: 5, inAction: 2, already: 15, awail: '1', price: { K: 100, N: 20 }, delta: { K: 1.05, N: 1.05 } },
+    { type: '2', id: 'Z2', count: 1, inAction: 0, already: 3, awail: '1', price: { K: 400, N: 80, S: 50 }, delta: { K: 1.1, N: 1.1, S: 1.1 } },
+  ],
+};
+
+// Синтетические данные для проверки PowerShieldWindow (?screen=power-shield).
+const TEST_POWER_SHIELD: PowerShieldData = {
+  turn: '24',
+  minTurn: '1',
+  maxTurn: '10',
+  status: '3',
+  price: 50,
+  desc1: 'Силовой щит заряжен и готов к активации.',
+  desc2: '',
+};
+
+// Синтетические данные для проверки ProtectShieldWindow (?screen=protect-shield).
+const TEST_PROTECT_SHIELD: ProtectShieldData = {
+  currentPercent: 40,
+  priceRes: [10, 5, 8, 3, 2],
+  priceSilver: 4,
+};
+
+// Синтетические данные для проверки ScannerWindow (?screen=scanner).
+const TEST_SPY_LOG: SpyLogData = {
+  showFiltersMenu: true,
+  entries: [
+    {
+      id: '56',
+      action: 'Razvedko',
+      addrFrom: '1.2.3',
+      addrTo: '2.6.6',
+      date: '15.01 13:15',
+      typelog: 'FullLog',
+      zname: 'Зонд Исследователь',
+      zcolor: '#66ccff',
+    },
+    {
+      id: '57',
+      action: 'Razvedko',
+      addrFrom: '1.2.3',
+      addrTo: '2.6.7',
+      date: '15.01 14:02',
+      typelog: 'ShortLog',
+      zname: 'Зонд Разведчик',
+      zcolor: '#ffcc66',
+    },
+  ],
+  filter: {
+    maxAllowZond: '10',
+    typesMove: [],
+    colonys: [],
+    defName: null,
+    time: { cur: null, min: null, max: null },
+  },
+};
+
 // Точка входа HTML5-клиента Destiny Sphere.
 // Живая интеграция сети (Фаза 1) + карты (Фаза 2), см. CLIENT_PORTING_PLAN.md.
 //
@@ -315,6 +385,58 @@ async function main() {
         zondNames={TEST_ZOND_NAMES}
         onClose={() => console.log('[spying] close')}
         onSend={(params) => console.log('[spying] send_zond(', params, ')')}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'zond-create') {
+    openWindow(
+      <ZondCreateWindow
+        data={TEST_ZOND_CREATE}
+        zondNames={TEST_ZOND_NAMES}
+        onClose={() => console.log('[zond-create] close')}
+        onTrain={(id, count) => console.log('[zond-create] train(', id, count, ')')}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'power-shield') {
+    openWindow(
+      <PowerShieldWindow
+        data={TEST_POWER_SHIELD}
+        onClose={() => console.log('[power-shield] close')}
+        onCharge={() => console.log('[power-shield] poweractivation()')}
+        onActivate={(turns) => console.log('[power-shield] powershieldenabled(', turns, ')')}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'protect-shield') {
+    openWindow(
+      <ProtectShieldWindow
+        data={TEST_PROTECT_SHIELD}
+        playerResources={{ kaderium: 300, nano: 100, stasis: 50, food: 200, prodium: 5, silver: 100 }}
+        onClose={() => console.log('[protect-shield] close')}
+        onRestoreWithResources={(percent) => console.log('[protect-shield] restore(res,', percent, ')')}
+        onRestoreWithSilver={(percent) => console.log('[protect-shield] restore(silver,', percent, ')')}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'scanner') {
+    openWindow(
+      <ScannerWindow
+        data={TEST_SPY_LOG}
+        onClose={() => console.log('[scanner] close')}
+        onScanSelected={(ids) => console.log('[scanner] requestScan(', ids, ')')}
       />,
     );
     (window as any).__renderDone = true;

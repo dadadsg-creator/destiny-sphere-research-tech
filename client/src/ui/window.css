@@ -298,3 +298,37 @@
   gap: 4px;
   cursor: pointer;
 }
+
+.ds-power-shield__desc {
+  font-size: 12px;
+  color: #ccd3ea;
+  white-space: pre-wrap;
+  margin: 0 0 10px;
+}
+
+.ds-protect-shield__bar {
+  position: relative;
+  width: 100%;
+  height: 18px;
+  background: #0e1a38;
+  border: 1px solid #3a4d7a;
+  border-radius: 3px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+.ds-protect-shield__bar-fill {
+  position: absolute;
+  inset: 0;
+  background: #4a7a4a;
+}
+.ds-protect-shield__bar-label {
+  position: relative;
+  display: block;
+  text-align: center;
+  font-size: 11px;
+  line-height: 18px;
+  color: #fff;
+}
+.ds-protect-shield__cost--unaffordable {
+  color: #ff6666;
+}
