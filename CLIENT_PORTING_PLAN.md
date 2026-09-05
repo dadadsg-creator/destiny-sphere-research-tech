@@ -811,8 +811,39 @@ Preact** (решение владельца) — `client/` до этого не 
 **Итог Фазы 3.2**: все 5 файлов домена — данные + рабочий экран. Полностью
 закрыто.
 
-- [ ] **3.3 Здания/производство** — `build_menu.as`, `buildinfo.as`,
-      `art_depot_menu.as`.
+- [x] **3.3 Здания/производство — все 3 файла: данные + экраны**
+      (2026-09-05, источник `docs/client-economy-social-ui.md` §1.5,
+      1.7, 1.8). Новая папка `client/src/buildings/`.
+  - `buildMenuData.ts` — `parseListBuild()` (mark `getbuildmenu`,
+    `xmlparsers.as:2577-2627`) + `computeBuildAllowed()` (категория «В»:
+    недоступно, если сервер запретил (`s==0`) ИЛИ не хватает хотя бы
+    одного из K/N/S/F/P/W/GC/SC — если только `alwaysAllow` не
+    переопределяет ОБЕ проверки, в т.ч. серверный запрет — портировано
+    именно в этом порядке, как в оригинале). Денежная цена (GC/SC)
+    реально живой атрибут (в отличие от K/N/S/F/P/W из `loaddata`) —
+    клиент её рендерит и проверяет, даже несмотря на найденную ранее
+    недоделанность списания денег на сервере (`mechanics-buildings.md`
+    §2.3) — порт ничего не чинит, просто показывает как есть.
+  - `buildInfoData.ts` — `parseInfoBuild()` (mark `getbuildinfo`,
+    `xmlparsers.as:2629-2732`) — `info` как есть generic-словарь атрибутов
+    корня (в оригинале тоже без явного перечисления — `info_build["info"]
+    = xml.attributes`).
+  - `artDepotData.ts` — `parseArtDepot()` (mark `archeology_artefact`,
+    `xmlparsers.as:898-998`). Сознательно НЕ портирован скалярный
+    `obj.name`/`obj.bonus` оригинала — реальный баг (перезаписывается
+    последним `bonus` в цикле), реальные данные в массиве `bonus_arr`.
+  - `BuildMenuWindow.tsx`/`BuildInfoWindow.tsx`/`ArtDepotWindow.tsx` —
+    экраны поверх каркаса. `BuildInfoWindow` гейтит кнопки буквально по
+    таблице поле→команда из доклада (присутствие ключа в `info`, для `ia`
+    — дополнительно наличие `ac`).
+  - Визуально проверено headless Edge на всех трёх (`?screen=build-menu
+    /build-info/art-depot`) — включая нетривиальные случаи: здание
+    `alwaysAllow=true` с серверным запретом всё равно доступно к
+    постройке; неудаляемый артефакт (`removeAllow=false`) корректно
+    скрывает чекбокс, но показывает кнопку активации.
+
+**Итог Фазы 3.3**: все 3 файла домена — данные + рабочий экран. Полностью
+закрыто.
 - [ ] **3.4 Наука** — `researchmenu.as`, `tree_scients/setting.as`,
       `tree_scients/loader.as`, `tree_scients/tree.as`.
 - [ ] **3.5 Торговля/аукцион** (источник:

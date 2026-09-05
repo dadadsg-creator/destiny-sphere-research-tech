@@ -18,6 +18,9 @@ import { ZondCreateWindow } from './spying/ZondCreateWindow';
 import { PowerShieldWindow } from './spying/PowerShieldWindow';
 import { ProtectShieldWindow } from './spying/ProtectShieldWindow';
 import { ScannerWindow } from './spying/ScannerWindow';
+import { BuildMenuWindow } from './buildings/BuildMenuWindow';
+import { BuildInfoWindow } from './buildings/BuildInfoWindow';
+import { ArtDepotWindow } from './buildings/ArtDepotWindow';
 import type { ArmyOverview } from './army/armyData';
 import type { ArmyCreationData } from './army/armyCreationData';
 import type { TrainUnitData } from './army/trainUnitData';
@@ -27,7 +30,10 @@ import type { ZondCreateData } from './spying/zondCreateData';
 import type { PowerShieldData } from './spying/powerShieldData';
 import type { ProtectShieldData } from './spying/protectShieldData';
 import type { SpyLogData } from './spying/scannerData';
-import type { LocalUnit } from './data/localData';
+import type { BuildMenuEntry, PlayerResourcePoolFull } from './buildings/buildMenuData';
+import type { BuildInfoData } from './buildings/buildInfoData';
+import type { ArtDepotEntry } from './buildings/artDepotData';
+import type { LocalUnit, LocalBuilding } from './data/localData';
 import type { TabDef } from './ui/tabs';
 
 // Синтетический набор построек для проверки renderBuildings() без живого
@@ -323,6 +329,109 @@ const TEST_SPY_LOG: SpyLogData = {
   },
 };
 
+// Синтетические данные для проверки BuildMenuWindow (?screen=build-menu).
+const TEST_BUILD_MENU: BuildMenuEntry[] = [
+  { id: 9, serverAllowed: true, goldCredit: 0, silverCredit: 0, alwaysAllow: false },
+  { id: 15, serverAllowed: true, goldCredit: 0, silverCredit: 50, alwaysAllow: false },
+  { id: 6, serverAllowed: false, goldCredit: 0, silverCredit: 0, alwaysAllow: true },
+];
+const TEST_LOCAL_BUILDINGS = new Map<number, LocalBuilding>([
+  [
+    9,
+    {
+      id: 9,
+      name: 'RESIDENTIAL_BUILDING',
+      type: 'RES',
+      ln: 'Жилой дом',
+      unique: false,
+      description: '',
+      attrs: { K: '100', N: '20', S: '0', F: '50', P: '0', W: '1', C: '0.5' },
+    },
+  ],
+  [
+    15,
+    {
+      id: 15,
+      name: 'CITY',
+      type: 'RES',
+      ln: 'Город',
+      unique: true,
+      description: '',
+      attrs: { K: '5000', N: '2000', S: '500', F: '1000', P: '200', W: '10', C: '2' },
+    },
+  ],
+  [
+    6,
+    {
+      id: 6,
+      name: 'CENTRAL_GATE',
+      type: 'MIL',
+      ln: 'Центральные врата',
+      unique: true,
+      description: '',
+      attrs: { K: '0', N: '0', S: '0', F: '0', P: '0', W: '0', C: '0' },
+    },
+  ],
+]);
+const TEST_PLAYER_RESOURCES: PlayerResourcePoolFull = {
+  kaderium: 300,
+  nanoCrystal: 100,
+  stasisEnergy: 50,
+  food: 200,
+  prodium: 5,
+  worker: 5,
+  silverCredit: 10,
+  goldCredit: 0,
+};
+
+// Синтетические данные для проверки BuildInfoWindow (?screen=build-info).
+const TEST_BUILD_INFO: BuildInfoData = {
+  info: { destr: '1', deact: '1', upgrade: '1' },
+  upgrade: {
+    idNextBuild: '40',
+    allow: true,
+    kad: '2000',
+    nano: '500',
+    stat: '100',
+    food: '300',
+    prod: '50',
+    time: '12',
+    work: '2',
+    sctarg: null,
+    sccur: null,
+  },
+  added: { K: '0', N: '0', S: '0', F: '0', P: '0' },
+  removed: { K: '0', N: '0', S: '0', F: '0', P: '0' },
+  allowGround: [],
+  messages: {},
+};
+
+// Синтетические данные для проверки ArtDepotWindow (?screen=art-depot).
+const TEST_ART_DEPOT: ArtDepotEntry[] = [
+  {
+    id: '1',
+    libName: 'ARTEFACT_TECH_CATALYZATION',
+    prefix: 'ARTEFACT',
+    scope: 'TECH',
+    postfix: 'CATALYZATION',
+    expired: '',
+    removeAllow: true,
+    bonuses: [{ name: 'PRODUCTION_SPEED', value: '15' }],
+    link: null,
+  },
+  {
+    id: '2',
+    libName: 'ARTEFACT_BONUS_GIFT',
+    prefix: 'ARTEFACT',
+    scope: 'BONUS',
+    postfix: 'GIFT',
+    expired: 'истекает через 3 дня',
+    removeAllow: false,
+    bonuses: [],
+    link: { id: '2', text: 'Активировать', hintText: 'Разовый подарок' },
+  },
+];
+
 // Точка входа HTML5-клиента Destiny Sphere.
 // Живая интеграция сети (Фаза 1) + карты (Фаза 2), см. CLIENT_PORTING_PLAN.md.
 //
@@ -385,6 +494,51 @@ async function main() {
         zondNames={TEST_ZOND_NAMES}
         onClose={() => console.log('[spying] close')}
         onSend={(params) => console.log('[spying] send_zond(', params, ')')}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'build-menu') {
+    openWindow(
+      <BuildMenuWindow
+        entries={TEST_BUILD_MENU}
+        localBuildings={TEST_LOCAL_BUILDINGS}
+        resources={TEST_PLAYER_RESOURCES}
+        onClose={() => console.log('[build-menu] close')}
+        onBuild={(id) => console.log('[build-menu] putbuild(', id, ')')}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'build-info') {
+    openWindow(
+      <BuildInfoWindow
+        data={TEST_BUILD_INFO}
+        onClose={() => console.log('[build-info] close')}
+        onCancelBuild={() => console.log('[build-info] cancelbuild()')}
+        onDemolish={() => console.log('[build-info] delbuild()')}
+        onCancelUpgrade={() => console.log('[build-info] cancelupgrade()')}
+        onActivate={() => console.log('[build-info] activatebuild()')}
+        onCancelActivate={() => console.log('[build-info] cancelactivate()')}
+        onDeactivate={() => console.log('[build-info] deactivatebuild()')}
+        onUpgrade={() => console.log('[build-info] upgradebuild()')}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'art-depot') {
+    openWindow(
+      <ArtDepotWindow
+        entries={TEST_ART_DEPOT}
+        onClose={() => console.log('[art-depot] close')}
+        onDeleteSelected={(ids) => console.log('[art-depot] delArtFromDepot(', ids, ')')}
+        onActivate={(id) => console.log('[art-depot] artActivate(', id, ')')}
       />,
     );
     (window as any).__renderDone = true;

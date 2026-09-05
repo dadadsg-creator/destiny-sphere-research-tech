@@ -332,3 +332,18 @@
 .ds-protect-shield__cost--unaffordable {
   color: #ff6666;
 }
+
+.ds-build-info__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.ds-build-info__upgrade {
+  font-size: 12px;
+  border-top: 1px solid #23325c;
+  padding-top: 10px;
+}
+.ds-build-info__upgrade p {
+  margin: 0 0 8px;
+}
