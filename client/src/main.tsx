@@ -11,8 +11,11 @@ import { WindowHost } from './ui/WindowHost';
 import { openWindow } from './ui/windowStore';
 import { ArmyOverviewWindow } from './army/ArmyOverviewWindow';
 import { ArmyCreationWindow } from './army/ArmyCreationWindow';
+import { TrainUnitWindow } from './army/TrainUnitWindow';
 import type { ArmyOverview } from './army/armyData';
 import type { ArmyCreationData } from './army/armyCreationData';
+import type { TrainUnitData } from './army/trainUnitData';
+import type { LocalUnit } from './data/localData';
 import type { TabDef } from './ui/tabs';
 
 // Синтетический набор построек для проверки renderBuildings() без живого
@@ -109,6 +112,99 @@ const TEST_ARMY_CREATION: ArmyCreationData = {
   ],
 };
 
+// Синтетические данные для проверки TrainUnitWindow (?screen=train-unit) —
+// живые поля (trainUnitData) + статические характеристики (localData),
+// как они реально объединяются в оригинале (см. trainUnitData.ts docstring).
+const TEST_TRAIN_UNIT: TrainUnitData = {
+  turn: '24',
+  speedup: '1',
+  units: [
+    {
+      idName: 'SOLDIER',
+      idUnit: '3',
+      type: null,
+      sctarg: null,
+      sccur: null,
+      avail: '1',
+      inProgress: 0,
+      endDate: null,
+      upkeep: { kad: 1, nano: 0, energy: 2, food: 3, prod: 0, work: 0 },
+    },
+    {
+      idName: 'TANK',
+      idUnit: '9',
+      type: null,
+      sctarg: null,
+      sccur: null,
+      avail: '1',
+      inProgress: 5,
+      endDate: '2026-09-06 10:00:00',
+      upkeep: { kad: 4, nano: 2, energy: 5, food: 1, prod: 1, work: 0 },
+    },
+    {
+      idName: 'GUARD',
+      idUnit: '7',
+      type: null,
+      sctarg: null,
+      sccur: null,
+      avail: '0',
+      inProgress: 0,
+      endDate: null,
+      upkeep: { kad: 2, nano: 0, energy: 1, food: 2, prod: 0, work: 0 },
+    },
+  ],
+};
+const TEST_LOCAL_UNITS = new Map<string, LocalUnit>([
+  [
+    'SOLDIER',
+    {
+      id: 'SOLDIER',
+      ln: 'Солдат',
+      level: '1',
+      race: '1',
+      attack: '50%',
+      defence: '25%',
+      damageMin: '10',
+      damageMax: '10',
+      hitpoints: '10',
+      description: '',
+      attrs: {},
+    },
+  ],
+  [
+    'TANK',
+    {
+      id: 'TANK',
+      ln: 'Танк',
+      level: '3',
+      race: '1',
+      attack: '80%',
+      defence: '60%',
+      damageMin: '40',
+      damageMax: '60',
+      hitpoints: '200',
+      description: '',
+      attrs: {},
+    },
+  ],
+  [
+    'GUARD',
+    {
+      id: 'GUARD',
+      ln: 'Страж',
+      level: '2',
+      race: '1',
+      attack: '30%',
+      defence: '70%',
+      damageMin: '15',
+      damageMax: '20',
+      hitpoints: '150',
+      description: '',
+      attrs: {},
+    },
+  ],
+]);
+
 // Точка входа HTML5-клиента Destiny Sphere.
 // Живая интеграция сети (Фаза 1) + карты (Фаза 2), см. CLIENT_PORTING_PLAN.md.
 //
@@ -144,6 +240,20 @@ async function main() {
         onTabClick={(tabId) => console.log('[army] tab click ->', tabId)}
         onClose={() => console.log('[army] close')}
         onDismissAll={() => console.log('[army] dismissAll()')}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'train-unit') {
+    openWindow(
+      <TrainUnitWindow
+        data={TEST_TRAIN_UNIT}
+        localUnits={TEST_LOCAL_UNITS}
+        onClose={() => console.log('[train-unit] close')}
+        onTrain={(idUnit, count) => console.log('[train-unit] trainWarUnit(', count, idUnit, ')')}
+        onCancel={(idUnit) => console.log('[train-unit] cancel(', idUnit, ')')}
       />,
     );
     (window as any).__renderDone = true;

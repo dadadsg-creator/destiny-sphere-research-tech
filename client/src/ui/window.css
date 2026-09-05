@@ -227,3 +227,13 @@
 .ds-popup__btn:disabled:hover {
   background: #33447a;
 }
+
+.ds-train-unit__idle {
+  color: #7c8bb5;
+  font-size: 11px;
+}
+.ds-train-unit__unavailable {
+  color: #6b7396;
+  font-style: italic;
+  font-size: 11px;
+}
