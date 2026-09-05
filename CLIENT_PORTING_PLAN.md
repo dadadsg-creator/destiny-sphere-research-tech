@@ -1027,7 +1027,31 @@ Preact** (решение владельца) — `client/` до этого не 
   - Визуально проверено headless Edge (`?screen=reincarnate`) — квота
     корректно уменьшена на уже реинкарнированное, очередь показывает
     разобранные start/finish по отдельности.
-- [ ] **3.9 Артефакты** — `artefactstatclass.as`, `buildartefactclass.as`.
+- [x] **3.9 Артефакты** — `artefactstatclass.as`, `buildartefactclass.as`.
+  - `artefactStatData.ts` — разбор mark `arthint` (панорамная карта
+    артефактных слотов всей соты), портировано 1:1 из
+    `xmlparsers.as:477-520` (`artefact_info_menu`). `getArtCellSprite()` —
+    таблица спрайтов по типу слота (§1.4 доклада). `getExpiryColor()` —
+    премиум-фича "скоро истекает", пороги дословно из
+    `artefactstatclass.as:659-671` (≥30 суток — зелёный, ≥7 суток —
+    жёлтый, иначе красный). `findMinRemainArt()` — артефакт с минимальным
+    остатком времени в ячейке (тот, что подсвечивается).
+  - `buildArtefactData.ts` — разбор mark `buildingartefact`
+    (артефактные слоты конкретного здания), портировано 1:1 из
+    `xmlparsers.as:1371-1428` (`building_artefact_menu`). Подтверждена
+    находка: `insert_artefact(id)`/`delete_artefact(id)` принимают
+    только `id`, привязка к зданию — через общий `debug.link.active_cell`,
+    без номера вкладки.
+  - `ArtefactStatWindow.tsx` — таблица ячеек соты вместо гекс-мозаики
+    оригинала (это HTML-меню, не канвас-экран Фазы 2; раскладку из
+    `map/hexGrid.ts` сознательно не подключали). Клик по ячейке шлёт
+    `getbuildmenu(c, tab=BuildingArtefact)`.
+  - `BuildArtefactWindow.tsx` — две колонки (вставлено/доступно из
+    депо), кнопка "Вставить" гейтится наличием свободных слотов.
+  - Визуально проверено headless Edge (`?screen=artefact-stat`,
+    `?screen=build-artefact`) — все три порога `getExpiryColor()`
+    подтверждены на скриншоте (зелёный/жёлтый/красный на разных
+    ячейках соты), просроченный артефакт в депо подсвечен красным.
 - [ ] **3.10 Рейтинг** — `ranking_menu_main_class.as`,
       `ranking_classes/*.as` (7 файлов; НЕ путать с дублем внутри
       `DS_KONTAKT_MODULE/ranking_classes/` — см. Фазу 0).

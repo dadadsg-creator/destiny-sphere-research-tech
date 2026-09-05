@@ -33,6 +33,8 @@ import { ReligionWindow } from './world/ReligionWindow';
 import { ArcheologyWindow } from './world/ArcheologyWindow';
 import { ColonizationWindow } from './world/ColonizationWindow';
 import { ReincarnateWindow } from './world/ReincarnateWindow';
+import { ArtefactStatWindow } from './artefacts/ArtefactStatWindow';
+import { BuildArtefactWindow } from './artefacts/BuildArtefactWindow';
 import type { ArmyOverview } from './army/armyData';
 import type { ArmyCreationData } from './army/armyCreationData';
 import type { TrainUnitData } from './army/trainUnitData';
@@ -57,6 +59,8 @@ import type { ReligionOption } from './world/religionData';
 import type { ArcheologyData, PlayerKadFoodPool } from './world/archeologyData';
 import type { ColonizationData } from './world/colonizationData';
 import type { ReincarnateData } from './world/reincarnateData';
+import type { ArtefactStatData } from './artefacts/artefactStatData';
+import type { BuildArtefactData } from './artefacts/buildArtefactData';
 import type { LocalUnit, LocalBuilding } from './data/localData';
 import type { TabDef } from './ui/tabs';
 
@@ -662,6 +666,31 @@ const TEST_REINCARNATE: ReincarnateData = {
 };
 const TEST_REINCARNATE_RESOURCES = [100000, 100000, 100000, 100000, 100000, 100000];
 
+// Синтетические данные для проверки ArtefactStatWindow (?screen=artefact-stat).
+const TEST_ARTEFACT_STAT: ArtefactStatData = new Map([
+  ['1', { type: 'STASIS_ENERGY', maxSlots: 3, fullSlots: 1, artInBuild: [
+    { id: '1', bonus: '15%', idArt: '101', remain: '2600000' }, // >= 30 суток — зелёный
+  ] }],
+  ['2', { type: 'KADERIUM', maxSlots: 2, fullSlots: 1, artInBuild: [
+    { id: '2', bonus: '10%', idArt: '102', remain: '700000' }, // >= 7 суток — жёлтый
+  ] }],
+  ['3', { type: 'COMBO', maxSlots: 4, fullSlots: 1, artInBuild: [
+    { id: '3', bonus: '20%', idArt: '103', remain: '100000' }, // < 7 суток — красный
+  ] }],
+]);
+
+// Синтетические данные для проверки BuildArtefactWindow (?screen=build-artefact).
+const TEST_BUILD_ARTEFACT: BuildArtefactData = {
+  countSlots: 3,
+  attached: [
+    { id: '1', libname: 'ART_ATTACK_MEDIUM', bonuses: [{ bonusType: 'attack', bonusValue: '15' }], expired: '' },
+  ],
+  available: [
+    { id: '2', libname: 'ART_DEFENSE_SMALL', bonuses: [{ bonusType: 'defense', bonusValue: '5' }], expired: '' },
+    { id: '3', libname: 'ART_SPEED_LARGE', bonuses: [{ bonusType: 'speed', bonusValue: '30' }], expired: 'скоро истекает' },
+  ],
+};
+
 // Точка входа HTML5-клиента Destiny Sphere.
 // Живая интеграция сети (Фаза 1) + карты (Фаза 2), см. CLIENT_PORTING_PLAN.md.
 //
@@ -1015,6 +1044,32 @@ async function main() {
         onTabClick={(tabId) => console.log('[army-create] tab click ->', tabId)}
         onClose={() => console.log('[army-create] close')}
         onCreate={(name, units) => console.log('[army-create] create_army(', name, units, ')')}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'artefact-stat') {
+    openWindow(
+      <ArtefactStatWindow
+        data={TEST_ARTEFACT_STAT}
+        isPremium={true}
+        onClose={() => console.log('[artefact-stat] close')}
+        onCellClick={(cellNum) => console.log('[artefact-stat] getbuildmenu(', cellNum, 'tab=BuildingArtefact)')}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'build-artefact') {
+    openWindow(
+      <BuildArtefactWindow
+        data={TEST_BUILD_ARTEFACT}
+        onClose={() => console.log('[build-artefact] close')}
+        onAttach={(id) => console.log('[build-artefact] attachartefact(', id, ')')}
+        onDetach={(id) => console.log('[build-artefact] detachartefact(', id, ')')}
       />,
     );
     (window as any).__renderDone = true;
