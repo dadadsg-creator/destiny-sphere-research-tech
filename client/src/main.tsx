@@ -21,6 +21,7 @@ import { ScannerWindow } from './spying/ScannerWindow';
 import { BuildMenuWindow } from './buildings/BuildMenuWindow';
 import { BuildInfoWindow } from './buildings/BuildInfoWindow';
 import { ArtDepotWindow } from './buildings/ArtDepotWindow';
+import { ResearchWindow } from './science/ResearchWindow';
 import type { ArmyOverview } from './army/armyData';
 import type { ArmyCreationData } from './army/armyCreationData';
 import type { TrainUnitData } from './army/trainUnitData';
@@ -33,6 +34,7 @@ import type { SpyLogData } from './spying/scannerData';
 import type { BuildMenuEntry, PlayerResourcePoolFull } from './buildings/buildMenuData';
 import type { BuildInfoData } from './buildings/buildInfoData';
 import type { ArtDepotEntry } from './buildings/artDepotData';
+import type { ResearchData } from './science/researchData';
 import type { LocalUnit, LocalBuilding } from './data/localData';
 import type { TabDef } from './ui/tabs';
 
@@ -432,6 +434,27 @@ const TEST_ART_DEPOT: ArtDepotEntry[] = [
   },
 ];
 
+// Синтетические данные для проверки ResearchWindow (?screen=research).
+const TEST_RESEARCH: ResearchData = {
+  branches: [
+    { id: 'KADERIUM', name: 'Кадериум', ir: null, nextLevel: '4', level: '3', allow: '1', bonusAll: '15%', bonus: '5%', time: '12', inProgressUntil: null },
+    { id: 'NANO_CRYSTAL', name: 'Нанокристалл', ir: null, nextLevel: '2', level: '1', allow: '1', bonusAll: '5%', bonus: '3%', time: '-', inProgressUntil: '2026-09-07 10:00' },
+    { id: 'SPYING', name: 'Шпионаж', ir: null, nextLevel: '0', level: null, allow: '0', bonusAll: '-', bonus: '-', time: '-', inProgressUntil: null },
+  ],
+  train: {
+    turn: '24',
+    work: 3,
+    scientistMax: 10,
+    scientistAllowRaw: 8,
+    inProgress: 1,
+    priceWork: 1,
+    priceNano: 50,
+    priceFood: 30,
+    priceTime: 2,
+  },
+  messages: {},
+};
+
 // Точка входа HTML5-клиента Destiny Sphere.
 // Живая интеграция сети (Фаза 1) + карты (Фаза 2), см. CLIENT_PORTING_PLAN.md.
 //
@@ -494,6 +517,22 @@ async function main() {
         zondNames={TEST_ZOND_NAMES}
         onClose={() => console.log('[spying] close')}
         onSend={(params) => console.log('[spying] send_zond(', params, ')')}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'research') {
+    openWindow(
+      <ResearchWindow
+        data={TEST_RESEARCH}
+        playerResources={{ nanoCrystal: 1000, food: 1000 }}
+        onClose={() => console.log('[research] close')}
+        onStartResearch={(id) => console.log('[research] start_research(', id, ')')}
+        onCancelResearch={(id) => console.log('[research] cancel_research(', id, ')')}
+        onTrainScientists={(count) => console.log('[research] trainscientists(', count, ')')}
+        onCancelTrainScientists={() => console.log('[research] canceltrainscientists()')}
       />,
     );
     (window as any).__renderDone = true;
