@@ -1,0 +1,54 @@
+/**
+ * Окно режима отпуска — otpusk_class.as, см.
+ * docs/client-economy-social-ui.md §4.2. Статус "2" сознательно не
+ * рисует ни одной кнопки — как и в оригинале (назначение переходного
+ * состояния не установлено).
+ */
+import { useState } from 'preact/hooks';
+import { Window } from '../ui/Window';
+import { ConfirmPopup } from '../ui/Popup';
+import type { VacationData } from './vacationData';
+
+export interface VacationWindowProps {
+  data: VacationData;
+  onClose: () => void;
+  onStart: (password: string) => void;
+  onStop: (password: string) => void;
+  onForgotPassword: () => void;
+}
+
+export function VacationWindow({ data, onClose, onStart, onStop, onForgotPassword }: VacationWindowProps) {
+  const [password, setPassword] = useState('');
+  const [confirming, setConfirming] = useState(false);
+
+  return (
+    <Window title="Отпуск" onClose={onClose}>
+      <p>{data.dataText}</p>
+      <p>{data.descText}</p>
+
+      {(data.status === '1' || data.status === '3') && (
+        <input type="password" value={password} onInput={(e) => setPassword((e.target as HTMLInputElement).value)} />
+      )}
+
+      {data.status === '1' && <button onClick={() => setConfirming(true)}>Уйти в отпуск</button>}
+
+      {data.status === '3' && (
+        <>
+          <button onClick={() => onStop(password)}>Выйти из отпуска</button>
+          <button onClick={onForgotPassword}>Забыл пароль</button>
+        </>
+      )}
+
+      {confirming && (
+        <ConfirmPopup
+          message="Вы уверены, что хотите уйти в отпуск?"
+          onYes={() => {
+            setConfirming(false);
+            onStart(password);
+          }}
+          onNo={() => setConfirming(false)}
+        />
+      )}
+    </Window>
+  );
+}

@@ -44,6 +44,7 @@ import { SettingsWindow } from './settings/SettingsWindow';
 import { AdviceWindow } from './settings/AdviceWindow';
 import { CabinetWindow } from './cabinet/CabinetWindow';
 import { ArtefactShopWindow } from './cabinet/ArtefactShopWindow';
+import { VacationWindow } from './vacation/VacationWindow';
 import type { ArmyOverview } from './army/armyData';
 import type { ArmyCreationData } from './army/armyCreationData';
 import type { TrainUnitData } from './army/trainUnitData';
@@ -78,6 +79,7 @@ import type { AdviceHint } from './settings/adviceData';
 import type { CabinetMainData } from './cabinet/cabinetMainData';
 import type { SubmenuFormData } from './cabinet/submenuData';
 import type { ArtefactShopData } from './cabinet/artefactShopData';
+import type { VacationData } from './vacation/vacationData';
 import type { LocalUnit, LocalBuilding } from './data/localData';
 import type { TabDef } from './ui/tabs';
 
@@ -682,6 +684,10 @@ const TEST_REINCARNATE: ReincarnateData = {
   queue: [{ id: '3', libname: 'SOLDIER', time: ['2026-09-05 10:00', '2026-09-05 14:00'], amount: '5' }],
 };
 const TEST_REINCARNATE_RESOURCES = [100000, 100000, 100000, 100000, 100000, 100000];
+
+// Синтетические данные для проверки VacationWindow (?screen=vacation).
+const TEST_VACATION_NOT_STARTED: VacationData = { status: '1', dataText: 'Вы можете уйти в отпуск.', descText: 'Постройки не разрушаются, атаки невозможны.' };
+const TEST_VACATION_ACTIVE: VacationData = { status: '3', dataText: 'Вы в отпуске.', descText: 'Введите пароль отпуска, чтобы выйти.' };
 
 // Синтетические данные для проверки CabinetWindow (?screen=cabinet).
 const TEST_CABINET: CabinetMainData = {
@@ -1355,6 +1361,20 @@ async function main() {
         data={TEST_ARTEFACT_SHOP}
         onClose={() => console.log('[artefact-shop] close')}
         onBuy={(cart, concurrency) => console.log('[artefact-shop] buyArtInShop(', cart, concurrency, ')')}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'vacation' || screen === 'vacation-active') {
+    openWindow(
+      <VacationWindow
+        data={screen === 'vacation' ? TEST_VACATION_NOT_STARTED : TEST_VACATION_ACTIVE}
+        onClose={() => console.log('[vacation] close')}
+        onStart={(password) => console.log('[vacation] vacationstart(', password, ')')}
+        onStop={(password) => console.log('[vacation] vacationstop(', password, ')')}
+        onForgotPassword={() => console.log('[vacation] vacationsedpass()')}
       />,
     );
     (window as any).__renderDone = true;
