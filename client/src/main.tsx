@@ -12,9 +12,11 @@ import { openWindow } from './ui/windowStore';
 import { ArmyOverviewWindow } from './army/ArmyOverviewWindow';
 import { ArmyCreationWindow } from './army/ArmyCreationWindow';
 import { TrainUnitWindow } from './army/TrainUnitWindow';
+import { WarStatisticWindow } from './army/WarStatisticWindow';
 import type { ArmyOverview } from './army/armyData';
 import type { ArmyCreationData } from './army/armyCreationData';
 import type { TrainUnitData } from './army/trainUnitData';
+import type { WarComplexData } from './army/warFactoryData';
 import type { LocalUnit } from './data/localData';
 import type { TabDef } from './ui/tabs';
 
@@ -205,6 +207,22 @@ const TEST_LOCAL_UNITS = new Map<string, LocalUnit>([
   ],
 ]);
 
+// Синтетические данные для проверки WarStatisticWindow (?screen=war-statistic).
+const TEST_WAR_COMPLEX: WarComplexData = {
+  turn: '24',
+  speedup: '0',
+  units: [
+    { id: '3', unitname: 'SOLDIER', types: ['LIGHT'], upkeep: { kad: 1, nano: 0, food: 3, energy: 2, prod: 0 }, maxallow: null },
+    { id: '9', unitname: 'TANK', types: ['HEAVY'], upkeep: { kad: 4, nano: 2, food: 1, energy: 5, prod: 1 }, maxallow: null },
+  ],
+  factories: new Map([
+    ['1', { idCell: '1', type: 'LIGHT', busy: false, unit: null, count: 0, timeEnd: null }],
+    ['2', { idCell: '2', type: 'LIGHT', busy: true, unit: 'SOLDIER', count: 12, timeEnd: '2026-09-06 10:00:00' }],
+    ['3', { idCell: '3', type: 'HEAVY', busy: false, unit: null, count: 0, timeEnd: null }],
+    ['4', { idCell: '4', type: 'HEAVY', busy: true, unit: 'TANK', count: 3, timeEnd: '2026-09-06 12:00:00' }],
+  ]),
+};
+
 // Точка входа HTML5-клиента Destiny Sphere.
 // Живая интеграция сети (Фаза 1) + карты (Фаза 2), см. CLIENT_PORTING_PLAN.md.
 //
@@ -254,6 +272,21 @@ async function main() {
         onClose={() => console.log('[train-unit] close')}
         onTrain={(idUnit, count) => console.log('[train-unit] trainWarUnit(', count, idUnit, ')')}
         onCancel={(idUnit) => console.log('[train-unit] cancel(', idUnit, ')')}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'war-statistic') {
+    openWindow(
+      <WarStatisticWindow
+        data={TEST_WAR_COMPLEX}
+        localUnits={TEST_LOCAL_UNITS}
+        onClose={() => console.log('[war-statistic] close')}
+        onLoad={(cellIds, unitId, amount) =>
+          console.log('[war-statistic] load_pack_war_factory(', cellIds, unitId, amount, ')')
+        }
       />,
     );
     (window as any).__renderDone = true;

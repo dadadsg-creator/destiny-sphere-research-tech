@@ -237,3 +237,46 @@
   font-style: italic;
   font-size: 11px;
 }
+
+.ds-war-statistic__units {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 12px;
+  font-size: 12px;
+}
+.ds-war-statistic__unit-choice {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.ds-war-statistic__factories {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.ds-war-statistic__factory {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  padding: 4px 6px;
+  border-radius: 3px;
+  background: #16264d;
+  cursor: pointer;
+}
+.ds-war-statistic__factory--busy {
+  color: #ffcc66;
+}
+.ds-war-statistic__factory--disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.ds-war-statistic__controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
