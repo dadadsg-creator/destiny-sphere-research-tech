@@ -1,0 +1,173 @@
+/* Каркас окон — упрощённая, не попиксельно совпадающая со скином
+   оригинала стилизация (углы/9-slice ассеты см.
+   docs/client-window-framework.md §1.1). Тёмная тема — тот же фон,
+   что и у PixiJS-канваса карты (0x040d23). */
+
+.ds-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.ds-window {
+  background: #0b1730;
+  border: 2px solid #3a4d7a;
+  border-radius: 6px;
+  min-width: 320px;
+  max-width: 90vw;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  color: #e8ecf7;
+  font-family: Arial, sans-serif;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
+.ds-window__titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  background: #16264d;
+  border-bottom: 1px solid #3a4d7a;
+  border-radius: 4px 4px 0 0;
+}
+
+.ds-window__title {
+  font-weight: bold;
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  color: #eeeeee;
+}
+
+.ds-window__close {
+  background: #33447a;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+}
+.ds-window__close:hover {
+  background: #8888ff;
+}
+
+.ds-window__content {
+  padding: 12px;
+  overflow: auto;
+}
+
+.ds-tabbar {
+  display: flex;
+  gap: 2px;
+  padding: 4px 6px 0;
+  background: #0e1a38;
+  border-bottom: 1px solid #3a4d7a;
+}
+
+.ds-tabbar__tab {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #1c2c56;
+  color: #ccd3ea;
+  border: none;
+  border-radius: 4px 4px 0 0;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 11px;
+}
+.ds-tabbar__tab--active {
+  background: #33447a;
+  color: #fff;
+  font-weight: bold;
+}
+.ds-tabbar__tab:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.ds-tabbar__tab--link {
+  font-style: italic;
+}
+.ds-tabbar__icon {
+  width: 16px;
+  height: 16px;
+}
+
+.ds-popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.ds-popup {
+  background: #16264d;
+  border: 2px solid #8888ff;
+  border-radius: 6px;
+  padding: 16px 20px;
+  min-width: 260px;
+  max-width: 80vw;
+  color: #e8ecf7;
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
+.ds-popup__message {
+  margin: 0 0 14px;
+  font-size: 13px;
+  white-space: pre-wrap;
+}
+
+.ds-popup__buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.ds-popup__btn {
+  background: #33447a;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 18px;
+  cursor: pointer;
+  font-size: 12px;
+}
+.ds-popup__btn:hover {
+  background: #8888ff;
+}
+
+/* Базовая табличная стилизация — используется списками экранов Фазы 3
+   (обзор армий и т.п.), пока без попиксельного скина оригинала. */
+.ds-window table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 12px;
+}
+.ds-window th,
+.ds-window td {
+  padding: 4px 10px;
+  text-align: left;
+  border-bottom: 1px solid #23325c;
+}
+.ds-window tbody tr.ds-army-row {
+  cursor: pointer;
+}
+.ds-window tbody tr.ds-army-row:hover {
+  background: #16264d;
+}
+.ds-army-units {
+  margin: 0;
+  padding-left: 18px;
+}

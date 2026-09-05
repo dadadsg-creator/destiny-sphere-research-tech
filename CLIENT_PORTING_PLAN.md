@@ -603,13 +603,76 @@
 [client-side-computed-logic.md](docs/client-side-computed-logic.md) (те
 переносить формула-в-формулу с юнит-проверкой значений, не «на глаз»).
 
-- [ ] **3.1 Боевой блок** (источник:
-      [client-combat-ui.md](docs/client-combat-ui.md)) —
-      `army_overview_class.as`, `armycreationclass.as`,
-      `battleoverviewclass.as`, `warstatistic.as`, `warplateclass.as`,
-      `trainvarunitclass.as`, `armycalcclass.as`/`army_calc.txt`
-      (боевой калькулятор — уже расшифрован `SC`/`GC` =
-      `SILVER_CREDIT`/`GOLD_CREDIT`).
+**Порядок работы (решение 2026-09-05)**: начали с 3.15 (общий каркас
+окон), а не по номерам — каркас нужен всем остальным доменам, ретрофит
+навигации поверх уже написанных экранов был бы дороже. **UI-фреймворк —
+Preact** (решение владельца) — `client/` до этого не имел HTML-UI
+фреймворка вообще (только PixiJS для канваса Фазы 2); `@preact/signals`
+для глобального стейта окон (естественно ложится на модель «один активный
+модальный слот» из оригинала). `client/src/main.tsx` (переименован из
+`main.ts` — теперь содержит JSX) монтирует `<WindowHost/>` в `#ui-root`
+(новый div в `index.html`, рядом с канвасом `#app` — два независимых UI-слоя,
+как и в оригинале, где меню оверлеятся поверх сцены Flash).
+
+- [x] **3.15 Общий каркас окон/меню — минимальная версия готова**
+      (2026-09-05). Сначала фоновый агент полностью разобрал
+      `old-sphere/SPHERE_client/window.as` (5724 строки) →
+      [client-window-framework.md](docs/client-window-framework.md) —
+      ключевые находки: окно = внешняя рамка + внутренняя панель (9-slice,
+      два режима — стандартный титлбар / кастомная шапка);
+      **вкладки верхнего уровня — это серверная навигация**
+      (клик = `<getbuildmenu tab="ID"/>` + немедленное закрытие окна, НЕ
+      локальное переключение контента — контент неактивных вкладок
+      клиенту вообще не известен); один общий модальный слот
+      (`game.lock(8500)`) с двумя исключениями (список писем→композер,
+      лог-окно always-on-top); confirm/buy-попапы не участвуют в
+      модальном слоте вообще, рисуют свой блокиратор.
+  - `client/src/ui/tabs.ts` — `TabDef`, `getWindowName()`/`getWindowId()`,
+    порт 1:1 из `window.as:90-126` (включая особенность оригинала: при
+    активной дочерней вкладке `getWindowId` возвращает id родительской,
+    не дочерней — не баг порта, так в исходнике).
+  - `client/src/ui/windowStore.ts` — `@preact/signals`, три независимых
+    слота: `currentWindow` (один активный модальный слот),
+    `logWindow` (always-on-top), `popupStack` (confirm/alert, стек, не
+    участвует в модальном слоте).
+  - `client/src/ui/Window.tsx`/`TabBar.tsx`/`Popup.tsx` — каркас окна,
+    вкладки (`onTabClick` — controlled callback, сам компонент не решает,
+    что показать дальше — реальная навигация только через сервер),
+    `ConfirmPopup`/`InfoPopup`.
+  - **Визуально упрощено, НЕ попиксельно повторяет скин оригинала**
+    (9-slice ассеты рамки/углов не перенесены — `client/src/ui/window.css`,
+    простая тёмная тема) — это осознанно отложенная задача полировки
+    внешнего вида, отдельная от структуры/поведения каркаса.
+  - **Не портировано в этой версии** (см. §5-6 доклада, отдельные задачи
+    по мере необходимости конкретных экранов): три реализации скроллера
+    (унифицировать в одну виртуализованную — `addScroll`/`addTextScroll`/
+    `addDiskretScroll`), степпер с акселерацией, комбобокс, дерево
+    фильтров, календарь, `createBUYWindow`/`createBUYBONUSWindow`
+    (степпер количества + живой пересчёт цены), `add_second_tabs`
+    (второй, локальный механизм вкладок — не путать с серверным).
+  - Проверено визуально headless Edge (`?screen=army`, синтетические
+    данные): окно с вкладками и таблицей открывается; клик по кнопке
+    внутри окна корректно кладёт `ConfirmPopup` поверх затемнённого окна
+    (`scripts/screenshot-click.ts`) — весь путь Window→TabBar→Popup
+    подтверждён рабочим, не только typecheck/сборкой.
+- [x] **3.1 Боевой блок — старт, данные + первый экран** (2026-09-05,
+      источник [client-combat-ui.md](docs/client-combat-ui.md) §1, §3, §4):
+  - `client/src/army/armyData.ts` — `parseArmyOverview()` (mark
+    `armyoverview`, `xmlparsers.as:1461-1568`).
+  - `client/src/battle/battleOverviewData.ts` — `parseBattleOverview()`
+    (mark `battleoverview`, `xmlparsers.as:1052-1150`).
+  - `client/src/battle/battleData.ts`/`battleRenderer.ts` — уже было
+    сделано в Фазе 2 (см. там), фактически относится к этому домену
+    (`warplateclass.as`, наглядное поле боя).
+  - `client/src/army/ArmyOverviewWindow.tsx` — первый реальный экран
+    поверх каркаса 3.15: таблица армий (статус по `inaction`, сила,
+    скорость, состав юнитов по клику), кнопка «Распустить все армии» →
+    `ConfirmPopup` (соответствует `DISMISS_ALL`, только премиум в
+    оригинале — проверка премиума не реализована в этой версии).
+  - **Не сделано**: `armycreationclass.as` (создание армии),
+    `warstatistic.as` (фабрики), `trainvarunitclass.as` (тренировка
+    юнита), `armycalcclass.as` (калькулятор) — сами экраны ещё не
+    написаны, только упомянутые выше данные/один экран.
 - [ ] **3.2 Шпионаж/зонды/щиты** (источник: `client-combat-ui.md`) —
       `spying_class.as`, `scannermenuclass.as`, `zondcreateclass.as`
       (категория «В» — прогрессивная цена зондов, формула уже есть в
