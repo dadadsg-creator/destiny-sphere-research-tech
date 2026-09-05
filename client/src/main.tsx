@@ -32,6 +32,7 @@ import { TerraformWindow } from './world/TerraformWindow';
 import { ReligionWindow } from './world/ReligionWindow';
 import { ArcheologyWindow } from './world/ArcheologyWindow';
 import { ColonizationWindow } from './world/ColonizationWindow';
+import { ReincarnateWindow } from './world/ReincarnateWindow';
 import type { ArmyOverview } from './army/armyData';
 import type { ArmyCreationData } from './army/armyCreationData';
 import type { TrainUnitData } from './army/trainUnitData';
@@ -55,6 +56,7 @@ import type { TerraformOption } from './world/terraformData';
 import type { ReligionOption } from './world/religionData';
 import type { ArcheologyData, PlayerKadFoodPool } from './world/archeologyData';
 import type { ColonizationData } from './world/colonizationData';
+import type { ReincarnateData } from './world/reincarnateData';
 import type { LocalUnit, LocalBuilding } from './data/localData';
 import type { TabDef } from './ui/tabs';
 
@@ -636,6 +638,30 @@ const TEST_COLONIZATION: ColonizationData = {
   textStatus: '',
 };
 
+// Синтетические данные для проверки ReincarnateWindow (?screen=reincarnate).
+const TEST_REINCARNATE: ReincarnateData = {
+  fork: {
+    maxProdium: 1000,
+    lostProdium: 200,
+    buildProdium: 500,
+    reincProdium: 300,
+    targetProdium: 700,
+    resEnabled: true,
+    silEnabled: true,
+  },
+  statsByWeek: [
+    { w: '10,20,30,40,50,60,70', m: '100,200,300' },
+    { w: '5,10,15,20,25,30,35', m: '50,100,150' },
+    { w: '1,2,3,4,5,6,7', m: '10,20,30' },
+  ],
+  units: [
+    { id: '3', libname: 'SOLDIER', prodiumWeight: 2, price: { KA: 10, NA: 5, ST: 0, FO: 5, PR: 0, SC: 0 } },
+    { id: '9', libname: 'TANK', prodiumWeight: 10, price: { KA: 50, NA: 20, ST: 10, FO: 5, PR: 0, SC: 0 } },
+  ],
+  queue: [{ id: '3', libname: 'SOLDIER', time: ['2026-09-05 10:00', '2026-09-05 14:00'], amount: '5' }],
+};
+const TEST_REINCARNATE_RESOURCES = [100000, 100000, 100000, 100000, 100000, 100000];
+
 // Точка входа HTML5-клиента Destiny Sphere.
 // Живая интеграция сети (Фаза 1) + карты (Фаза 2), см. CLIENT_PORTING_PLAN.md.
 //
@@ -698,6 +724,19 @@ async function main() {
         zondNames={TEST_ZOND_NAMES}
         onClose={() => console.log('[spying] close')}
         onSend={(params) => console.log('[spying] send_zond(', params, ')')}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'reincarnate') {
+    openWindow(
+      <ReincarnateWindow
+        data={TEST_REINCARNATE}
+        playerResources={TEST_REINCARNATE_RESOURCES}
+        onClose={() => console.log('[reincarnate] close')}
+        onSend={(cmd) => console.log('[reincarnate] getReincarnate(', cmd, ')')}
       />,
     );
     (window as any).__renderDone = true;
