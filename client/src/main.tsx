@@ -42,6 +42,8 @@ import { SysMessageWindow } from './mail/SysMessageWindow';
 import { QuestWindow } from './quests/QuestWindow';
 import { SettingsWindow } from './settings/SettingsWindow';
 import { AdviceWindow } from './settings/AdviceWindow';
+import { CabinetWindow } from './cabinet/CabinetWindow';
+import { ArtefactShopWindow } from './cabinet/ArtefactShopWindow';
 import type { ArmyOverview } from './army/armyData';
 import type { ArmyCreationData } from './army/armyCreationData';
 import type { TrainUnitData } from './army/trainUnitData';
@@ -73,6 +75,9 @@ import type { CreateNewMailData } from './mail/createNewMailData';
 import type { LogWindowData } from './mail/logData';
 import type { QuestMenuData } from './quests/questData';
 import type { AdviceHint } from './settings/adviceData';
+import type { CabinetMainData } from './cabinet/cabinetMainData';
+import type { SubmenuFormData } from './cabinet/submenuData';
+import type { ArtefactShopData } from './cabinet/artefactShopData';
 import type { LocalUnit, LocalBuilding } from './data/localData';
 import type { TabDef } from './ui/tabs';
 
@@ -678,6 +683,71 @@ const TEST_REINCARNATE: ReincarnateData = {
 };
 const TEST_REINCARNATE_RESOURCES = [100000, 100000, 100000, 100000, 100000, 100000];
 
+// Синтетические данные для проверки CabinetWindow (?screen=cabinet).
+const TEST_CABINET: CabinetMainData = {
+  billingUrl: 'https://billing.example/pay',
+  user: {
+    name: 'Dartana',
+    email: 'dartana@example.com',
+    allowWorld: [
+      { name: 'Sphere Wolf', id: '123', gold: 12, silver: 14 },
+      { name: 'Sphere Orion', id: '1123', gold: 16, silver: 18 },
+    ],
+  },
+  currentStatus: { gold: 1500, silver: 15000 },
+  serviceList: [
+    { type: 'HEAD', name: 'Услуги' },
+    { type: 'SUB', id: 'buy_res', name: 'Купить ресурсы' },
+    { type: 'SUB', id: 'finish_act', name: 'Ускорить действие' },
+    { type: 'SPLITER' },
+    { type: 'HEAD', name: 'Прочее' },
+    { type: 'SUB', id: 'set_user_name', name: 'Сменить имя' },
+  ],
+  popupMessage: 'Добро пожаловать в личный кабинет!',
+  lastOperation: { date: '2026-09-05', text: 'Обмен 100 золота на серебро' },
+};
+
+// Синтетические данные для проверки SubmenuForm внутри CabinetWindow.
+const TEST_SUBMENU: SubmenuFormData = {
+  idmenu: 'buy_res',
+  titleWindow: 'Купить ресурсы',
+  closeButtonEnabled: true,
+  elements: [
+    { type: 'textfield', id: 't1', text: 'Выберите ресурс и количество:' },
+    { type: 'br' },
+    {
+      type: 'combobox',
+      id: 'resource',
+      defIndex: 0,
+      options: [
+        { id: 'kad', ln: 'Кадерий' },
+        { id: 'nano', ln: 'Нанокристалл' },
+      ],
+    },
+    { type: 'amountf', id: 'count', min: 0, max: 1000, def: 10 },
+    { type: 'hidden', id: 'src', data: 'cabinet' },
+    { type: 'button', id: 'confirm', label: 'Купить', fieldIdsForSend: ['resource', 'count', 'src'], confirmText: 'Точно купить?' },
+  ],
+};
+
+// Синтетические данные для проверки ArtefactShopWindow (?screen=artefact-shop).
+const TEST_ARTEFACT_SHOP: ArtefactShopData = {
+  filters: [
+    { id: '1', listTypes: [{ id: '10', name: 'Военные' }, { id: '11', name: 'Экономические' }] },
+    { id: '2', listTypes: [{ id: '20', name: 'Редкие' }] },
+  ],
+  artefacts: [
+    {
+      id: '1', name: 'Артефакт атаки', exp: '30', icon: 'ART1', priceSilver: 500, priceGold: 50,
+      bonusText: 'Атака +15%', life: '2592000', filterData: [{ id: 'filter1', value: '10' }, { id: 'filter2', value: '20' }],
+    },
+    {
+      id: '2', name: 'Артефакт защиты', exp: '30', icon: 'ART2', priceSilver: 300, priceGold: 30,
+      bonusText: 'Защита +10%', life: '2592000', filterData: [{ id: 'filter1', value: '11' }, { id: 'filter2', value: '20' }],
+    },
+  ],
+};
+
 // Синтетические данные для проверки AdviceWindow (?screen=advice).
 const TEST_ADVICE: AdviceHint = {
   title: 'Добро пожаловать',
@@ -1221,6 +1291,70 @@ async function main() {
         onNext={() => console.log('[advice] getNubHelp(4, HINT)')}
         onPrev={() => console.log('[advice] getNubHelp(2, HINT)')}
         onJumpTo={(id) => console.log('[advice] substnick(', id, ') -> getNubHelp(', id, ', HINT)')}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'cabinet') {
+    openWindow(
+      <CabinetWindow
+        data={TEST_CABINET}
+        openSubmenu={null}
+        onClose={() => console.log('[cabinet] close')}
+        onSelectService={(id) => console.log('[cabinet] getSubMenuCabinet(', id, ')')}
+        onCloseSubmenu={() => console.log('[cabinet] closeSubMenu')}
+        onSubmitSubmenu={(buttonId, values) => console.log('[cabinet] subMenuAction(', buttonId, values, ')')}
+        onDismissPopup={() => console.log('[cabinet] dismiss popup')}
+        rightBlock={{
+          buyGoldMode: 'vk',
+          onBuyGold: () => console.log('[cabinet] buyGold (VK)'),
+          onOpenExternal: (url) => console.log('[cabinet] open external', url),
+          onChangeGoldToSilver: (count) => console.log('[cabinet] changeGoldTOSelver(', count, ')'),
+          onMoneyToWorld: (id, gold, silver) => console.log('[cabinet] moneyToWorld(', id, gold, silver, ')'),
+          onMoneyFromWorld: (id, gold, silver) => console.log('[cabinet] moneyFormWorld(', id, gold, silver, ')'),
+          onGiftMoney: (gold, silver) => console.log('[cabinet] giftMoney(', gold, silver, ')'),
+          onShowAllStatistic: () => console.log('[cabinet] getAllStatistic()'),
+        }}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'cabinet-submenu') {
+    openWindow(
+      <CabinetWindow
+        data={TEST_CABINET}
+        openSubmenu={TEST_SUBMENU}
+        onClose={() => console.log('[cabinet] close')}
+        onSelectService={(id) => console.log('[cabinet] getSubMenuCabinet(', id, ')')}
+        onCloseSubmenu={() => console.log('[cabinet] closeSubMenu')}
+        onSubmitSubmenu={(buttonId, values) => console.log('[cabinet] subMenuAction(', buttonId, values, ')')}
+        onDismissPopup={() => console.log('[cabinet] dismiss popup')}
+        rightBlock={{
+          buyGoldMode: 'vk',
+          onBuyGold: () => console.log('[cabinet] buyGold (VK)'),
+          onOpenExternal: (url) => console.log('[cabinet] open external', url),
+          onChangeGoldToSilver: (count) => console.log('[cabinet] changeGoldTOSelver(', count, ')'),
+          onMoneyToWorld: (id, gold, silver) => console.log('[cabinet] moneyToWorld(', id, gold, silver, ')'),
+          onMoneyFromWorld: (id, gold, silver) => console.log('[cabinet] moneyFormWorld(', id, gold, silver, ')'),
+          onGiftMoney: (gold, silver) => console.log('[cabinet] giftMoney(', gold, silver, ')'),
+          onShowAllStatistic: () => console.log('[cabinet] getAllStatistic()'),
+        }}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'artefact-shop') {
+    openWindow(
+      <ArtefactShopWindow
+        data={TEST_ARTEFACT_SHOP}
+        onClose={() => console.log('[artefact-shop] close')}
+        onBuy={(cart, concurrency) => console.log('[artefact-shop] buyArtInShop(', cart, concurrency, ')')}
       />,
     );
     (window as any).__renderDone = true;
