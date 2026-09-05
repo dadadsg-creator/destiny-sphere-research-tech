@@ -960,9 +960,46 @@ Preact** (решение владельца) — `client/` до этого не 
     нетривиальные случаи: лидер не кикается сам себя, участник с
     `delete_button_disabled` не кикается никем, входящее предложение
     мира отличимо от уже заключённого.
-- [ ] **3.7 Религия/археология/терраформинг/колонизация** —
-      `religion_class.as`, `archeology_class.as`, `terraform_class.as`,
-      `colonyzationclass.as`.
+- [x] **3.7 Религия/археология/терраформинг/колонизация — все 4 файла:
+      данные + экраны** (2026-09-05, источник
+      `docs/client-economy-social-ui.md` §1.3, 1.9, 3.1, 3.3). Новая
+      папка `client/src/world/`.
+  - `terraformData.ts` — `parseTerraforming()` (mark `terraforming`,
+    `xmlparsers.as:1247-1303`). Формат `price` здесь ДРУГОЙ, чем во всех
+    остальных доменах — токены через `:`, но буква и число внутри
+    токена БЕЗ разделителя (`"K100"`, не `"K:100"`) — явно
+    задокументировано, чтобы не путать с другими доменами.
+    `canCancelTerraform()` — отмена терраформинга премиум-фича, даже
+    если `allow=="2"`.
+  - `religionData.ts` — `parseReligion()` (mark `religion`,
+    `xmlparsers.as:2538-2575`). `getReligionIcon()` — портирована
+    находка доклада буквально: только `RELIGI_WOLKENENDER` имеет свою
+    иконку, ЛЮБОЕ другое имя (включая гипотетическую третью религию) —
+    дефолт `RELIGI_WOLKENSTURMER`.
+  - `archeologyData.ts` — `parseArcheology()` (mark `archeology`,
+    `xmlparsers.as:2842-2988`) + `computeArcheologistAllow()` (та же
+    формула ужимания по ресурсам+work, что и в науке/фабриках) +
+    `computeSendTimeOptions()`/`computeSendLocationOptions()`
+    (категория «В», клиентские списки вариантов отправки экспедиции).
+    **Сознательно НЕ портирован** `arch_array` оригинала — объявлен, но
+    ни разу не заполняется ни в одной ветке разбора (мёртвый код,
+    проверено построчно).
+  - `colonizationData.ts` — `parseColonizationCenter()` (marks
+    `colonize`/`colonizestatus`, `xmlparsers.as:2813-2839`),
+    `isValidColonyName()` (3-25 символов), `buildColonyDestination()`
+    (два формата адреса — `"<кольцо>.rand"` или точные координаты).
+  - `TerraformWindow.tsx`/`ReligionWindow.tsx`/`ArcheologyWindow.tsx`/
+    `ColonizationWindow.tsx` — экраны поверх каркаса.
+  - Визуально проверено headless Edge на всех четырёх (`?screen=terraform
+    /religion/archeology/colonization`) — включая нетривиальные случаи:
+    отмена терраформинга задизейблена без премиума даже когда
+    `allow=="2"`; state-machine колонизации (готов/в процессе/завершено).
+
+**Итог Фазы 3.7**: все 4 файла домена — данные + рабочий экран.
+Полностью закрыто.
+
+- [ ] **3.8 Реинкарнация** — `reincarnate.as` (категория «В» — калькулятор
+      «сколько могу себе позволить»), `reincarnate_menu_class.as`.
 - [ ] **3.8 Реинкарнация** — `reincarnate.as` (категория «В» — калькулятор
       «сколько могу себе позволить»), `reincarnate_menu_class.as`.
 - [ ] **3.9 Артефакты** — `artefactstatclass.as`, `buildartefactclass.as`.

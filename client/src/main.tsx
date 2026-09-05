@@ -28,6 +28,10 @@ import { TransferWindow } from './trade/TransferWindow';
 import { AllianceManagementWindow } from './alliance/AllianceManagementWindow';
 import { AllianceMemberWindow } from './alliance/AllianceMemberWindow';
 import { PrivatePeaceWindow } from './alliance/PrivatePeaceWindow';
+import { TerraformWindow } from './world/TerraformWindow';
+import { ReligionWindow } from './world/ReligionWindow';
+import { ArcheologyWindow } from './world/ArcheologyWindow';
+import { ColonizationWindow } from './world/ColonizationWindow';
 import type { ArmyOverview } from './army/armyData';
 import type { ArmyCreationData } from './army/armyCreationData';
 import type { TrainUnitData } from './army/trainUnitData';
@@ -47,6 +51,10 @@ import type { TransferMenuData } from './trade/transferData';
 import type { AllianceManagementData } from './alliance/allianceData';
 import type { AllianceOverviewData } from './alliance/allianceMemberData';
 import type { PrivatePeaceData } from './alliance/privatePeaceData';
+import type { TerraformOption } from './world/terraformData';
+import type { ReligionOption } from './world/religionData';
+import type { ArcheologyData, PlayerKadFoodPool } from './world/archeologyData';
+import type { ColonizationData } from './world/colonizationData';
 import type { LocalUnit, LocalBuilding } from './data/localData';
 import type { TabDef } from './ui/tabs';
 
@@ -588,6 +596,46 @@ const TEST_PRIVATE_PEACE: PrivatePeaceData = {
   ],
 };
 
+// Синтетические данные для проверки TerraformWindow (?screen=terraform).
+const TEST_TERRAFORM: TerraformOption[] = [
+  { typeGround: 'GRASS', time: '12', kad: 100, nano: 20, prod: 0, stas: 10, work: 1, food: 5, allow: '1', action: '' },
+  { typeGround: 'DESERT', time: '24', kad: 200, nano: 40, prod: 0, stas: 20, work: 2, food: 10, allow: '2', action: '' },
+  { typeGround: 'ROCK', time: '36', kad: 300, nano: 60, prod: 0, stas: 30, work: 3, food: 15, allow: undefined, action: '' },
+];
+
+// Синтетические данные для проверки ReligionWindow (?screen=religion).
+const TEST_RELIGION: ReligionOption[] = [
+  {
+    id: '1',
+    status: 'RELIGI_CONNECT',
+    name: 'RELIGI_WOLKENENDER',
+    percent: null,
+    date: null,
+    bonuses: [{ name: 'PRODUCTION_BONUS', value: 10 }],
+    desc: 'Религия облачных странников.',
+  },
+];
+
+// Синтетические данные для проверки ArcheologyWindow (?screen=archeology).
+const TEST_ARCHEOLOGY: ArcheologyData = {
+  extendedTime: true,
+  expeditions: [{ count: '20', dest: 'CENTRAL', endDate: '2026-09-06 19:22', minSize: '3' }],
+  train: { turn: '600', archeologistMax: 20, archeologistAllowRaw: 15, inProgress: 2, work: 5, priceWork: 1, priceKad: 50, priceFood: 20, priceTime: 1 },
+  messages: {},
+};
+const TEST_ARCH_RESOURCES: PlayerKadFoodPool = { kaderium: 10000, food: 10000 };
+
+// Синтетические данные для проверки ColonizationWindow (?screen=colonization).
+const TEST_COLONIZATION: ColonizationData = {
+  action: '1',
+  idModule: '1',
+  rings: [
+    { id: '1', ln: 'Кольцо технологий' },
+    { id: '2', ln: 'Кольцо биологии' },
+  ],
+  textStatus: '',
+};
+
 // Точка входа HTML5-клиента Destiny Sphere.
 // Живая интеграция сети (Фаза 1) + карты (Фаза 2), см. CLIENT_PORTING_PLAN.md.
 //
@@ -650,6 +698,64 @@ async function main() {
         zondNames={TEST_ZOND_NAMES}
         onClose={() => console.log('[spying] close')}
         onSend={(params) => console.log('[spying] send_zond(', params, ')')}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'terraform') {
+    openWindow(
+      <TerraformWindow
+        options={TEST_TERRAFORM}
+        isPremium={false}
+        onClose={() => console.log('[terraform] close')}
+        onStart={(type) => console.log('[terraform] start_terraform(', type, ')')}
+        onCancel={(type) => console.log('[terraform] stop_terraform(', type, ')')}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'religion') {
+    openWindow(
+      <ReligionWindow
+        religions={TEST_RELIGION}
+        onClose={() => console.log('[religion] close')}
+        onConnect={(id) => console.log('[religion] religyConnect(', id, ')')}
+        onLeave={(id) => console.log('[religion] religyOut(', id, ')')}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'archeology') {
+    openWindow(
+      <ArcheologyWindow
+        data={TEST_ARCHEOLOGY}
+        playerResources={TEST_ARCH_RESOURCES}
+        isPremium={false}
+        gateOpen={true}
+        onClose={() => console.log('[archeology] close')}
+        onTrain={(count) => console.log('[archeology] trainArch(', count, ')')}
+        onSendExpedition={(dest, count, turns, size, group) =>
+          console.log('[archeology] sendArchExpedition(', count, dest, turns, size, group, ')')
+        }
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'colonization') {
+    openWindow(
+      <ColonizationWindow
+        data={TEST_COLONIZATION}
+        onClose={() => console.log('[colonization] close')}
+        onSend={(dest, name) => console.log('[colonization] sendColonyModule(', dest, name, ')')}
+        onCancel={() => console.log('[colonization] cancelColonyModule()')}
       />,
     );
     (window as any).__renderDone = true;
