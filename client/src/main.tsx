@@ -22,6 +22,9 @@ import { BuildMenuWindow } from './buildings/BuildMenuWindow';
 import { BuildInfoWindow } from './buildings/BuildInfoWindow';
 import { ArtDepotWindow } from './buildings/ArtDepotWindow';
 import { ResearchWindow } from './science/ResearchWindow';
+import { AuctionWindow } from './trade/AuctionWindow';
+import { SellWindow } from './trade/SellWindow';
+import { TransferWindow } from './trade/TransferWindow';
 import type { ArmyOverview } from './army/armyData';
 import type { ArmyCreationData } from './army/armyCreationData';
 import type { TrainUnitData } from './army/trainUnitData';
@@ -35,6 +38,9 @@ import type { BuildMenuEntry, PlayerResourcePoolFull } from './buildings/buildMe
 import type { BuildInfoData } from './buildings/buildInfoData';
 import type { ArtDepotEntry } from './buildings/artDepotData';
 import type { ResearchData } from './science/researchData';
+import type { AuctionLot } from './trade/auctionData';
+import type { TradeMenuData } from './trade/tradeData';
+import type { TransferMenuData } from './trade/transferData';
 import type { LocalUnit, LocalBuilding } from './data/localData';
 import type { TabDef } from './ui/tabs';
 
@@ -455,6 +461,93 @@ const TEST_RESEARCH: ResearchData = {
   messages: {},
 };
 
+// Синтетические данные для проверки AuctionWindow (?screen=auction).
+const TEST_AUCTION_LOTS: AuctionLot[] = [
+  {
+    id: '1',
+    endDate: '2026-09-06 12:00',
+    amount: 500,
+    getPrice: { K: '100' },
+    currentPrice: 100,
+    currentPriceOnce: null,
+    seller: 'Игрок1',
+    tradeBy: 'KADERIUM',
+    tradeScope: null,
+    immediate: '1',
+    libname: 'NANO_CRYSTAL',
+    buyer: null,
+    serverDisabled: false,
+    nextPrice: 100,
+    maxPrice: null,
+  },
+  {
+    id: '2',
+    endDate: '2026-09-06 15:00',
+    amount: 10,
+    getPrice: { K: '5000' },
+    currentPrice: 5000,
+    currentPriceOnce: null,
+    seller: 'Игрок2',
+    tradeBy: 'KADERIUM',
+    tradeScope: null,
+    immediate: '0',
+    libname: 'TANK',
+    buyer: null,
+    serverDisabled: false,
+    nextPrice: 5200,
+    maxPrice: null,
+  },
+];
+const TEST_PLAYER_RESOURCE_BY_NAME = new Map([['KADERIUM', 300]]);
+
+// Синтетические данные для проверки SellWindow (?screen=sell).
+const TEST_TRADE_MENU: TradeMenuData = {
+  turn: '24',
+  minQuantity: 50,
+  time2Trade: 24,
+  flags: { nalog: true, trend: true, person: true, anonymous: false },
+  matrix: {
+    trades: ['1', '2', '3'],
+    reses: [
+      { name: 'KADERIUM', ln: 'Кадериум', price: 1, category: '1', id: '1' },
+      { name: 'SILVER_CREDIT', ln: 'Серебро', price: 1, category: '1', id: '9' },
+    ],
+    data: [
+      [{ allow: true, minOrder: 10, maxOrder: 200, tax: 5 }, { allow: true, minOrder: 5, maxOrder: 300, tax: 2 }],
+      [{ allow: true, minOrder: 10, maxOrder: 200, tax: 5 }, { allow: false }],
+      [{ allow: false }, { allow: true, minOrder: 5, maxOrder: 300, tax: 2 }],
+    ],
+  },
+  articlesByCategory: {
+    1: [
+      { category: 1, idCat: '1_2', id: '2', amount: 1000, upkeep: { K: 0, N: 0, P: 0, F: 0, S: 0 }, power: {}, libname: 'NANO_CRYSTAL', ln: null, isArtefact: false },
+    ],
+    2: [
+      { category: 2, idCat: '2_9', id: '9', amount: 20, upkeep: { K: 0, N: 0, P: 0, F: 0, S: 0 }, power: {}, libname: 'TANK', ln: null, isArtefact: false },
+    ],
+    3: [
+      { category: 3, idCat: '3_1', id: '1', amount: 3, upkeep: { K: 0, N: 0, P: 0, F: 0, S: 0 }, power: {}, libname: null, ln: null, isArtefact: true, artId: '1', datum: '' },
+    ],
+  },
+  scopes: [
+    { id: '1', ln: 'Комплекс' },
+    { id: '2', ln: 'Кольцо' },
+  ],
+};
+
+// Синтетические данные для проверки TransferWindow (?screen=transfer).
+const TEST_TRANSFER: TransferMenuData = {
+  articlesByCategory: {
+    1: [{ category: 1, id: '2', libname: 'NANO_CRYSTAL', amount: '500' }],
+    2: [{ category: 2, id: '9', libname: 'TANK', amount: '10' }],
+    3: [],
+  },
+  targets: [
+    { idComb: '5', combName: 'Вторая колония', coords: '2.1.7' },
+    { idComb: '6', combName: 'Третья колония', coords: '2.1.9' },
+  ],
+};
+
 // Точка входа HTML5-клиента Destiny Sphere.
 // Живая интеграция сети (Фаза 1) + карты (Фаза 2), см. CLIENT_PORTING_PLAN.md.
 //
@@ -517,6 +610,46 @@ async function main() {
         zondNames={TEST_ZOND_NAMES}
         onClose={() => console.log('[spying] close')}
         onSend={(params) => console.log('[spying] send_zond(', params, ')')}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'auction') {
+    openWindow(
+      <AuctionWindow
+        lots={TEST_AUCTION_LOTS}
+        playerResourceByName={TEST_PLAYER_RESOURCE_BY_NAME}
+        onClose={() => console.log('[auction] close')}
+        onBuy={(lotId, price) => console.log('[auction] buy_lot(', lotId, price, ')')}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'sell') {
+    openWindow(
+      <SellWindow
+        data={TEST_TRADE_MENU}
+        onClose={() => console.log('[sell] close')}
+        onSell={(cmd) => console.log('[sell] sell(', cmd, ')')}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'transfer') {
+    openWindow(
+      <TransferWindow
+        data={TEST_TRANSFER}
+        onClose={() => console.log('[transfer] close')}
+        onTransfer={(cmd) => console.log('[transfer] transfer_to_colony(', cmd, ')')}
+        onCalculate={(id, category, amount, target) =>
+          console.log('[transfer] calc_transfer_to_colony(', id, category, amount, target, ')')
+        }
       />,
     );
     (window as any).__renderDone = true;
