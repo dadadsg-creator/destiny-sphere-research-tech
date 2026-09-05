@@ -35,6 +35,10 @@ import { ColonizationWindow } from './world/ColonizationWindow';
 import { ReincarnateWindow } from './world/ReincarnateWindow';
 import { ArtefactStatWindow } from './artefacts/ArtefactStatWindow';
 import { BuildArtefactWindow } from './artefacts/BuildArtefactWindow';
+import { MailWindow } from './mail/MailWindow';
+import { CreateNewMailWindow } from './mail/CreateNewMailWindow';
+import { LogWindow } from './mail/LogWindow';
+import { SysMessageWindow } from './mail/SysMessageWindow';
 import type { ArmyOverview } from './army/armyData';
 import type { ArmyCreationData } from './army/armyCreationData';
 import type { TrainUnitData } from './army/trainUnitData';
@@ -61,6 +65,9 @@ import type { ColonizationData } from './world/colonizationData';
 import type { ReincarnateData } from './world/reincarnateData';
 import type { ArtefactStatData } from './artefacts/artefactStatData';
 import type { BuildArtefactData } from './artefacts/buildArtefactData';
+import type { MailListData } from './mail/mailData';
+import type { CreateNewMailData } from './mail/createNewMailData';
+import type { LogWindowData } from './mail/logData';
 import type { LocalUnit, LocalBuilding } from './data/localData';
 import type { TabDef } from './ui/tabs';
 
@@ -666,6 +673,40 @@ const TEST_REINCARNATE: ReincarnateData = {
 };
 const TEST_REINCARNATE_RESOURCES = [100000, 100000, 100000, 100000, 100000, 100000];
 
+// Синтетические данные для проверки MailWindow (?screen=mail).
+const TEST_MAIL: MailListData = {
+  type: 'in',
+  mails: [
+    { id: '1', name: 'Alice', datecreate: '2026-09-01 10:00', dateread: '', subj: 'Привет!', lscopename: 'Личное', scopeid: '1', deleteFlag: false },
+    { id: '2', name: 'Совет альянса', datecreate: '2026-09-02 12:00', dateread: '2026-09-02 13:00', subj: 'Собрание', lscopename: 'Альянс', scopeid: '2', deleteFlag: false },
+    { id: '3', name: 'Bob', datecreate: '2026-09-03 09:30', dateread: '', subj: 'Торговое предложение', lscopename: 'Личное', scopeid: '1', deleteFlag: false },
+  ],
+};
+
+// Синтетические данные для проверки CreateNewMailWindow (?screen=create-mail).
+const TEST_CREATE_MAIL: CreateNewMailData = {
+  scopes: [
+    { id: '1', name: 'personal', ln: 'Личное' },
+    { id: '2', name: 'alliance', ln: 'Альянс' },
+  ],
+  recipientName: 'Alice',
+  quoteSubject: 'Re: Привет!',
+  quoteBody: 'исходный текст письма',
+};
+
+// Синтетические данные для проверки LogWindow (?screen=log-window).
+const TEST_LOG_WINDOW: LogWindowData = {
+  title: 'Отчёт о разведке',
+  titleData: '<b>Цель:</b> 1.2.3',
+  textData: 'Обнаружено: 5 юнитов SOLDIER, 2 юнита TANK.<br/>Оборона: слабая.',
+};
+
+// Синтетические данные для проверки SysMessageWindow (?screen=sys-message).
+const TEST_SYS_MESSAGES = [
+  '<font color="#33cc66">Постройка завершена: Склад</font>',
+  '<font color="#ffcc66">Атака отражена в соте 1.2.4</font>',
+];
+
 // Синтетические данные для проверки ArtefactStatWindow (?screen=artefact-stat).
 const TEST_ARTEFACT_STAT: ArtefactStatData = new Map([
   ['1', { type: 'STASIS_ENERGY', maxSlots: 3, fullSlots: 1, artInBuild: [
@@ -1070,6 +1111,59 @@ async function main() {
         onClose={() => console.log('[build-artefact] close')}
         onAttach={(id) => console.log('[build-artefact] attachartefact(', id, ')')}
         onDetach={(id) => console.log('[build-artefact] detachartefact(', id, ')')}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'mail') {
+    openWindow(
+      <MailWindow
+        data={TEST_MAIL}
+        openBody={null}
+        onClose={() => console.log('[mail] close')}
+        onSwitchType={() => console.log('[mail] get_mail(', TEST_MAIL.type === 'in' ? 'out' : 'in', ')')}
+        onOpenMail={(id) => console.log('[mail] getMailMessage(', id, ')')}
+        onDeleteSelected={(ids) => console.log('[mail] deletemessages(', ids, ')')}
+        onReadSelected={(ids) => console.log('[mail] readmessages(', ids, ')')}
+        onNewMail={() => console.log('[mail] createnewmail("new")')}
+        onReply={(id) => console.log('[mail] createnewmail("reply",', id, ')')}
+        onReplyQuote={(id) => console.log('[mail] createnewmail("quote",', id, ')')}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'create-mail') {
+    openWindow(
+      <CreateNewMailWindow
+        data={TEST_CREATE_MAIL}
+        isVk={false}
+        onClose={() => console.log('[create-mail] close')}
+        onSend={(to, subject, body, typeScope) => console.log('[create-mail] send_mail(', to, subject, body, typeScope, ')')}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'log-window') {
+    openWindow(<LogWindow data={TEST_LOG_WINDOW} onClose={() => console.log('[log-window] close')} onCopy={() => console.log('[log-window] copyToBuffer')} />);
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'sys-message') {
+    openWindow(
+      <SysMessageWindow
+        messages={TEST_SYS_MESSAGES}
+        windowName="Системные сообщения"
+        typeWin="SPY"
+        gateOpen={true}
+        onClose={() => console.log('[sys-message] close')}
+        onViewSpyLog={() => console.log('[sys-message] getSpyMenu()')}
       />,
     );
     (window as any).__renderDone = true;

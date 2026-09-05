@@ -1093,8 +1093,40 @@ Preact** (решение владельца) — `client/` до этого не 
       Итог: HTML5-порт этого окна пропущен как ЧЕСТНО НЕ СУЩЕСТВОВАВШАЯ
       в живом клиенте функциональность, а не как недосмотр переноса —
       придумывать протокол вместо реального не стали.
-- [ ] **3.11 Почта/системные сообщения** — `mailmenu.as`,
+- [x] **3.11 Почта/системные сообщения** — `mailmenu.as`,
       `create_new_mail.as`, `sys_mess_menu.as`, `logwindow.as`.
+  - `mailData.ts` — разбор marks `messageoverview` (список писем,
+    `xmlparsers.as:2990-3016`) и `message` (тело письма,
+    `xmlparsers.as:3063-3130`). Порт кодирования темы/тела письма —
+    каждый символ как 3 hex-символа (`decodeMailMessage`/
+    `encodeMailMessage`, зеркало `xmlparsers.as:3018-3061` и
+    `game.as:2655-2690`), с откатом на обычный текст для старых писем.
+    **Исправление находки**: `mailmenu.as`'s `delMessages()`/
+    `readMessages()` берут `mail_arr[i].id` вместо
+    `mail_arr[array_active[i]].id` — при активном фильтре типов шлют ID
+    не тех писем на сервер; в порте индексация исправлена (см. докстринг
+    `selectActiveMailIndices()`).
+  - `createNewMailData.ts` — разбор mark `createmessage`
+    (`xmlparsers.as:2734-2803`), валидация перед отправкой
+    (`create_new_mail.as:332-353`: получатель ≥3 символов ИЛИ скоуп≠
+    «личное», тема/текст ≥4 символов).
+  - `logData.ts` — разбор mark `log` (`xmlparsers.as:9-32`,
+    `datawindow`) и фрагмента `sysmsg` (`parser.as:494-548`, только
+    одна порция новых сообщений, без накопительного `debug.link.sys_msg`
+    состояния — это часть постоянного игрового цикла, не конкретно
+    этого окна). **Находка**: кнопка «Написать письмо этому игроку» в
+    `logwindow.as` — мёртвый код (`completeWindow()` вызывается четырьмя
+    аргументами вместо пяти, `mail_to` всегда `undefined`) — в HTML-порте
+    кнопка сознательно всегда отрисована неактивной, как и в живом
+    клиенте (см. LogWindow.tsx), это НЕ было исправлено, т.к. это
+    реальное поведение, увиденное игроками.
+  - `MailWindow.tsx` / `CreateNewMailWindow.tsx` / `LogWindow.tsx` /
+    `SysMessageWindow.tsx` — визуально проверено headless Edge
+    (`?screen=mail`, `?screen=create-mail`, `?screen=log-window`,
+    `?screen=sys-message`): кнопки действий с письмом верно
+    заблокированы при отсутствии выбора, кнопка «Написать письмо» в
+    LogWindow верно неактивна, кнопка «Просмотр лога разведки» в
+    SysMessageWindow верно показана при `type=SPY`+открытых воротах.
 - [ ] **3.12 Квесты** — `quest_menu_class.as`.
 - [ ] **3.13 Настройки/справка** — `setting.as`, `settingmenu.as`,
       `help_class.as`, `adviceclass.as`.
