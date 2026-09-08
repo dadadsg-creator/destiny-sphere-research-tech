@@ -13,13 +13,17 @@
  * **Объём этого прохода (см. план)**: реестр разбора («тег → парсер»)
  * заполнен по всем доменам, где парсер уже есть из Фазы 3 — это чисто
  * механическая работа. Полная проводка в реальные окна с командами
- * реализована только для одного полностью проверенного вертикального
- * среза — `getbuildinfo` (карта → клик по постройке → BuildInfoWindow,
- * формат запроса подтверждён живым тестом 2026-09-08, см.
- * buildInfoData.ts). Остальные домены пока только логируются в консоль —
- * подключение конкретных окон с реальными командами оставлено отдельным
- * объёмом работы (у многих нужны ещё не портированные служебные марки,
- * например `combres` для пула ресурсов игрока).
+ * реализована для вертикальных срезов из "гнезда" `getbuildmenu`-семейства
+ * (карта → клик по соте → окно → команда → новый ответ), все — по
+ * подтверждённому 2026-09-08 списку 37 классов `PN_*` (все расширяют
+ * `UA_GetBuildMenu`, см. CLIENT_PORTING_PLAN.md): `getbuildinfo`,
+ * `buildingartefact`, `terraforming`, `religion`, `transferresource`,
+ * `trade`. Остальные домены пока только логируются в консоль — подключение
+ * оставлено отдельным объёмом работы; часть из них (`archeology`,
+ * `reincarnate`, будущий `BuildMenuWindow`) требует ещё не портированной
+ * марки `combres` (пул ресурсов игрока) и/или неизвестного источника
+ * премиум-статуса — сознательно не подключены, чтобы не подставлять
+ * выдуманные данные вместо реальных.
  */
 import type { ParsedMarks } from './response';
 import { parseXmlFragment } from './response';
@@ -34,7 +38,13 @@ import { openWindow, closeWindow, pushPopup, popPopup } from '../ui/windowStore'
 import { InfoPopup } from '../ui/Popup';
 import { BuildInfoWindow } from '../buildings/BuildInfoWindow';
 import { parseInfoBuild } from '../buildings/buildInfoData';
-import { tag } from './xmlBuilder';
+import { tag, sellXml, transferResourceXml } from './xmlBuilder';
+import { parseTabsArray, stripTabPrefix } from './tabsParser';
+import { BuildArtefactWindow } from '../artefacts/BuildArtefactWindow';
+import { TerraformWindow } from '../world/TerraformWindow';
+import { ReligionWindow } from '../world/ReligionWindow';
+import { TransferWindow } from '../trade/TransferWindow';
+import { SellWindow } from '../trade/SellWindow';
 
 // --- разбор конкретных доменов, известных, но пока не подключённых к живым окнам ---
 import { parseAllianceManagement } from '../alliance/allianceData';
@@ -78,6 +88,14 @@ export interface DispatchContext {
   renderer: MapRenderer;
   /** Отправить команду и обработать её ответ тем же диспетчером — используется колбэками окон. */
   send: (xml: string) => Promise<void>;
+  /**
+   * Ячейка, к которой привязано текущее `getbuildmenu`-семейство окон —
+   * аналог `debug.link.active_cell` оригинала. Проставляется кодом,
+   * инициирующим клик по соте (см. liveApp.ts), и переиспользуется кликами
+   * по вкладкам внутри уже открытого окна (см. `sendTabClick` ниже) —
+   * сервер не присылает номер ячейки обратно в ответе.
+   */
+  activeCell: string | undefined;
 }
 
 /**
@@ -104,12 +122,10 @@ const PARSERS: Record<string, (xml: string) => unknown> = {
   auction: parseAuction,
   battleoverview: parseBattleOverview,
   battlinfo: parseBattleInfo,
-  buildingartefact: parseBuildArtefact,
   colonize: parseColonizationCenter,
   colonizestatus: parseColonizationCenter,
   createmessage: parseCreateNewMail,
   getbuildmenu: parseListBuild,
-  getbuildinfo: parseInfoBuild,
   log: parseLogWindow,
   messageoverview: parseMailList,
   message: parseMailMessage,
@@ -117,13 +133,9 @@ const PARSERS: Record<string, (xml: string) => unknown> = {
   powershild: parsePowerShield,
   protectedfield: parseProtectShield,
   questmenu: parseQuestMenu,
-  religion: parseReligion,
   research: parseResearch,
   spylog: parseSpyLog,
-  trade: parseTradeMenu,
   reincarnate: parseReincarnate,
-  transferresource: parseTransferMenu,
-  terraforming: parseTerraforming,
   warunit: parseTrainWarUnit,
   warcomplex: parseWarComplex,
   spying: parseSpying,
@@ -133,13 +145,29 @@ const PARSERS: Record<string, (xml: string) => unknown> = {
   // colonynavigate — colonynavigate.as не читался в Фазе 3.
 };
 
+/**
+ * Клик по вкладке внутри уже открытого `getbuildmenu`-семейства окна —
+ * общий для всех них (см. `RENDERERS` ниже), переиспользует `ctx.activeCell`
+ * (та же сота, что открыла текущее "гнездо" окон). `tab.id` приходит с
+ * префиксом класса (`PN_BuildingInfo`) — подтверждено живым тестом
+ * 2026-09-08, см. tabsParser.ts.
+ */
+function sendTabClick(ctx: DispatchContext, tabId: string): void {
+  if (ctx.activeCell === undefined) {
+    console.warn('[dispatch] клик по вкладке без активной ячейки — окно открыто не через клик по карте?', tabId);
+    return;
+  }
+  void ctx.send(tag('getbuildmenu', { c: ctx.activeCell, tab: stripTabPrefix(tabId) }));
+}
+
 /** reqvestdata.as — кнопки BuildInfoWindow, все семь — <тег c=""/>, подтверждено ds_useractiontype (2026-09-08). */
 function buildInfoActionCommand(actionTag: string, cellNum: string): string {
   return tag(actionTag, { c: cellNum });
 }
 
-/** Полная живая проводка — карта → клик по занятой ячейке → это окно. Единственный на сегодня domain с реальными командами. */
-function renderBuildInfo(xml: string, cellNum: string, ctx: DispatchContext): void {
+function renderBuildInfo(root: Element, xml: string, ctx: DispatchContext): void {
+  const cellNum = ctx.activeCell;
+  if (cellNum === undefined) return;
   const data = parseInfoBuild(xml);
   const act = (actionTag: string) => () => {
     void ctx.send(buildInfoActionCommand(actionTag, cellNum));
@@ -147,6 +175,8 @@ function renderBuildInfo(xml: string, cellNum: string, ctx: DispatchContext): vo
   openWindow(
     <BuildInfoWindow
       data={data}
+      tabs={parseTabsArray(root)}
+      onTabClick={(tabId) => sendTabClick(ctx, tabId)}
       onClose={closeWindow}
       onCancelBuild={act('cancelbuild')}
       onDemolish={act('delbuild')}
@@ -159,14 +189,118 @@ function renderBuildInfo(xml: string, cellNum: string, ctx: DispatchContext): vo
   );
 }
 
+/** buildArtefactData.ts:81 — <attachartefact c="" id=""/> / <detachartefact c="" id=""/>. */
+function renderBuildArtefact(root: Element, xml: string, ctx: DispatchContext): void {
+  const cellNum = ctx.activeCell;
+  if (cellNum === undefined) return;
+  const data = parseBuildArtefact(xml);
+  openWindow(
+    <BuildArtefactWindow
+      data={data}
+      tabs={parseTabsArray(root)}
+      onTabClick={(tabId) => sendTabClick(ctx, tabId)}
+      onClose={closeWindow}
+      onAttach={(id) => void ctx.send(tag('attachartefact', { c: cellNum, id }))}
+      onDetach={(id) => void ctx.send(tag('detachartefact', { c: cellNum, id }))}
+    />,
+  );
+}
+
+/** terraformData.ts:74 — <terraform c="" type=""/> / <cancelterraform c="" type=""/>, теги подтверждены ds_useractiontype. */
+function renderTerraform(root: Element, xml: string, ctx: DispatchContext): void {
+  const cellNum = ctx.activeCell;
+  if (cellNum === undefined) return;
+  const options = parseTerraforming(xml);
+  openWindow(
+    <TerraformWindow
+      options={options}
+      // Премиум-статус нигде не парсится (как и combres, см. докстринг
+      // файла) — реальный пробел, пока считаем false (безопасный дефолт:
+      // просто не покажет кнопку отмены терраформинга премиум-аккаунту).
+      isPremium={false}
+      tabs={parseTabsArray(root)}
+      onTabClick={(tabId) => sendTabClick(ctx, tabId)}
+      onClose={closeWindow}
+      onStart={(type) => void ctx.send(tag('terraform', { c: cellNum, type }))}
+      onCancel={(type) => void ctx.send(tag('cancelterraform', { c: cellNum, type }))}
+    />,
+  );
+}
+
+/** religionData.ts:93 — <religyconnect religy=""/> / <religycancel religy=""/> (имена тегов НЕ симметричны команде). */
+function renderReligion(root: Element, xml: string, ctx: DispatchContext): void {
+  const religions = parseReligion(xml);
+  openWindow(
+    <ReligionWindow
+      religions={religions}
+      tabs={parseTabsArray(root)}
+      onTabClick={(tabId) => sendTabClick(ctx, tabId)}
+      onClose={closeWindow}
+      onConnect={(id) => void ctx.send(tag('religyconnect', { religy: id }))}
+      onLeave={(id) => void ctx.send(tag('religycancel', { religy: id }))}
+    />,
+  );
+}
+
+/** transferData.ts:81 — сериализация через transferResourceXml (имена атрибутов не совпадают с полями команды). */
+function renderTransfer(root: Element, xml: string, ctx: DispatchContext): void {
+  const data = parseTransferMenu(xml);
+  openWindow(
+    <TransferWindow
+      data={data}
+      tabs={parseTabsArray(root)}
+      onTabClick={(tabId) => sendTabClick(ctx, tabId)}
+      onClose={closeWindow}
+      onTransfer={(command) => void ctx.send(transferResourceXml(command))}
+      onCalculate={(id, category, amount, targetCombId) => {
+        // UA_CalcTravel — тег есть в ds_useractiontype, но точный формат
+        // запроса (какие поля, как называются атрибуты) в Фазе 3 не
+        // сверялся — не отправляем непроверенную команду вслепую.
+        console.log('[dispatch] calctravel — формат запроса не подтверждён, действие не отправлено', {
+          id,
+          category,
+          amount,
+          targetCombId,
+        });
+      }}
+    />,
+  );
+}
+
+/** tradeData.ts:261 — сериализация через sellXml (id_* атрибуты не совпадают с camelCase-полями команды). */
+function renderSell(root: Element, xml: string, ctx: DispatchContext): void {
+  const data = parseTradeMenu(xml);
+  openWindow(
+    <SellWindow
+      data={data}
+      tabs={parseTabsArray(root)}
+      onTabClick={(tabId) => sendTabClick(ctx, tabId)}
+      onClose={closeWindow}
+      onSell={(command) => void ctx.send(sellXml(command))}
+    />,
+  );
+}
+
+/**
+ * Домены `getbuildmenu`-семейства (и `getbuildinfo` отдельным top-level
+ * запросом с тем же "гнездом" вкладок) с полной проводкой — реальные
+ * команды, реальные данные, реальные вкладки. Проверяется ДО `PARSERS`
+ * (см. `handleResponse`).
+ */
+const RENDERERS: Record<string, (root: Element, xml: string, ctx: DispatchContext) => void> = {
+  getbuildinfo: renderBuildInfo,
+  buildingartefact: renderBuildArtefact,
+  terraforming: renderTerraform,
+  religion: renderReligion,
+  transferresource: renderTransfer,
+  trade: renderSell,
+};
+
 /**
  * Обработать один разобранный ответ `sendCommand()` — прямой аналог
- * `parse_respond`. `activeCell` — ячейка, по которой был клик, вызвавший
- * этот запрос (нужна для проводки BuildInfoWindow, см. выше) — аналог
- * `debug.link.active_cell` оригинала, здесь передаётся явно вызывающим
- * кодом, а не глобальным состоянием.
+ * `parse_respond`.
  */
-export function handleResponse(marks: ParsedMarks, ctx: DispatchContext, activeCell?: string): void {
+export function handleResponse(marks: ParsedMarks, ctx: DispatchContext): void {
   if (marks.xmlerror) {
     const doc = parseXmlFragment(marks.xmlerror);
     pushPopup(<InfoPopup message={doc.documentElement?.textContent ?? marks.xmlerror} onClose={popPopup} />);
@@ -200,11 +334,13 @@ export function handleResponse(marks: ParsedMarks, ctx: DispatchContext, activeC
   if (!marks.xmldata) return;
 
   const doc = parseXmlFragment(marks.xmldata);
-  const rootTag = doc.documentElement?.nodeName;
-  if (!rootTag) return;
+  const root = doc.documentElement;
+  if (!root) return;
+  const rootTag = root.nodeName;
 
-  if (rootTag === 'getbuildinfo' && activeCell !== undefined) {
-    renderBuildInfo(marks.xmldata, activeCell, ctx);
+  const renderer = RENDERERS[rootTag];
+  if (renderer) {
+    renderer(root, marks.xmldata, ctx);
     return;
   }
 

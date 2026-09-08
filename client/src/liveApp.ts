@@ -21,6 +21,7 @@ export async function runLiveApp(renderer: MapRenderer, login: string, pass: str
 
   const ctx: DispatchContext = {
     renderer,
+    activeCell: undefined,
     // Общий колбэк для команд, отправляемых из УЖЕ открытого окна
     // (кнопки действий) — без привязки к конкретной ячейке, аналог
     // произвольного reqvestdata-вызова в оригинале.
@@ -33,13 +34,17 @@ export async function runLiveApp(renderer: MapRenderer, login: string, pass: str
   // Клик по ячейке соты — аналог onRelease на building/ground-спрайте в
   // sota.as: занятая ячейка открывает информацию о здании (формат
   // подтверждён живым тестом 2026-09-08, см. buildInfoData.ts docstring);
-  // пустая — список построек для возведения (имя таба "BuildMenu" — по
-  // аналогии, живым тестом НЕ подтверждено, см. план §3).
+  // пустая — список построек для возведения (имя таба "AllowBuildings",
+  // подтверждено чтением PN_AllowBuildings.class.php, см. план §3 —
+  // исправлено после первоначальной неподтверждённой догадки "BuildMenu").
+  // `ctx.activeCell` — аналог debug.link.active_cell оригинала: ячейка
+  // "прилипает" к открытому через getbuildmenu-семейство окну, клики по
+  // вкладкам внутри него переиспользуют это же значение (см. dispatch.tsx).
   renderer.onCellClick = (num, hasBuilding) => {
-    const cellNum = String(num);
-    const tab = hasBuilding ? 'BuildingInfo' : 'BuildMenu';
-    void session.sendCommand(tag('getbuildmenu', { c: cellNum, tab })).then((marks) => {
-      handleResponse(marks, ctx, cellNum);
+    ctx.activeCell = String(num);
+    const tab = hasBuilding ? 'BuildingInfo' : 'AllowBuildings';
+    void session.sendCommand(tag('getbuildmenu', { c: ctx.activeCell, tab })).then((marks) => {
+      handleResponse(marks, ctx);
     });
   };
 

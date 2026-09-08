@@ -8,6 +8,9 @@
  * `buy_artefact_in_shop`) — свои функции рядом.
  */
 
+import type { SellCommand } from '../trade/tradeData';
+import type { TransferCommand } from '../trade/transferData';
+
 export function tag(name: string, attrs: Record<string, string | number | boolean | undefined>): string {
   let out = `<${name}`;
   for (const [key, value] of Object.entries(attrs)) {
@@ -44,4 +47,45 @@ export function buyArtefactInShopXml(items: { id: string; count: number; life: s
 /** requestDataCabinet.as — все прочие команды кабинета оборачиваются в <cabinetRequest command="...">. */
 export function cabinetRequestXml(command: string, attrs: Record<string, string | number | undefined> = {}): string {
   return tag('cabinetRequest', { command, ...attrs });
+}
+
+/**
+ * trade/tradeData.ts:262-286 — поля SellCommand в camelCase/строчными без
+ * подчёркиваний, а подтверждённые атрибуты XML — `id_fromcategory` и т.п.,
+ * поэтому не годится обычный `tag(name, cmd)` (спред полей 1-в-1).
+ */
+export function sellXml(cmd: SellCommand): string {
+  return tag('sell', {
+    id_tradescope: cmd.idTradescope,
+    id_fromcategory: cmd.idFromcategory,
+    id_fromarticle: cmd.idFromarticle,
+    id_fromrealarticle: cmd.idFromrealarticle,
+    amount: cmd.amount,
+    id_tocategory: cmd.idTocategory,
+    id_toarticle: cmd.idToarticle,
+    price: cmd.price,
+    tradetime: cmd.tradetime,
+    isauction: cmd.isauction,
+    ispersonal: cmd.ispersonal,
+    nick: cmd.nick,
+    pass: cmd.pass,
+    death: cmd.death,
+    anonymous: cmd.anonymous,
+  });
+}
+
+/**
+ * trade/transferData.ts:81-92 — докстринг там буквально подтверждает
+ * атрибут `combto`, но поле интерфейса называется `comto` (без "b",
+ * похоже на опечатку исходного кода Фазы 3) — сериализуем в
+ * подтверждённое имя атрибута, а не в имя поля.
+ */
+export function transferResourceXml(cmd: TransferCommand): string {
+  return tag('transferresource', {
+    combto: cmd.comto,
+    id_article: cmd.idArticle,
+    id_category: cmd.idCategory,
+    amount: cmd.amount,
+    death: cmd.death,
+  });
 }
