@@ -1227,10 +1227,9 @@ if(_loc4_ == 1) { game.init_decor_button(_loc2_, ..., game.getLocalNames("SPY_ZO
 | `"FULLVARRANK"` | подпись поля общего военного ранга |
 | `obj_upd[i].newxp` | обновлённое значение ранга после события (например, после завершения постройки) |
 
-**Подтверждено дословно реальным источником и живым тестовым дампом**
+**Подтверждено дословно реальным источником**
 (`client-source: xmlparsers.as:3434-3500`, парсер тега `<zondcreate>`;
-`client-source: zondcreateclass.as:57-111`; литеральный пример из
-`SPHERE_client/createzond.txt`):
+`client-source: zondcreateclass.as:57-111`):
 
 ```xml
 <zondcreate battle_xp="0.0483">
@@ -1241,6 +1240,41 @@ if(_loc4_ == 1) { game.init_decor_button(_loc2_, ..., game.getLocalNames("SPY_ZO
 <allowzond type="2" ... id="Z2" awail="0"/>
 </zondcreate>
 ```
+
+**Находка (2026-09-08) — исправление характеристики источника примера
+выше.** Этот XML взят из `SPHERE_client/createzond.txt` — ранее
+считался «живым тестовым дампом», но это неверно: другие атрибуты в том
+же файле (`<tab ln="sdgdsfg"/>`, `ln="dsfgdfg"/>`, `ln="dfhfgh"/>`,
+`ln="billl"/>`) — явно бессмысленные строки-заглушки, которые
+разработчик вводил вручную при тестировании UI, а не локализованные
+названия вкладок с реального сервера. Это клиентский тестовый файл
+(аналогично найденной ранее заглушке `requestRanking.as` в Фазе 3.10),
+а не подтверждённый живой захват трафика — характеристика «живой
+тестовый дамп» из более раннего прохода была неточной.
+
+**Серверная формула найдена и подтверждена кодом (2026-09-08,
+`GL_SpyCountZondPrice.class.php`, `TL_SpyTrainUnit.class.php`)** —
+`_getProgressionSum($start, $coef, $count) = $start * (1 -
+pow($coef,$count)) / (1 - $coef)`, цена = `progressionSum(current+count)
+- progressionSum(current)` — **алгебраически идентична** клиентской
+`calculatePriceWithProgressiv` выше. НО коэффициент роста
+(`$coef = 1 + worldSettings.get(<unit_name>_PRODUCTION_COST_INCREASE)`)
+у сервера **один на юнит, не один на ресурс** —
+`TL_SpyTrainUnit.class.php:37` буквально строит
+`delta="K:$delta,N:$delta,S:$delta,F:$delta,P:$delta,W:1,C:1,WR:1"` с
+ОДНОЙ переменной `$delta`, подставленной 5 раз. То есть пример выше
+(разные `delta` по K/N/S/F/P) не может быть настоящим ответом текущего
+сервера — реальный ответ всегда имеет одинаковый `delta` для K/N/S/F/P
+у одного типа зонда (и `W:1,C:1,WR:1` — без роста).
+
+> ✅ **Реальные значения на мире «Сфера Ориона» (источник: БД,
+> live-запрос, 2026-09-08)**: `SPY_ZOND_SCOUT_PRODUCTION_COST_INCREASE
+> = 0.01` (рост 1% за зонд), `SPY_ZOND_EXPLORER_PRODUCTION_COST_INCREASE
+> = 0` (рост отсутствует — линейная цена, `delta=1` для этого типа на
+> этом мире). Также подтверждён отдельный путь оплаты Explorer-зондов
+> очками боевого опыта: `SPY_ZOND_EXPLORER_BATTLE_XP_COST = 0.2` — цена
+> в `battle_xp` считается отдельной веткой `GetMaxByResource()`, не
+> через обычный `PRODUCTION_COSTS`.
 
 Это подтверждает **дословно, без единой оговорки**:
 
