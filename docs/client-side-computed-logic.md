@@ -293,6 +293,19 @@ kad_prcK  = prodiumWeight * quant * koeff[0]   // тот же объём, выр
 воспроизводим на HTML5/JS формула-в-формулу, без каких-либо рисков — сервер
 никогда не видит эти вычисления.
 
+**Источник `koeff` — найден и подтверждён числами из БД (2026-09-08)**:
+`PN_WarCalculator.class.php:21-30` строит `koeff` циклом по
+`GB_ResourcesList::$allResources = ['KADERIUM', 'NANO_CRYSTAL',
+'STASIS_ENERGY', 'FOOD', 'PRODIUM']` (жёстко заданный порядок и состав —
+без `WORKER`), каждый элемент — `PRODIUM.exchangerate /
+<ресурс>.exchangerate` (глобальная, не per-world, таблица `ds_resource`,
+кэш `GLOBAL_CACHE`). Реальные `exchangerate` (одинаковые для всех миров):
+`PRODIUM=10, NANO_CRYSTAL=4, KADERIUM=2, FOOD=1, STASIS_ENERGY=1,
+WORKER=0`. Отсюда реальный `koeff` = `[5, 2.5, 10, 10, 1]` (в порядке
+KADERIUM/NANO/STASIS/FOOD/PRODIUM). `WORKER.exchangerate=0` заметен, но
+**не является багом деления на ноль** — `WORKER` в `$allResources` не
+входит, поэтому в знаменателе `koeff` никогда не встречается.
+
 ### 2.8. Резолвнутый открытый вопрос — семантика `SC`/`GC` в `<armycalculator>`
 
 `docs/client-combat-ui.md`, раздел «Открытые вопросы», **пункт 12**, ставил
