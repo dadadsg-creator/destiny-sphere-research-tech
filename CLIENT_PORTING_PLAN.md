@@ -1387,6 +1387,54 @@ Preact** (решение владельца) — `client/` до этого не 
     выше) — новый код проверен только на уровне типов/сборки, как и
     предусмотрено планом на случай, если бан не снимут вовремя.
 
+- [x] **Марка `combres` разобрана (2026-09-08)** — снимала блокировку с
+  `archeology`/`reincarnate`/`getbuildmenu` (`BuildMenuWindow`).
+  - Точный wire-формат установлен ДВУМЯ независимыми источниками:
+    серверным кодом (`UA_Refresh.class.php:288-352`, `_updateCombRes()`) и
+    двумя фикстурами клиента (`SPHERE_client/refresh.txt`,
+    `refresh_test.txt`, реальные захваченные ответы). Оба согласуются:
+    `<combres>` содержит 8 элементов из `GB_ResourcesList::
+    $allCombResources` (KADERIUM/NANO_CRYSTAL/PRODIUM/FOOD/STASIS_ENERGY —
+    только `current`; WORKER/SCIENTIST/ARCHEOLOGIST — `current`+`max`) и,
+    следом, 0-2 элемента GOLD_CREDIT/SILVER_CREDIT — это баланс ВАЛЮТ
+    ИГРОКА (не соты!), добавляется отдельным циклом по
+    `MU_EntityMoneySumm::$allowCreditName`. Ранняя "РЕКОНСТРУКЦИЯ" в
+    `docs/protocol-client-server.md` §7.3 (только 4 элемента) была верной,
+    но неполной — не уточнялась.
+  - `data/combResData.ts` (тип `CombRes`, `parseCombRes()`,
+    `combResCurrent()`) + `data/combResStore.ts` (сигнал, по образцу
+    `localDataStore.ts`) — общее хранилище, обновляется в `dispatch.tsx`
+    при каждой марке `combres` (приходит почти при любом ответе сервера,
+    не только `refresh`).
+  - Каждый домен получил свой маленький конвертер `CombRes → нужная ему
+    форма` в СВОЁМ файле (не общий, по образцу уже существующих
+    доменных вычислений): `buildMenuData.ts` (`combResToPlayerPool` →
+    `PlayerResourcePoolFull`), `reincarnateData.ts`
+    (`combResToPriceOrder` → `number[]` в порядке KA,NA,ST,FO,PR,SC),
+    `archeologyData.ts` (`combResToKadFoodPool` → `PlayerKadFoodPool`).
+  - Заодно найден и подключён подтверждённый тег постройки — `putbuild`
+    (`ds_useractiontype`, `UA_ConstructBuilding`) — заменил
+    неподтверждённую реконструкцию `constructbuilding` из §7.5 доклада
+    (сам файл документации не правился, тег там уже помечен
+    "не подтверждён буквально" — правка не требуется, просто теперь
+    известно верное значение).
+  - **`gateOpen` (для `ArcheologyWindow`) решён попутно**: у марки
+    `refresh` уже был живой атрибут `gate` (`map/refreshData.ts`,
+    `parseRefresh` его читал ещё в Фазе 2, но нигде не сохранял) —
+    подтверждён той же фикстурой `refresh.txt` (`gate="1"`). Добавлено
+    `DispatchContext.gateOpen`, обновляется при каждой марке `refresh`.
+  - `archeologyteam` (отправка экспедиции) подключена полностью —
+    `xmlBuilder.ts:archeologyTeamXml()` (поле `countGroup` в TS camelCase,
+    подтверждённый атрибут `countgroup` — обычный `tag()`-спред дал бы
+    неверное имя). `onTrain` (обучение археологов) НЕ подключён — для
+    него нет подтверждённого тега ни в `ds_useractiontype`, ни в
+    докстринге `reqvestdata.as` — оставлен логом, как и
+    `TransferWindow.onCalculate`.
+  - `isPremium` для `ArcheologyWindow`/`TerraformWindow` по-прежнему
+    `false` (безопасный дефолт) — источник премиум-статуса в живых
+    марках так и не найден, это отдельный от `combres` пробел.
+  - Верификация: `npx tsc --noEmit -p .` и `npx vite build` — чисто.
+
 ### Фаза 4 — Проверка на паритет (объём: средне, но не сокращать)
 
 - [ ] Поднять тестовый/dev-мир (или использовать существующий, если

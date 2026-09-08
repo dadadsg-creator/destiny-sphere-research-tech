@@ -32,8 +32,25 @@
  * здесь не заводится.
  */
 import { parseXmlFragment } from '../protocol/response';
+import { combResCurrent, type CombRes } from '../data/combResData';
 
 export type ReincarnatePriceMap = Partial<Record<'KA' | 'NA' | 'ST' | 'FO' | 'PR' | 'SC', number>>;
+
+/**
+ * Марка `combres` → массив в том же порядке, что ключи цены юнита
+ * (`ReincarnateWindow.tsx` PRICE_ORDER: KA,NA,ST,FO,PR,SC), для
+ * `calcReincarnateAmount()`.
+ */
+export function combResToPriceOrder(res: CombRes): number[] {
+  return [
+    combResCurrent(res, 'KADERIUM'),
+    combResCurrent(res, 'NANO_CRYSTAL'),
+    combResCurrent(res, 'STASIS_ENERGY'),
+    combResCurrent(res, 'FOOD'),
+    combResCurrent(res, 'PRODIUM'),
+    combResCurrent(res, 'SILVER_CREDIT'),
+  ];
+}
 
 export interface ReincarnateUnitOption {
   id: string | null;

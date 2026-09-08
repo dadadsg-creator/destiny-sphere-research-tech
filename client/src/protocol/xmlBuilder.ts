@@ -10,6 +10,7 @@
 
 import type { SellCommand } from '../trade/tradeData';
 import type { TransferCommand } from '../trade/transferData';
+import type { ArcheologyTeamCommand } from '../world/archeologyData';
 
 export function tag(name: string, attrs: Record<string, string | number | boolean | undefined>): string {
   let out = `<${name}`;
@@ -87,5 +88,19 @@ export function transferResourceXml(cmd: TransferCommand): string {
     id_category: cmd.idCategory,
     amount: cmd.amount,
     death: cmd.death,
+  });
+}
+
+/**
+ * world/archeologyData.ts:170-181 — поле `countGroup` в camelCase, а
+ * подтверждённый атрибут XML — `countgroup` (строчными, без разделителя).
+ */
+export function archeologyTeamXml(cmd: ArcheologyTeamCommand): string {
+  return tag('archeologyteam', {
+    dest: cmd.dest,
+    count: cmd.count,
+    time: cmd.time,
+    size: cmd.size,
+    countgroup: cmd.countGroup,
   });
 }

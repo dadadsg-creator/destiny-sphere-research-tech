@@ -19,6 +19,7 @@
  */
 import { parseXmlFragment } from '../protocol/response';
 import type { LocalBuilding } from '../data/localData';
+import { combResCurrent, type CombRes } from '../data/combResData';
 
 export interface BuildMenuEntry {
   id: number;
@@ -63,6 +64,20 @@ export interface PlayerResourcePoolFull {
   worker: number;
   silverCredit: number;
   goldCredit: number;
+}
+
+/** Марка `combres` (см. combResData.ts) → форма, которую ждёт computeBuildAllowed()/BuildMenuWindow. */
+export function combResToPlayerPool(res: CombRes): PlayerResourcePoolFull {
+  return {
+    kaderium: combResCurrent(res, 'KADERIUM'),
+    nanoCrystal: combResCurrent(res, 'NANO_CRYSTAL'),
+    stasisEnergy: combResCurrent(res, 'STASIS_ENERGY'),
+    food: combResCurrent(res, 'FOOD'),
+    prodium: combResCurrent(res, 'PRODIUM'),
+    worker: combResCurrent(res, 'WORKER'),
+    silverCredit: combResCurrent(res, 'SILVER_CREDIT'),
+    goldCredit: combResCurrent(res, 'GOLD_CREDIT'),
+  };
 }
 
 /**

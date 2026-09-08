@@ -27,6 +27,7 @@
  * `game.turnToTime()` (не установлен).
  */
 import { parseXmlFragment } from '../protocol/response';
+import { combResCurrent, type CombRes } from '../data/combResData';
 
 export interface Expedition {
   count: string | null;
@@ -124,6 +125,11 @@ export function parseArcheology(xml: string): ArcheologyData {
 export interface PlayerKadFoodPool {
   kaderium: number;
   food: number;
+}
+
+/** Марка `combres` → узкий срез, нужный computeArcheologistAllow()/ArcheologyWindow. */
+export function combResToKadFoodPool(res: CombRes): PlayerKadFoodPool {
+  return { kaderium: combResCurrent(res, 'KADERIUM'), food: combResCurrent(res, 'FOOD') };
 }
 
 /** Категория «В» (xmlparsers.as:2896-2907) — та же формула, что computeScientistAllow. */

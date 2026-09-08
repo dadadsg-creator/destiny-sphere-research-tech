@@ -18,12 +18,14 @@
  * подтверждённому 2026-09-08 списку 37 классов `PN_*` (все расширяют
  * `UA_GetBuildMenu`, см. CLIENT_PORTING_PLAN.md): `getbuildinfo`,
  * `buildingartefact`, `terraforming`, `religion`, `transferresource`,
- * `trade`. Остальные домены пока только логируются в консоль — подключение
- * оставлено отдельным объёмом работы; часть из них (`archeology`,
- * `reincarnate`, будущий `BuildMenuWindow`) требует ещё не портированной
- * марки `combres` (пул ресурсов игрока) и/или неизвестного источника
- * премиум-статуса — сознательно не подключены, чтобы не подставлять
- * выдуманные данные вместо реальных.
+ * `trade`, `getbuildmenu`, `archeology`, `reincarnate`. Марка `combres`
+ * (пул ресурсов игрока/соты, см. `data/combResData.ts`) теперь тоже
+ * подключена — блокировала три последних домена. Остальные домены пока
+ * только логируются в консоль — подключение оставлено отдельным объёмом
+ * работы; часть из них по-прежнему упирается в неизвестный источник
+ * премиум-статуса (`TerraformWindow`/`ArcheologyWindow` получают
+ * `isPremium={false}` как заведомо безопасный дефолт) — сознательно не
+ * подключены, чтобы не подставлять выдуманные данные.
  */
 import type { ParsedMarks } from './response';
 import { parseXmlFragment } from './response';
@@ -31,20 +33,28 @@ import { parseRefresh } from '../map/refreshData';
 import { parseBuild } from '../map/buildData';
 import type { MapRenderer } from '../map/renderer';
 import { parseLocalData } from '../data/localData';
-import { setLocalData } from '../data/localDataStore';
+import { setLocalData, localData } from '../data/localDataStore';
+import { parseCombRes } from '../data/combResData';
+import { setCombRes, combRes } from '../data/combResStore';
 import { parseSysMsg } from '../mail/logData';
 import { parseAdviceHint } from '../settings/adviceData';
 import { openWindow, closeWindow, pushPopup, popPopup } from '../ui/windowStore';
 import { InfoPopup } from '../ui/Popup';
 import { BuildInfoWindow } from '../buildings/BuildInfoWindow';
 import { parseInfoBuild } from '../buildings/buildInfoData';
-import { tag, sellXml, transferResourceXml } from './xmlBuilder';
+import { tag, sellXml, transferResourceXml, archeologyTeamXml } from './xmlBuilder';
 import { parseTabsArray, stripTabPrefix } from './tabsParser';
 import { BuildArtefactWindow } from '../artefacts/BuildArtefactWindow';
 import { TerraformWindow } from '../world/TerraformWindow';
 import { ReligionWindow } from '../world/ReligionWindow';
 import { TransferWindow } from '../trade/TransferWindow';
 import { SellWindow } from '../trade/SellWindow';
+import { BuildMenuWindow } from '../buildings/BuildMenuWindow';
+import { combResToPlayerPool } from '../buildings/buildMenuData';
+import { ReincarnateWindow } from '../world/ReincarnateWindow';
+import { combResToPriceOrder } from '../world/reincarnateData';
+import { ArcheologyWindow } from '../world/ArcheologyWindow';
+import { combResToKadFoodPool, buildSendExpeditionCommand } from '../world/archeologyData';
 
 // --- разбор конкретных доменов, известных, но пока не подключённых к живым окнам ---
 import { parseAllianceManagement } from '../alliance/allianceData';
@@ -96,6 +106,15 @@ export interface DispatchContext {
    * сервер не присылает номер ячейки обратно в ответе.
    */
   activeCell: string | undefined;
+  /**
+   * "Открыты ли ворота" текущей соты — `game.getGateStatus()` оригинала,
+   * внешнее состояние, не часть ни одного доменного XML напрямую.
+   * Единственный живой источник — атрибут `gate` корня марки `refresh`
+   * (`map/refreshData.ts`, `<refresh gate="0|1">`, подтверждено фикстурой
+   * `SPHERE_client/refresh.txt`) — обновляется в `handleResponse` при
+   * каждом `refresh`, используется `ArcheologyWindow`.
+   */
+  gateOpen: boolean;
 }
 
 /**
@@ -112,7 +131,6 @@ const PARSERS: Record<string, (xml: string) => unknown> = {
   alliancesettings: parseAllianceSettings,
   alliancepeace: parseAlliancePeaceList,
   alliancePeaceData: parseAlliancePeaceDetail,
-  archeology: parseArcheology,
   archeology_artefact: parseArtDepot,
   armycreation: parseArmyCreation,
   armyoverview: parseArmyOverview,
@@ -125,7 +143,6 @@ const PARSERS: Record<string, (xml: string) => unknown> = {
   colonize: parseColonizationCenter,
   colonizestatus: parseColonizationCenter,
   createmessage: parseCreateNewMail,
-  getbuildmenu: parseListBuild,
   log: parseLogWindow,
   messageoverview: parseMailList,
   message: parseMailMessage,
@@ -135,7 +152,6 @@ const PARSERS: Record<string, (xml: string) => unknown> = {
   questmenu: parseQuestMenu,
   research: parseResearch,
   spylog: parseSpyLog,
-  reincarnate: parseReincarnate,
   warunit: parseTrainWarUnit,
   warcomplex: parseWarComplex,
   spying: parseSpying,
@@ -281,6 +297,70 @@ function renderSell(root: Element, xml: string, ctx: DispatchContext): void {
   );
 }
 
+/** buildMenuData.ts:1-19 — <putbuild c="" b=""/>, тег подтверждён ds_useractiontype (2026-09-08, было "constructbuilding" — неподтверждённая догадка Фазы 3). */
+function renderBuildMenu(root: Element, xml: string, ctx: DispatchContext): void {
+  const cellNum = ctx.activeCell;
+  if (cellNum === undefined) return;
+  const entries = parseListBuild(xml);
+  const localBuildings = localData.value?.buildings ?? new Map();
+  openWindow(
+    <BuildMenuWindow
+      entries={entries}
+      localBuildings={localBuildings}
+      resources={combResToPlayerPool(combRes.value)}
+      tabs={parseTabsArray(root)}
+      onTabClick={(tabId) => sendTabClick(ctx, tabId)}
+      onClose={closeWindow}
+      onBuild={(id) => void ctx.send(tag('putbuild', { c: cellNum, b: id }))}
+    />,
+  );
+}
+
+/** reincarnateData.ts:177-189 — <getReincarnate for="" lst=""/>, playerResources — из combres (KA,NA,ST,FO,PR,SC). */
+function renderReincarnate(root: Element, xml: string, ctx: DispatchContext): void {
+  const data = parseReincarnate(xml);
+  openWindow(
+    <ReincarnateWindow
+      data={data}
+      playerResources={combResToPriceOrder(combRes.value)}
+      tabs={parseTabsArray(root)}
+      onTabClick={(tabId) => sendTabClick(ctx, tabId)}
+      onClose={closeWindow}
+      onSend={(command) => void ctx.send(tag('getReincarnate', { for: command.for, lst: command.lst }))}
+    />,
+  );
+}
+
+/**
+ * archeologyData.ts:1-27 — <archeologyteam .../> отправка экспедиции
+ * (тег подтверждён ds_useractiontype). `onTrain` (обучение археологов) —
+ * НЕ подключён: точный тег для этого действия в Фазе 3/4 не сверялся с
+ * `reqvestdata.as`, отправлять непроверенным не стали (тот же принцип,
+ * что и TransferWindow.onCalculate).
+ */
+function renderArcheology(root: Element, xml: string, ctx: DispatchContext): void {
+  const data = parseArcheology(xml);
+  openWindow(
+    <ArcheologyWindow
+      data={data}
+      playerResources={combResToKadFoodPool(combRes.value)}
+      // Как и в TerraformWindow — источник премиум-статуса нигде не
+      // распарсен, безопасный дефолт false.
+      isPremium={false}
+      gateOpen={ctx.gateOpen}
+      tabs={parseTabsArray(root)}
+      onTabClick={(tabId) => sendTabClick(ctx, tabId)}
+      onClose={closeWindow}
+      onTrain={(count) => {
+        console.log('[dispatch] обучение археологов — тег запроса не подтверждён, действие не отправлено', { count });
+      }}
+      onSendExpedition={(dest, count, turns, sizeMin, countGroup) =>
+        void ctx.send(archeologyTeamXml(buildSendExpeditionCommand(dest, count, turns, sizeMin, countGroup)))
+      }
+    />,
+  );
+}
+
 /**
  * Домены `getbuildmenu`-семейства (и `getbuildinfo` отдельным top-level
  * запросом с тем же "гнездом" вкладок) с полной проводкой — реальные
@@ -294,6 +374,9 @@ const RENDERERS: Record<string, (root: Element, xml: string, ctx: DispatchContex
   religion: renderReligion,
   transferresource: renderTransfer,
   trade: renderSell,
+  getbuildmenu: renderBuildMenu,
+  reincarnate: renderReincarnate,
+  archeology: renderArcheology,
 };
 
 /**
@@ -310,10 +393,15 @@ export function handleResponse(marks: ParsedMarks, ctx: DispatchContext): void {
     const refresh = parseRefresh(marks.refresh);
     void ctx.renderer.renderGround(refresh.sota);
     void ctx.renderer.renderBuildings(parseBuild(refresh.build));
+    ctx.gateOpen = refresh.gate;
   }
 
   if (marks.loaddata) {
     setLocalData(parseLocalData(marks.loaddata));
+  }
+
+  if (marks.combres) {
+    setCombRes(parseCombRes(marks.combres));
   }
 
   if (marks.sysmsg) {

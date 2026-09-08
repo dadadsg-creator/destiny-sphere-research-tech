@@ -22,6 +22,7 @@ export async function runLiveApp(renderer: MapRenderer, login: string, pass: str
   const ctx: DispatchContext = {
     renderer,
     activeCell: undefined,
+    gateOpen: false,
     // Общий колбэк для команд, отправляемых из УЖЕ открытого окна
     // (кнопки действий) — без привязки к конкретной ячейке, аналог
     // произвольного reqvestdata-вызова в оригинале.
