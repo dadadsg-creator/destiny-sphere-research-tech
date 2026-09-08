@@ -27,6 +27,22 @@
  * Поле `ia` — общий флаг и для активации, и для деактивации (одно и то
  * же поле, различается косвенно наличием `ac`) — серверная модель
  * (mechanics-buildings.md §2.2) подтверждена клиентом буквально 1:1.
+ *
+ * **Запрос на открытие этого окна — не был найден статическим анализом
+ * AS2 (ни в `reqvestdata.as`, ни литералом в `call_tabs()`), подтверждён
+ * позже (2026-09-08, Фаза 4) живым запросом к реальному серверу**:
+ * `<getbuildmenu c="<num>" tab="BuildingInfo"/>` — по аналогии с другими
+ * PN_/TI_/TL_-обработчиками, диспетчеризуемыми через общий `getbuildmenu`
+ * (см. protocol-client-server.md §5.4). Реальный ответ живого сервера
+ * (мир «Сфера Ориона», обработчик `PN_BuildingInfo`) содержит ещё и
+ * `<alltabs><tab id="PN_BuildingInfo" .../><tab id="PN_BuildingArtefact"
+ * .../></alltabs>` — список вкладок этого окна (в т.ч. подтверждает,
+ * что артефактная вкладка здания диспетчеризуется через
+ * `PN_BuildingArtefact`); здесь не разбирается отдельно, т.к. это
+ * тот же кросс-доменный `tabs_array`/`TabDef`, что и везде (см.
+ * `ui/tabs.ts`), не специфичные для этого домена данные. Разобран
+ * парсером `parseInfoBuild()` без ошибок на реальных данных — все
+ * прочие поля (`info`/`tp`/`bo`) совпали с ожиданиями.
  */
 import { parseXmlFragment } from '../protocol/response';
 
@@ -137,4 +153,9 @@ export function parseInfoBuild(xml: string): BuildInfoData {
     allowGround,
     messages,
   };
+}
+
+/** Подтверждено живым запросом (Фаза 4, 2026-09-08) — см. докстринг файла. */
+export function buildGetBuildInfoCommand(cellNum: string): { c: string; tab: 'BuildingInfo' } {
+  return { c: cellNum, tab: 'BuildingInfo' };
 }

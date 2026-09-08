@@ -116,7 +116,7 @@ async function main() {
     });
     console.log('ENTER CLICKED:', enterClicked);
 
-    await new Promise((r) => setTimeout(r, 5000));
+    await new Promise((r) => setTimeout(r, 12000));
     console.log('AFTER ENTER WORLD URL:', page.url());
 
     const embedInfo = await page.evaluate(() => {
