@@ -16,6 +16,16 @@ export class MapRenderer {
   readonly groundLayer: Container;
   readonly buildLayer: Container;
 
+  /**
+   * Клик по ячейке соты (аналог onRelease на building/ground-спрайте в
+   * sota.as) — вешается на грунтовый слой (он есть всегда и на каждую
+   * ячейку целиком, в отличие от спрайта постройки, который не
+   * перекрывает всю ячейку) — см. план «Сшивание», 2026-09-08.
+   * `hasBuilding` вычисляется по последнему `renderBuildings()`.
+   */
+  onCellClick: ((num: number, hasBuilding: boolean) => void) | null = null;
+  private occupiedCells = new Set<number>();
+
   private constructor(app: Application) {
     this.app = app;
     this.worldLayer = new Container();
@@ -58,6 +68,10 @@ export class MapRenderer {
       // краям намеренно, как в оригинале (полосы засветки на стыках).
       sprite.width = 48;
       sprite.height = 26;
+      sprite.eventMode = 'static';
+      sprite.cursor = 'pointer';
+      const num = cell.num;
+      sprite.on('pointertap', () => this.onCellClick?.(num, this.occupiedCells.has(num)));
       this.groundLayer.addChild(sprite);
     }
 
@@ -77,6 +91,9 @@ export class MapRenderer {
    */
   async renderBuildings(records: BuildRecord[]): Promise<void> {
     this.buildLayer.removeChildren();
+    this.occupiedCells = new Set(
+      records.filter((r) => (BUILDING_NAMES[r.id] ?? 'NO_BUILDING') !== 'NO_BUILDING').map((r) => r.num),
+    );
 
     const cells = buildHexGrid();
     const toLoad = new Map<string, string>();
