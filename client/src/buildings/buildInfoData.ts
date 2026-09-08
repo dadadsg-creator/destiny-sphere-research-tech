@@ -30,10 +30,13 @@
  *
  * **Запрос на открытие этого окна — не был найден статическим анализом
  * AS2 (ни в `reqvestdata.as`, ни литералом в `call_tabs()`), подтверждён
- * позже (2026-09-08, Фаза 4) живым запросом к реальному серверу**:
- * `<getbuildmenu c="<num>" tab="BuildingInfo"/>` — по аналогии с другими
- * PN_/TI_/TL_-обработчиками, диспетчеризуемыми через общий `getbuildmenu`
- * (см. protocol-client-server.md §5.4). Реальный ответ живого сервера
+ * живым запросом к реальному серверу (2026-09-08, Фаза 4) и окончательно
+ * закрыт дампом `ds_useractiontype` в тот же день (protocol-client-server.md
+ * §12.1) — там нет отдельного тега `getbuildinfo`, только общий
+ * `getbuildmenu`/`UA_GetBuildMenu`**: `<getbuildmenu c="<num>"
+ * tab="BuildingInfo"/>` — по аналогии с другими PN_/TI_/TL_-обработчиками,
+ * диспетчеризуемыми через тот же `getbuildmenu` (см.
+ * protocol-client-server.md §5.4). Реальный ответ живого сервера
  * (мир «Сфера Ориона», обработчик `PN_BuildingInfo`) содержит ещё и
  * `<alltabs><tab id="PN_BuildingInfo" .../><tab id="PN_BuildingArtefact"
  * .../></alltabs>` — список вкладок этого окна (в т.ч. подтверждает,

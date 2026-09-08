@@ -1357,16 +1357,119 @@ loadkey=<?xml version="1.0" encoding="utf-8"?>
 справочников), либо реального перехвата трафика/декомпиляции `ds3.swf`
 (инструментов Flash-декомпиляции в этом ревью не применялось):
 
-1. **Полный список ~96 команд и их точные тег-имена недоступны.**
-   Таблица `ds_useractiontype` (тег → класс `actionhandler`) хранится в
-   БД, дампа БД в репозитории нет. В §5.2/§5.4 набралось около 30
-   тегов, подтверждённых буквальным совпадением строки в PHP-коде
-   (списки `$abpa`, `alertTags`, `resetTags`, `clientDirectLinks`, два
-   явных сравнения `tagname == "..."`). Для оставшихся ~65 классов
-   `UA_*` имя тега — только предположение по имени класса, причём
-   подтверждённые случаи (`activatebuild`, `changeleader`,
-   `changepassword`) прямо показывают, что угадывание по имени класса
-   регулярно ошибается (сокращения).
+1. ~~Полный список ~96 команд и их точные тег-имена недоступны~~ —
+   **резолвнуто живым запросом к БД (2026-09-08)**: `SELECT tagname,
+   actionhandler FROM ds_useractiontype ORDER BY tagname` на мире
+   `orion` (через `ds/utils/ExecOnDB.php`, доступ выдан владельцем
+   проекта) вернул полную, исчерпывающую таблицу — **всего 81 команда**
+   (не ~96, как предполагалось ранее), а не ~30 подтверждённых +
+   ~65 предположений:
+
+   | tagname | actionhandler |
+   |---|---|
+   | `activateall` | `UA_ActivateAll` |
+   | `activatebuild` | `UA_ActivateBuilding` |
+   | `archeologyteam` | `UA_ArcheologyTeam` |
+   | `armyuseartefacts` | `UA_ArmyUseArtefacts` |
+   | `arthint` | `UA_GetCombArts` |
+   | `attachartefact` | `UA_AttachBuildingArtefact` |
+   | `attack` | `UA_Attack` |
+   | `attack_confirm` | `UA_ComfirmAttack` |
+   | `buy` | `UA_Buy` |
+   | `calctravel` | `UA_CalcTravel` |
+   | `cancelactivate` | `UA_CancelActivateBuilding` |
+   | `cancelattack` | `UA_CancelAttack` |
+   | `cancelbuild` | `UA_CancelBuilding` |
+   | `cancelcolonize` | `UA_CancelColonize` |
+   | `canceldefend` | `UA_CancelDefend` |
+   | `cancelresearch` | `UA_CancelResearch` |
+   | `cancelterraform` | `UA_CancelTerraform` |
+   | `canceltrainunit` | `UA_CancelTrainUnit` |
+   | `canceltrainwarunit` | `UA_CancelTrainWarUnit` |
+   | `cancelupgrade` | `UA_CancelUpgradeBuilding` |
+   | `changeleader` | `UA_ChangeAllianceLeader` |
+   | `changepassword` | `UA_ChangeAllianceJoinpassword` |
+   | `colonize` | `UA_Colonize` |
+   | `complexview` | `UA_ComplexView` |
+   | `createalliance` | `UA_CreateAlliance` |
+   | `createarmy` | `UA_CreateArmy` |
+   | `deactivatebuild` | `UA_DeactivateBuilding` |
+   | `defend` | `UA_Defend` |
+   | `delbuild` | `UA_DropBuilding` |
+   | `deletemessage` | `UA_DeleteMessage` |
+   | `detachartefact` | `UA_DetachBuildingArtefact` |
+   | `dismissArmies` | `UA_DismissArmies` |
+   | `dropartefact` | `UA_DropArtefact` |
+   | `empty` | `UA_Empty` |
+   | `expelalliance` | `UA_ExpelAlliance` |
+   | `getAlliancePeace` | `UA_AlliancePeace` |
+   | `getBattleInfo` | `UA_GetBattleInfo` |
+   | `getbuildmenu` | `UA_GetBuildMenu` |
+   | `getNubHelp` | `UA_GetNubHelp` |
+   | `getPayService` | `UA_GetPayService` |
+   | `getprivatepeace` | `UA_PrivatePeace` |
+   | `getReincarnate` | `UA_ReincarnateUnit` |
+   | `getremotewarbase` | `UA_GetRemoteWarBase` |
+   | `getRewards` | `UA_GetRewards` |
+   | `getspylog` | `UA_SpyGetLog` |
+   | `getSpyMenu` | `UA_GoToSpyMenu` |
+   | `getwarfactory` | `UA_GetCombWarUnitsBuilds` |
+   | `hide_army` | `UA_HideArmy` |
+   | `joinalliance` | `UA_JoinAlliance` |
+   | `leavealliance` | `UA_LeaveAlliance` |
+   | `leaveColony` | `UA_LeaveCaprureColony` (опечатка "Caprure" в самом классе) |
+   | `load` | `UA_Load` |
+   | `movetocomb` | `UA_MoveArmyToComb` |
+   | `navigate` | `UA_Navigate` |
+   | `psactivation` | `UA_PowerShildActivate` |
+   | `psstart` | `UA_PowerShildStart` |
+   | `putbuild` | `UA_ConstructBuilding` |
+   | `readmessage` | `UA_MarkMailAsRead` |
+   | `redbutton` | `UA_GetRedBatton` (опечатка "Batton" в самом классе) |
+   | `refresh` | `UA_Refresh` |
+   | `religycancel` | `UA_ReligionCancel` |
+   | `religyconnect` | `UA_ReligionConnect` |
+   | `renameArmy` | `UA_RenameArmy` |
+   | `research` | `UA_NewResearch` |
+   | `restoreProtection` | `UA_RestoreProtection` |
+   | `retreat` | `UA_Retreat` |
+   | `sell` | `UA_Sell` |
+   | `sendmessage` | `UA_SendMessage` |
+   | `sendzond` | `UA_SpySendZonds` |
+   | `setfilterauction` | `UA_TradeAuctionFilter` |
+   | `showmemail` | `UA_ShowMail` |
+   | `terraform` | `UA_Terraforming` |
+   | `trainspyunit` | `UA_TrainSpyUnit` |
+   | `trainunit` | `UA_TrainUnit` |
+   | `trainwarunit` | `UA_TrainWarUnit` |
+   | `transferresource` | `UA_TransferResource` |
+   | `transferunit` | `UA_TransferUnit` |
+   | `upgradebuild` | `UA_UpgradeBuilding` |
+   | `vacationsedpass` | `UA_VacationSendPass` (опечатка "sed" вместо "send" — буквально и в имени класса, не только в клиенте) |
+   | `vacationstart` | `UA_VacationStart` |
+   | `vacationstop` | `UA_VacationStop` |
+
+   Заметные подтверждения/находки из этой таблицы:
+   - **Опечатки не только клиентские** — `vacationsedpass`/
+     `UA_VacationSendPass`, `leaveColony`/`UA_LeaveCaprureColony`,
+     `redbutton`/`UA_GetRedBatton` — сервер зарегистрировал команду под
+     тем же опечатанным именем класса, то есть это не баг переноса и не
+     декомпиляции, а реальное имя на сервере.
+   - **`getbuildinfo` в этой таблице отсутствует вовсе** — подтверждает
+     находку Фазы 4 (`buildInfoData.ts`): окно информации о здании НЕ
+     имеет отдельной команды, оно идёт через общий `getbuildmenu`/
+     `UA_GetBuildMenu` с `tab="BuildingInfo"`, как и остальные PN_/TI_/
+     TL_-панели.
+   - **Три команды армии не встречались ни в одном прочитанном .as-файле
+     клиента в рамках Фазы 3** — `dismissArmies`/`UA_DismissArmies`,
+     `hide_army`/`UA_HideArmy`, `renameArmy`/`UA_RenameArmy`. Не
+     установлено, есть ли для них клиентский UI вообще (возможно, не
+     реализованы в этой версии AS2-клиента, либо использовались только
+     из админки/другого интерфейса) — открытый вопрос для дальнейшей
+     проверки, если понадобится полнота Фазы 3.1 (Армия).
+   - `setfilterauction`/`UA_TradeAuctionFilter` подтверждает, что фильтр
+     аукциона (сознательно не портированный в Фазе 3.5 «дерево
+     категорий») — реальная, а не декоративная серверная функция.
 2. **Точный формат `set_swf=...` в `detect_player`** (разделитель,
    что именно на позициях 0-3, есть ли позиции после 3-й) восстановлен
    только со стороны потребителя (`DetectSystem::proceed()`), не со
