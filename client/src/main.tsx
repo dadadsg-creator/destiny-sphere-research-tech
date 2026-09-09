@@ -1248,6 +1248,7 @@ async function main() {
     openWindow(
       <ArmyCreationWindow
         data={TEST_ARMY_CREATION}
+        localUnits={TEST_LOCAL_UNITS}
         tabs={TEST_TABS_CREATE}
         onTabClick={(tabId) => console.log('[army-create] tab click ->', tabId)}
         onClose={() => console.log('[army-create] close')}

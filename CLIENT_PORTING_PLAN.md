@@ -1668,6 +1668,49 @@ Preact** (решение владельца) — `client/` до этого не 
   - Все три без `c`. Проверено синтетическими `?screen=` скриншотами
     без визуальных регрессий.
 
+- [x] **Реальные названия колец колонизации (2026-09-09, замечание
+  владельца)** — тестовые "Кольцо технологий"/"Кольцо биологии" были
+  выдуманным плейсхолдером, а не настоящими названиями. Настоящие 4
+  кольца — собственные имена локаций (`ds_ring`, живая БД): Ворания
+  (RING_TECH), Лиенсорд (RING_BIO), Псолеон (RING_PSI), Мелсион
+  (RING_COLONIZE). Заодно подтверждено в `PN_ColonizePanel.class.php:
+  269-298`, что сама логика разбора (`ringnumber`→`id`, `ringname`→`ln`
+  — да, атрибут `ringname` в этом конкретном ответе хранит ЛОКАЛИЗОВАННЫЙ
+  текст, не машинное имя, так называет сам SQL-алиас на сервере) верна —
+  баг был только в тестовой фикстуре.
+
+- [x] **Ещё 4 домена (2026-09-09): `AllianceManagement`, `CreateMessage`,
+  `TrainWarUnit`, `ArmyCreation`**.
+  - `AllianceManagement`/`alliancemanagement` → `AllianceManagementWindow`
+    — три команды без `c`: `<createalliance>`/`<joinalliance>` (вложенный
+    CDATA, `reqvestdata.as:587-608`, новые `createAllianceXml()`/
+    `joinAllianceXml()`) и `<leavealliance id_alliance=""/>`
+    (`reqvestdata.as:609-612`, `leaveAllianceXml()`). Замечена и НЕ
+    воспроизведена мелкая опечатка оригинала — лишний `>` перед
+    `</joinalliance>` (одиночный `>` в тексте — валидный XML, не баг
+    протокола, ни на что не влияет).
+  - `CreateMessage`/`createmessage` → `CreateNewMailWindow` —
+    переиспользует уже готовый `sendMessageXml()` (та же команда, что и
+    "Ответить" из уже открытой почты). `isVk` жёстко `false` — этот
+    клиент не VK-сборка.
+  - `TrainWarUnit`/`warunit` → `TrainUnitWindow` — `<trainwarunit c=""
+    count="" id=""/>`/`<canceltrainwarunit c=""/>` (`reqvestdata.as:
+    554-563`), оба требуют `c`. `playerResources`/`computeAllowMax()`
+    (нужен неопределённый `game.getMaxNumber()`) сюда сознательно не
+    подключены — окно их пока не принимает вовсе.
+  - `ArmyCreation`/`armycreation` → `ArmyCreationWindow` — `<createarmy>
+    <armyname>...</armyname><unit id="" count=""/>...</createarmy>`
+    (`reqvestdata.as:748-757`, переменное число `<unit>`, новая
+    `createArmyXml()`), без `c`.
+  - Живьём (скриншотами `?screen=`) заодно найдены и исправлены ДВА
+    случая сырого `K/N/S/F/P`-текста вместо иконок в окнах, которые как
+    раз в этом заходе подключались (`TrainUnitWindow` — содержание
+    юнита) и отсутствия локализации названий юнитов
+    (`ArmyCreationWindow` показывал сырое "SOLDIER"/"TANK"/"GUARD" —
+    добавлен опциональный проп `localUnits`, как уже был в
+    `TrainUnitWindow`) — не ждали новой жалобы владельца, раз уже
+    открыт тот же класс окон.
+
 ### Фаза 4 — Проверка на паритет (объём: средне, но не сокращать)
 
 - [ ] Поднять тестовый/dev-мир (или использовать существующий, если

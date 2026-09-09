@@ -18,6 +18,7 @@ import { useState } from 'preact/hooks';
 import { Window } from '../ui/Window';
 import { Stepper } from '../ui/Stepper';
 import type { TabDef } from '../ui/tabs';
+import { ResourceList, type ResourceCost } from '../ui/ResourceValue';
 import type { TrainUnitData } from './trainUnitData';
 import type { LocalUnit } from '../data/localData';
 
@@ -51,7 +52,7 @@ export function TrainUnitWindow({
             <th>Атака/Защита</th>
             <th>Урон</th>
             <th>Прочность</th>
-            <th>Содержание (K/N/S/F/P/Раб)</th>
+            <th>Содержание</th>
             <th>В строю</th>
             <th>Заказать</th>
           </tr>
@@ -72,8 +73,16 @@ export function TrainUnitWindow({
                 </td>
                 <td>{local?.hitpoints ?? '?'}</td>
                 <td>
-                  {unit.upkeep.kad}/{unit.upkeep.nano}/{unit.upkeep.energy}/{unit.upkeep.food}/{unit.upkeep.prod}/
-                  {unit.upkeep.work}
+                  <ResourceList
+                    costs={[
+                      { name: 'KADERIUM', value: unit.upkeep.kad },
+                      { name: 'NANO_CRYSTAL', value: unit.upkeep.nano },
+                      { name: 'STASIS_ENERGY', value: unit.upkeep.energy },
+                      { name: 'FOOD', value: unit.upkeep.food },
+                      { name: 'PRODIUM', value: unit.upkeep.prod },
+                      { name: 'WORKER', value: unit.upkeep.work },
+                    ] satisfies ResourceCost[]}
+                  />
                 </td>
                 <td>
                   {unit.inProgress > 0 ? (

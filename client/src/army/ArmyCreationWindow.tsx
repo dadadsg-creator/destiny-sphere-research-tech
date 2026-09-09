@@ -17,16 +17,19 @@ import { Window } from '../ui/Window';
 import { Stepper } from '../ui/Stepper';
 import type { TabDef } from '../ui/tabs';
 import type { ArmyCreationData } from './armyCreationData';
+import type { LocalUnit } from '../data/localData';
 
 export interface ArmyCreationWindowProps {
   data: ArmyCreationData;
+  /** Локализованные названия юнитов (mark `loaddata`, ключ — то же machine-имя, что `unit.libname`) — если не пришло/нет записи, показываем сырое имя. */
+  localUnits?: Map<string, LocalUnit>;
   tabs?: TabDef[];
   onTabClick?: (tabId: string) => void;
   onClose: () => void;
   onCreate: (name: string, units: { id: string; count: number }[]) => void;
 }
 
-export function ArmyCreationWindow({ data, tabs, onTabClick, onClose, onCreate }: ArmyCreationWindowProps) {
+export function ArmyCreationWindow({ data, localUnits, tabs, onTabClick, onClose, onCreate }: ArmyCreationWindowProps) {
   const [name, setName] = useState('');
   const [counts, setCounts] = useState<Record<string, number>>({});
 
@@ -61,7 +64,7 @@ export function ArmyCreationWindow({ data, tabs, onTabClick, onClose, onCreate }
         <tbody>
           {data.units.map((unit) => (
             <tr key={unit.id}>
-              <td>{unit.libname}</td>
+              <td>{localUnits?.get(unit.libname)?.ln ?? unit.libname}</td>
               <td>{unit.amount}</td>
               <td>
                 <Stepper

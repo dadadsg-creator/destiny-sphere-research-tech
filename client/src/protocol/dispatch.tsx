@@ -46,7 +46,19 @@ import { openWindow, closeWindow, pushPopup, popPopup } from '../ui/windowStore'
 import { InfoPopup } from '../ui/Popup';
 import { BuildInfoWindow } from '../buildings/BuildInfoWindow';
 import { parseInfoBuild } from '../buildings/buildInfoData';
-import { tag, sellXml, transferResourceXml, archeologyTeamXml, getPPeaceXml, colonizeXml } from './xmlBuilder';
+import {
+  tag,
+  sellXml,
+  transferResourceXml,
+  archeologyTeamXml,
+  getPPeaceXml,
+  colonizeXml,
+  createAllianceXml,
+  joinAllianceXml,
+  leaveAllianceXml,
+  createArmyXml,
+  sendMessageXml,
+} from './xmlBuilder';
 import { parseTabsArray, stripTabPrefix } from './tabsParser';
 import { BuildArtefactWindow } from '../artefacts/BuildArtefactWindow';
 import { TerraformWindow } from '../world/TerraformWindow';
@@ -68,6 +80,10 @@ import { ColonizationWindow } from '../world/ColonizationWindow';
 import { buildSendColonyModuleCommand } from '../world/colonizationData';
 import { ArmyOverviewWindow } from '../army/ArmyOverviewWindow';
 import { AllianceMemberWindow } from '../alliance/AllianceMemberWindow';
+import { AllianceManagementWindow } from '../alliance/AllianceManagementWindow';
+import { CreateNewMailWindow } from '../mail/CreateNewMailWindow';
+import { TrainUnitWindow } from '../army/TrainUnitWindow';
+import { ArmyCreationWindow } from '../army/ArmyCreationWindow';
 import { buildKickCommand } from '../alliance/allianceMemberData';
 
 // --- разбор конкретных доменов, известных, но пока не подключённых к живым окнам ---
@@ -140,25 +156,21 @@ export interface DispatchContext {
  * `colonynavigate` — реальный пробел, `colonynavigate.as` не портирован).
  */
 const PARSERS: Record<string, (xml: string) => unknown> = {
-  alliancemanagement: parseAllianceManagement,
   alliancesettings: parseAllianceSettings,
   alliancepeace: parseAlliancePeaceList,
   alliancePeaceData: parseAlliancePeaceDetail,
   archeology_artefact: parseArtDepot,
-  armycreation: parseArmyCreation,
   armycalculator: parseArmyCalculator,
   artefact_shop: parseArtefactShop,
   arthint: parseArtefactStat,
   auction: parseAuction,
   battleoverview: parseBattleOverview,
   battlinfo: parseBattleInfo,
-  createmessage: parseCreateNewMail,
   log: parseLogWindow,
   messageoverview: parseMailList,
   message: parseMailMessage,
   questmenu: parseQuestMenu,
   spylog: parseSpyLog,
-  warunit: parseTrainWarUnit,
   warcomplex: parseWarComplex,
   spying: parseSpying,
   zondcreate: parseZondCreate,
@@ -533,6 +545,87 @@ function renderAllianceOverview(root: Element, xml: string, ctx: DispatchContext
   );
 }
 
+/**
+ * allianceData.ts — три команды, все без `c`: `<createalliance>`/
+ * `<joinalliance>` (вложенный CDATA, reqvestdata.as:587-608) и
+ * `<leavealliance id_alliance=""/>` (reqvestdata.as:609-612).
+ */
+function renderAllianceManagement(root: Element, xml: string, ctx: DispatchContext): void {
+  const data = parseAllianceManagement(xml);
+  openWindow(
+    <AllianceManagementWindow
+      data={data}
+      tabs={parseTabsArray(root)}
+      onTabClick={(tabId) => sendTabClick(ctx, tabId)}
+      onClose={closeWindow}
+      onExit={(idAlliance) => void ctx.send(leaveAllianceXml(idAlliance))}
+      onCreate={(command) => void ctx.send(createAllianceXml(command))}
+      onJoin={(command) => void ctx.send(joinAllianceXml(command))}
+    />,
+  );
+}
+
+/**
+ * createNewMailData.ts — переиспользует уже готовый `sendMessageXml()`
+ * (та же команда `<sendmessage>`, что и для "Ответить"/"Ответить с
+ * цитатой" из уже открытой почты). `isVk` — сборка ВКонтакте, всегда
+ * `false` здесь: этот клиент — основной сайт, не VK-версия (см.
+ * CLIENT_PORTING_PLAN.md, решение "VK — переносить заново отдельно").
+ */
+function renderCreateMessage(root: Element, xml: string, ctx: DispatchContext): void {
+  const data = parseCreateNewMail(xml);
+  openWindow(
+    <CreateNewMailWindow
+      data={data}
+      isVk={false}
+      tabs={parseTabsArray(root)}
+      onTabClick={(tabId) => sendTabClick(ctx, tabId)}
+      onClose={closeWindow}
+      onSend={(to, subject, body, typeScope) => void ctx.send(sendMessageXml(typeScope, to, subject, body))}
+    />,
+  );
+}
+
+/**
+ * trainUnitData.ts — <trainwarunit c="" count="" id=""/>/
+ * <canceltrainwarunit c=""/> (reqvestdata.as:554-563), оба требуют `c`.
+ * `playerResources`/`computeAllowMax()` (нужен неопределённый
+ * `game.getMaxNumber()`) сюда сознательно не подключены — окно их пока
+ * не принимает вовсе (пробел Фазы 3, отдельная задача).
+ */
+function renderTrainWarUnit(root: Element, xml: string, ctx: DispatchContext): void {
+  const data = parseTrainWarUnit(xml);
+  const cellNum = ctx.activeCell;
+  openWindow(
+    <TrainUnitWindow
+      data={data}
+      localUnits={localData.value?.units ?? new Map()}
+      tabs={parseTabsArray(root)}
+      onTabClick={(tabId) => sendTabClick(ctx, tabId)}
+      onClose={closeWindow}
+      onTrain={(idUnit, count) =>
+        cellNum !== undefined && void ctx.send(tag('trainwarunit', { c: cellNum, count, id: idUnit }))
+      }
+      onCancel={() => cellNum !== undefined && void ctx.send(tag('canceltrainwarunit', { c: cellNum }))}
+    />,
+  );
+}
+
+/** armyCreationData.ts — <createarmy><armyname>...<unit .../>...</createarmy> (reqvestdata.as:748-757), без `c`. */
+function renderArmyCreation(root: Element, xml: string, ctx: DispatchContext): void {
+  const data = parseArmyCreation(xml);
+  openWindow(
+    <ArmyCreationWindow
+      data={data}
+      localUnits={localData.value?.units ?? new Map()}
+      tabs={parseTabsArray(root)}
+      onTabClick={(tabId) => sendTabClick(ctx, tabId)}
+      onClose={closeWindow}
+      onCreate={(name, units) => void ctx.send(createArmyXml(name, units))}
+    />,
+  );
+}
+
 const RENDERERS: Record<string, (root: Element, xml: string, ctx: DispatchContext) => void> = {
   getbuildinfo: renderBuildInfo,
   buildingartefact: renderBuildArtefact,
@@ -552,6 +645,10 @@ const RENDERERS: Record<string, (root: Element, xml: string, ctx: DispatchContex
   colonizestatus: renderColonization,
   armyoverview: renderArmyOverview,
   allianceoverview: renderAllianceOverview,
+  alliancemanagement: renderAllianceManagement,
+  createmessage: renderCreateMessage,
+  warunit: renderTrainWarUnit,
+  armycreation: renderArmyCreation,
 };
 
 /**

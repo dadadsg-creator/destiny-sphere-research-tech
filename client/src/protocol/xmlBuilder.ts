@@ -13,6 +13,7 @@ import type { TransferCommand } from '../trade/transferData';
 import type { ArcheologyTeamCommand } from '../world/archeologyData';
 import type { GetPPeaceCommand } from '../alliance/privatePeaceData';
 import type { SendColonyModuleCommand } from '../world/colonizationData';
+import type { CreateAllianceCommand, JoinAllianceCommand } from '../alliance/allianceData';
 
 export function tag(name: string, attrs: Record<string, string | number | boolean | undefined>): string {
   let out = `<${name}`;
@@ -127,4 +128,41 @@ export function colonizeXml(cmd: SendColonyModuleCommand): string {
     `<colonize id_module="${escapeXmlAttr(cmd.idModule)}" destination="${escapeXmlAttr(cmd.destination)}">` +
     `<colonyname><![CDATA[${cmd.colonyName}]]></colonyname></colonize>`
   );
+}
+
+/** alliance/allianceData.ts:90-97 — reqvestdata.as:587-590 (createAlliance): три CDATA-child. */
+export function createAllianceXml(cmd: CreateAllianceCommand): string {
+  return (
+    `<createalliance><name><![CDATA[${cmd.name}]]></name><tag><![CDATA[${cmd.tag}]]></tag>` +
+    `<joinpassword><![CDATA[${cmd.joinPassword}]]></joinpassword></createalliance>`
+  );
+}
+
+/**
+ * alliance/allianceData.ts:100-107 — reqvestdata.as:603-606 (connectAlliance):
+ * `id_alliance` — атрибут корня, пароль — вложенный CDATA-child. В самом
+ * оригинале лишний `>` перед `</joinalliance>` (опечатка конкатенации
+ * строк) — не воспроизводим, он ни на что не влияет (одиночный `>` в
+ * текстовом узле — валидный XML, не баг протокола).
+ */
+export function joinAllianceXml(cmd: JoinAllianceCommand): string {
+  return (
+    `<joinalliance id_alliance="${escapeXmlAttr(cmd.idAlliance)}">` +
+    `<joinpassword><![CDATA[${cmd.joinPassword}]]></joinpassword></joinalliance>`
+  );
+}
+
+/** reqvestdata.as:609-612 (exitAlliance) — <leavealliance id_alliance=""/>. */
+export function leaveAllianceXml(idAlliance: string): string {
+  return tag('leavealliance', { id_alliance: idAlliance });
+}
+
+/**
+ * reqvestdata.as:748-757 (create_army) — <createarmy><armyname>
+ * <![CDATA[name]]></armyname><unit id="" count=""/>...</createarmy>,
+ * переменное число `<unit>` — не годится плоский `tag()`, без `c`.
+ */
+export function createArmyXml(name: string, units: { id: string; count: number }[]): string {
+  const unitsXml = units.map((u) => tag('unit', { id: u.id, count: u.count })).join('');
+  return `<createarmy><armyname><![CDATA[${name}]]></armyname>${unitsXml}</createarmy>`;
 }
