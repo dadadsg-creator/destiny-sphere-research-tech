@@ -9,6 +9,7 @@
  */
 import { Window } from '../ui/Window';
 import type { TabDef } from '../ui/tabs';
+import { ResourceList, type ResourceCost } from '../ui/ResourceValue';
 import type { BuildInfoData } from './buildInfoData';
 
 export interface BuildInfoWindowProps {
@@ -48,6 +49,17 @@ export function BuildInfoWindow({
   const hasDeact = 'deact' in info;
   const hasUpgrade = 'upgrade' in info && !!upgrade?.allow;
 
+  const upgradeCosts: ResourceCost[] = upgrade
+    ? [
+        { name: 'KADERIUM', value: Number(upgrade.kad) || 0 },
+        { name: 'NANO_CRYSTAL', value: Number(upgrade.nano) || 0 },
+        { name: 'STASIS_ENERGY', value: Number(upgrade.stat) || 0 },
+        { name: 'FOOD', value: Number(upgrade.food) || 0 },
+        { name: 'PRODIUM', value: Number(upgrade.prod) || 0 },
+        { name: 'WORKER', value: Number(upgrade.work) || 0 },
+      ]
+    : [];
+
   return (
     <Window title="Информация о здании" tabs={tabs} onTabClick={onTabClick} onClose={onClose}>
       <div class="ds-build-info__actions">
@@ -86,7 +98,9 @@ export function BuildInfoWindow({
 
       {upgrade && (
         <div class="ds-build-info__upgrade">
-          <p>Апгрейд: K:{upgrade.kad} N:{upgrade.nano} S:{upgrade.stat} F:{upgrade.food} P:{upgrade.prod} Раб:{upgrade.work} Время:{upgrade.time}</p>
+          <p>
+            Апгрейд: <ResourceList costs={upgradeCosts} /> Время: {upgrade.time}
+          </p>
           <button type="button" class="ds-popup__btn" disabled={!hasUpgrade} onClick={onUpgrade}>
             Апгрейд
           </button>

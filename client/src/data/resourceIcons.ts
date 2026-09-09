@@ -127,3 +127,35 @@ export function artefactScopeMaskUrl(scope: string | null): string | null {
   if (!scope || !KNOWN_ARTEFACT_SCOPES.has(scope)) return null;
   return `/assets/artefact-scopes/${scope}.png`;
 }
+
+/**
+ * Иконки веток науки — извлечены из `client-assets/tree_scients_tree/
+ * sprites/DefineSprite_*_<ИМЯ>/1.png` (та самая библиотека
+ * `tree_scients/tree.as` — визуальное дерево науки, упомянутая, но не
+ * портированная в `researchData.ts`; сам набор иконок 23×23,
+ * консистентный, годится и без дерева). 5 из 7 веток совпадают с
+ * обычными именами ресурсов (KADERIUM/NANO_CRYSTAL/STASIS_ENERGY/
+ * PRODIUM/FOOD) — сознательно НЕ переиспользуем `resourceIconUrl()` для
+ * них: у `tree_scients_tree` свой визуальный стиль, смешивать с общим
+ * набором `menu.lib` было бы непоследовательно. Ветки TRADE/SPYING
+ * (`branchid`) отдельных иконок в `menu.lib` не имеют вовсе — только
+ * здесь.
+ */
+const RESEARCH_BRANCH_NAMES: Record<string, string> = {
+  KADERIUM: 'Кадериум',
+  NANO_CRYSTAL: 'Нанокристаллы',
+  STASIS_ENERGY: 'Энергия',
+  PRODIUM: 'Продиум',
+  FOOD: 'Еда',
+  TRADE: 'Торговля',
+  SPYING: 'Шпионаж',
+};
+
+export function researchBranchName(branchId: string): string {
+  return RESEARCH_BRANCH_NAMES[branchId] ?? branchId;
+}
+
+export function researchBranchIconUrl(branchId: string): string | null {
+  if (!(branchId in RESEARCH_BRANCH_NAMES)) return null;
+  return `/assets/research/${branchId}.png`;
+}

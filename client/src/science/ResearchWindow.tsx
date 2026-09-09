@@ -11,6 +11,7 @@ import { useState } from 'preact/hooks';
 import { Window } from '../ui/Window';
 import { Stepper } from '../ui/Stepper';
 import type { TabDef } from '../ui/tabs';
+import { researchBranchIconUrl, researchBranchName } from '../data/resourceIcons';
 import {
   computeScientistAllow,
   getCancelResearchId,
@@ -65,7 +66,14 @@ export function ResearchWindow({
             const disabled = branch.allow === '0';
             return (
               <tr key={branch.id}>
-                <td>{branch.name ?? branch.id}</td>
+                <td>
+                  <div class="ds-artefact-row">
+                    {researchBranchIconUrl(branch.id) && (
+                      <img class="ds-resource__icon" src={researchBranchIconUrl(branch.id)!} alt="" />
+                    )}
+                    <span>{branch.name ?? researchBranchName(branch.id)}</span>
+                  </div>
+                </td>
                 <td>{branch.level ?? '-'}</td>
                 <td>{branch.bonus}</td>
                 <td>{branch.bonusAll}</td>

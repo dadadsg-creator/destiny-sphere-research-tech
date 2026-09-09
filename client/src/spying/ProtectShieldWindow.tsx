@@ -19,6 +19,7 @@ import { useState } from 'preact/hooks';
 import { Window } from '../ui/Window';
 import { Stepper } from '../ui/Stepper';
 import type { TabDef } from '../ui/tabs';
+import { ResourceList, ResourceValue, type ResourceCost } from '../ui/ResourceValue';
 import type { ProtectShieldData } from './protectShieldData';
 
 export interface ProtectShieldPlayerResources {
@@ -66,6 +67,14 @@ export function ProtectShieldWindow({
 
   const isFull = data.currentPercent >= 100;
 
+  const resourceCosts: ResourceCost[] = [
+    { name: 'KADERIUM', value: costRes[0] ?? 0 },
+    { name: 'NANO_CRYSTAL', value: costRes[1] ?? 0 },
+    { name: 'STASIS_ENERGY', value: costRes[2] ?? 0 },
+    { name: 'FOOD', value: costRes[3] ?? 0 },
+    { name: 'PRODIUM', value: costRes[4] ?? 0 },
+  ];
+
   return (
     <Window title="Защитное поле колонии" tabs={tabs} onTabClick={onTabClick} onClose={onClose}>
       <div class="ds-protect-shield__bar">
@@ -83,7 +92,7 @@ export function ProtectShieldWindow({
           <div class="ds-spying__row">
             <span class="ds-spying__label">Цена ресурсами:</span>
             <span class={canAffordRes ? '' : 'ds-protect-shield__cost--unaffordable'}>
-              K:{costRes[0]} N:{costRes[1]} S:{costRes[2]} F:{costRes[3]} P:{costRes[4]}
+              <ResourceList costs={resourceCosts} />
             </span>
             <button
               type="button"
@@ -97,7 +106,9 @@ export function ProtectShieldWindow({
 
           <div class="ds-spying__row">
             <span class="ds-spying__label">Цена серебром:</span>
-            <span class={canAffordSilver ? '' : 'ds-protect-shield__cost--unaffordable'}>{costSilver}</span>
+            <span class={canAffordSilver ? '' : 'ds-protect-shield__cost--unaffordable'}>
+              <ResourceValue name="SILVER_CREDIT" value={costSilver} />
+            </span>
             <button
               type="button"
               class="ds-popup__btn"
