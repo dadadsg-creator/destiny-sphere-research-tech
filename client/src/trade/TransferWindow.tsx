@@ -8,8 +8,10 @@
 import { useState } from 'preact/hooks';
 import { Window } from '../ui/Window';
 import { Stepper } from '../ui/Stepper';
+import { ResourceValue } from '../ui/ResourceValue';
+import { RESOURCE_NAME_RU } from '../data/resourceIcons';
 import type { TabDef } from '../ui/tabs';
-import { buildTransferCommand, type TransferCommand, type TransferMenuData } from './transferData';
+import { buildTransferCommand, type TransferArticle, type TransferCommand, type TransferMenuData } from './transferData';
 
 export interface TransferWindowProps {
   data: TransferMenuData;
@@ -21,6 +23,12 @@ export interface TransferWindowProps {
 }
 
 const CATEGORY_LABELS: Record<number, string> = { 1: 'Ресурсы', 2: 'Юниты', 3: 'Артефакты' };
+
+/** Категория 1 (ресурсы) — libname это машинное имя (NANO_CRYSTAL и т.п.), локализуем через уже готовый RESOURCE_NAME_RU. Категории 2/3 — libname остаётся сырым (см. докстринг transferData.ts, форматирование parser.artrp() не портировано). */
+function articleLabel(a: TransferArticle, category: number): string {
+  if (category === 1 && a.libname) return RESOURCE_NAME_RU[a.libname] ?? a.libname;
+  return a.libname ?? a.id ?? '';
+}
 
 export function TransferWindow({ data, tabs, onTabClick, onClose, onTransfer, onCalculate }: TransferWindowProps) {
   const [category, setCategory] = useState(1);
@@ -57,11 +65,24 @@ export function TransferWindow({ data, tabs, onTabClick, onClose, onTransfer, on
         <select value={articleId ?? ''} onChange={(e) => setArticleId((e.target as HTMLSelectElement).value)}>
           {articles.map((a) => (
             <option key={a.id} value={a.id ?? ''}>
-              {a.libname ?? a.id} (есть: {a.amount})
+              {articleLabel(a, category)}
             </option>
           ))}
         </select>
       </div>
+
+      {article && (
+        <div class="ds-spying__row">
+          <span class="ds-spying__label">Доступно у вас:</span>
+          {category === 1 && article.libname ? (
+            <ResourceValue name={article.libname} value={article.amount ?? '0'} />
+          ) : (
+            <span>
+              {article.amount ?? '0'} шт. ({articleLabel(article, category)})
+            </span>
+          )}
+        </div>
+      )}
 
       <div class="ds-spying__row">
         <span class="ds-spying__label">Количество:</span>
