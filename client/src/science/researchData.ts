@@ -26,6 +26,7 @@
  * полировки, как и 9-slice скин окна).
  */
 import { parseXmlFragment } from '../protocol/response';
+import { combResCurrent, type CombRes } from '../data/combResData';
 
 export interface ScienceBranch {
   /** branchid — машинное имя ветки (KADERIUM/NANO_CRYSTAL/STASIS_ENERGY/PRODIUM/FOOD/TRADE/SPYING). */
@@ -149,6 +150,11 @@ export function getCancelResearchId(branch: ScienceBranch): string {
 export interface PlayerNanoFoodPool {
   nanoCrystal: number;
   food: number;
+}
+
+/** Марка combres (см. data/combResData.ts) → узкий срез, нужный computeScientistAllow()/ResearchWindow. */
+export function combResToNanoFoodPool(res: CombRes): PlayerNanoFoodPool {
+  return { nanoCrystal: combResCurrent(res, 'NANO_CRYSTAL'), food: combResCurrent(res, 'FOOD') };
 }
 
 /**

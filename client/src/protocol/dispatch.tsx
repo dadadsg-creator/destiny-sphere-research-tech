@@ -61,6 +61,9 @@ import { ArcheologyWindow } from '../world/ArcheologyWindow';
 import { combResToKadFoodPool, buildSendExpeditionCommand } from '../world/archeologyData';
 import { VacationWindow } from '../vacation/VacationWindow';
 import { PrivatePeaceWindow } from '../alliance/PrivatePeaceWindow';
+import { PowerShieldWindow } from '../spying/PowerShieldWindow';
+import { ProtectShieldWindow } from '../spying/ProtectShieldWindow';
+import { ResearchWindow } from '../science/ResearchWindow';
 
 // --- разбор конкретных доменов, известных, но пока не подключённых к живым окнам ---
 import { parseAllianceManagement } from '../alliance/allianceData';
@@ -84,9 +87,10 @@ import { parseCreateNewMail } from '../mail/createNewMailData';
 import { parseLogWindow } from '../mail/logData';
 import { parseMailList, parseMailMessage } from '../mail/mailData';
 import { parseQuestMenu } from '../quests/questData';
-import { parseResearch } from '../science/researchData';
+import { parseResearch, combResToNanoFoodPool } from '../science/researchData';
 import { parsePowerShield } from '../spying/powerShieldData';
 import { parseProtectShield } from '../spying/protectShieldData';
+import { combResCurrent } from '../data/combResData';
 import { parseSpyLog } from '../spying/scannerData';
 import { parseSpying } from '../spying/spyingData';
 import { parseZondCreate } from '../spying/zondCreateData';
@@ -151,10 +155,7 @@ const PARSERS: Record<string, (xml: string) => unknown> = {
   log: parseLogWindow,
   messageoverview: parseMailList,
   message: parseMailMessage,
-  powershild: parsePowerShield,
-  protectedfield: parseProtectShield,
   questmenu: parseQuestMenu,
-  research: parseResearch,
   spylog: parseSpyLog,
   warunit: parseTrainWarUnit,
   warcomplex: parseWarComplex,
@@ -407,6 +408,76 @@ function renderPrivatePeace(root: Element, xml: string, ctx: DispatchContext): v
  * команды, реальные данные, реальные вкладки. Проверяется ДО `PARSERS`
  * (см. `handleResponse`).
  */
+/**
+ * powerShieldData.ts — "Зарядить"/"Активировать" НЕ синонимы вопреки
+ * ожиданию: `powershieldclass.as:118-146` подтверждает `onCharge` (без
+ * параметров, без подтверждения) шлёт `<psactivation/>`, а `onActivate`
+ * (с числом ходов, с обязательным подтверждением) — `<psstart time=""/>`.
+ * Ни один не требует `c`.
+ */
+function renderPowerShield(root: Element, xml: string, ctx: DispatchContext): void {
+  const data = parsePowerShield(xml);
+  openWindow(
+    <PowerShieldWindow
+      data={data}
+      tabs={parseTabsArray(root)}
+      onTabClick={(tabId) => sendTabClick(ctx, tabId)}
+      onClose={closeWindow}
+      onCharge={() => void ctx.send(tag('psactivation', {}))}
+      onActivate={(turns) => void ctx.send(tag('psstart', { time: turns }))}
+    />,
+  );
+}
+
+/** protectShieldData.ts — <restoreProtection resource="RES|SILVER" amount="{percent}"/> (reqvestdata.as:900-904), без `c`. */
+function renderProtectShield(root: Element, xml: string, ctx: DispatchContext): void {
+  const data = parseProtectShield(xml);
+  const res = combRes.value;
+  openWindow(
+    <ProtectShieldWindow
+      data={data}
+      playerResources={{
+        kaderium: combResCurrent(res, 'KADERIUM'),
+        nano: combResCurrent(res, 'NANO_CRYSTAL'),
+        stasis: combResCurrent(res, 'STASIS_ENERGY'),
+        food: combResCurrent(res, 'FOOD'),
+        prodium: combResCurrent(res, 'PRODIUM'),
+        silver: combResCurrent(res, 'SILVER_CREDIT'),
+      }}
+      tabs={parseTabsArray(root)}
+      onTabClick={(tabId) => sendTabClick(ctx, tabId)}
+      onClose={closeWindow}
+      onRestoreWithResources={(percent) => void ctx.send(tag('restoreProtection', { resource: 'RES', amount: percent }))}
+      onRestoreWithSilver={(percent) => void ctx.send(tag('restoreProtection', { resource: 'SILVER', amount: percent }))}
+    />,
+  );
+}
+
+/**
+ * researchData.ts — <research id=""/>/<cancelresearch id=""/> без `c`,
+ * но набор/отмена набора учёных — <trainunit c="" count=""/>/
+ * <canceltrainunit c=""/>, оба ТРЕБУЮТ `c` (reqvestdata.as:415-444) —
+ * та же генерическая пара тегов, что и для набора военных юнитов
+ * (`trainunit`/`canceltrainunit` — не путать с маркой ответа `warunit`).
+ */
+function renderResearch(root: Element, xml: string, ctx: DispatchContext): void {
+  const data = parseResearch(xml);
+  const cellNum = ctx.activeCell;
+  openWindow(
+    <ResearchWindow
+      data={data}
+      playerResources={combResToNanoFoodPool(combRes.value)}
+      tabs={parseTabsArray(root)}
+      onTabClick={(tabId) => sendTabClick(ctx, tabId)}
+      onClose={closeWindow}
+      onStartResearch={(id) => void ctx.send(tag('research', { id }))}
+      onCancelResearch={(id) => void ctx.send(tag('cancelresearch', { id }))}
+      onTrainScientists={(count) => cellNum !== undefined && void ctx.send(tag('trainunit', { c: cellNum, count }))}
+      onCancelTrainScientists={() => cellNum !== undefined && void ctx.send(tag('canceltrainunit', { c: cellNum }))}
+    />,
+  );
+}
+
 const RENDERERS: Record<string, (root: Element, xml: string, ctx: DispatchContext) => void> = {
   getbuildinfo: renderBuildInfo,
   buildingartefact: renderBuildArtefact,
@@ -419,6 +490,9 @@ const RENDERERS: Record<string, (root: Element, xml: string, ctx: DispatchContex
   archeology: renderArcheology,
   otpusk: renderVacation,
   allianceprivatepeace: renderPrivatePeace,
+  powershild: renderPowerShield,
+  protectedfield: renderProtectShield,
+  research: renderResearch,
 };
 
 /**
