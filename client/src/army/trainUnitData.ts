@@ -14,17 +14,23 @@
  * каждом `<unit>`, в отличие от цены постройки).
  *
  * `allowMax` (сколько максимально можно построить) в оригинале —
- * категория «В»: клиент берёт `game.getMaxNumber()` (глобальная
- * константа — не установлено, что это), опционально переопределяет
- * живым атрибутом `maxallow`, затем ужимает по каждому из 6 ресурсов
- * игрока (`Math.floor(current/price)`, отдельно по Kaderium/Nano/Prodium/
- * Food/StasisEnergy/Worker) — это требует ещё и текущего запаса ресурсов
- * игрока (mark `combres`, парсер этого mark'а здесь НЕ реализован) — эта
- * функция сюда сознательно не включена, см. `computeAllowMax()` ниже как
- * отдельный шаг, который вызывающий код может выполнить, когда появится
- * парсер `combres`.
+ * категория «В», формула ПОДТВЕРЖДЕНА дословно (`xmlparsers.as:396-474`,
+ * `trainwarunit_parser`): `game.getMaxNumber()` — глобальная константа,
+ * подтверждена как `2 000 000 000` (`game.as:375`, буквально
+ * `return 2000000000`), опционально переопределяется живым атрибутом
+ * `maxallow` (подтверждено `PN_TrainWarUnit.class.php:243,307` — этот
+ * атрибут в реальности шлётся ТОЛЬКО для трёх спец-юнитов захваченной
+ * колонии, id 98/99/93, значением "1" или "0" — не общий большой лимит,
+ * а фактический потолок в 1 штуку для этих юнитов), затем ужимается по
+ * каждому из 6 ресурсов игрока (`Math.floor(current/price)`, отдельно по
+ * Kaderium/Nano/Prodium/Food/StasisEnergy/Worker). Цена постройки
+ * (`price.kad`/`.nano`/... = `game.getLocalNames(unitname).K/N/S/F/P/W`)
+ * — подтверждено `UA_Load.class.php:623`: атрибут на `<unit>` в
+ * `loaddata` называется ПЕРВОЙ БУКВОЙ имени ресурса (K/N/S/F/P/W),
+ * попадает в `LocalUnit.attrs` (см. `unitBuildPriceFromLocal()` ниже).
  */
 import { parseXmlFragment } from '../protocol/response';
+import type { LocalUnit } from '../data/localData';
 
 export interface TrainUnitUpkeep {
   kad: number;
@@ -52,6 +58,8 @@ export interface TrainUnitEntry {
   inProgress: number;
   endDate: string | null;
   upkeep: TrainUnitUpkeep;
+  /** Живой атрибут maxallow — на практике шлётся только для спец-юнитов захваченной колонии (id 98/99/93), см. докстринг файла. */
+  maxallow: number | null;
 }
 
 export interface TrainUnitData {
@@ -70,6 +78,7 @@ export function parseTrainWarUnit(xml: string): TrainUnitData {
   const units: TrainUnitEntry[] = [];
   for (const el of Array.from(root.children)) {
     if (el.nodeName !== 'unit') continue;
+    const maxallowAttr = el.getAttribute('maxallow');
     units.push({
       idName: el.getAttribute('unitname') ?? '',
       idUnit: el.getAttribute('id') ?? '',
@@ -79,6 +88,7 @@ export function parseTrainWarUnit(xml: string): TrainUnitData {
       avail: el.getAttribute('avail'),
       inProgress: Number(el.getAttribute('count')),
       endDate: el.getAttribute('enddate'),
+      maxallow: maxallowAttr !== null ? Number(maxallowAttr) : null,
       upkeep: {
         kad: Number(el.getAttribute('kad')) || 0,
         nano: Number(el.getAttribute('nano')) || 0,
@@ -105,6 +115,22 @@ export interface UnitBuildPrice {
   food: number;
   prod: number;
   work: number;
+}
+
+/** game.as:375 — `static function getMaxNumber() { return 2000000000; }`, буквальная константа-"бесконечность". */
+export const GLOBAL_MAX_NUMBER = 2_000_000_000;
+
+/** UA_Load.class.php:623 — атрибут цены на `<unit>` в loaddata это первая буква имени ресурса (K/N/S/F/P/W), лежит в LocalUnit.attrs. */
+export function unitBuildPriceFromLocal(local: LocalUnit | undefined): UnitBuildPrice {
+  const attrs = local?.attrs ?? {};
+  return {
+    kad: Number(attrs.K) || 0,
+    nano: Number(attrs.N) || 0,
+    energy: Number(attrs.S) || 0,
+    food: Number(attrs.F) || 0,
+    prod: Number(attrs.P) || 0,
+    work: Number(attrs.W) || 0,
+  };
 }
 
 export interface PlayerResourcePool {

@@ -52,7 +52,7 @@ import { BattleOverviewWindow } from './battle/BattleOverviewWindow';
 import { BattleWindow } from './battle/BattleWindow';
 import type { ArmyOverview } from './army/armyData';
 import type { ArmyCreationData } from './army/armyCreationData';
-import type { TrainUnitData } from './army/trainUnitData';
+import type { TrainUnitData, PlayerResourcePool } from './army/trainUnitData';
 import type { WarComplexData } from './army/warFactoryData';
 import type { SpyingData } from './spying/spyingData';
 import type { ZondCreateData } from './spying/zondCreateData';
@@ -215,6 +215,7 @@ const TEST_TRAIN_UNIT: TrainUnitData = {
       avail: '1',
       inProgress: 0,
       endDate: null,
+      maxallow: null,
       upkeep: { kad: 1, nano: 0, energy: 2, food: 3, prod: 0, work: 0 },
     },
     {
@@ -226,6 +227,7 @@ const TEST_TRAIN_UNIT: TrainUnitData = {
       avail: '1',
       inProgress: 5,
       endDate: '2026-09-06 10:00:00',
+      maxallow: null,
       upkeep: { kad: 4, nano: 2, energy: 5, food: 1, prod: 1, work: 0 },
     },
     {
@@ -237,6 +239,7 @@ const TEST_TRAIN_UNIT: TrainUnitData = {
       avail: '0',
       inProgress: 0,
       endDate: null,
+      maxallow: null,
       upkeep: { kad: 2, nano: 0, energy: 1, food: 2, prod: 0, work: 0 },
     },
     {
@@ -248,6 +251,7 @@ const TEST_TRAIN_UNIT: TrainUnitData = {
       avail: '1',
       inProgress: 0,
       endDate: null,
+      maxallow: null,
       upkeep: { kad: 2, nano: 1, energy: 1, food: 1, prod: 0, work: 0 },
     },
     {
@@ -259,6 +263,7 @@ const TEST_TRAIN_UNIT: TrainUnitData = {
       avail: '1',
       inProgress: 0,
       endDate: null,
+      maxallow: null,
       upkeep: { kad: 6, nano: 3, energy: 4, food: 2, prod: 2, work: 0 },
     },
     {
@@ -270,6 +275,7 @@ const TEST_TRAIN_UNIT: TrainUnitData = {
       avail: '1',
       inProgress: 0,
       endDate: null,
+      maxallow: null,
       upkeep: { kad: 8, nano: 4, energy: 6, food: 3, prod: 3, work: 0 },
     },
     {
@@ -281,6 +287,7 @@ const TEST_TRAIN_UNIT: TrainUnitData = {
       avail: '1',
       inProgress: 0,
       endDate: null,
+      maxallow: null,
       upkeep: { kad: 3, nano: 1, energy: 2, food: 2, prod: 0, work: 0 },
     },
     {
@@ -292,6 +299,7 @@ const TEST_TRAIN_UNIT: TrainUnitData = {
       avail: '1',
       inProgress: 0,
       endDate: null,
+      maxallow: null,
       upkeep: { kad: 10, nano: 5, energy: 5, food: 4, prod: 3, work: 0 },
     },
     {
@@ -303,6 +311,7 @@ const TEST_TRAIN_UNIT: TrainUnitData = {
       avail: '1',
       inProgress: 0,
       endDate: null,
+      maxallow: null,
       upkeep: { kad: 15, nano: 8, energy: 10, food: 2, prod: 6, work: 0 },
     },
     {
@@ -314,6 +323,7 @@ const TEST_TRAIN_UNIT: TrainUnitData = {
       avail: '0',
       inProgress: 0,
       endDate: null,
+      maxallow: null,
       upkeep: { kad: 20, nano: 12, energy: 14, food: 3, prod: 9, work: 0 },
     },
   ],
@@ -332,7 +342,8 @@ const TEST_LOCAL_UNITS = new Map<string, LocalUnit>([
       damageMax: '10',
       hitpoints: '10',
       description: '',
-      attrs: {},
+      // Цена постройки (не путать с upkeep живой марки) — game.getLocalNames(unitname).K/N/S/F, см. trainUnitData.ts:unitBuildPriceFromLocal().
+      attrs: { K: '10', N: '5', S: '2', F: '8' },
     },
   ],
   [
@@ -348,7 +359,7 @@ const TEST_LOCAL_UNITS = new Map<string, LocalUnit>([
       damageMax: '60',
       hitpoints: '200',
       description: '',
-      attrs: {},
+      attrs: { K: '50', N: '30', S: '20', F: '15', P: '10' },
     },
   ],
   [
@@ -396,6 +407,19 @@ const TEST_LOCAL_UNITS = new Map<string, LocalUnit>([
     { id: 'DESTROYER', ln: 'Эсминец', level: '8', race: '1', attack: '99%', defence: '85%', damageMin: '220', damageMax: '320', hitpoints: '1400', description: '', attrs: {} },
   ],
 ]);
+
+// Скромный запас ресурсов игрока — намеренно небольшой (не 2×10⁹), чтобы
+// computeAllowMax() реально ограничивал степпер количества у TrainUnitWindow/
+// WarStatisticWindow (?screen=train-unit/?screen=war-statistic), а не всегда
+// упирался в глобальный дефолт (см. trainUnitData.ts GLOBAL_MAX_NUMBER).
+const TEST_PLAYER_RESOURCE_POOL: PlayerResourcePool = {
+  kaderium: 500,
+  nanoCrystal: 300,
+  stasisEnergy: 1000,
+  food: 1000,
+  prodium: 1000,
+  worker: 1000,
+};
 
 // Синтетические данные для проверки WarStatisticWindow (?screen=war-statistic).
 const TEST_WAR_COMPLEX: WarComplexData = {
@@ -1164,6 +1188,7 @@ async function main() {
       <TrainUnitWindow
         data={TEST_TRAIN_UNIT}
         localUnits={TEST_LOCAL_UNITS}
+        playerResources={TEST_PLAYER_RESOURCE_POOL}
         onClose={() => console.log('[train-unit] close')}
         onTrain={(idUnit, count) => console.log('[train-unit] trainWarUnit(', count, idUnit, ')')}
         onCancel={(idUnit) => console.log('[train-unit] cancel(', idUnit, ')')}
@@ -1538,6 +1563,7 @@ async function main() {
       <WarStatisticWindow
         data={TEST_WAR_COMPLEX}
         localUnits={TEST_LOCAL_UNITS}
+        playerResources={TEST_PLAYER_RESOURCE_POOL}
         onClose={() => console.log('[war-statistic] close')}
         onLoad={(cellIds, unitId, amount) =>
           console.log('[war-statistic] load_pack_war_factory(', cellIds, unitId, amount, ')')

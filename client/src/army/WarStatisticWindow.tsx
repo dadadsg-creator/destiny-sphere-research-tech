@@ -12,19 +12,22 @@
  *  - кнопка «Загрузить» шлёт `load_pack_war_factory(cellIds, unitId,
  *    amount)` только если выбрана хотя бы одна фабрика И amount > 0.
  *
- * НЕ реализовано: allowMax-ограничение (см. warFactoryData.ts — та же
- * формула, что в trainUnitData.ts, требует mark `combres`).
+ * `allowMax` (категория «В», формула подтверждена — см. докстринг
+ * `trainUnitData.ts`) теперь ограничивает степпер количества для
+ * выбранного юнита.
  */
 import { useState } from 'preact/hooks';
 import { Window } from '../ui/Window';
 import { Stepper } from '../ui/Stepper';
 import type { TabDef } from '../ui/tabs';
 import type { WarComplexData, Factory, FactoryUnit } from './warFactoryData';
+import { computeAllowMax, unitBuildPriceFromLocal, GLOBAL_MAX_NUMBER, type PlayerResourcePool } from './trainUnitData';
 import type { LocalUnit } from '../data/localData';
 
 export interface WarStatisticWindowProps {
   data: WarComplexData;
   localUnits: Map<string, LocalUnit>;
+  playerResources: PlayerResourcePool;
   tabs?: TabDef[];
   onTabClick?: (tabId: string) => void;
   onClose: () => void;
@@ -37,13 +40,21 @@ function isFactorySelectable(factory: Factory, unit: FactoryUnit): boolean {
   return true;
 }
 
-export function WarStatisticWindow({ data, localUnits, tabs, onTabClick, onClose, onLoad }: WarStatisticWindowProps) {
+export function WarStatisticWindow({ data, localUnits, playerResources, tabs, onTabClick, onClose, onLoad }: WarStatisticWindowProps) {
   const [selectedUnitName, setSelectedUnitName] = useState<string>(data.units[0]?.unitname ?? '');
   const [selectedCells, setSelectedCells] = useState<Set<string>>(new Set());
   const [amount, setAmount] = useState(0);
 
   const selectedUnit = data.units.find((u) => u.unitname === selectedUnitName);
   const factories = [...data.factories.values()];
+  const allowMax = selectedUnit
+    ? computeAllowMax(
+        GLOBAL_MAX_NUMBER,
+        unitBuildPriceFromLocal(localUnits.get(selectedUnit.unitname)),
+        playerResources,
+        selectedUnit.maxallow ?? undefined,
+      )
+    : 0;
 
   function toggleCell(idCell: string) {
     const next = new Set(selectedCells);
@@ -101,7 +112,7 @@ export function WarStatisticWindow({ data, localUnits, tabs, onTabClick, onClose
       </div>
 
       <div class="ds-war-statistic__controls">
-        <Stepper value={amount} min={0} onChange={setAmount} />
+        <Stepper value={amount} min={0} max={allowMax} onChange={setAmount} />
         <button
           type="button"
           class="ds-popup__btn"

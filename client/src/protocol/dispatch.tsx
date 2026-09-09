@@ -630,9 +630,9 @@ function renderCreateMessage(root: Element, xml: string, ctx: DispatchContext): 
 /**
  * trainUnitData.ts — <trainwarunit c="" count="" id=""/>/
  * <canceltrainwarunit c=""/> (reqvestdata.as:554-563), оба требуют `c`.
- * `playerResources`/`computeAllowMax()` (нужен неопределённый
- * `game.getMaxNumber()`) сюда сознательно не подключены — окно их пока
- * не принимает вовсе (пробел Фазы 3, отдельная задача).
+ * `playerResources`/`computeAllowMax()` — теперь подключены:
+ * `game.getMaxNumber()` подтверждён как 2×10⁹ (game.as:375), см.
+ * докстринг trainUnitData.ts.
  */
 function renderTrainWarUnit(root: Element, xml: string, ctx: DispatchContext): void {
   const data = parseTrainWarUnit(xml);
@@ -641,6 +641,7 @@ function renderTrainWarUnit(root: Element, xml: string, ctx: DispatchContext): v
     <TrainUnitWindow
       data={data}
       localUnits={localData.value?.units ?? new Map()}
+      playerResources={combResToPlayerPool(combRes.value)}
       tabs={parseTabsArray(root)}
       onTabClick={(tabId) => sendTabClick(ctx, tabId)}
       onClose={closeWindow}
@@ -823,6 +824,7 @@ function renderWarComplex(_root: Element, xml: string, ctx: DispatchContext): vo
     <WarStatisticWindow
       data={data}
       localUnits={localData.value?.units ?? new Map()}
+      playerResources={combResToPlayerPool(combRes.value)}
       onClose={closeWindow}
       onLoad={(cellIds, unitId, amount) =>
         void ctx.send(tag('trainwarunit', { c: cellIds.join(','), id: unitId, count: amount }))

@@ -18,12 +18,12 @@
  *
  * ВАЖНО (как и в trainUnitData.ts): цена постройки (K/N/F/S/P/W/C) НЕ
  * приходит живым атрибутом здесь вообще — берётся из `loaddata`
- * (`game.getLocalNames(unitname).K/...`, см. data/localData.ts). Из
- * живого `<unit>` читаются ТОЛЬКО содержание (`kad`/`nano`/`food`/
- * `energy`/`prod` — заметьте другие имена атрибутов, не K/N/F/S/P!) и
- * `maxallow`. Переиспользует `computeAllowMax()` из trainUnitData.ts —
- * та же формула (категория «В», требует mark `combres`, здесь не
- * подключена).
+ * (`game.getLocalNames(unitname).K/...`, см. data/localData.ts,
+ * `unitBuildPriceFromLocal()`). Из живого `<unit>` читаются ТОЛЬКО
+ * содержание (`kad`/`nano`/`food`/`energy`/`prod` — заметьте другие
+ * имена атрибутов, не K/N/F/S/P!) и `maxallow`. Переиспользует
+ * `computeAllowMax()` из trainUnitData.ts — та же формула (категория
+ * «В», подключена в WarStatisticWindow.tsx через `combres`).
  */
 import { parseXmlFragment } from '../protocol/response';
 
