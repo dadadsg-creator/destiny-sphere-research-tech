@@ -18,21 +18,40 @@
  * `insert_artefact(id)`/`delete_artefact(id)` принимают ТОЛЬКО `id`, без
  * номера вкладки — привязка к зданию идёт через `debug.link.active_cell`
  * (атрибут `c`), общий для §1.4 и этого раздела.
+ *
+ * **Живой баг оригинала, сознательно исправленный в ремастере (2026-09-09)**:
+ * `bonus.value` приходит буквальными символами `%2B`/`%25` вместо `+`/`%`
+ * (подтверждено И живым перехватом ответа, И `PN_BuildingArtefact.
+ * class.php:164-174` — сервер строит `"%2B".$bonus` и, для BONUS_RELATIVE,
+ * добавляет суффикс `"%25"`). Оригинальный AS2-клиент (`xmlparsers.as:
+ * 1396,1418`, `obj2.bonus_value = ....attributes.value`) читает этот
+ * атрибут БЕЗ какой-либо распаковки — то есть баг исторический, виден и в
+ * оригинале, но для нового клиента показывать игроку сырой escape-код
+ * вместо "+800" не имеет смысла — см. `fixBonusPercent()`.
  */
 import { parseXmlFragment } from '../protocol/response';
 
 export interface ArtefactBonusEntry {
   bonusType: string | null;
+  /** Уже показываемая строка ("+800"/"+50%"), не сырое "%2B800"/"%2B50%25" — см. докстринг файла. */
   bonusValue: string | null;
 }
 
 export interface BuildArtefact {
   id: string | null;
-  /** prefix+"_"+scope+"_"+postfix — ключ локализации/ассета. */
+  /** prefix+"_"+scope+"_"+postfix — ключ локализации в LocalData.artefacts. */
   libname: string;
+  /** Базовый вид артефакта — ключ иконки (LocalData.artefacts не всегда доступна/заполнена по этому конкретному id, иконка привязана к postfix напрямую, см. resourceIcons.ts:artefactIconUrl). */
+  postfix: string | null;
   bonuses: ArtefactBonusEntry[];
   /** Непусто, если у артефакта скоро истекает срок действия. */
   expired: string;
+}
+
+/** "%2B800" -> "+800", "%2B50%25" -> "+50%" — см. докстринг файла. */
+function fixBonusPercent(value: string | null): string | null {
+  if (value === null) return null;
+  return value.replace(/^%2B/, '+').replace(/%25$/, '%');
 }
 
 export interface BuildArtefactData {
@@ -50,11 +69,12 @@ function parseArtefactEl(el: Element): BuildArtefact {
 
   const bonuses: ArtefactBonusEntry[] = Array.from(el.children)
     .filter((child) => child.nodeName === 'bonus')
-    .map((child) => ({ bonusType: child.getAttribute('name'), bonusValue: child.getAttribute('value') }));
+    .map((child) => ({ bonusType: child.getAttribute('name'), bonusValue: fixBonusPercent(child.getAttribute('value')) }));
 
   return {
     id: el.getAttribute('id'),
     libname: `${prefix}_${scope}_${postfix}`,
+    postfix,
     bonuses,
     expired: el.getAttribute('death_message') ?? '',
   };

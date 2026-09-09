@@ -213,6 +213,7 @@ function renderBuildArtefact(root: Element, xml: string, ctx: DispatchContext): 
   openWindow(
     <BuildArtefactWindow
       data={data}
+      localArtefacts={localData.value?.artefacts ?? new Map()}
       tabs={parseTabsArray(root)}
       onTabClick={(tabId) => sendTabClick(ctx, tabId)}
       onClose={closeWindow}

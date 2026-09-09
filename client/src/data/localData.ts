@@ -70,6 +70,32 @@ export interface LocalSimpleEntry {
   ln: string | null;
 }
 
+/**
+ * Каталог артефактов (`<artefact id="" idn="" ln="" bn="" bv="">description</artefact>`,
+ * `UA_Load.class.php:378-444`) — `id` это ПОЛНОЕ имя (`artefactname`,
+ * тот же формат `prefix_scope_postfix`, что и `libname` в
+ * buildArtefactData.ts и т.д.). `bv` — displaystring бонуса СВОЕЙ
+ * кодировкой, ОТЛИЧНОЙ от рантайм-марок (`buildingartefact` и т.п.
+ * используют литеральные "%2B"/"%25" — см. buildArtefactData.ts): здесь,
+ * по буквальному комментарию сервера, "# = +, $ = %" — см. `fixBonusHash()`.
+ */
+export interface LocalArtefact {
+  id: string;
+  idn: string | null;
+  ln: string | null;
+  description: string;
+  /** Машинное имя бонусного атрибута (совпадает с именем ресурса, например STASIS_ENERGY) — пусто, если у артефакта нет бонуса. */
+  bonusName: string;
+  /** Готовая для показа строка бонуса (уже "+800"/"+50%", не сырое "#800"/"#50$"). */
+  bonusValue: string;
+}
+
+/** "#800" -> "+800", "#50$" -> "+50%" — см. докстринг LocalArtefact про "# = +, $ = %". */
+function fixBonusHash(raw: string | null): string {
+  if (!raw) return '';
+  return raw.replace(/^#/, '+').replace(/\$$/, '%');
+}
+
 export interface LocalData {
   version: string | null;
   buildings: Map<number, LocalBuilding>;
@@ -80,6 +106,7 @@ export interface LocalData {
   attributeNames: Map<string, LocalSimpleEntry>;
   messageScopes: Map<string, LocalSimpleEntry>;
   rings: Map<string, LocalSimpleEntry & { ringNumber: string | null }>;
+  artefacts: Map<string, LocalArtefact>;
   /** "OK", если сервер подтвердил целостность передачи (dataintegrity). */
   dataIntegrityOk: boolean;
 }
@@ -115,6 +142,7 @@ export function parseLocalData(xml: string): LocalData {
     attributeNames: new Map(),
     messageScopes: new Map(),
     rings: new Map(),
+    artefacts: new Map(),
     dataIntegrityOk: false,
   };
 
@@ -199,9 +227,21 @@ export function parseLocalData(xml: string): LocalData {
       case 'dataintegrity':
         result.dataIntegrityOk = el.getAttribute('ln') === 'OK';
         break;
-      // 'comb', 'artscope', 'artsize', 'artbonus', 'artefact' — не разобраны в
-      // этой версии (не нужны для текущих экранов Фазы 3.1); формат см.
-      // UA_Load.class.php:36-55,152-251,378-444, при необходимости добавить.
+      case 'artefact': {
+        const id = el.getAttribute('id') ?? '';
+        result.artefacts.set(id, {
+          id,
+          idn: el.getAttribute('idn'),
+          ln: el.getAttribute('ln'),
+          description: el.textContent ?? '',
+          bonusName: el.getAttribute('bn') ?? '',
+          bonusValue: fixBonusHash(el.getAttribute('bv')),
+        });
+        break;
+      }
+      // 'comb', 'artscope', 'artsize', 'artbonus' — не разобраны в этой
+      // версии (не нужны для текущих экранов); формат см.
+      // UA_Load.class.php:36-55,152-251, при необходимости добавить.
       default:
         break;
     }

@@ -11,11 +11,17 @@
  * её всегда, даже если списание денег на сервере на момент этой ревизии
  * не реализовано до конца (см. находка в докладе, mechanics-buildings.md
  * §2.3) — порт это не чинит и не скрывает, просто показывает как есть.
+ *
+ * Стоимость — единый список иконок (ResourceValue/ResourceList,
+ * ui/ResourceValue.tsx) вместо сырых чисел через слэш; нулевые ресурсы
+ * не показываются.
  */
 import { Window } from '../ui/Window';
 import type { TabDef } from '../ui/tabs';
 import { computeBuildAllowed, type BuildMenuEntry, type PlayerResourcePoolFull } from './buildMenuData';
 import type { LocalBuilding } from '../data/localData';
+import { RESOURCE_LETTER_TO_NAME } from '../data/resourceIcons';
+import { ResourceList, type ResourceCost } from '../ui/ResourceValue';
 
 export interface BuildMenuWindowProps {
   entries: BuildMenuEntry[];
@@ -25,6 +31,15 @@ export interface BuildMenuWindowProps {
   onTabClick?: (tabId: string) => void;
   onClose: () => void;
   onBuild: (id: number) => void;
+}
+
+function buildCosts(attrs: Record<string, string>, entry: BuildMenuEntry): ResourceCost[] {
+  const costs: ResourceCost[] = Object.entries(RESOURCE_LETTER_TO_NAME).map(([letter, name]) => ({
+    name,
+    value: Number(attrs[letter]) || 0,
+  }));
+  costs.push({ name: 'GOLD_CREDIT', value: entry.goldCredit }, { name: 'SILVER_CREDIT', value: entry.silverCredit });
+  return costs;
 }
 
 export function BuildMenuWindow({
@@ -42,8 +57,7 @@ export function BuildMenuWindow({
         <thead>
           <tr>
             <th>Здание</th>
-            <th>K/N/S/F/P/W</th>
-            <th>GC/SC</th>
+            <th>Стоимость</th>
             <th />
           </tr>
         </thead>
@@ -56,11 +70,7 @@ export function BuildMenuWindow({
               <tr key={entry.id}>
                 <td>{local?.ln ?? entry.id}</td>
                 <td>
-                  {attrs.K ?? '0'}/{attrs.N ?? '0'}/{attrs.S ?? '0'}/{attrs.F ?? '0'}/{attrs.P ?? '0'}/
-                  {attrs.W ?? '0'}
-                </td>
-                <td>
-                  {entry.goldCredit}/{entry.silverCredit}
+                  <ResourceList costs={buildCosts(attrs, entry)} />
                 </td>
                 <td>
                   <button type="button" class="ds-popup__btn" disabled={!allowed} onClick={() => onBuild(entry.id)}>

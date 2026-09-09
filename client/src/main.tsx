@@ -79,7 +79,7 @@ import type { CabinetMainData } from './cabinet/cabinetMainData';
 import type { SubmenuFormData } from './cabinet/submenuData';
 import type { ArtefactShopData } from './cabinet/artefactShopData';
 import type { VacationData } from './vacation/vacationData';
-import type { LocalUnit, LocalBuilding } from './data/localData';
+import type { LocalUnit, LocalBuilding, LocalArtefact } from './data/localData';
 import type { TabDef } from './ui/tabs';
 
 // Синтетический набор построек для проверки renderBuildings() без живого
@@ -830,13 +830,43 @@ const TEST_ARTEFACT_STAT: ArtefactStatData = new Map([
 const TEST_BUILD_ARTEFACT: BuildArtefactData = {
   countSlots: 3,
   attached: [
-    { id: '1', libname: 'ART_ATTACK_MEDIUM', bonuses: [{ bonusType: 'attack', bonusValue: '15' }], expired: '' },
+    {
+      id: '1',
+      libname: 'MIGHTY_SPHERE_STASIS_ENERGY_EGG',
+      postfix: 'STASIS_ENERGY_EGG',
+      bonuses: [{ bonusType: 'STASIS_ENERGY', bonusValue: '+800' }],
+      expired: '',
+    },
   ],
   available: [
-    { id: '2', libname: 'ART_DEFENSE_SMALL', bonuses: [{ bonusType: 'defense', bonusValue: '5' }], expired: '' },
-    { id: '3', libname: 'ART_SPEED_LARGE', bonuses: [{ bonusType: 'speed', bonusValue: '30' }], expired: 'скоро истекает' },
+    {
+      id: '2',
+      libname: 'SMALL_SPHERE_PROTECTION',
+      postfix: 'PROTECTION',
+      bonuses: [{ bonusType: 'KADERIUM', bonusValue: '+5' }],
+      expired: '',
+    },
+    {
+      id: '3',
+      libname: 'HUGE_SPHERE_PRECISION',
+      postfix: 'PRECISION',
+      bonuses: [{ bonusType: 'PRODIUM', bonusValue: '+30%' }],
+      expired: 'скоро истекает',
+    },
   ],
 };
+
+const TEST_LOCAL_ARTEFACTS = new Map<string, LocalArtefact>([
+  [
+    'MIGHTY_SPHERE_STASIS_ENERGY_EGG',
+    { id: 'MIGHTY_SPHERE_STASIS_ENERGY_EGG', idn: '1', ln: 'Могучее яйцо энергии сферы', description: '', bonusName: 'STASIS_ENERGY', bonusValue: '+800' },
+  ],
+  [
+    'SMALL_SPHERE_PROTECTION',
+    { id: 'SMALL_SPHERE_PROTECTION', idn: '2', ln: 'Малая защита сферы', description: '', bonusName: 'KADERIUM', bonusValue: '+5' },
+  ],
+  // HUGE_SPHERE_PRECISION намеренно не в каталоге — проверка запасного варианта (сырой libname).
+]);
 
 // Точка входа HTML5-клиента Destiny Sphere.
 // Живая интеграция сети (Фаза 1) + карты (Фаза 2), см. CLIENT_PORTING_PLAN.md.
@@ -1214,6 +1244,7 @@ async function main() {
     openWindow(
       <BuildArtefactWindow
         data={TEST_BUILD_ARTEFACT}
+        localArtefacts={TEST_LOCAL_ARTEFACTS}
         onClose={() => console.log('[build-artefact] close')}
         onAttach={(id) => console.log('[build-artefact] attachartefact(', id, ')')}
         onDetach={(id) => console.log('[build-artefact] detachartefact(', id, ')')}

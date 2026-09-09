@@ -333,6 +333,48 @@
   color: #ff6666;
 }
 
+.ds-resource-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.ds-resource-list__empty {
+  color: #6b7396;
+}
+.ds-resource {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
+}
+.ds-resource__icon {
+  width: 16px;
+  height: 16px;
+}
+.ds-resource__value {
+  font-variant-numeric: tabular-nums;
+}
+
+.ds-artefact-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ds-artefact-row__icon {
+  width: 23px;
+  height: 23px;
+  flex-shrink: 0;
+}
+.ds-artefact-row__name {
+  min-width: 140px;
+}
+.ds-artefact-row__bonuses {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex: 1;
+}
+
 .ds-build-info__actions {
   display: flex;
   flex-wrap: wrap;

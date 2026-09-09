@@ -4,13 +4,25 @@
  * Две колонки: доступные к вставке (депо) и уже вставленные в здание —
  * insert_artefact(id)/delete_artefact(id) привязаны к активной соте через
  * общий debug.link.active_cell, номер вкладки не передаётся.
+ *
+ * Иконка/название — из статического каталога `LocalData.artefacts`
+ * (`data/localData.ts`, `<artefact>` из `loaddata`, ключ — тот же
+ * libname `prefix_scope_postfix`), иконка конкретно по `art.postfix`
+ * (см. `resourceIcons.ts:artefactIconUrl` — один "базовый вид" на набор
+ * префикс/scope-модификаторов силы). Если каталог ещё не пришёл или
+ * артефакта в нём нет — показываем сырой libname текстом без иконки,
+ * не выдумывая замену.
  */
 import { Window } from '../ui/Window';
 import type { TabDef } from '../ui/tabs';
+import type { LocalArtefact } from '../data/localData';
+import { artefactIconUrl } from '../data/resourceIcons';
+import { ResourceValue } from '../ui/ResourceValue';
 import type { BuildArtefact, BuildArtefactData } from './buildArtefactData';
 
 export interface BuildArtefactWindowProps {
   data: BuildArtefactData;
+  localArtefacts: Map<string, LocalArtefact>;
   tabs?: TabDef[];
   onTabClick?: (tabId: string) => void;
   onClose: () => void;
@@ -18,11 +30,32 @@ export interface BuildArtefactWindowProps {
   onDetach: (id: string) => void;
 }
 
-function ArtefactRow({ art, actionLabel, onAction }: { art: BuildArtefact; actionLabel: string; onAction: () => void }) {
+function ArtefactRow({
+  art,
+  local,
+  actionLabel,
+  onAction,
+}: {
+  art: BuildArtefact;
+  local: LocalArtefact | undefined;
+  actionLabel: string;
+  onAction: () => void;
+}) {
   return (
     <tr class="ds-army-row">
-      <td style={{ color: art.expired ? '#ff6666' : undefined }}>{art.libname}</td>
-      <td>{art.bonuses.map((b) => `${b.bonusType}:${b.bonusValue}`).join(', ')}</td>
+      <td>
+        <div class="ds-artefact-row">
+          {art.postfix && <img class="ds-artefact-row__icon" src={artefactIconUrl(art.postfix)} alt="" />}
+          <span class="ds-artefact-row__name" style={{ color: art.expired ? '#ff6666' : undefined }}>
+            {local?.ln ?? art.libname}
+          </span>
+          <span class="ds-artefact-row__bonuses">
+            {art.bonuses.map((b, i) => (
+              <ResourceValue key={i} name={b.bonusType ?? ''} value={b.bonusValue ?? ''} />
+            ))}
+          </span>
+        </div>
+      </td>
       <td>
         <button onClick={onAction}>{actionLabel}</button>
       </td>
@@ -30,7 +63,15 @@ function ArtefactRow({ art, actionLabel, onAction }: { art: BuildArtefact; actio
   );
 }
 
-export function BuildArtefactWindow({ data, tabs, onTabClick, onClose, onAttach, onDetach }: BuildArtefactWindowProps) {
+export function BuildArtefactWindow({
+  data,
+  localArtefacts,
+  tabs,
+  onTabClick,
+  onClose,
+  onAttach,
+  onDetach,
+}: BuildArtefactWindowProps) {
   const freeSlots = data.countSlots - data.attached.length;
 
   return (
@@ -43,7 +84,13 @@ export function BuildArtefactWindow({ data, tabs, onTabClick, onClose, onAttach,
       <table>
         <tbody>
           {data.attached.map((art) => (
-            <ArtefactRow key={art.id} art={art} actionLabel="Извлечь" onAction={() => art.id && onDetach(art.id)} />
+            <ArtefactRow
+              key={art.id}
+              art={art}
+              local={localArtefacts.get(art.libname)}
+              actionLabel="Извлечь"
+              onAction={() => art.id && onDetach(art.id)}
+            />
           ))}
         </tbody>
       </table>
@@ -55,6 +102,7 @@ export function BuildArtefactWindow({ data, tabs, onTabClick, onClose, onAttach,
             <ArtefactRow
               key={art.id}
               art={art}
+              local={localArtefacts.get(art.libname)}
               actionLabel={freeSlots > 0 ? 'Вставить' : 'Нет слотов'}
               onAction={() => freeSlots > 0 && art.id && onAttach(art.id)}
             />
