@@ -49,3 +49,18 @@ export function resourceIconUrl(name: string): string {
 export function artefactIconUrl(postfix: string): string {
   return `/assets/artefacts/${postfix}.png`;
 }
+
+/**
+ * Рамка слота артефакта — в оригинале иконка это ДВА отдельных слоя
+ * (`buildartefactclass.as:157-176`): `art_clear` (фон/рамка слота,
+ * `attachMovie`, круглая тёмная окантовка) под низом, и сам артефакт
+ * (`art_lib.createArtefact()`) поверх, отцентрован по рамке
+ * (`pic_for._x = ... + obj._width/2`). У `art_clear` есть цветные
+ * scope-варианты окантовки (`ArtColors/sprites/<SCOPE>`, например
+ * "SPHERE"/"WAR"/"BUILDING") — они полупрозрачные цветовые оверлеи,
+ * рассчитанные на blend-режим Flash, плоский PNG-экспорт даёт из них
+ * почти белый пустой кадр — не воспроизводится в этой версии, используется
+ * один универсальный `art_clear` для всех scope (сознательное упрощение).
+ * Извлечена из `client-assets/ArtColors/sprites/DefineSprite_31_art_clear/1.png`.
+ */
+export const ARTEFACT_SLOT_FRAME_URL = '/assets/ui/artefact-slot-frame.png';

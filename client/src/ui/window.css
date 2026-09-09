@@ -360,10 +360,25 @@
   align-items: center;
   gap: 8px;
 }
-.ds-artefact-row__icon {
-  width: 23px;
-  height: 23px;
+.ds-artefact-row__icon-wrap {
+  position: relative;
+  width: 32px;
+  height: 32px;
   flex-shrink: 0;
+}
+.ds-artefact-row__frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.ds-artefact-row__icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 60%;
+  max-height: 60%;
 }
 .ds-artefact-row__name {
   min-width: 140px;

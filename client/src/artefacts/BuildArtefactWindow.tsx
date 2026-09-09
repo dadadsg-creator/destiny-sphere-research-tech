@@ -16,7 +16,7 @@
 import { Window } from '../ui/Window';
 import type { TabDef } from '../ui/tabs';
 import type { LocalArtefact } from '../data/localData';
-import { artefactIconUrl } from '../data/resourceIcons';
+import { artefactIconUrl, ARTEFACT_SLOT_FRAME_URL } from '../data/resourceIcons';
 import { ResourceValue } from '../ui/ResourceValue';
 import type { BuildArtefact, BuildArtefactData } from './buildArtefactData';
 
@@ -45,7 +45,10 @@ function ArtefactRow({
     <tr class="ds-army-row">
       <td>
         <div class="ds-artefact-row">
-          {art.postfix && <img class="ds-artefact-row__icon" src={artefactIconUrl(art.postfix)} alt="" />}
+          <span class="ds-artefact-row__icon-wrap">
+            <img class="ds-artefact-row__frame" src={ARTEFACT_SLOT_FRAME_URL} alt="" />
+            {art.postfix && <img class="ds-artefact-row__icon" src={artefactIconUrl(art.postfix)} alt="" />}
+          </span>
           <span class="ds-artefact-row__name" style={{ color: art.expired ? '#ff6666' : undefined }}>
             {local?.ln ?? art.libname}
           </span>
