@@ -1388,6 +1388,9 @@ async function main() {
   }
 
   const renderer = await MapRenderer.create(app);
+  // Отладочный доступ для скриптов тестирования (см. scripts/live-map-click.ts) —
+  // по образцу __renderDone/__renderError ниже.
+  (window as any).__mapRenderer = renderer;
 
   if (!wantsLive || !login || !pass || !uiid) {
     await renderer.renderGround('G'.repeat(217));
