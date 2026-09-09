@@ -18,10 +18,14 @@
  * подтверждённому 2026-09-08 списку 37 классов `PN_*` (все расширяют
  * `UA_GetBuildMenu`, см. CLIENT_PORTING_PLAN.md): `getbuildinfo`,
  * `buildingartefact`, `terraforming`, `religion`, `transferresource`,
- * `trade`, `getbuildmenu`, `archeology`, `reincarnate`. Марка `combres`
- * (пул ресурсов игрока/соты, см. `data/combResData.ts`) теперь тоже
- * подключена — блокировала три последних домена. Остальные домены пока
- * только логируются в консоль — подключение оставлено отдельным объёмом
+ * `trade`, `getbuildmenu`, `archeology`, `reincarnate`, `otpusk`,
+ * `allianceprivatepeace`. Марка `combres` (пул ресурсов игрока/соты, см.
+ * `data/combResData.ts`) разблокировала три домена (`getbuildmenu`,
+ * `reincarnate`, `archeology`); `otpusk`/`allianceprivatepeace` не
+ * привязаны к конкретной ячейке в своих действиях (подтверждено
+ * `reqvestdata.as` — `<vacationstart/>`/`<getprivatepeace/>` без `c`),
+ * в отличие от большинства этой "семьи". Остальные домены пока только
+ * логируются в консоль — подключение оставлено отдельным объёмом
  * работы; часть из них по-прежнему упирается в неизвестный источник
  * премиум-статуса (`TerraformWindow`/`ArcheologyWindow` получают
  * `isPremium={false}` как заведомо безопасный дефолт) — сознательно не
@@ -42,7 +46,7 @@ import { openWindow, closeWindow, pushPopup, popPopup } from '../ui/windowStore'
 import { InfoPopup } from '../ui/Popup';
 import { BuildInfoWindow } from '../buildings/BuildInfoWindow';
 import { parseInfoBuild } from '../buildings/buildInfoData';
-import { tag, sellXml, transferResourceXml, archeologyTeamXml } from './xmlBuilder';
+import { tag, sellXml, transferResourceXml, archeologyTeamXml, getPPeaceXml } from './xmlBuilder';
 import { parseTabsArray, stripTabPrefix } from './tabsParser';
 import { BuildArtefactWindow } from '../artefacts/BuildArtefactWindow';
 import { TerraformWindow } from '../world/TerraformWindow';
@@ -55,6 +59,8 @@ import { ReincarnateWindow } from '../world/ReincarnateWindow';
 import { combResToPriceOrder } from '../world/reincarnateData';
 import { ArcheologyWindow } from '../world/ArcheologyWindow';
 import { combResToKadFoodPool, buildSendExpeditionCommand } from '../world/archeologyData';
+import { VacationWindow } from '../vacation/VacationWindow';
+import { PrivatePeaceWindow } from '../alliance/PrivatePeaceWindow';
 
 // --- разбор конкретных доменов, известных, но пока не подключённых к живым окнам ---
 import { parseAllianceManagement } from '../alliance/allianceData';
@@ -127,7 +133,6 @@ export interface DispatchContext {
 const PARSERS: Record<string, (xml: string) => unknown> = {
   alliancemanagement: parseAllianceManagement,
   allianceoverview: parseAllianceOverview,
-  allianceprivatepeace: parsePrivatePeace,
   alliancesettings: parseAllianceSettings,
   alliancepeace: parseAlliancePeaceList,
   alliancePeaceData: parseAlliancePeaceDetail,
@@ -146,7 +151,6 @@ const PARSERS: Record<string, (xml: string) => unknown> = {
   log: parseLogWindow,
   messageoverview: parseMailList,
   message: parseMailMessage,
-  otpusk: parseVacation,
   powershild: parsePowerShield,
   protectedfield: parseProtectShield,
   questmenu: parseQuestMenu,
@@ -363,6 +367,41 @@ function renderArcheology(root: Element, xml: string, ctx: DispatchContext): voi
 }
 
 /**
+ * vacationData.ts — <vacationstart password=""/>/<vacationstop password=""/>/
+ * <vacationsedpass/>, ни один не требует `c` (подтверждено `reqvestdata.as:
+ * 873-887`) — в отличие от большинства доменов этой "семьи", действие
+ * не привязано к конкретной ячейке.
+ */
+function renderVacation(root: Element, xml: string, ctx: DispatchContext): void {
+  const data = parseVacation(xml);
+  openWindow(
+    <VacationWindow
+      data={data}
+      tabs={parseTabsArray(root)}
+      onTabClick={(tabId) => sendTabClick(ctx, tabId)}
+      onClose={closeWindow}
+      onStart={(password) => void ctx.send(tag('vacationstart', { password }))}
+      onStop={(password) => void ctx.send(tag('vacationstop', { password }))}
+      onForgotPassword={() => void ctx.send(tag('vacationsedpass', {}))}
+    />,
+  );
+}
+
+/** privatePeaceData.ts — <getprivatepeace nick="" definition="" reason=""/>, тоже без `c` (reqvestdata.as:134-149). */
+function renderPrivatePeace(root: Element, xml: string, ctx: DispatchContext): void {
+  const data = parsePrivatePeace(xml);
+  openWindow(
+    <PrivatePeaceWindow
+      data={data}
+      tabs={parseTabsArray(root)}
+      onTabClick={(tabId) => sendTabClick(ctx, tabId)}
+      onClose={closeWindow}
+      onSend={(command) => void ctx.send(getPPeaceXml(command))}
+    />,
+  );
+}
+
+/**
  * Домены `getbuildmenu`-семейства (и `getbuildinfo` отдельным top-level
  * запросом с тем же "гнездом" вкладок) с полной проводкой — реальные
  * команды, реальные данные, реальные вкладки. Проверяется ДО `PARSERS`
@@ -378,6 +417,8 @@ const RENDERERS: Record<string, (root: Element, xml: string, ctx: DispatchContex
   getbuildmenu: renderBuildMenu,
   reincarnate: renderReincarnate,
   archeology: renderArcheology,
+  otpusk: renderVacation,
+  allianceprivatepeace: renderPrivatePeace,
 };
 
 /**

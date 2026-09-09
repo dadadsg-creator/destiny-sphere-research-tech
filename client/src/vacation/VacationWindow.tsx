@@ -7,22 +7,25 @@
 import { useState } from 'preact/hooks';
 import { Window } from '../ui/Window';
 import { ConfirmPopup } from '../ui/Popup';
+import type { TabDef } from '../ui/tabs';
 import type { VacationData } from './vacationData';
 
 export interface VacationWindowProps {
   data: VacationData;
+  tabs?: TabDef[];
+  onTabClick?: (tabId: string) => void;
   onClose: () => void;
   onStart: (password: string) => void;
   onStop: (password: string) => void;
   onForgotPassword: () => void;
 }
 
-export function VacationWindow({ data, onClose, onStart, onStop, onForgotPassword }: VacationWindowProps) {
+export function VacationWindow({ data, tabs, onTabClick, onClose, onStart, onStop, onForgotPassword }: VacationWindowProps) {
   const [password, setPassword] = useState('');
   const [confirming, setConfirming] = useState(false);
 
   return (
-    <Window title="Отпуск" onClose={onClose}>
+    <Window title="Отпуск" tabs={tabs} onTabClick={onTabClick} onClose={onClose}>
       <p>{data.dataText}</p>
       <p>{data.descText}</p>
 

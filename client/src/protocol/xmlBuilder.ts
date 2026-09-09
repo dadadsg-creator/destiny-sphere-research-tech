@@ -11,6 +11,7 @@
 import type { SellCommand } from '../trade/tradeData';
 import type { TransferCommand } from '../trade/transferData';
 import type { ArcheologyTeamCommand } from '../world/archeologyData';
+import type { GetPPeaceCommand } from '../alliance/privatePeaceData';
 
 export function tag(name: string, attrs: Record<string, string | number | boolean | undefined>): string {
   let out = `<${name}`;
@@ -103,4 +104,13 @@ export function archeologyTeamXml(cmd: ArcheologyTeamCommand): string {
     size: cmd.size,
     countgroup: cmd.countGroup,
   });
+}
+
+/**
+ * alliance/privatePeaceData.ts:89-97 — подтверждено `reqvestdata.as:
+ * 134-149` (`getPPeace`): `<getprivatepeace nick="" definition="" reason=""/>`,
+ * поля команды названы иначе (`targetName`/`uid`), чем атрибуты XML.
+ */
+export function getPPeaceXml(cmd: GetPPeaceCommand): string {
+  return tag('getprivatepeace', { nick: cmd.targetName, definition: cmd.uid, reason: cmd.reason });
 }
