@@ -41,7 +41,9 @@ import { setLocalData, localData } from '../data/localDataStore';
 import { parseCombRes } from '../data/combResData';
 import { setCombRes, combRes } from '../data/combResStore';
 import { parseSysMsg } from '../mail/logData';
-import { parseAdviceHint } from '../settings/adviceData';
+import { appendSysMsgBatch } from '../mail/sysMessageStore';
+import { AdviceWindow } from '../settings/AdviceWindow';
+import { parseAdviceHint, buildGetNubHelpCommand } from '../settings/adviceData';
 import { openWindow, closeWindow, pushPopup, popPopup } from '../ui/windowStore';
 import { InfoPopup } from '../ui/Popup';
 import { BuildInfoWindow } from '../buildings/BuildInfoWindow';
@@ -302,7 +304,21 @@ function renderReligion(root: Element, xml: string, ctx: DispatchContext): void 
   );
 }
 
-/** transferData.ts:81 — сериализация через transferResourceXml (имена атрибутов не совпадают с полями команды). */
+/**
+ * transferData.ts:81 — сериализация через transferResourceXml (имена
+ * атрибутов не совпадают с полями команды). `onCalculate` — подтверждено
+ * чтением `reqvestdata.as:638-641` (`calc_transfer_to_colony`):
+ * `<calctravel mode="TRANSFER"|"TRANSFERRES" id_colony="" id_unit=""
+ * amount=""/>`, `mode` зависит от категории (`id_cat===2` →
+ * "TRANSFER", иначе "TRANSFERRES") — точное значение категории "2"
+ * (юниты армии, а не ресурс) не установлено достоверно из одного
+ * только `reqvestdata.as`, взято по буквальному условию оригинала.
+ * Ответ (`<calctravel/>`) НИГДЕ не обрабатывается в найденном клиентском
+ * коде (ни в `transfer_class.as`, ни в общем `xmldata_action`-свитче
+ * `parser.as`) — похоже на нерабочий даже в оригинале раунд-трип
+ * (см. тот же класс находок, что и "MAIL_TO всегда задизейблена"), но
+ * сам ЗАПРОС теперь отправляется реальным, а не молчаливым placeholder'ом.
+ */
 function renderTransfer(root: Element, xml: string, ctx: DispatchContext): void {
   const data = parseTransferMenu(xml);
   openWindow(
@@ -312,17 +328,16 @@ function renderTransfer(root: Element, xml: string, ctx: DispatchContext): void 
       onTabClick={(tabId) => sendTabClick(ctx, tabId)}
       onClose={closeWindow}
       onTransfer={(command) => void ctx.send(transferResourceXml(command))}
-      onCalculate={(id, category, amount, targetCombId) => {
-        // UA_CalcTravel — тег есть в ds_useractiontype, но точный формат
-        // запроса (какие поля, как называются атрибуты) в Фазе 3 не
-        // сверялся — не отправляем непроверенную команду вслепую.
-        console.log('[dispatch] calctravel — формат запроса не подтверждён, действие не отправлено', {
-          id,
-          category,
-          amount,
-          targetCombId,
-        });
-      }}
+      onCalculate={(id, category, amount, targetCombId) =>
+        void ctx.send(
+          tag('calctravel', {
+            mode: category === 2 ? 'TRANSFER' : 'TRANSFERRES',
+            id_colony: targetCombId,
+            id_unit: id,
+            amount,
+          }),
+        )
+      }
     />,
   );
 }
@@ -378,12 +393,15 @@ function renderReincarnate(root: Element, xml: string, ctx: DispatchContext): vo
 /**
  * archeologyData.ts:1-27 — <archeologyteam .../> отправка экспедиции
  * (тег подтверждён ds_useractiontype). `onTrain` (обучение археологов) —
- * НЕ подключён: точный тег для этого действия в Фазе 3/4 не сверялся с
- * `reqvestdata.as`, отправлять непроверенным не стали (тот же принцип,
- * что и TransferWindow.onCalculate).
+ * подтверждено чтением `reqvestdata.as:536-540` (`trainarchelogist`,
+ * буквальная опечатка "archelogist" в самом клиенте): реально шлёт ТОТ
+ * ЖЕ генерический `<trainunit c="" count=""/>`, что и набор учёных в
+ * ResearchWindow — не отдельный тег под археологов, различает их только
+ * ячейка/здание, в которое отправлена команда. Требует `c`.
  */
 function renderArcheology(root: Element, xml: string, ctx: DispatchContext): void {
   const data = parseArcheology(xml);
+  const cellNum = ctx.activeCell;
   openWindow(
     <ArcheologyWindow
       data={data}
@@ -395,9 +413,7 @@ function renderArcheology(root: Element, xml: string, ctx: DispatchContext): voi
       tabs={parseTabsArray(root)}
       onTabClick={(tabId) => sendTabClick(ctx, tabId)}
       onClose={closeWindow}
-      onTrain={(count) => {
-        console.log('[dispatch] обучение археологов — тег запроса не подтверждён, действие не отправлено', { count });
-      }}
+      onTrain={(count) => cellNum !== undefined && void ctx.send(tag('trainunit', { c: cellNum, count }))}
       onSendExpedition={(dest, count, turns, sizeMin, countGroup) =>
         void ctx.send(archeologyTeamXml(buildSendExpeditionCommand(dest, count, turns, sizeMin, countGroup)))
       }
@@ -1263,18 +1279,25 @@ export function handleResponse(marks: ParsedMarks, ctx: DispatchContext): void {
   }
 
   if (marks.sysmsg) {
-    // Разбор одной порции — накопление в постоянный лог (аналог
-    // debug.link.sys_msg/war_msg/spy_msg) оставлено объёмом следующего
-    // прохода, см. logData.ts докстринг.
-    const batch = parseSysMsg(marks.sysmsg);
-    if (batch.sys.length || batch.war.length || batch.spy.length) {
-      console.log('[dispatch] sysmsg', batch);
-    }
+    // Копим в постоянный лог (аналог debug.link.sys_msg/war_msg/spy_msg,
+    // см. mail/sysMessageStore.ts) — раньше порция молча терялась после
+    // console.log. Автопоказ попапа НЕ воспроизводим: в оригинале
+    // sys_mess_menu.as открывается кнопкой статус-бара по требованию
+    // игрока, а не всплывает сама на каждое сообщение.
+    appendSysMsgBatch(parseSysMsg(marks.sysmsg));
   }
 
   if (marks.advice) {
     const hint = parseAdviceHint(marks.advice);
-    console.log('[dispatch] advice hint (попап адвайзера пока не подключён к реальным командам)', hint);
+    openWindow(
+      <AdviceWindow
+        hint={hint}
+        onClose={closeWindow}
+        onNext={() => void ctx.send(tag('getNubHelp', buildGetNubHelpCommand(hint.number + 1)))}
+        onPrev={() => void ctx.send(tag('getNubHelp', buildGetNubHelpCommand(hint.number - 1)))}
+        onJumpTo={(id) => void ctx.send(tag('getNubHelp', buildGetNubHelpCommand(Number(id))))}
+      />,
+    );
   }
 
   if (!marks.xmldata) return;
