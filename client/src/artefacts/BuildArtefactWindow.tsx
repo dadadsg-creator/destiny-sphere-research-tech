@@ -12,11 +12,17 @@
  * префикс/scope-модификаторов силы). Если каталог ещё не пришёл или
  * артефакта в нём нет — показываем сырой libname текстом без иконки,
  * не выдумывая замену.
+ *
+ * **Отклонение от оригинала (по требованию владельца, 2026-09-09)**:
+ * `art_clear` (серый фон слота, был первым/нижним из трёх слоёв —
+ * см. buildArtefactData.ts) сознательно убран из этого списочного вида —
+ * визуально только мельчил картинку артефакта. Остались 2 слоя: цветная
+ * scope-форма (сама выполняет роль рамки) и иконка поверх.
  */
 import { Window } from '../ui/Window';
 import type { TabDef } from '../ui/tabs';
 import type { LocalArtefact } from '../data/localData';
-import { artefactIconUrl, artefactScopeMaskUrl, artefactSizeColor, ARTEFACT_SLOT_FRAME_URL } from '../data/resourceIcons';
+import { artefactIconUrl, artefactScopeMaskUrl, artefactSizeColor } from '../data/resourceIcons';
 import { ResourceValue } from '../ui/ResourceValue';
 import type { BuildArtefact, BuildArtefactData } from './buildArtefactData';
 
@@ -46,7 +52,6 @@ function ArtefactRow({
       <td>
         <div class="ds-artefact-row">
           <span class="ds-artefact-row__icon-wrap">
-            <img class="ds-artefact-row__frame" src={ARTEFACT_SLOT_FRAME_URL} alt="" />
             {artefactScopeMaskUrl(art.scope) && (
               <span
                 class="ds-artefact-row__scope"

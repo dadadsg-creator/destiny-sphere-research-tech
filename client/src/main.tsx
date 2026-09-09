@@ -871,7 +871,15 @@ const TEST_LOCAL_ARTEFACTS = new Map<string, LocalArtefact>([
     'SMALL_SPHERE_PROTECTION',
     { id: 'SMALL_SPHERE_PROTECTION', idn: '2', ln: 'Малая защита сферы', description: '', bonusName: 'KADERIUM', bonusValue: '+5' },
   ],
-  // HUGE_SPHERE_PRECISION намеренно не в каталоге — проверка запасного варианта (сырой libname).
+  [
+    'SUPREME_WAR_PRECISION',
+    { id: 'SUPREME_WAR_PRECISION', idn: '3', ln: 'Колоссальная точность войны', description: '', bonusName: 'PRODIUM', bonusValue: '+30%' },
+  ],
+  // Запасной вариант (каталога локализации нет/артефакта в нём нет — сырой
+  // libname без иконки) больше не держим отдельным элементом основного
+  // демо-вида — он визуально выглядел как баг. Логика fallback'а
+  // (local?.ln ?? art.libname) достаточно простая, чтобы не требовать
+  // постоянного примера в общих тестовых данных.
 ]);
 
 // Точка входа HTML5-клиента Destiny Sphere.

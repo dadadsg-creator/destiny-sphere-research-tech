@@ -362,24 +362,16 @@
 }
 .ds-artefact-row__icon-wrap {
   position: relative;
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   flex-shrink: 0;
 }
-.ds-artefact-row__frame {
+/* Цветная scope-рамка — CSS-маска вместо Flash Color.setRGB(), см. resourceIcons.ts:artefactSizeColor(). Сама играет роль рамки — отдельный серый фон слота (art_clear) сознательно убран, см. BuildArtefactWindow.tsx. */
+.ds-artefact-row__scope {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-}
-/* Цветная scope-рамка — CSS-маска вместо Flash Color.setRGB(), см. resourceIcons.ts:artefactSizeColor(). */
-.ds-artefact-row__scope {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 78%;
-  height: 78%;
   -webkit-mask-image: var(--scope-mask);
   -webkit-mask-size: contain;
   -webkit-mask-repeat: no-repeat;
@@ -395,8 +387,8 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  max-width: 60%;
-  max-height: 60%;
+  max-width: 72%;
+  max-height: 72%;
 }
 .ds-artefact-row__name {
   min-width: 140px;

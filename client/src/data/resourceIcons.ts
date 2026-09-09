@@ -51,22 +51,18 @@ export function artefactIconUrl(postfix: string): string {
 }
 
 /**
- * Картинка артефакта — ТРИ слоя в оригинале, не один (найдено
- * декомпиляцией `artefact.lib.swf`/`frame_1/DoAction.as:createArtefact`,
- * 2026-09-09; см. подробный докстринг `buildArtefactData.ts`):
- *  1. `art_clear` — фон слота (круглая тёмная окантовка,
- *     `buildartefactclass.as:157-176`, `attachMovie` из `menu.lib.swf`).
- *  2. `SCOPE_MOV` — форма-маска по `scope` артефакта (`ArtColors.swf`,
- *     `DefineSprite_*_<SCOPE>`, например SPHERE/WAR/BUILDING/ALLIANCE),
- *     красится СПЛОШНЫМ цветом по `prefix` (размер/редкость) через
- *     Flash `Color.setRGB()` — здесь воспроизведено CSS `mask-image`
- *     (альфа-канал PNG как маска) + `background-color`, тот же эффект.
- *  3. `TYPE_MOV` — сама иконка (по `postfix`, `artefactIconUrl()`),
- *     поверх всего.
- * Живьём подтверждён топ-тир: SUPREME/"Колоссальная" → 0x9900FF (фиолетовый),
+ * Картинка артефакта — ТРИ слоя в оригинале (найдено декомпиляцией
+ * `artefact.lib.swf`/`frame_1/DoAction.as:createArtefact`, 2026-09-09;
+ * см. подробный докстринг `buildArtefactData.ts`): `art_clear` (фон
+ * слота, круглая тёмная окантовка) снизу, `SCOPE_MOV` (форма-маска по
+ * `scope`, красится СПЛОШНЫМ цветом по `prefix`/размеру через Flash
+ * `Color.setRGB()`) посередине, `TYPE_MOV` (сама иконка по `postfix`,
+ * `artefactIconUrl()`) сверху. `BuildArtefactWindow.tsx` использует
+ * только 2 верхних слоя — `art_clear` сознательно убран (см. докстринг
+ * того файла), поэтому здесь нет отдельной константы под него. Живьём
+ * подтверждён топ-тир: SUPREME/"Колоссальная" → 0x9900FF (фиолетовый),
  * ровно как в реальном скриншоте владельца.
  */
-export const ARTEFACT_SLOT_FRAME_URL = '/assets/ui/artefact-slot-frame.png';
 
 /**
  * `arr_size` из `artefact.lib.swf` (`ds/flash/`-копия, новее и полнее
