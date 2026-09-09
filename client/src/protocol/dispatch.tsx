@@ -58,6 +58,8 @@ import {
   leaveAllianceXml,
   createArmyXml,
   sendMessageXml,
+  sendZondXml,
+  buyArtefactInShopXml,
 } from './xmlBuilder';
 import { parseTabsArray, stripTabPrefix } from './tabsParser';
 import { BuildArtefactWindow } from '../artefacts/BuildArtefactWindow';
@@ -88,6 +90,17 @@ import { buildDeleteMessagesCommand, buildReadMessagesCommand } from '../mail/ma
 import { TrainUnitWindow } from '../army/TrainUnitWindow';
 import { ArmyCreationWindow } from '../army/ArmyCreationWindow';
 import { buildKickCommand } from '../alliance/allianceMemberData';
+import { WarStatisticWindow } from '../army/WarStatisticWindow';
+import { QuestWindow } from '../quests/QuestWindow';
+import { LogWindow } from '../mail/LogWindow';
+import { ArtefactStatWindow } from '../artefacts/ArtefactStatWindow';
+import { ArtDepotWindow } from '../buildings/ArtDepotWindow';
+import { ArtefactShopWindow } from '../cabinet/ArtefactShopWindow';
+import { buildBuyArtefactsCommand } from '../cabinet/artefactShopData';
+import { AuctionWindow } from '../trade/AuctionWindow';
+import { SpyingWindow } from '../spying/SpyingWindow';
+import { ZondCreateWindow } from '../spying/ZondCreateWindow';
+import { ScannerWindow } from '../spying/ScannerWindow';
 
 // --- разбор конкретных доменов, известных, но пока не подключённых к живым окнам ---
 import { parseAllianceManagement } from '../alliance/allianceData';
@@ -162,19 +175,9 @@ const PARSERS: Record<string, (xml: string) => unknown> = {
   alliancesettings: parseAllianceSettings,
   alliancepeace: parseAlliancePeaceList,
   alliancePeaceData: parseAlliancePeaceDetail,
-  archeology_artefact: parseArtDepot,
   armycalculator: parseArmyCalculator,
-  artefact_shop: parseArtefactShop,
-  arthint: parseArtefactStat,
-  auction: parseAuction,
   battleoverview: parseBattleOverview,
   battlinfo: parseBattleInfo,
-  log: parseLogWindow,
-  questmenu: parseQuestMenu,
-  spylog: parseSpyLog,
-  warcomplex: parseWarComplex,
-  spying: parseSpying,
-  zondcreate: parseZondCreate,
   cabinet: parseCabinetResponse,
   // Не портировано (см. план, «Реестр доменов»):
   // colonynavigate — colonynavigate.as не читался в Фазе 3.
@@ -673,6 +676,254 @@ function renderMailWindow(ctx: DispatchContext): void {
   );
 }
 
+/**
+ * spyingData.ts / `PN_SpyAction` (getbuildmenu-семья, `extends
+ * UA_GetBuildMenu`, требует `c`). Живьём подтверждено
+ * (`TL_SpyAction.class.php:26-31,35`): атрибут `<onbase id="">` — это
+ * comma-joined `unitname` (например "SPY_ZOND_SCOUT"), а НЕ буквальные
+ * "Z1"/"Z2", как предполагала докстрока spyingData.ts — совпадает по
+ * формату с ключом `LocalUnit.id`, поэтому зонды локализуются напрямую
+ * через `localData.value.units`. `<sendzond .../>` — без `c`
+ * (см. sendZondXml в xmlBuilder.ts).
+ */
+function renderSpying(root: Element, xml: string, ctx: DispatchContext): void {
+  const data = parseSpying(xml);
+  const units = localData.value?.units ?? new Map();
+  const zondNames = new Map<string, string>();
+  for (const z of data.allowZonds) zondNames.set(z.id, units.get(z.id)?.ln ?? z.id);
+  openWindow(
+    <SpyingWindow
+      data={data}
+      zondNames={zondNames}
+      tabs={parseTabsArray(root)}
+      onTabClick={(tabId) => sendTabClick(ctx, tabId)}
+      onClose={closeWindow}
+      onSend={(p) => {
+        const action = data.actions.find((a) => a.id === p.actionId);
+        void ctx.send(
+          sendZondXml({
+            id: p.zondId,
+            count: p.count,
+            action: p.actionId,
+            needsCoord: action?.addrAllow === '1',
+            ring: p.ring,
+            complex: p.complex,
+            sota: p.sota,
+            oneRound: p.oneRoundBattle,
+            speed: p.speedOrTime,
+            time: p.speedOrTime,
+          }),
+        );
+      }}
+    />,
+  );
+}
+
+/**
+ * zondCreateData.ts / `PN_SpyTrainUnit` (getbuildmenu-семья, требует `c`,
+ * подтверждено `debug.link.active_cell` в `trainzondunit()`,
+ * reqvestdata.as:311-324 — реальный тег `trainspyunit`, НЕ `trainzondunit`
+ * как называется сама клиентская функция-обёртка). Атрибут `id` у
+ * `<allowzond>` — подтверждено `TL_SpyTrainUnit.class.php:27-31`: это
+ * буквальный `unitname` (SPY_ZOND_SCOUT/EXPLORER), НЕ числовой `id_unit`,
+ * как предполагала докстрока zondCreateData.ts — тоже совпадает с ключом
+ * `LocalUnit.id`.
+ */
+function renderZondCreate(root: Element, xml: string, ctx: DispatchContext): void {
+  const data = parseZondCreate(xml);
+  const cellNum = ctx.activeCell;
+  const units = localData.value?.units ?? new Map();
+  const zondNames = new Map<string, string>();
+  for (const z of data.allowZond) zondNames.set(z.id, units.get(z.id)?.ln ?? z.id);
+  openWindow(
+    <ZondCreateWindow
+      data={data}
+      zondNames={zondNames}
+      tabs={parseTabsArray(root)}
+      onTabClick={(tabId) => sendTabClick(ctx, tabId)}
+      onClose={closeWindow}
+      onTrain={(id, count) => cellNum !== undefined && void ctx.send(tag('trainspyunit', { c: cellNum, count, id }))}
+    />,
+  );
+}
+
+/**
+ * scannerData.ts / `PN_SpyLogs` (getbuildmenu-семья, требует `c` для
+ * открытия/фильтра — `filterScanner()`, reqvestdata.as:73-83), но само
+ * действие "Пересканировать выбранное" — БЕЗ `c`
+ * (`<scaninriver id="{csv}"/>`, reqvestdata.as:942-946, `requestScan`,
+ * массив id сериализуется через запятую). В оригинале кнопка видна
+ * только премиум-аккаунтам (`game.getPremium()`, scannermenuclass.as:135)
+ * — источник премиум-статуса нигде не распарсен (как и в TerraformWindow/
+ * ArcheologyWindow), здесь кнопка всегда доступна — безопасный дефолт.
+ */
+function renderSpyLog(root: Element, xml: string, ctx: DispatchContext): void {
+  const data = parseSpyLog(xml);
+  openWindow(
+    <ScannerWindow
+      data={data}
+      tabs={parseTabsArray(root)}
+      onTabClick={(tabId) => sendTabClick(ctx, tabId)}
+      onClose={closeWindow}
+      onScanSelected={(ids) => void ctx.send(tag('scaninriver', { id: ids.join(',') }))}
+    />,
+  );
+}
+
+/**
+ * warFactoryData.ts — открывается автономной командой `<getwarfactory/>`
+ * (reqvestdata.as:848-852, `request_war_statistic`), НЕ через
+ * getbuildmenu-семью (класса `PN_WarComplex`/аналога среди `PN_*` нет) —
+ * `onTabClick` сознательно не подключаем, нет привязанной ячейки.
+ * `onLoad` шлёт `<trainwarunit c="{cell1,cell2,...}" id="" count=""/>`
+ * (reqvestdata.as:863-866, `load_pack_war_factory`) — ТА ЖЕ команда, что
+ * и в TrainUnitWindow, но `c` здесь — CSV выбранных ячеек-фабрик, а не
+ * `ctx.activeCell`.
+ */
+function renderWarComplex(_root: Element, xml: string, ctx: DispatchContext): void {
+  const data = parseWarComplex(xml);
+  openWindow(
+    <WarStatisticWindow
+      data={data}
+      localUnits={localData.value?.units ?? new Map()}
+      onClose={closeWindow}
+      onLoad={(cellIds, unitId, amount) =>
+        void ctx.send(tag('trainwarunit', { c: cellIds.join(','), id: unitId, count: amount }))
+      }
+    />,
+  );
+}
+
+/**
+ * questData.ts — read-only журнал заданий, без исходящих команд и без
+ * вкладок (`QuestWindowProps` не принимает ни то, ни другое). Команда
+ * открытия окна не подтверждена достоверно (см. `questData.ts` докстринг
+ * — ни одной кнопки-триггера в клиенте найти не удалось).
+ */
+function renderQuestMenu(_root: Element, xml: string, _ctx: DispatchContext): void {
+  const data = parseQuestMenu(xml);
+  openWindow(<QuestWindow data={data} onClose={closeWindow} />);
+}
+
+/**
+ * logData.ts — общий попап отчёта, без вкладок и исходящих команд.
+ * "Копировать в буфер" — чисто клиентское действие (`logwindow.as:87-88`,
+ * `game.copyToBuffer(REPORT_FIELD.text)` — AS2 `.text` отдаёт ПЛОСКИЙ
+ * текст без разметки, не `.htmlText`), воспроизведено через
+ * `textContent` промежуточного `<div>`, не сырой `textData` с тегами.
+ */
+function renderLogWindow(_root: Element, xml: string, _ctx: DispatchContext): void {
+  const data = parseLogWindow(xml);
+  openWindow(
+    <LogWindow
+      data={data}
+      onClose={closeWindow}
+      onCopy={() => {
+        const tmp = document.createElement('div');
+        tmp.innerHTML = data.textData;
+        void navigator.clipboard?.writeText(tmp.textContent ?? '');
+      }}
+    />,
+  );
+}
+
+/**
+ * artefactStatData.ts — открывается автономной командой `<arthint/>`
+ * (reqvestdata.as:843-847, `request_art_statistic`), не через
+ * getbuildmenu-семью — `onTabClick` не подключаем. Клик по ячейке в
+ * таблице — ДРУГАЯ, уже подключённая команда `getbuildmenu c=""
+ * tab="BuildingArtefact"` (renderBuildArtefact), не связана с текущим
+ * "гнездом" вкладок этого окна. `isPremium` — источник статуса нигде не
+ * распарсен, безопасный дефолт false (как в TerraformWindow/
+ * ArcheologyWindow).
+ */
+function renderArtefactStat(_root: Element, xml: string, ctx: DispatchContext): void {
+  const data = parseArtefactStat(xml);
+  openWindow(
+    <ArtefactStatWindow
+      data={data}
+      isPremium={false}
+      onClose={closeWindow}
+      onCellClick={(cellNum) => void ctx.send(tag('getbuildmenu', { c: cellNum, tab: 'BuildingArtefact' }))}
+    />,
+  );
+}
+
+/**
+ * artDepotData.ts / `PN_ArcheologyArtefact` (getbuildmenu-семья, требует
+ * `c` для открытия/сортировки — подтверждено `artdepotsort()`,
+ * reqvestdata.as:868-871), но обе команды окна — БЕЗ `c`:
+ * `<dropartefact id="{csv}"/>` (reqvestdata.as:828-834, `delArtFromDepot`)
+ * и `<artefactactivate id=""/>` (reqvestdata.as:947-950, `artActivate`).
+ * Фильтр по типу/размеру/scope (`data.filter`) не отрисован в
+ * `ArtDepotWindow` (пробел Фазы 3) — `artdepotsort()` сюда сознательно не
+ * подключён.
+ */
+function renderArtDepot(root: Element, xml: string, ctx: DispatchContext): void {
+  const data = parseArtDepot(xml);
+  openWindow(
+    <ArtDepotWindow
+      entries={data.entries}
+      tabs={parseTabsArray(root)}
+      onTabClick={(tabId) => sendTabClick(ctx, tabId)}
+      onClose={closeWindow}
+      onDeleteSelected={(ids) => void ctx.send(tag('dropartefact', { id: ids.join(',') }))}
+      onActivate={(id) => void ctx.send(tag('artefactactivate', { id }))}
+    />,
+  );
+}
+
+/**
+ * artefactShopData.ts — магазин артефактов ЛИЧНОГО КАБИНЕТА, не
+ * getbuildmenu-семьи. `onBuy` переиспользует уже готовый
+ * `buyArtefactInShopXml()` (requestDataCabinet.as:61-88 `buyArtInShop` —
+ * единственная команда кабинета, НЕ обёрнутая в `<cabinetRequest>`, см.
+ * xmlBuilder.ts). Открывается изнутри домена `cabinet`, который в этом
+ * заходе ещё не подключён к живым командам (см. план) — точка входа пока
+ * недостижима вживую, но окно и команда уже готовы (тот же принцип, что
+ * ранее с otpusk/allianceprivatepeace до появления кнопки открытия).
+ */
+function renderArtefactShop(_root: Element, xml: string, ctx: DispatchContext): void {
+  const data = parseArtefactShop(xml);
+  openWindow(
+    <ArtefactShopWindow
+      data={data}
+      onClose={closeWindow}
+      onBuy={(cart, concurrency) => {
+        const cmd = buildBuyArtefactsCommand(cart, concurrency);
+        void ctx.send(buyArtefactInShopXml(cmd.artefacts));
+      }}
+    />,
+  );
+}
+
+/**
+ * auctionData.ts / `PN_AuctionPanel` (getbuildmenu-семья, требует `c` для
+ * открытия). `onBuy` → `<buy id_trade="" newprice="" anonym="0|1"/>`
+ * (reqvestdata.as:836-841, `buy_lot`) — `anonym` зависит от
+ * несинхронизированного клиентского флага `debug.link.BYU_ANONYMOUSLY`
+ * (отдельная галочка "анонимно"), здесь безопасный дефолт "0"
+ * (неанонимно). `lot.tradeBy` — то же машинное имя ресурса, что и ключи
+ * `combres` (`debug.link.resourse_player` оригинала — та же структура).
+ */
+function renderAuction(root: Element, xml: string, ctx: DispatchContext): void {
+  const data = parseAuction(xml);
+  const res = combRes.value;
+  const playerResourceByName = new Map<string, number>(
+    Object.entries(res).map(([name, entry]) => [name, entry?.current ?? 0]),
+  );
+  openWindow(
+    <AuctionWindow
+      lots={data.lots}
+      playerResourceByName={playerResourceByName}
+      tabs={parseTabsArray(root)}
+      onTabClick={(tabId) => sendTabClick(ctx, tabId)}
+      onClose={closeWindow}
+      onBuy={(lotId, price) => void ctx.send(tag('buy', { id_trade: lotId, newprice: price, anonym: 0 }))}
+    />,
+  );
+}
+
 const RENDERERS: Record<string, (root: Element, xml: string, ctx: DispatchContext) => void> = {
   getbuildinfo: renderBuildInfo,
   buildingartefact: renderBuildArtefact,
@@ -698,6 +949,16 @@ const RENDERERS: Record<string, (root: Element, xml: string, ctx: DispatchContex
   armycreation: renderArmyCreation,
   messageoverview: renderMailList,
   message: renderMailMessage,
+  spying: renderSpying,
+  zondcreate: renderZondCreate,
+  spylog: renderSpyLog,
+  warcomplex: renderWarComplex,
+  questmenu: renderQuestMenu,
+  log: renderLogWindow,
+  arthint: renderArtefactStat,
+  archeology_artefact: renderArtDepot,
+  artefact_shop: renderArtefactShop,
+  auction: renderAuction,
 };
 
 /**

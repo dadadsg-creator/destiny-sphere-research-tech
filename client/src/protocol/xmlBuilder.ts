@@ -166,3 +166,36 @@ export function createArmyXml(name: string, units: { id: string; count: number }
   const unitsXml = units.map((u) => tag('unit', { id: u.id, count: u.count })).join('');
   return `<createarmy><armyname><![CDATA[${name}]]></armyname>${unitsXml}</createarmy>`;
 }
+
+/**
+ * spying/spyingData.ts + spying_class.as:196-274 (send_zond,
+ * reqvestdata.as:987-999) — ветвление подтверждено буквально:
+ * чекбокс "один раунд боя" в оригинале существует, только когда действие
+ * требует координат цели (`allow_coord`/`needsCoord`), поэтому именно
+ * тогда отправляются `ring`/`compl`/`sota`/`oneround`/`sd` (скорость), а
+ * иначе — только `time`; оба набора никогда не шлются одновременно.
+ */
+export function sendZondXml(cmd: {
+  id: string;
+  count: number;
+  action: string;
+  needsCoord: boolean;
+  ring: string;
+  complex: number;
+  sota: number;
+  oneRound: boolean;
+  speed: number;
+  time: number;
+}): string {
+  const attrs: Record<string, string | number> = { id: cmd.id, count: cmd.count, action: cmd.action };
+  if (cmd.needsCoord) {
+    attrs.ring = cmd.ring;
+    attrs.compl = cmd.complex;
+    attrs.sota = cmd.sota;
+    attrs.oneround = cmd.oneRound ? 1 : 0;
+    attrs.sd = cmd.speed;
+  } else {
+    attrs.time = cmd.time;
+  }
+  return tag('sendzond', attrs);
+}

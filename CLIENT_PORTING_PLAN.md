@@ -1765,6 +1765,80 @@ Preact** (решение владельца) — `client/` до этого не 
     лог-заглушками) — теперь полностью в `RENDERERS`. Проверено
     синтетическим `?screen=mail` скриншотом без визуальных регрессий.
 
+- [x] **Ещё 10 доменов (2026-09-09): `SpyAction`(`spying`), `SpyTrainUnit`
+  (`zondcreate`), `SpyLogs`(`spylog`), `warcomplex`, `questmenu`, `log`,
+  `arthint`, `ArcheologyArtefact`(`archeology_artefact`), `artefact_shop`,
+  `AuctionPanel`(`auction`)**.
+  - **Находка, отменяющая две неопределённости из докстрок Фазы 3**:
+    декомпиляцией `TL_SpyAction.class.php:26-31,35` и
+    `TL_SpyTrainUnit.class.php:27-31` подтверждено, что `id` зонда что в
+    `<onbase id="">` (spying), что в `<allowzond id="">` (zondcreate) —
+    это буквальный `unitname` (`SPY_ZOND_SCOUT`/`SPY_ZOND_EXPLORER`), А
+    НЕ "Z1"/"Z2" или числовой `id_unit`, как предполагали докстроки
+    `spyingData.ts`/`zondCreateData.ts` в Фазе 3 — совпадает с ключом
+    `LocalUnit.id`, поэтому зонды локализуются напрямую через
+    `localData.value.units` (новый общий паттерн `zondNames`, инлайн в
+    `dispatch.tsx`, отдельную функцию заводить не стали).
+  - `spying` → `SpyingWindow` — `<sendzond id="" count="" action=""
+    ...>` без `c` (reqvestdata.as:987-999, `send_zond`). Ветвление
+    ring/compl/sota/oneround/sd ПРОТИВ только-`time` подтверждено
+    `spying_class.as:196-274`: чекбокс "один раунд" физически существует
+    в оригинале только когда действие требует координат (`allow_coord`)
+    — новая `sendZondXml()` в `xmlBuilder.ts`.
+  - `zondcreate` → `ZondCreateWindow` — `<trainspyunit c="" count=""
+    id=""/>` (reqvestdata.as:311-324, ВАЖНО: реальный тег
+    `trainspyunit`, не `trainzondunit`, как называется сама клиентская
+    функция-обёртка), требует `c`.
+  - `spylog` → `ScannerWindow` — `<scaninriver id="{csv}"/>`
+    (reqvestdata.as:942-946, `requestScan`), без `c`. Кнопка в оригинале
+    гейтится премиум-статусом (`scannermenuclass.as:135`) — источник
+    статуса нигде не распарсен, здесь кнопка всегда доступна (как и
+    `TerraformWindow`/`ArcheologyWindow` с `isPremium=false`).
+  - `warcomplex` → `WarStatisticWindow` — открывается автономной
+    `<getwarfactory/>` (reqvestdata.as:848-852), НЕ через getbuildmenu-
+    семью (класса `PN_WarComplex` не существует) — вкладки не
+    подключены. `onLoad` → `<trainwarunit c="{cell1,cell2,...}" id=""
+    count=""/>` (reqvestdata.as:863-866, `load_pack_war_factory`) — ТА
+    ЖЕ команда, что и одиночная тренировка юнита, но `c` здесь — CSV
+    нескольких выбранных ячеек-фабрик, не активная ячейка окна.
+  - `questmenu` → `QuestWindow` — read-only, без исходящих команд и без
+    вкладок (сам `QuestWindowProps` их не принимает).
+  - `log` → `LogWindow` — без вкладок/команд, "Копировать в буфер"
+    воспроизводит `logwindow.as:87-88` (`REPORT_FIELD.text` — AS2
+    plain-text геттер, не HTML) через `textContent` промежуточного
+    `<div>`, а не сырой HTML с тегами.
+  - `arthint` → `ArtefactStatWindow` — открывается автономной
+    `<arthint/>` (reqvestdata.as:843-847), не getbuildmenu-семья. Клик
+    по ячейке — уже подключённая ДРУГАЯ команда (`getbuildmenu
+    tab="BuildingArtefact"`, `renderBuildArtefact`), не связана с
+    "гнездом" вкладок этого окна.
+  - `archeology_artefact` → `ArtDepotWindow` — getbuildmenu-семья
+    (`PN_ArcheologyArtefact`, требует `c` для открытия/сортировки), но
+    обе живые команды окна без `c`: `<dropartefact id="{csv}"/>`
+    (reqvestdata.as:828-834) и `<artefactactivate id=""/>`
+    (reqvestdata.as:947-950).
+  - `artefact_shop` → `ArtefactShopWindow` — переиспользует уже готовый
+    `buyArtefactInShopXml()`. Открывается изнутри домена `cabinet`,
+    который этим заходом ещё не подключён (см. следующий пункт объёма)
+    — точка входа пока недостижима вживую, окно и команда уже готовы
+    (тот же принцип, что раньше с `otpusk`/`allianceprivatepeace` до
+    появления кнопки).
+  - `auction` → `AuctionWindow` — getbuildmenu-семья (`PN_AuctionPanel`).
+    `onBuy` → `<buy id_trade="" newprice="" anonym="0|1"/>`
+    (reqvestdata.as:836-841, `buy_lot`), `anonym` — безопасный дефолт
+    "0" (сам клиентский флаг "анонимно" нигде не синхронизирован).
+    `playerResourceByName` строится прямо из `combres` — подтверждено,
+    что `lot.tradeBy` использует те же машинные имена ресурсов.
+  - Все 10 проверены синтетическими `?screen=` скриншотами без
+    визуальных регрессий (эти экраны вызывают компоненты напрямую с
+    тестовыми данными, минуя `dispatch.tsx` — риск регрессии от правок
+    диспетчера тем самым низкий, но проверка сохранена для консистентности).
+  - **Оставлено вне объёма**: домен `cabinet` (3 под-действия
+    `enter`/`submenuopen`/`operationStatistic`, отдельная форма
+    `SubmenuForm`, `buyGoldMode` по платформе) — заметно больше по
+    объёму, чем остальные (архитектурно ближе к почте, чем к обычному
+    getbuildmenu-домену), не пытались закрыть в этом же заходе.
+
 ### Фаза 4 — Проверка на паритет (объём: средне, но не сокращать)
 
 - [ ] Поднять тестовый/dev-мир (или использовать существующий, если
