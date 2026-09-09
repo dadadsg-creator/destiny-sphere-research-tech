@@ -12,6 +12,7 @@ import type { SellCommand } from '../trade/tradeData';
 import type { TransferCommand } from '../trade/transferData';
 import type { ArcheologyTeamCommand } from '../world/archeologyData';
 import type { GetPPeaceCommand } from '../alliance/privatePeaceData';
+import type { SendColonyModuleCommand } from '../world/colonizationData';
 
 export function tag(name: string, attrs: Record<string, string | number | boolean | undefined>): string {
   let out = `<${name}`;
@@ -113,4 +114,17 @@ export function archeologyTeamXml(cmd: ArcheologyTeamCommand): string {
  */
 export function getPPeaceXml(cmd: GetPPeaceCommand): string {
   return tag('getprivatepeace', { nick: cmd.targetName, definition: cmd.uid, reason: cmd.reason });
+}
+
+/**
+ * world/colonizationData.ts:72-80 — подтверждено `reqvestdata.as:
+ * 565-568` (`sendColonyModule`): `<colonize id_module="" destination="">
+ * <colonyname><![CDATA[name]]></colonyname></colonize>` — единственная
+ * ещё, помимо `sendmessage`, команда с вложенным CDATA-child, без `c`.
+ */
+export function colonizeXml(cmd: SendColonyModuleCommand): string {
+  return (
+    `<colonize id_module="${escapeXmlAttr(cmd.idModule)}" destination="${escapeXmlAttr(cmd.destination)}">` +
+    `<colonyname><![CDATA[${cmd.colonyName}]]></colonyname></colonize>`
+  );
 }

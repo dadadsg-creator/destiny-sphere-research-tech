@@ -46,7 +46,7 @@ import { openWindow, closeWindow, pushPopup, popPopup } from '../ui/windowStore'
 import { InfoPopup } from '../ui/Popup';
 import { BuildInfoWindow } from '../buildings/BuildInfoWindow';
 import { parseInfoBuild } from '../buildings/buildInfoData';
-import { tag, sellXml, transferResourceXml, archeologyTeamXml, getPPeaceXml } from './xmlBuilder';
+import { tag, sellXml, transferResourceXml, archeologyTeamXml, getPPeaceXml, colonizeXml } from './xmlBuilder';
 import { parseTabsArray, stripTabPrefix } from './tabsParser';
 import { BuildArtefactWindow } from '../artefacts/BuildArtefactWindow';
 import { TerraformWindow } from '../world/TerraformWindow';
@@ -64,6 +64,11 @@ import { PrivatePeaceWindow } from '../alliance/PrivatePeaceWindow';
 import { PowerShieldWindow } from '../spying/PowerShieldWindow';
 import { ProtectShieldWindow } from '../spying/ProtectShieldWindow';
 import { ResearchWindow } from '../science/ResearchWindow';
+import { ColonizationWindow } from '../world/ColonizationWindow';
+import { buildSendColonyModuleCommand } from '../world/colonizationData';
+import { ArmyOverviewWindow } from '../army/ArmyOverviewWindow';
+import { AllianceMemberWindow } from '../alliance/AllianceMemberWindow';
+import { buildKickCommand } from '../alliance/allianceMemberData';
 
 // --- разбор конкретных доменов, известных, но пока не подключённых к живым окнам ---
 import { parseAllianceManagement } from '../alliance/allianceData';
@@ -136,21 +141,17 @@ export interface DispatchContext {
  */
 const PARSERS: Record<string, (xml: string) => unknown> = {
   alliancemanagement: parseAllianceManagement,
-  allianceoverview: parseAllianceOverview,
   alliancesettings: parseAllianceSettings,
   alliancepeace: parseAlliancePeaceList,
   alliancePeaceData: parseAlliancePeaceDetail,
   archeology_artefact: parseArtDepot,
   armycreation: parseArmyCreation,
-  armyoverview: parseArmyOverview,
   armycalculator: parseArmyCalculator,
   artefact_shop: parseArtefactShop,
   arthint: parseArtefactStat,
   auction: parseAuction,
   battleoverview: parseBattleOverview,
   battlinfo: parseBattleInfo,
-  colonize: parseColonizationCenter,
-  colonizestatus: parseColonizationCenter,
   createmessage: parseCreateNewMail,
   log: parseLogWindow,
   messageoverview: parseMailList,
@@ -478,6 +479,60 @@ function renderResearch(root: Element, xml: string, ctx: DispatchContext): void 
   );
 }
 
+/**
+ * colonizationData.ts — <colonize id_module="" destination=""><colonyname>
+ * <![CDATA[name]]></colonyname></colonize> (reqvestdata.as:565-568) и
+ * <cancelcolonize id_module=""/> (reqvestdata.as:570-574), `id_module`
+ * берём из уже разобранных данных (`data.idModule`), не спрашиваем окно
+ * ещё раз — ни одна из двух команд не требует `c`.
+ */
+function renderColonization(root: Element, xml: string, ctx: DispatchContext): void {
+  const data = parseColonizationCenter(xml);
+  openWindow(
+    <ColonizationWindow
+      data={data}
+      tabs={parseTabsArray(root)}
+      onTabClick={(tabId) => sendTabClick(ctx, tabId)}
+      onClose={closeWindow}
+      onSend={(destination, name) =>
+        void ctx.send(colonizeXml(buildSendColonyModuleCommand(data.idModule ?? '', destination, name)))
+      }
+      onCancel={() => void ctx.send(tag('cancelcolonize', { id_module: data.idModule ?? '' }))}
+    />,
+  );
+}
+
+/** armyData.ts — <dismissArmies/> (reqvestdata.as:104-108), без параметров и без `c`. */
+function renderArmyOverview(root: Element, xml: string, ctx: DispatchContext): void {
+  const data = parseArmyOverview(xml);
+  openWindow(
+    <ArmyOverviewWindow
+      overview={data}
+      tabs={parseTabsArray(root)}
+      onTabClick={(tabId) => sendTabClick(ctx, tabId)}
+      onClose={closeWindow}
+      onDismissAll={() => void ctx.send(tag('dismissArmies', {}))}
+    />,
+  );
+}
+
+/** allianceMemberData.ts — <expelalliance id_alliance="" id_userinstance=""/> (reqvestdata.as:906-910), без `c`. */
+function renderAllianceOverview(root: Element, xml: string, ctx: DispatchContext): void {
+  const data = parseAllianceOverview(xml);
+  openWindow(
+    <AllianceMemberWindow
+      data={data}
+      tabs={parseTabsArray(root)}
+      onTabClick={(tabId) => sendTabClick(ctx, tabId)}
+      onClose={closeWindow}
+      onKick={(userId) => {
+        const cmd = buildKickCommand(data.idAlliance ?? '', userId);
+        void ctx.send(tag('expelalliance', { id_alliance: cmd.idAlliance, id_userinstance: cmd.idUserinstance }));
+      }}
+    />,
+  );
+}
+
 const RENDERERS: Record<string, (root: Element, xml: string, ctx: DispatchContext) => void> = {
   getbuildinfo: renderBuildInfo,
   buildingartefact: renderBuildArtefact,
@@ -493,6 +548,10 @@ const RENDERERS: Record<string, (root: Element, xml: string, ctx: DispatchContex
   powershild: renderPowerShield,
   protectedfield: renderProtectShield,
   research: renderResearch,
+  colonize: renderColonization,
+  colonizestatus: renderColonization,
+  armyoverview: renderArmyOverview,
+  allianceoverview: renderAllianceOverview,
 };
 
 /**

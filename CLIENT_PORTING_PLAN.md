@@ -1632,6 +1632,42 @@ Preact** (решение владельца) — `client/` до этого не 
     три подтверждены синтетическими `?screen=` скриншотами без
     визуальных регрессий и построчной сверкой с `reqvestdata.as`.
 
+- [x] **Иконки ресурсов ещё в трёх местах (2026-09-09, по замечанию
+  владельца после скриншотов)** — `ResourceValue`/`ResourceList` не
+  применялся везде, где раньше был сырой `K:N:S:F:P`-текст:
+  - `ProtectShieldWindow` — цена восстановления защитного поля.
+  - `ResearchWindow` — ветки науки получили СВОЙ набор иконок
+    (`resourceIcons.ts:researchBranchIconUrl`), извлечён из
+    `client-assets/tree_scients_tree` (библиотека дерева науки,
+    упомянутая, но не портированная в `researchData.ts` — сам набор
+    иконок 23×23 годится и без дерева). 5 из 7 веток совпадают по
+    имени с обычными ресурсами, но СОЗНАТЕЛЬНО не переиспользуют
+    общий `resourceIconUrl()` — свой визуальный стиль библиотеки,
+    смешивать с `menu.lib` было бы непоследовательно. TRADE/SPYING —
+    единственный источник иконок для этих двух веток вообще.
+  - `BuildInfoWindow` — стоимость апгрейда здания (найдено попутно тем
+    же `grep` по кодовой базе, не было в изначальной жалобе владельца).
+
+- [x] **Ещё 3 домена (2026-09-09): `ColonizePanel`, `ArmyOverview`,
+  `AllianceOverview`**.
+  - `ColonizePanel`/`colonize`/`colonizestatus` → `ColonizationWindow` —
+    `<colonize id_module="" destination=""><colonyname><![CDATA[name]]>
+    </colonyname></colonize>` (`reqvestdata.as:565-568`, третья, помимо
+    `sendmessage`/уже реализованных, команда с вложенным CDATA-полем,
+    новая `colonizeXml()` в `xmlBuilder.ts`) и `<cancelcolonize
+    id_module=""/>`. `id_module` берём из уже разобранного ответа
+    (`data.idModule`), не из колбэка окна — окно про него не знает.
+  - `ArmyOverview`/`armyoverview` → `ArmyOverviewWindow` —
+    `<dismissArmies/>` (`reqvestdata.as:104-108`), без параметров.
+  - `AllianceOverview`/`allianceoverview` → `AllianceMemberWindow` —
+    `<expelalliance id_alliance="" id_userinstance=""/>`
+    (`reqvestdata.as:906-910`); `buildKickCommand()` возвращает поля
+    `idAlliance`/`idUserinstance` (camelCase) — сериализация сделана
+    инлайн в `dispatch.tsx` (2 поля, отдельную функцию в `xmlBuilder.ts`
+    заводить не стали).
+  - Все три без `c`. Проверено синтетическими `?screen=` скриншотами
+    без визуальных регрессий.
+
 ### Фаза 4 — Проверка на паритет (объём: средне, но не сокращать)
 
 - [ ] Поднять тестовый/dev-мир (или использовать существующий, если
