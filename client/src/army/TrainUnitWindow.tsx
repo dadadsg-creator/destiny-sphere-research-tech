@@ -19,6 +19,7 @@ import { Window } from '../ui/Window';
 import { Stepper } from '../ui/Stepper';
 import type { TabDef } from '../ui/tabs';
 import { ResourceList, type ResourceCost } from '../ui/ResourceValue';
+import { unitIconUrl } from '../data/resourceIcons';
 import type { TrainUnitData } from './trainUnitData';
 import type { LocalUnit } from '../data/localData';
 
@@ -64,7 +65,12 @@ export function TrainUnitWindow({
             const count = counts[unit.idUnit] ?? 0;
             return (
               <tr key={unit.idUnit}>
-                <td>{local?.ln ?? unit.idName}</td>
+                <td>
+                  <div class="ds-artefact-row">
+                    <img class="ds-unit-icon" src={unitIconUrl(unit.idName)} alt="" />
+                    <span>{local?.ln ?? unit.idName}</span>
+                  </div>
+                </td>
                 <td>
                   {local?.attack ?? '?'} / {local?.defence ?? '?'}
                 </td>

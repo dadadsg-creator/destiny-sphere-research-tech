@@ -39,6 +39,18 @@ export function resourceIconUrl(name: string): string {
 }
 
 /**
+ * Иконка боевого юнита — `public/assets/units/<unitname>.png`, уже
+ * извлечена в более ранней фазе из `war_units.lib.swf` (`game.getLibrary(
+ * 2, race)` → "unitlib") и используется PixiJS battle-рендерером
+ * (`battle/battleRenderer.ts`) — тот же путь, тот же набор ~95 машинных
+ * имён, переиспользуем здесь как обычный `<img>` для `TrainUnitWindow`/
+ * `ArmyCreationWindow` (раньше юниты показывались без картинки вовсе).
+ */
+export function unitIconUrl(unitname: string): string {
+  return `/assets/units/${unitname}.png`;
+}
+
+/**
  * Иконка артефакта — извлечена из `client-assets/artefact.lib/sprites/
  * DefineSprite_*_<POSTFIX>/1.png`, ключ — ИМЕННО `postfix` артефакта
  * (`<artefact prefix="" scope="" postfix=""/>`), не полный libname:

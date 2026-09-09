@@ -166,6 +166,11 @@ const TEST_TABS_CREATE: TabDef[] = [
 ];
 
 // Синтетические данные для проверки ArmyCreationWindow (?screen=army-create).
+// Полный ростер боевых юнитов (`war_units.lib.swf`) — под сотню машинных
+// имён, здесь используется 10 с подтверждёнными живой БД (2026-09-09,
+// ds_unit/ds_localizedtextlanguage) русскими названиями — раньше в
+// тестовых данных было только 3 юнита, что заметно меньше, чем в реальной
+// игре (замечание владельца).
 const TEST_ARMY_CREATION: ArmyCreationData = {
   cur: 3,
   max: 10,
@@ -173,6 +178,13 @@ const TEST_ARMY_CREATION: ArmyCreationData = {
     { id: '3', libname: 'SOLDIER', amount: 500, prodoweight: 0 },
     { id: '9', libname: 'TANK', amount: 40, prodoweight: 2 },
     { id: '7', libname: 'GUARD', amount: 120, prodoweight: 0 },
+    { id: '11', libname: 'SNIPER', amount: 60, prodoweight: 1 },
+    { id: '12', libname: 'KNIGHT', amount: 25, prodoweight: 3 },
+    { id: '13', libname: 'GLADIATOR', amount: 15, prodoweight: 4 },
+    { id: '14', libname: 'GRENADIER', amount: 80, prodoweight: 1 },
+    { id: '15', libname: 'VETERAN', amount: 10, prodoweight: 5 },
+    { id: '16', libname: 'CRUISER', amount: 8, prodoweight: 6 },
+    { id: '17', libname: 'DESTROYER', amount: 4, prodoweight: 8 },
   ],
 };
 
@@ -216,6 +228,83 @@ const TEST_TRAIN_UNIT: TrainUnitData = {
       endDate: null,
       upkeep: { kad: 2, nano: 0, energy: 1, food: 2, prod: 0, work: 0 },
     },
+    {
+      idName: 'SNIPER',
+      idUnit: '11',
+      type: null,
+      sctarg: null,
+      sccur: null,
+      avail: '1',
+      inProgress: 0,
+      endDate: null,
+      upkeep: { kad: 2, nano: 1, energy: 1, food: 1, prod: 0, work: 0 },
+    },
+    {
+      idName: 'KNIGHT',
+      idUnit: '12',
+      type: null,
+      sctarg: null,
+      sccur: null,
+      avail: '1',
+      inProgress: 0,
+      endDate: null,
+      upkeep: { kad: 6, nano: 3, energy: 4, food: 2, prod: 2, work: 0 },
+    },
+    {
+      idName: 'GLADIATOR',
+      idUnit: '13',
+      type: null,
+      sctarg: null,
+      sccur: null,
+      avail: '1',
+      inProgress: 0,
+      endDate: null,
+      upkeep: { kad: 8, nano: 4, energy: 6, food: 3, prod: 3, work: 0 },
+    },
+    {
+      idName: 'GRENADIER',
+      idUnit: '14',
+      type: null,
+      sctarg: null,
+      sccur: null,
+      avail: '1',
+      inProgress: 0,
+      endDate: null,
+      upkeep: { kad: 3, nano: 1, energy: 2, food: 2, prod: 0, work: 0 },
+    },
+    {
+      idName: 'VETERAN',
+      idUnit: '15',
+      type: null,
+      sctarg: null,
+      sccur: null,
+      avail: '1',
+      inProgress: 0,
+      endDate: null,
+      upkeep: { kad: 10, nano: 5, energy: 5, food: 4, prod: 3, work: 0 },
+    },
+    {
+      idName: 'CRUISER',
+      idUnit: '16',
+      type: null,
+      sctarg: null,
+      sccur: null,
+      avail: '1',
+      inProgress: 0,
+      endDate: null,
+      upkeep: { kad: 15, nano: 8, energy: 10, food: 2, prod: 6, work: 0 },
+    },
+    {
+      idName: 'DESTROYER',
+      idUnit: '17',
+      type: null,
+      sctarg: null,
+      sccur: null,
+      avail: '0',
+      inProgress: 0,
+      endDate: null,
+      upkeep: { kad: 20, nano: 12, energy: 14, food: 3, prod: 9, work: 0 },
+    },
   ],
 };
 const TEST_LOCAL_UNITS = new Map<string, LocalUnit>([
@@ -255,7 +344,7 @@ const TEST_LOCAL_UNITS = new Map<string, LocalUnit>([
     'GUARD',
     {
       id: 'GUARD',
-      ln: 'Страж',
+      ln: 'Стражник',
       level: '2',
       race: '1',
       attack: '30%',
@@ -266,6 +355,34 @@ const TEST_LOCAL_UNITS = new Map<string, LocalUnit>([
       description: '',
       attrs: {},
     },
+  ],
+  [
+    'SNIPER',
+    { id: 'SNIPER', ln: 'Снайпер', level: '2', race: '1', attack: '65%', defence: '15%', damageMin: '25', damageMax: '35', hitpoints: '20', description: '', attrs: {} },
+  ],
+  [
+    'KNIGHT',
+    { id: 'KNIGHT', ln: 'Рыцарь', level: '4', race: '1', attack: '70%', defence: '65%', damageMin: '50', damageMax: '70', hitpoints: '300', description: '', attrs: {} },
+  ],
+  [
+    'GLADIATOR',
+    { id: 'GLADIATOR', ln: 'Гладиатор', level: '5', race: '1', attack: '85%', defence: '55%', damageMin: '70', damageMax: '100', hitpoints: '350', description: '', attrs: {} },
+  ],
+  [
+    'GRENADIER',
+    { id: 'GRENADIER', ln: 'Гренадёр', level: '3', race: '1', attack: '60%', defence: '35%', damageMin: '35', damageMax: '55', hitpoints: '90', description: '', attrs: {} },
+  ],
+  [
+    'VETERAN',
+    { id: 'VETERAN', ln: 'Ветеран', level: '6', race: '1', attack: '90%', defence: '75%', damageMin: '90', damageMax: '130', hitpoints: '400', description: '', attrs: {} },
+  ],
+  [
+    'CRUISER',
+    { id: 'CRUISER', ln: 'Крейсер', level: '7', race: '1', attack: '95%', defence: '80%', damageMin: '150', damageMax: '220', hitpoints: '900', description: '', attrs: {} },
+  ],
+  [
+    'DESTROYER',
+    { id: 'DESTROYER', ln: 'Эсминец', level: '8', race: '1', attack: '99%', defence: '85%', damageMin: '220', damageMax: '320', hitpoints: '1400', description: '', attrs: {} },
   ],
 ]);
 
@@ -591,10 +708,13 @@ const TEST_ALLIANCE_OWN: AllianceManagementData = {
   inAlliance: true,
   own: { id: '10', name: 'Наш альянс', tag: 'OUR', religion: null, status: 'LEADER', leave: '1' },
 };
+// Название/тег — реальный альянс с мира orion (ds_alliance, сверено с
+// живой БД 2026-09-09), не выдуманное "Чужой альянс [FRN]" (замечание
+// владельца — placeholder звучал как бессмыслица).
 const TEST_ALLIANCE_JOIN: AllianceManagementData = {
   inAlliance: false,
   alliancesToJoin: [
-    { id: '20', name: 'Чужой альянс', tag: 'FRN', leader: 'SomeLeader' },
+    { id: '2589', name: 'ORION', tag: 'ORION', leader: 'SomeLeader' },
   ],
 };
 

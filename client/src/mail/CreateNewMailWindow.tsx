@@ -5,7 +5,9 @@
  * выделения через Selection.getBeginIndex/getEndIndex — в браузере для
  * простого <textarea> это не так прямолинейно; полноценный rich-text
  * редактор сознательно не делается, это визуальная полировка вне рамок
- * протокол-ориентированного переноса).
+ * протокол-ориентированного переноса). "Ж"/"К" — Жирный/Курсив (как
+ * "B"/"I" в англоязычном интерфейсе), с подсказкой по наведению — сами
+ * буквы неочевидны без контекста (замечание владельца, 2026-09-09).
  */
 import { useState } from 'preact/hooks';
 import { Window } from '../ui/Window';
@@ -81,9 +83,15 @@ export function CreateNewMailWindow({ data, isVk, tabs, onTabClick, onClose, onS
           onInput={(e) => setBody((e.target as HTMLTextAreaElement).value)}
         />
       </div>
-      <button onClick={() => setBody((b) => `<b>${b}</b>`)}>Ж</button>
-      <button onClick={() => setBody((b) => `<i>${b}</i>`)}>К</button>
-      <button onClick={() => setBody((b) => `<a href="" target="blank">${b}</a>`)}>Ссылка</button>
+      <button title="Жирный — обернуть весь текст в <b>" style={{ fontWeight: 'bold' }} onClick={() => setBody((b) => `<b>${b}</b>`)}>
+        Ж
+      </button>
+      <button title="Курсив — обернуть весь текст в <i>" style={{ fontStyle: 'italic' }} onClick={() => setBody((b) => `<i>${b}</i>`)}>
+        К
+      </button>
+      <button title="Обернуть весь текст в ссылку <a>" onClick={() => setBody((b) => `<a href="" target="blank">${b}</a>`)}>
+        Ссылка
+      </button>
       <button onClick={handleSend}>Отправить</button>
     </Window>
   );

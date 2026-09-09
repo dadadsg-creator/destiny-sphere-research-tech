@@ -18,6 +18,7 @@ import { Stepper } from '../ui/Stepper';
 import type { TabDef } from '../ui/tabs';
 import type { ArmyCreationData } from './armyCreationData';
 import type { LocalUnit } from '../data/localData';
+import { unitIconUrl } from '../data/resourceIcons';
 
 export interface ArmyCreationWindowProps {
   data: ArmyCreationData;
@@ -64,7 +65,12 @@ export function ArmyCreationWindow({ data, localUnits, tabs, onTabClick, onClose
         <tbody>
           {data.units.map((unit) => (
             <tr key={unit.id}>
-              <td>{localUnits?.get(unit.libname)?.ln ?? unit.libname}</td>
+              <td>
+                <div class="ds-artefact-row">
+                  <img class="ds-unit-icon" src={unitIconUrl(unit.libname)} alt="" />
+                  <span>{localUnits?.get(unit.libname)?.ln ?? unit.libname}</span>
+                </div>
+              </td>
               <td>{unit.amount}</td>
               <td>
                 <Stepper

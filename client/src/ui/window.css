@@ -206,6 +206,20 @@
   text-align: right;
 }
 
+/* Текстовые/парольные поля (имя, тег, пароль, ник) — раньше по ошибке
+   переиспользовали узкий .ds-stepper__input (задуман для чисел степпера),
+   из-за чего поля выглядели слишком маленькими для текста. */
+.ds-text-input {
+  width: 180px;
+  background: #0e1a38;
+  color: #e8ecf7;
+  border: 1px solid #3a4d7a;
+  border-radius: 3px;
+  padding: 2px 6px;
+  font-size: 12px;
+  text-align: left;
+}
+
 .ds-army-creation__name {
   display: block;
   margin-bottom: 10px;
@@ -392,6 +406,15 @@
 }
 .ds-artefact-row__name {
   min-width: 140px;
+}
+
+/* Спрайты юнитов (war_units.lib.swf) сильно разного соотношения сторон — фиксированный бокс, contain, без искажения. */
+.ds-unit-icon {
+  width: 28px;
+  height: 36px;
+  object-fit: contain;
+  object-position: bottom;
+  flex-shrink: 0;
 }
 .ds-artefact-row__bonuses {
   display: flex;

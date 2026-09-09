@@ -167,7 +167,7 @@ export function SellWindow({ data, tabs, onTabClick, onClose, onSell }: SellWind
           {isPersonal && (
             <input
               type="text"
-              class="ds-stepper__input"
+              class="ds-text-input"
               placeholder="Ник покупателя"
               value={nick}
               onInput={(e) => setNick((e.target as HTMLInputElement).value)}

@@ -92,9 +92,9 @@ function AllianceJoinCreateForm({
     <Window title="Альянс" tabs={tabs} onTabClick={onTabClick} onClose={onClose}>
       <h4>Создать альянс</h4>
       <div class="ds-spying__row">
-        <input type="text" class="ds-stepper__input" placeholder="Название (3-50)" value={name} onInput={(e) => setName((e.target as HTMLInputElement).value)} />
-        <input type="text" class="ds-stepper__input" placeholder="Тег (1-8)" value={tag} onInput={(e) => setTag((e.target as HTMLInputElement).value)} />
-        <input type="password" class="ds-stepper__input" placeholder="Пароль (3-30)" value={pass} onInput={(e) => setPass((e.target as HTMLInputElement).value)} />
+        <input type="text" class="ds-text-input" placeholder="Название (3-50)" value={name} onInput={(e) => setName((e.target as HTMLInputElement).value)} />
+        <input type="text" class="ds-text-input" placeholder="Тег (1-8)" value={tag} onInput={(e) => setTag((e.target as HTMLInputElement).value)} />
+        <input type="password" class="ds-text-input" placeholder="Пароль (3-30)" value={pass} onInput={(e) => setPass((e.target as HTMLInputElement).value)} />
         <button type="button" class="ds-popup__btn" disabled={!canCreate} onClick={() => onCreate({ name, tag, joinPassword: pass })}>
           Создать
         </button>
@@ -111,7 +111,7 @@ function AllianceJoinCreateForm({
         </select>
         <input
           type="password"
-          class="ds-stepper__input"
+          class="ds-text-input"
           placeholder="Пароль вступления"
           value={joinPass}
           onInput={(e) => setJoinPass((e.target as HTMLInputElement).value)}

@@ -75,7 +75,7 @@ export function ColonizationWindow({ data, tabs, onTabClick, onClose, onSend, on
 
       <div class="ds-spying__row">
         <span class="ds-spying__label">Название соты (3-25):</span>
-        <input type="text" class="ds-stepper__input" value={name} onInput={(e) => setName((e.target as HTMLInputElement).value)} />
+        <input type="text" class="ds-text-input" value={name} onInput={(e) => setName((e.target as HTMLInputElement).value)} />
       </div>
 
       <button

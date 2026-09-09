@@ -28,7 +28,7 @@ export function PrivatePeaceWindow({ data, tabs, onTabClick, onClose, onSend }: 
       <div class="ds-spying__row">
         <input
           type="text"
-          class="ds-stepper__input"
+          class="ds-text-input"
           placeholder="Ник игрока"
           value={targetName}
           onInput={(e) => setTargetName((e.target as HTMLInputElement).value)}
