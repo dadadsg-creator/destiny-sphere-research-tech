@@ -14,6 +14,7 @@ import type { ArcheologyTeamCommand } from '../world/archeologyData';
 import type { GetPPeaceCommand } from '../alliance/privatePeaceData';
 import type { SendColonyModuleCommand } from '../world/colonizationData';
 import type { CreateAllianceCommand, JoinAllianceCommand } from '../alliance/allianceData';
+import type { AlliancePeaceCommand } from '../alliance/alliancePeaceData';
 
 export function tag(name: string, attrs: Record<string, string | number | boolean | undefined>): string {
   let out = `<${name}`;
@@ -198,4 +199,43 @@ export function sendZondXml(cmd: {
     attrs.time = cmd.time;
   }
   return tag('sendzond', attrs);
+}
+
+/** reqvestdata.as:592-597 (changeAlliancePass) — <changepassword><![CDATA[текст]]></changepassword>, без атрибутов. */
+export function changeAlliancePasswordXml(newPassword: string): string {
+  return `<changepassword><![CDATA[${newPassword}]]></changepassword>`;
+}
+
+/**
+ * alliancePeaceData.ts / `RequestDataAlli.as:13-86` — единая команда
+ * `<getAlliancePeace status="" alliId="" [time="" my_k="" ... he_e=""]/>`.
+ * Поле `time`/`my`/`he` присутствуют только у статуса `setPeace`
+ * (`sendOfferPeace`), у остальных 7 статусов — только `alliId`+`status`.
+ */
+export function getAlliancePeaceXml(cmd: AlliancePeaceCommand): string {
+  if (cmd.status === 'setPeace' && cmd.my && cmd.he) {
+    return tag('getAlliancePeace', {
+      status: cmd.status,
+      alliId: cmd.alliId,
+      time: cmd.time,
+      my_k: cmd.my.k,
+      my_n: cmd.my.n,
+      my_f: cmd.my.f,
+      my_p: cmd.my.p,
+      my_s: cmd.my.s,
+      my_e: cmd.my.e,
+      he_k: cmd.he.k,
+      he_n: cmd.he.n,
+      he_f: cmd.he.f,
+      he_p: cmd.he.p,
+      he_s: cmd.he.s,
+      he_e: cmd.he.e,
+    });
+  }
+  return tag('getAlliancePeace', { alliId: cmd.alliId, status: cmd.status });
+}
+
+/** `RequestDataAlli.as:13-16` (dataAboutPeace) — <getInfoAboutPeace allianceId=""/>, ответ приходит маркой `alliancePeaceData`. */
+export function getInfoAboutPeaceXml(allianceId: string): string {
+  return tag('getInfoAboutPeace', { allianceId });
 }

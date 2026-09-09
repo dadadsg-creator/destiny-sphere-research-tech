@@ -44,6 +44,12 @@ import { AdviceWindow } from './settings/AdviceWindow';
 import { CabinetWindow } from './cabinet/CabinetWindow';
 import { ArtefactShopWindow } from './cabinet/ArtefactShopWindow';
 import { VacationWindow } from './vacation/VacationWindow';
+import { AllianceSettingsWindow } from './alliance/AllianceSettingsWindow';
+import { AlliancePeaceWindow } from './alliance/AlliancePeaceWindow';
+import { AlliancePeaceDetailWindow } from './alliance/AlliancePeaceDetailWindow';
+import { ArmyCalculatorWindow } from './army/ArmyCalculatorWindow';
+import { BattleOverviewWindow } from './battle/BattleOverviewWindow';
+import { BattleWindow } from './battle/BattleWindow';
 import type { ArmyOverview } from './army/armyData';
 import type { ArmyCreationData } from './army/armyCreationData';
 import type { TrainUnitData } from './army/trainUnitData';
@@ -63,6 +69,11 @@ import type { TransferMenuData } from './trade/transferData';
 import type { AllianceManagementData } from './alliance/allianceData';
 import type { AllianceOverviewData } from './alliance/allianceMemberData';
 import type { PrivatePeaceData } from './alliance/privatePeaceData';
+import type { AllianceSettingData } from './alliance/allianceSettingData';
+import type { AlliancePeaceListData, AlliancePeaceDetailData } from './alliance/alliancePeaceData';
+import type { ArmyCalculatorData } from './army/armyCreationData';
+import type { BattleOverview } from './battle/battleOverviewData';
+import type { BattleInfo } from './battle/battleData';
 import type { TerraformOption } from './world/terraformData';
 import type { ReligionOption } from './world/religionData';
 import type { ArcheologyData, PlayerKadFoodPool } from './world/archeologyData';
@@ -740,6 +751,94 @@ const TEST_PRIVATE_PEACE: PrivatePeaceData = {
   ],
 };
 
+// Синтетические данные для проверки AllianceSettingsWindow (?screen=alliance-settings).
+const TEST_ALLIANCE_SETTINGS: AllianceSettingData = {
+  leader: '1',
+  members: [
+    { id: '1', ln: 'Игрок1' },
+    { id: '2', ln: 'Игрок2' },
+    { id: '3', ln: 'Игрок3' },
+  ],
+};
+
+// Синтетические данные для проверки ArmyCalculatorWindow (?screen=army-calculator).
+const TEST_ARMY_CALCULATOR: ArmyCalculatorData = {
+  koeff: [1, 1.5, 2, 1, 1.2, 1],
+  units: [
+    { id: '3', libname: 'SOLDIER', amount: 2_000_000_000, prodiumWeight: 1, power: { kaderium: 10, nano: 5, food: 2 } },
+    { id: '9', libname: 'TANK', amount: 500, prodiumWeight: 4, power: { kaderium: 40, nano: 20, stasis: 10, prodium: 5 } },
+  ],
+};
+
+// Синтетические данные для проверки AlliancePeaceWindow (?screen=alliance-peace).
+const TEST_ALLIANCE_PEACE_LIST: AlliancePeaceListData = {
+  alliName: 'ORION',
+  viewData: '1',
+  allowAction: '1',
+  blinkDismiss: false,
+  maxPeaceLength: '30',
+  allow: [
+    {
+      name: 'Соседний альянс', short: 'NBR', leader: 'Leader1', id: '101', peaceDuration: null, peaceEndDate: null, you: false,
+      myPrice: { k: null, n: null, f: null, p: null, s: null, e: null }, hisPrice: { k: null, n: null, f: null, p: null, s: null, e: null },
+    },
+  ],
+  ready: [
+    {
+      name: 'Союзный альянс', short: 'ALY', leader: 'Leader2', id: '102', peaceDuration: '30', peaceEndDate: '2026-10-09', you: true,
+      myPrice: { k: null, n: null, f: null, p: null, s: null, e: null }, hisPrice: { k: null, n: null, f: null, p: null, s: null, e: null },
+    },
+  ],
+  offer: [],
+  wait: [
+    {
+      name: 'Просящий мира', short: 'REQ', leader: 'Leader3', id: '103', peaceDuration: null, peaceEndDate: null, you: false,
+      myPrice: { k: null, n: null, f: null, p: null, s: null, e: null }, hisPrice: { k: null, n: null, f: null, p: null, s: null, e: null },
+    },
+  ],
+  dismiss: [],
+};
+
+// Синтетические данные для проверки AlliancePeaceDetailWindow (?screen=alliance-peace-detail).
+const TEST_ALLIANCE_PEACE_DETAIL: AlliancePeaceDetailData = {
+  id: '101',
+  edit: '1',
+  buttons: { allow: '1', dismiss: null, offer: null, confirm: null, confirmDismiss: null },
+  youSide: { name: 'Наш альянс', k: '500', n: '200', f: '0', e: null, p: '100', s: '50' },
+  opponentSide: { name: 'Соседний альянс', k: '300', n: '150', f: '0', e: null, p: '80', s: '20' },
+  desc: 'Взаимные набеги последнюю неделю привели к предложению перемирия.',
+};
+
+// Синтетические данные для проверки BattleOverviewWindow (?screen=battle-overview).
+const TEST_BATTLE_OVERVIEW: BattleOverview = {
+  battles: [
+    {
+      idBattle: 501, startBattle: '2026-09-05 12:00', endBattle: '2026-09-05 12:10', typeBattle: 'A', winnerBattle: 'Мы',
+      ra: '0', combBattleName: 'Наша сота', combBattleComplex: '2.1.2', opponentName: 'Враг1', opponentComplexName: 'Их сота',
+      opponentComplexNum: '3.1.1', opponentRace: '1', youRanking: '12', battleRoundNum: 3,
+    },
+    {
+      idBattle: 502, startBattle: '2026-09-09 08:00', endBattle: '', typeBattle: 'D', winnerBattle: '', ra: '1',
+      combBattleName: 'Наша сота', combBattleComplex: '2.1.2', opponentName: 'Враг2', opponentComplexName: 'Их сота 2',
+      opponentComplexNum: '3.1.5', opponentRace: '1', youRanking: null, battleRoundNum: 1,
+    },
+  ],
+  filters: {
+    status: 'ALL', winner: 'ALL', opponents: ['Враг1', 'Враг2'], sotes: ['2.1.2'],
+    allowdays: [{ ln: '1 SEPTEMBER' }, { ln: '9 SEPTEMBER' }], startday: '1', endday: '9', reward: '0', ra: '1',
+  },
+};
+
+// Синтетические данные для проверки BattleWindow (?screen=battle-window) — переиспользует TEST_BATTLE_ROUND (уже проверенный ?screen=battle).
+const TEST_BATTLE_INFO: BattleInfo = {
+  idBattle: '501',
+  nicks: ['Враг1'],
+  rounds: [
+    TEST_BATTLE_ROUND,
+    { sideA: [{ libname: 'TANK', amount: 9, army: 'Атакующий флот' }], sideD: [{ libname: 'GUARD', amount: 2, army: 'Гарнизон' }] },
+  ],
+};
+
 // Синтетические данные для проверки TerraformWindow (?screen=terraform).
 const TEST_TERRAFORM: TerraformOption[] = [
   { typeGround: 'GRASS', time: '12', kad: 100, nano: 20, prod: 0, stas: 10, work: 1, food: 5, allow: '1', action: '' },
@@ -1192,6 +1291,91 @@ async function main() {
         onSend={(cmd) => console.log('[private-peace] getPPeace(', cmd, ')')}
       />,
     );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'alliance-settings') {
+    openWindow(
+      <AllianceSettingsWindow
+        data={TEST_ALLIANCE_SETTINGS}
+        onClose={() => console.log('[alliance-settings] close')}
+        onChangePassword={(pwd) => console.log('[alliance-settings] changeAlliancePass(', pwd, ')')}
+        onChangeLeader={(id) => console.log('[alliance-settings] changeAllianceLeader(', id, ')')}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'army-calculator') {
+    openWindow(
+      <ArmyCalculatorWindow
+        data={TEST_ARMY_CALCULATOR}
+        localUnits={TEST_LOCAL_UNITS}
+        onClose={() => console.log('[army-calculator] close')}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'alliance-peace') {
+    openWindow(
+      <AlliancePeaceWindow
+        data={TEST_ALLIANCE_PEACE_LIST}
+        onClose={() => console.log('[alliance-peace] close')}
+        onOpenDetail={(id) => console.log('[alliance-peace] getInfoAboutPeace(', id, ')')}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'alliance-peace-detail') {
+    openWindow(
+      <AlliancePeaceDetailWindow
+        data={TEST_ALLIANCE_PEACE_DETAIL}
+        onClose={() => console.log('[alliance-peace-detail] close')}
+        onBack={() => console.log('[alliance-peace-detail] back')}
+        onOfferPeace={(my, he, time) => console.log('[alliance-peace-detail] getAlliancePeace(setPeace,', my, he, time, ')')}
+        onCancelOffer={() => console.log('[alliance-peace-detail] getAlliancePeace(cancelPeace)')}
+        onConfirmPeace={() => console.log('[alliance-peace-detail] getAlliancePeace(confirmPeace)')}
+        onDeclinePeace={() => console.log('[alliance-peace-detail] getAlliancePeace(declinePeace)')}
+        onOfferTerminate={() => console.log('[alliance-peace-detail] getAlliancePeace(terminatePeace)')}
+        onConfirmTerminate={() => console.log('[alliance-peace-detail] getAlliancePeace(confirmTerminatePeace)')}
+        onDeclineTerminate={() => console.log('[alliance-peace-detail] getAlliancePeace(declineTerminatePeace)')}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'battle-overview') {
+    openWindow(
+      <BattleOverviewWindow
+        data={TEST_BATTLE_OVERVIEW}
+        onClose={() => console.log('[battle-overview] close')}
+        onApplyFilter={(v) => console.log('[battle-overview] ShowBattle(', v, ')')}
+        onViewBattle={(id) => console.log('[battle-overview] getShowBattle(', id, ')')}
+        onSurrender={(id) => console.log('[battle-overview] SurrenderSampleBattle(', id, ')')}
+        onWriteToOpponent={(nick) => console.log('[battle-overview] createnewmail(new, undefined,', nick, ')')}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'battle-window') {
+    openWindow(<BattleWindow data={TEST_BATTLE_INFO} onClose={() => console.log('[battle-window] close')} />);
+    // BattleWindow монтирует PixiJS-канвас асинхронно внутри useEffect (уже
+    // ПОСЛЕ возврата openWindow()) — ждём появления <canvas>, а затем ещё
+    // немного, пока не отрисуется сам раунд (Assets.load + отрисовка спрайтов
+    // — отдельный второй useEffect, гонка с появлением самого <canvas>).
+    for (let i = 0; i < 100 && !document.querySelector('.ds-battle-window__canvas canvas'); i++) {
+      await new Promise((r) => setTimeout(r, 50));
+    }
+    await new Promise((r) => setTimeout(r, 800));
     (window as any).__renderDone = true;
     return;
   }

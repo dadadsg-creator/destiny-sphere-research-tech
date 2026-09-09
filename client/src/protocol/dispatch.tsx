@@ -61,6 +61,9 @@ import {
   sendZondXml,
   buyArtefactInShopXml,
   cabinetRequestXml,
+  changeAlliancePasswordXml,
+  getAlliancePeaceXml,
+  getInfoAboutPeaceXml,
 } from './xmlBuilder';
 import { parseTabsArray, stripTabPrefix } from './tabsParser';
 import { BuildArtefactWindow } from '../artefacts/BuildArtefactWindow';
@@ -112,6 +115,20 @@ import {
 } from '../cabinet/cabinetMainData';
 import { buildOpenSubmenuCommand } from '../cabinet/submenuData';
 import { cabinetMain, cabinetSubmenu, setCabinetMain, setCabinetSubmenu, dismissCabinetPopup } from '../cabinet/cabinetStore';
+import { AllianceSettingsWindow } from '../alliance/AllianceSettingsWindow';
+import { ArmyCalculatorWindow } from '../army/ArmyCalculatorWindow';
+import { AlliancePeaceWindow } from '../alliance/AlliancePeaceWindow';
+import { AlliancePeaceDetailWindow } from '../alliance/AlliancePeaceDetailWindow';
+import { buildSendOfferPeaceCommand, buildSimplePeaceCommand } from '../alliance/alliancePeaceData';
+import {
+  alliancePeaceList,
+  alliancePeaceDetail,
+  setAlliancePeaceList,
+  setAlliancePeaceDetail,
+  clearAlliancePeaceDetail,
+} from '../alliance/alliancePeaceStore';
+import { BattleOverviewWindow } from '../battle/BattleOverviewWindow';
+import { BattleWindow } from '../battle/BattleWindow';
 
 // --- разбор конкретных доменов, известных, но пока не подключённых к живым окнам ---
 import { parseAllianceManagement } from '../alliance/allianceData';
@@ -183,12 +200,6 @@ export interface DispatchContext {
  * `colonynavigate` — реальный пробел, `colonynavigate.as` не портирован).
  */
 const PARSERS: Record<string, (xml: string) => unknown> = {
-  alliancesettings: parseAllianceSettings,
-  alliancepeace: parseAlliancePeaceList,
-  alliancePeaceData: parseAlliancePeaceDetail,
-  armycalculator: parseArmyCalculator,
-  battleoverview: parseBattleOverview,
-  battlinfo: parseBattleInfo,
   // Не портировано (см. план, «Реестр доменов»):
   // colonynavigate — colonynavigate.as не читался в Фазе 3.
 };
@@ -1019,6 +1030,169 @@ function renderCabinetWindow(ctx: DispatchContext): void {
   );
 }
 
+/**
+ * allianceSettingData.ts / `PN_AllianceSettings` (getbuildmenu-семья,
+ * требует `c` для открытия), но обе живые команды окна — БЕЗ `c`:
+ * `<changepassword><![CDATA[текст]]></changepassword>`
+ * (reqvestdata.as:592-597) и `<changeleader newleader=""/>`
+ * (reqvestdata.as:598-603).
+ */
+function renderAllianceSettings(root: Element, xml: string, ctx: DispatchContext): void {
+  const data = parseAllianceSettings(xml);
+  openWindow(
+    <AllianceSettingsWindow
+      data={data}
+      tabs={parseTabsArray(root)}
+      onTabClick={(tabId) => sendTabClick(ctx, tabId)}
+      onClose={closeWindow}
+      onChangePassword={(pwd) => void ctx.send(changeAlliancePasswordXml(pwd))}
+      onChangeLeader={(id) => void ctx.send(tag('changeleader', { newleader: id }))}
+    />,
+  );
+}
+
+/**
+ * armyCreationData.ts / `PN_WarCalculator` (getbuildmenu-семья) — чисто
+ * просмотровый экран: у оригинала (`armycalcclass.as`) НЕТ ни одного
+ * исходящего запроса, только отображение уже присланных чисел (см.
+ * докстринг armyCreationData.ts).
+ */
+function renderArmyCalculator(root: Element, xml: string, ctx: DispatchContext): void {
+  const data = parseArmyCalculator(xml);
+  openWindow(
+    <ArmyCalculatorWindow
+      data={data}
+      localUnits={localData.value?.units ?? new Map()}
+      tabs={parseTabsArray(root)}
+      onTabClick={(tabId) => sendTabClick(ctx, tabId)}
+      onClose={closeWindow}
+    />,
+  );
+}
+
+/**
+ * alliancePeaceData.ts / `PN_PeaceAlliance` (getbuildmenu-семья, требует
+ * `c` для открытия). Список (`alliancepeace`) и открытая карточка одного
+ * альянса (`alliancePeaceData`) — ДВЕ РАЗНЫЕ марки, свой стор
+ * `alliancePeaceStore.ts` по тому же паттерну, что и почта/кабинет.
+ * Детальный запрос — `<getInfoAboutPeace allianceId=""/>`
+ * (`RequestDataAlli.as:13-16`), без `c`.
+ */
+function renderAlliancePeaceList(root: Element, xml: string, ctx: DispatchContext): void {
+  const data = parseAlliancePeaceList(xml);
+  setAlliancePeaceList(data, parseTabsArray(root));
+  renderAlliancePeaceWindow(ctx);
+}
+
+function renderAlliancePeaceDetail(_root: Element, xml: string, ctx: DispatchContext): void {
+  const data = parseAlliancePeaceDetail(xml);
+  setAlliancePeaceDetail(data);
+  renderAlliancePeaceWindow(ctx);
+}
+
+/**
+ * Восемь статусов `<getAlliancePeace status="..."/>` (`RequestDataAlli.as`)
+ * покрыты пятью живыми флагами `data.buttons` — какая кнопка видна,
+ * решает сервер; восьмой статус `cancelTerminate` ничем из пяти флагов
+ * не гейтится очевидным образом — кнопка для него не гадается (см.
+ * докстринг AlliancePeaceDetailWindow.tsx).
+ */
+function renderAlliancePeaceWindow(ctx: DispatchContext): void {
+  const detail = alliancePeaceDetail.value;
+  if (detail) {
+    openWindow(
+      <AlliancePeaceDetailWindow
+        data={detail}
+        onClose={closeWindow}
+        onBack={() => {
+          clearAlliancePeaceDetail();
+          renderAlliancePeaceWindow(ctx);
+        }}
+        onOfferPeace={(my, he, time) =>
+          void ctx.send(getAlliancePeaceXml(buildSendOfferPeaceCommand(detail.id ?? '', my, he, time)))
+        }
+        onCancelOffer={() => void ctx.send(getAlliancePeaceXml(buildSimplePeaceCommand(detail.id ?? '', 'cancelPeace')))}
+        onConfirmPeace={() => void ctx.send(getAlliancePeaceXml(buildSimplePeaceCommand(detail.id ?? '', 'confirmPeace')))}
+        onDeclinePeace={() => void ctx.send(getAlliancePeaceXml(buildSimplePeaceCommand(detail.id ?? '', 'declinePeace')))}
+        onOfferTerminate={() => void ctx.send(getAlliancePeaceXml(buildSimplePeaceCommand(detail.id ?? '', 'terminatePeace')))}
+        onConfirmTerminate={() =>
+          void ctx.send(getAlliancePeaceXml(buildSimplePeaceCommand(detail.id ?? '', 'confirmTerminatePeace')))
+        }
+        onDeclineTerminate={() =>
+          void ctx.send(getAlliancePeaceXml(buildSimplePeaceCommand(detail.id ?? '', 'declineTerminatePeace')))
+        }
+      />,
+    );
+    return;
+  }
+
+  const state = alliancePeaceList.value;
+  if (!state) return;
+  openWindow(
+    <AlliancePeaceWindow
+      data={state.data}
+      tabs={state.tabs}
+      onTabClick={(tabId) => sendTabClick(ctx, tabId)}
+      onClose={closeWindow}
+      onOpenDetail={(id) => void ctx.send(getInfoAboutPeaceXml(id))}
+    />,
+  );
+}
+
+/**
+ * battleOverviewData.ts — `ShowBattle()` подтверждает getbuildmenu-семью
+ * буквально (`<getbuildmenu c="" tab="BattleOverview" .../>`,
+ * reqvestdata.as:807-812), хотя отдельного `PN_BattleOverview`-класса
+ * среди найденных `PN_*` нет (возможно, под другим именем — не
+ * критично, сам wire-формат подтверждён). Фильтр — та же команда с доп.
+ * атрибутами `days`/`fromd`/`opp`/`sot`/`stat`/`winner` (подтверждённые
+ * enum'ы — battleoverviewclass.as:246-266), требует `c`. "Показать бой"
+ * (`getBattleInfo`) и "Сдаться"/"Отступить" (`retreat`) — без `c`
+ * (reqvestdata.as:814-827,918-927).
+ */
+function renderBattleOverview(root: Element, xml: string, ctx: DispatchContext): void {
+  const data = parseBattleOverview(xml);
+  const cellNum = ctx.activeCell;
+  openWindow(
+    <BattleOverviewWindow
+      data={data}
+      tabs={parseTabsArray(root)}
+      onTabClick={(tabId) => sendTabClick(ctx, tabId)}
+      onClose={closeWindow}
+      onApplyFilter={(v) =>
+        cellNum !== undefined &&
+        void ctx.send(
+          tag('getbuildmenu', {
+            c: cellNum,
+            tab: 'BattleOverview',
+            days: v.days,
+            fromd: v.fromDays,
+            opp: v.opp,
+            sot: v.sot,
+            stat: v.stat,
+            winner: v.winner,
+          }),
+        )
+      }
+      onViewBattle={(id) => void ctx.send(tag('getBattleInfo', { id_battle: id }))}
+      onSurrender={(id) => void ctx.send(tag('retreat', { id_battle: id }))}
+      onWriteToOpponent={(nick) => void ctx.send(tag('getbuildmenu', { tab: 'CreateMessage', type: 'new', name: nick }))}
+    />,
+  );
+}
+
+/**
+ * battleData.ts — `<battlinfo>` приходит в ответ на уже отправляемый из
+ * BattleOverviewWindow `getBattleInfo id_battle=""` (без `c`), рендерится
+ * в canvas через PixiJS (`BattleWindow`/`battleRenderer.ts`), а не
+ * обычной HTML-формой — "наглядное поле боя" в оригинале тоже отдельный
+ * визуальный режим, не табличный список.
+ */
+function renderBattleInfo(_root: Element, xml: string, _ctx: DispatchContext): void {
+  const data = parseBattleInfo(xml);
+  openWindow(<BattleWindow data={data} onClose={closeWindow} />);
+}
+
 const RENDERERS: Record<string, (root: Element, xml: string, ctx: DispatchContext) => void> = {
   getbuildinfo: renderBuildInfo,
   buildingartefact: renderBuildArtefact,
@@ -1055,6 +1229,12 @@ const RENDERERS: Record<string, (root: Element, xml: string, ctx: DispatchContex
   artefact_shop: renderArtefactShop,
   auction: renderAuction,
   cabinet: renderCabinet,
+  alliancesettings: renderAllianceSettings,
+  armycalculator: renderArmyCalculator,
+  alliancepeace: renderAlliancePeaceList,
+  alliancePeaceData: renderAlliancePeaceDetail,
+  battleoverview: renderBattleOverview,
+  battlinfo: renderBattleInfo,
 };
 
 /**

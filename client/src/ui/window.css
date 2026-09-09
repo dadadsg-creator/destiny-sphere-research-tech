@@ -437,3 +437,11 @@
 .ds-build-info__upgrade p {
   margin: 0 0 8px;
 }
+
+/* battle/BattleWindow.tsx — точка монтирования PixiJS-канваса (battleRenderer.ts), нужен явный размер (resizeTo: parent). */
+.ds-battle-window__canvas {
+  position: relative;
+  width: 560px;
+  max-width: 100%;
+  height: 360px;
+}
