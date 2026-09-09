@@ -650,12 +650,18 @@ const TEST_ARCHEOLOGY: ArcheologyData = {
 const TEST_ARCH_RESOURCES: PlayerKadFoodPool = { kaderium: 10000, food: 10000 };
 
 // Синтетические данные для проверки ColonizationWindow (?screen=colonization).
+// Названия/номера колец — реальные (RING_TECH/RING_BIO/RING_PSI/RING_COLONIZE
+// из ds_ring, сверено с живой БД 2026-09-09) — это собственные имена
+// локаций, не описательные фразы вроде "Кольцо технологий" (первая версия
+// была выдуманным плейсхолдером, ошибка).
 const TEST_COLONIZATION: ColonizationData = {
   action: '1',
   idModule: '1',
   rings: [
-    { id: '1', ln: 'Кольцо технологий' },
-    { id: '2', ln: 'Кольцо биологии' },
+    { id: '1', ln: 'Ворания' },
+    { id: '2', ln: 'Лиенсорд' },
+    { id: '3', ln: 'Псолеон' },
+    { id: '4', ln: 'Мелсион' },
   ],
   textStatus: '',
 };
