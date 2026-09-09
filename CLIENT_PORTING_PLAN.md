@@ -1543,6 +1543,46 @@ Preact** (решение владельца) — `client/` до этого не 
   Продолжать применять этот примитив по мере проводки остальных доменов
   (Фаза 4 ниже) — не переделывать отдельным проходом по всем окнам разом.
 
+- [x] **Картинка артефакта — правильные 3 слоя, не 1 (2026-09-09,
+  правка по замечанию владельца "обводка не та, форма другая")**.
+  Первая версия (циркулярный `art_clear` под иконкой) была неполной —
+  владелец прислал скриншот реального Flash-клиента: прямоугольные
+  рамки РАЗНОГО цвета на разных артефактах. Разобрано декомпиляцией
+  (поставлен Java/Temurin JRE 21 через `winget` + уже имевшийся в сессии
+  `ffdec-cli.jar`, экспорт `-export script`) — раньше в проекте
+  экспортировались только `image,shape,sprite,button`, без `script`,
+  этот пробел скрывал всю логику.
+  - `art_lib.swf`/`artefact.lib.swf` (**используется `ds/flash/`-копия —
+    новее и полнее, чем архивная в `SPHERE_client/`: там ещё нет
+    GIANT в цветовой таблице**), `frame_1/DoAction.as:createArtefact()`
+    — ТРИ слоя, не два: `art_clear` (фон слота) → `SCOPE_MOV` (форма по
+    `scope`, `mov.attachMovie(scope, ...)`, красится ЦЕЛИКОМ сплошным
+    цветом через `Color.setRGB()` по `arr_size[prefix]`) → `TYPE_MOV`
+    (сама иконка по `postfix`, поверх всего).
+  - Цветовая таблица `arr_size` — 16 записей (REDS/PAID/SMALL/MINOR/
+    AVERAGE/MAJOR/GREAT/SUPERIOR/MIGHTY/OUTSTANDING/SUPREME/WHITE/GOLD/
+    GIANT/SILVER/NORMAL, два последних — "NO" = без перекраски),
+    перенесена буквально в `resourceIcons.ts:ARTEFACT_SIZE_COLOR`.
+    Живьём подтверждена БД-запросом `ds_artefactprobability`/
+    `ds_localizedtextlanguage` (id_language=3 — русский; 1/2 — немецкий/
+    английский, чуть не перепутал) — в игре 18 префиксов размера, у двух
+    из них (`UNIQUE`, `COMMON`) нет цвета даже в оригинальной `arr_size`
+    — не подставляли отсебятину, для них рамка тоже не красится.
+  - Формы `SCOPE_MOV` — извлечены из `ArtColors.swf`
+    (`client-assets/ArtColors/sprites/DefineSprite_*_<SCOPE>`,
+    `public/assets/artefact-scopes/`). Сверено с живой БД
+    (`ds_artefactscope.scopename`) — 11 scope реально в ходу
+    (BUILDING/COMB/COMBCOMPLEX/WAR/ALLIANCE/SPHERE/ICE/HOLIDAY/
+    HOLIDAY2/QUEST/LOVE), для 8 из них есть форма в `ArtColors.swf`;
+    ICE/HOLIDAY/HOLIDAY2 подходящей формы не нашлось — рамка для них не
+    рисуется (не гадаем).
+  - Flash `Color.setRGB()` (полная замена RGB, альфа-канал/силуэт формы
+    сохраняется) воспроизведён CSS `mask-image`/`-webkit-mask-image`
+    (PNG как маска-силуэт) + `background-color` — тот же визуальный
+    эффект без пересборки сотен готовых PNG под каждую пару scope×size.
+  - Живьём подтверждено на реальном артефакте: `MIGHTY`/`SPHERE` →
+    оранжевая рамка (`#FF9900`), ровно как в декомпилированной таблице.
+
 ### Фаза 4 — Проверка на паритет (объём: средне, но не сокращать)
 
 - [ ] Поднять тестовый/dev-мир (или использовать существующий, если

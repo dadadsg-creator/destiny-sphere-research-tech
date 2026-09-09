@@ -28,6 +28,17 @@
  * атрибут БЕЗ какой-либо распаковки — то есть баг исторический, виден и в
  * оригинале, но для нового клиента показывать игроку сырой escape-код
  * вместо "+800" не имеет смысла — см. `fixBonusPercent()`.
+ *
+ * **Картинка артефакта — три слоя, не одна (найдено декомпиляцией
+ * `art_lib.swf`/`artefact.lib.swf`, `frame_1/DoAction.as:createArtefact`,
+ * 2026-09-09)**: `art_clear` (круглый тёмный фон слота) снизу,
+ * ПОВЕРХ — форма-маска по `scope` (`SCOPE_MOV`, красится сплошным цветом
+ * по `prefix`/размеру через `Color.setRGB()` — таблица цветов
+ * `resourceIcons.ts:ARTEFACT_SIZE_COLOR`, воспроизведена CSS `mask-image`
+ * вместо честного Flash Color.setRGB), и НА САМОМ ВЕРХУ — сама иконка
+ * (`TYPE_MOV`, по `postfix`). Раньше портировался только 1 слой (иконка) +
+ * фон слота, без цветной scope-рамки — отсюда жалоба владельца
+ * "обводка не та".
  */
 import { parseXmlFragment } from '../protocol/response';
 
@@ -41,6 +52,10 @@ export interface BuildArtefact {
   id: string | null;
   /** prefix+"_"+scope+"_"+postfix — ключ локализации в LocalData.artefacts. */
   libname: string;
+  /** Размер/редкость (MIGHTY, SMALL, ...) — красит рамку scope, см. resourceIcons.ts:ARTEFACT_SIZE_COLOR. */
+  prefix: string | null;
+  /** "Область" (SPHERE, WAR, BUILDING, ...) — форма цветной рамки, resourceIcons.ts:artefactScopeMaskUrl. */
+  scope: string | null;
   /** Базовый вид артефакта — ключ иконки (LocalData.artefacts не всегда доступна/заполнена по этому конкретному id, иконка привязана к postfix напрямую, см. resourceIcons.ts:artefactIconUrl). */
   postfix: string | null;
   bonuses: ArtefactBonusEntry[];
@@ -74,6 +89,8 @@ function parseArtefactEl(el: Element): BuildArtefact {
   return {
     id: el.getAttribute('id'),
     libname: `${prefix}_${scope}_${postfix}`,
+    prefix,
+    scope,
     postfix,
     bonuses,
     expired: el.getAttribute('death_message') ?? '',

@@ -833,6 +833,8 @@ const TEST_BUILD_ARTEFACT: BuildArtefactData = {
     {
       id: '1',
       libname: 'MIGHTY_SPHERE_STASIS_ENERGY_EGG',
+      prefix: 'MIGHTY',
+      scope: 'SPHERE',
       postfix: 'STASIS_ENERGY_EGG',
       bonuses: [{ bonusType: 'STASIS_ENERGY', bonusValue: '+800' }],
       expired: '',
@@ -842,13 +844,17 @@ const TEST_BUILD_ARTEFACT: BuildArtefactData = {
     {
       id: '2',
       libname: 'SMALL_SPHERE_PROTECTION',
+      prefix: 'SMALL',
+      scope: 'SPHERE',
       postfix: 'PROTECTION',
       bonuses: [{ bonusType: 'KADERIUM', bonusValue: '+5' }],
       expired: '',
     },
     {
       id: '3',
-      libname: 'HUGE_SPHERE_PRECISION',
+      libname: 'SUPREME_WAR_PRECISION',
+      prefix: 'SUPREME',
+      scope: 'WAR',
       postfix: 'PRECISION',
       bonuses: [{ bonusType: 'PRODIUM', bonusValue: '+30%' }],
       expired: 'скоро истекает',

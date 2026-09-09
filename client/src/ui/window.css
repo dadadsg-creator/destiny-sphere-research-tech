@@ -372,6 +372,24 @@
   width: 100%;
   height: 100%;
 }
+/* Цветная scope-рамка — CSS-маска вместо Flash Color.setRGB(), см. resourceIcons.ts:artefactSizeColor(). */
+.ds-artefact-row__scope {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 78%;
+  height: 78%;
+  -webkit-mask-image: var(--scope-mask);
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-image: var(--scope-mask);
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  background-color: var(--size-color, #aaaaaa);
+}
 .ds-artefact-row__icon {
   position: absolute;
   top: 50%;
