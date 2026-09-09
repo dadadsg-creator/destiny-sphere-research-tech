@@ -82,6 +82,9 @@ import { ArmyOverviewWindow } from '../army/ArmyOverviewWindow';
 import { AllianceMemberWindow } from '../alliance/AllianceMemberWindow';
 import { AllianceManagementWindow } from '../alliance/AllianceManagementWindow';
 import { CreateNewMailWindow } from '../mail/CreateNewMailWindow';
+import { MailWindow } from '../mail/MailWindow';
+import { mailListState, mailOpenBody, setMailList, setMailOpenBody } from '../mail/mailStore';
+import { buildDeleteMessagesCommand, buildReadMessagesCommand } from '../mail/mailData';
 import { TrainUnitWindow } from '../army/TrainUnitWindow';
 import { ArmyCreationWindow } from '../army/ArmyCreationWindow';
 import { buildKickCommand } from '../alliance/allianceMemberData';
@@ -167,8 +170,6 @@ const PARSERS: Record<string, (xml: string) => unknown> = {
   battleoverview: parseBattleOverview,
   battlinfo: parseBattleInfo,
   log: parseLogWindow,
-  messageoverview: parseMailList,
-  message: parseMailMessage,
   questmenu: parseQuestMenu,
   spylog: parseSpyLog,
   warcomplex: parseWarComplex,
@@ -626,6 +627,52 @@ function renderArmyCreation(root: Element, xml: string, ctx: DispatchContext): v
   );
 }
 
+/**
+ * mailData.ts — почта не привязана к ячейке нигде (`reqvestdata.as:
+ * get_mail/getMailMessage/deleteMail/readMail/createnewmail` — ни один
+ * не несёт `c`, подтверждено буквально). Список (`messageoverview`) и
+ * тело письма (`message`) — ДВЕ РАЗНЫЕ марки; `mailStore.ts` хранит
+ * последний список, чтобы марка `message` могла собрать окно заново
+ * (Preact сохраняет `useState` окна при повторном рендере с новыми
+ * пропами — выборка чекбоксов не теряется). "Написать"/"Ответить"/
+ * "Ответить с цитатой" — ОДНА и та же команда `<getbuildmenu
+ * tab="CreateMessage" type="new|reply|quote" [id=""]/>`
+ * (`reqvestdata.as:448-463`, `createnewmail()`), ответ уходит в уже
+ * подключённый `renderCreateMessage`.
+ */
+function renderMailList(root: Element, xml: string, ctx: DispatchContext): void {
+  const data = parseMailList(xml);
+  setMailList(data, parseTabsArray(root));
+  renderMailWindow(ctx);
+}
+
+function renderMailMessage(_root: Element, xml: string, ctx: DispatchContext): void {
+  const msg = parseMailMessage(xml);
+  setMailOpenBody(msg.body);
+  if (mailListState.value) renderMailWindow(ctx);
+}
+
+function renderMailWindow(ctx: DispatchContext): void {
+  const state = mailListState.value;
+  if (!state) return;
+  openWindow(
+    <MailWindow
+      data={state.data}
+      openBody={mailOpenBody.value}
+      tabs={state.tabs}
+      onTabClick={(tabId) => sendTabClick(ctx, tabId)}
+      onClose={closeWindow}
+      onSwitchType={() => void ctx.send(tag('getbuildmenu', { tab: 'MessageOverview', type: state.data.type === 'in' ? 'out' : 'in' }))}
+      onOpenMail={(id) => void ctx.send(tag('showmemail', { id }))}
+      onDeleteSelected={(ids) => void ctx.send(tag('deletemessage', { id_message: buildDeleteMessagesCommand(ids).idMessage }))}
+      onReadSelected={(ids) => void ctx.send(tag('readmessage', { id_message: buildReadMessagesCommand(ids).idMessage }))}
+      onNewMail={() => void ctx.send(tag('getbuildmenu', { tab: 'CreateMessage', type: 'new' }))}
+      onReply={(id) => void ctx.send(tag('getbuildmenu', { tab: 'CreateMessage', type: 'reply', id }))}
+      onReplyQuote={(id) => void ctx.send(tag('getbuildmenu', { tab: 'CreateMessage', type: 'quote', id }))}
+    />,
+  );
+}
+
 const RENDERERS: Record<string, (root: Element, xml: string, ctx: DispatchContext) => void> = {
   getbuildinfo: renderBuildInfo,
   buildingartefact: renderBuildArtefact,
@@ -649,6 +696,8 @@ const RENDERERS: Record<string, (root: Element, xml: string, ctx: DispatchContex
   createmessage: renderCreateMessage,
   warunit: renderTrainWarUnit,
   armycreation: renderArmyCreation,
+  messageoverview: renderMailList,
+  message: renderMailMessage,
 };
 
 /**

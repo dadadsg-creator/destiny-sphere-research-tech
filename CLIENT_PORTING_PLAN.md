@@ -1740,6 +1740,31 @@ Preact** (решение владельца) — `client/` до этого не 
      по наведению и визуальное начертание самих букв (bold/italic), чтобы
      функция была понятна без наведения тоже.
 
+- [x] **Домен почты (2026-09-09): `MessageOverview`, `Message`**.
+  - `MessageOverview`/`messageoverview` → список писем, `Message`/
+    `message` → тело письма — подтверждено, что это ДВЕ РАЗНЫЕ марки
+    ответа (`reqvestdata.as: get_mail`/`getMailMessage`, ни одна не
+    несёт `c` — почта не привязана к ячейке), а `MailWindow.tsx` из
+    Фазы 3 ожидает список и открытое тело ОДНИМ набором пропов. Решено
+    новым `mail/mailStore.ts` (сигналы `mailListState`/`mailOpenBody`):
+    список сохраняется целиком при получении `messageoverview`, а марка
+    `message` только обновляет `mailOpenBody` и заново вызывает
+    `openWindow()` тем же типом компонента — Preact сохраняет внутренний
+    `useState` окна (выборка чекбоксов) при повторном рендере с новыми
+    пропами, так что открытие письма не сбрасывает состояние списка.
+  - Команды без `c`: `<deletemessage id_message=""/>`/`<readmessage
+    id_message=""/>` (`reqvestdata.as:508-520,522-534`,
+    `buildDeleteMessagesCommand`/`buildReadMessagesCommand` уже были в
+    `mailData.ts`), переключение Входящие/Исходящие —
+    `<getbuildmenu tab="MessageOverview" type="in"|"out"/>`. "Написать"/
+    "Ответить"/"Ответить с цитатой" — ОДНА и та же команда
+    `<getbuildmenu tab="CreateMessage" type="new"|"reply"|"quote"
+    [id=""]/>` (`reqvestdata.as:448-463`), ответ уходит в уже
+    подключённый `renderCreateMessage`.
+  - `PARSERS`-записи `messageoverview`/`message` удалены (были
+    лог-заглушками) — теперь полностью в `RENDERERS`. Проверено
+    синтетическим `?screen=mail` скриншотом без визуальных регрессий.
+
 ### Фаза 4 — Проверка на паритет (объём: средне, но не сокращать)
 
 - [ ] Поднять тестовый/dev-мир (или использовать существующий, если
