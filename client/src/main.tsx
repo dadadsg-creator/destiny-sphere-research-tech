@@ -862,18 +862,26 @@ const TEST_BUILD_ARTEFACT: BuildArtefactData = {
   ],
 };
 
+// Порядок слов в `ln` — "{размер} {сфера/родовое слово} {эффект в
+// родительном падеже}" (сверено с реальным именем с живого аккаунта,
+// "Могучая Сфера Энервитриума", и со скриншотом владельца реального
+// Flash-клиента — там же для НЕ-SPHERE scope вместо родового слова
+// "Сфера" стоит родовая фраза "локальный артефакт", например
+// "Гигантский локальный артефакт поливки"). Первая версия этих трёх
+// тестовых строк была написана рукой в обратном порядке ("{размер}
+// {эффект} {сферы}") — не сама игра так называет, просто моя ошибка.
 const TEST_LOCAL_ARTEFACTS = new Map<string, LocalArtefact>([
   [
     'MIGHTY_SPHERE_STASIS_ENERGY_EGG',
-    { id: 'MIGHTY_SPHERE_STASIS_ENERGY_EGG', idn: '1', ln: 'Могучее яйцо энергии сферы', description: '', bonusName: 'STASIS_ENERGY', bonusValue: '+800' },
+    { id: 'MIGHTY_SPHERE_STASIS_ENERGY_EGG', idn: '1', ln: 'Могучая Сфера Энервитриума', description: '', bonusName: 'STASIS_ENERGY', bonusValue: '+800' },
   ],
   [
     'SMALL_SPHERE_PROTECTION',
-    { id: 'SMALL_SPHERE_PROTECTION', idn: '2', ln: 'Малая защита сферы', description: '', bonusName: 'KADERIUM', bonusValue: '+5' },
+    { id: 'SMALL_SPHERE_PROTECTION', idn: '2', ln: 'Малая Сфера Защиты', description: '', bonusName: 'KADERIUM', bonusValue: '+5' },
   ],
   [
     'SUPREME_WAR_PRECISION',
-    { id: 'SUPREME_WAR_PRECISION', idn: '3', ln: 'Колоссальная точность войны', description: '', bonusName: 'PRODIUM', bonusValue: '+30%' },
+    { id: 'SUPREME_WAR_PRECISION', idn: '3', ln: 'Колоссальный локальный артефакт точности', description: '', bonusName: 'PRODIUM', bonusValue: '+30%' },
   ],
   // Запасной вариант (каталога локализации нет/артефакта в нём нет — сырой
   // libname без иконки) больше не держим отдельным элементом основного
