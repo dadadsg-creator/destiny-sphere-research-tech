@@ -5,9 +5,16 @@
  *  - `status`/`winner` — подтверждённые enum'ы ("A"/"D"/"ALL",
  *    "0"/"1"/"ALL", battleoverviewclass.as:246-266), опонент/сота — из
  *    живых `filters.opponents`/`filters.sotes` (+"ALL");
- *  - диапазон дней (`day_start`/`day_end`) — индекс внутри
- *    `filters.allowdays` (тот же способ, каким сам оригинал строит
- *    `id=gg`, :178-186), отправляется как `fromdays`/`days` = индекс+1;
+ *  - диапазон дней — обычные `<input type="date">` (владелец: "нужен
+ *    нормальный выбор даты календарём", не выпадающий список меток
+ *    месяцев), а не индекс из `filters.allowdays` напрямую: сервер
+ *    строит этот список как непрерывный календарный диапазон "сегодня
+ *    минус N дней" (`PN_BattleOverview.class.php:212-247`,
+ *    `_getBattleDates()`, `$endDate = time()`) — значит индекс и
+ *    реальная дата взаимно однозначны чистой арифметикой, без разбора
+ *    меток месяцев вообще (см. `dateFromDaysAgo`/`toIndex` ниже),
+ *    итоговые `fromdays`/`days` (1-based индекс, как в оригинале)
+ *    получаются обратным пересчётом выбранной даты;
  *  - "Показать бой" (`getShowBattle`) — всегда; "Сдаться"/"Отступить"
  *    (`retreat`) — только для ЕЩЁ ИДУЩИХ боёв (`battle.ra==="1" &&
  *    filters.ra==="1"`), это именно НЕ-премиум ветка оригинала
@@ -53,30 +60,66 @@ export interface BattleOverviewWindowProps {
 
 const BATTLE_TYPE_LABEL: Record<string, string> = { A: 'Атака', D: 'Оборона', E: 'Защита коалиции' };
 
+/**
+ * `filters.allowdays` — непрерывный диапазон КАЛЕНДАРНЫХ дней от
+ * `сегодня` назад (сервер строит его именно так, `PN_BattleOverview.
+ * class.php:212-247`, `_getBattleDates()`: `$endDate = time()`, то есть
+ * последний элемент массива — всегда сегодня), а не абстрактный список
+ * меток — значит, индексу внутри массива соответствует РЕАЛЬНАЯ
+ * календарная дата, которую можно вычислить арифметикой "сегодня минус
+ * N дней", не разбирая метки месяцев (`d.ln`) вообще. Это и даёт обычный
+ * `<input type="date">` вместо выбора по индексу — `fromdays`/`days`
+ * (1-based индекс, как в оригинале) получаются обратным пересчётом.
+ */
+function dateFromDaysAgo(daysAgo: number): Date {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() - daysAgo);
+  return d;
+}
+function toISODate(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+function daysAgoFromISODate(iso: string): number {
+  const picked = new Date(`${iso}T00:00:00`);
+  const today = dateFromDaysAgo(0);
+  return Math.round((today.getTime() - picked.getTime()) / 86_400_000);
+}
+
 function FilterBar({ filters, onApply }: { filters: BattleFilters; onApply: (v: BattleFilterValues) => void }) {
-  const [dayStart, setDayStart] = useState(0);
-  const [dayEnd, setDayEnd] = useState(Math.max(0, filters.allowdays.length - 1));
+  const total = Math.max(1, filters.allowdays.length);
+  const todayIso = toISODate(dateFromDaysAgo(0));
+  const oldestIso = toISODate(dateFromDaysAgo(total - 1));
+
+  const [dateStart, setDateStart] = useState(oldestIso);
+  const [dateEnd, setDateEnd] = useState(todayIso);
   const [opp, setOpp] = useState('ALL');
   const [sot, setSot] = useState('ALL');
   const [stat, setStat] = useState('ALL');
   const [winner, setWinner] = useState('ALL');
 
+  /** Индекс внутри allowdays (1-based, старейший день = 1) — обратное преобразование "дата → fromdays/days". */
+  const toIndex = (iso: string) => Math.min(total, Math.max(1, total - daysAgoFromISODate(iso)));
+
   return (
     <div class="ds-spying__row" style={{ flexWrap: 'wrap' }}>
-      <select value={String(dayStart)} onChange={(e) => setDayStart(Number((e.target as HTMLSelectElement).value))}>
-        {filters.allowdays.map((d, i) => (
-          <option key={i} value={i}>
-            {d.ln}
-          </option>
-        ))}
-      </select>
-      <select value={String(dayEnd)} onChange={(e) => setDayEnd(Number((e.target as HTMLSelectElement).value))}>
-        {filters.allowdays.map((d, i) => (
-          <option key={i} value={i}>
-            {d.ln}
-          </option>
-        ))}
-      </select>
+      <input
+        type="date"
+        min={oldestIso}
+        max={todayIso}
+        value={dateStart}
+        onInput={(e) => setDateStart((e.target as HTMLInputElement).value)}
+      />
+      <input
+        type="date"
+        min={oldestIso}
+        max={todayIso}
+        value={dateEnd}
+        onInput={(e) => setDateEnd((e.target as HTMLInputElement).value)}
+      />
       <select value={opp} onChange={(e) => setOpp((e.target as HTMLSelectElement).value)}>
         <option value="ALL">Все противники</option>
         {filters.opponents.map((o) => (
@@ -106,7 +149,7 @@ function FilterBar({ filters, onApply }: { filters: BattleFilters; onApply: (v: 
       <button
         type="button"
         class="ds-popup__btn"
-        onClick={() => onApply({ fromDays: dayStart + 1, days: dayEnd + 1, opp, sot, stat, winner })}
+        onClick={() => onApply({ fromDays: toIndex(dateStart), days: toIndex(dateEnd), opp, sot, stat, winner })}
       >
         Показать
       </button>

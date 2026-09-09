@@ -445,3 +445,22 @@
   max-width: 100%;
   height: 360px;
 }
+
+/* alliance/AlliancePeaceDetailWindow.tsx — форма предложения мира: иконка+степпер на ресурс держатся вместе при переносе строки (не растягивают окно). */
+.ds-peace-price {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 10px;
+  font-size: 12px;
+}
+.ds-peace-price__fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.ds-peace-price__field {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}

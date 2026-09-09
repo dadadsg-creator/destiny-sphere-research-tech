@@ -13,6 +13,7 @@ import { useState } from 'preact/hooks';
 import { Window } from '../ui/Window';
 import { Stepper } from '../ui/Stepper';
 import { ResourceValue } from '../ui/ResourceValue';
+import { RESOURCE_NAME_RU, resourceIconUrl } from '../data/resourceIcons';
 import type { AlliancePeaceDetailData, AlliancePeaceOfferPrice } from './alliancePeaceData';
 
 export interface AlliancePeaceDetailWindowProps {
@@ -45,15 +46,27 @@ function SideInfo({ title, side }: { title: string; side: AlliancePeaceDetailDat
   );
 }
 
+/** Порядок и имена полей формы предложения мира — k/n/f/p/s, `e` не установлено (см. докстринг alliancePeaceData.ts), в форму не выведено. */
+const PRICE_FIELDS: { key: keyof Omit<AlliancePeaceOfferPrice, 'e'>; resource: string }[] = [
+  { key: 'k', resource: 'KADERIUM' },
+  { key: 'n', resource: 'NANO_CRYSTAL' },
+  { key: 'f', resource: 'FOOD' },
+  { key: 'p', resource: 'PRODIUM' },
+  { key: 's', resource: 'STASIS_ENERGY' },
+];
+
 function PriceRow({ label, price, onChange }: { label: string; price: AlliancePeaceOfferPrice; onChange: (p: AlliancePeaceOfferPrice) => void }) {
   return (
-    <div class="ds-spying__row" style={{ flexWrap: 'wrap' }}>
+    <div class="ds-peace-price">
       <span class="ds-spying__label">{label}</span>
-      К <Stepper value={price.k} min={0} onChange={(k) => onChange({ ...price, k })} />
-      Н <Stepper value={price.n} min={0} onChange={(n) => onChange({ ...price, n })} />
-      Е <Stepper value={price.f} min={0} onChange={(f) => onChange({ ...price, f })} />
-      П <Stepper value={price.p} min={0} onChange={(p) => onChange({ ...price, p })} />
-      С <Stepper value={price.s} min={0} onChange={(s) => onChange({ ...price, s })} />
+      <div class="ds-peace-price__fields">
+        {PRICE_FIELDS.map(({ key, resource }) => (
+          <span key={key} class="ds-peace-price__field" title={RESOURCE_NAME_RU[resource]}>
+            <img class="ds-resource__icon" src={resourceIconUrl(resource)} alt="" />
+            <Stepper value={price[key]} min={0} onChange={(v) => onChange({ ...price, [key]: v })} />
+          </span>
+        ))}
+      </div>
     </div>
   );
 }
