@@ -60,6 +60,7 @@ import {
   sendMessageXml,
   sendZondXml,
   buyArtefactInShopXml,
+  cabinetRequestXml,
 } from './xmlBuilder';
 import { parseTabsArray, stripTabPrefix } from './tabsParser';
 import { BuildArtefactWindow } from '../artefacts/BuildArtefactWindow';
@@ -101,6 +102,16 @@ import { AuctionWindow } from '../trade/AuctionWindow';
 import { SpyingWindow } from '../spying/SpyingWindow';
 import { ZondCreateWindow } from '../spying/ZondCreateWindow';
 import { ScannerWindow } from '../spying/ScannerWindow';
+import { CabinetWindow } from '../cabinet/CabinetWindow';
+import {
+  buildChangeGoldToSilverCommand,
+  buildMoneyToWorldCommand,
+  buildMoneyFromWorldCommand,
+  buildGiftMoneyCommand,
+  buildGetAllStatisticCommand,
+} from '../cabinet/cabinetMainData';
+import { buildOpenSubmenuCommand } from '../cabinet/submenuData';
+import { cabinetMain, cabinetSubmenu, setCabinetMain, setCabinetSubmenu, dismissCabinetPopup } from '../cabinet/cabinetStore';
 
 // --- разбор конкретных доменов, известных, но пока не подключённых к живым окнам ---
 import { parseAllianceManagement } from '../alliance/allianceData';
@@ -178,7 +189,6 @@ const PARSERS: Record<string, (xml: string) => unknown> = {
   armycalculator: parseArmyCalculator,
   battleoverview: parseBattleOverview,
   battlinfo: parseBattleInfo,
-  cabinet: parseCabinetResponse,
   // Не портировано (см. план, «Реестр доменов»):
   // colonynavigate — colonynavigate.as не читался в Фазе 3.
 };
@@ -878,10 +888,12 @@ function renderArtDepot(root: Element, xml: string, ctx: DispatchContext): void 
  * getbuildmenu-семьи. `onBuy` переиспользует уже готовый
  * `buyArtefactInShopXml()` (requestDataCabinet.as:61-88 `buyArtInShop` —
  * единственная команда кабинета, НЕ обёрнутая в `<cabinetRequest>`, см.
- * xmlBuilder.ts). Открывается изнутри домена `cabinet`, который в этом
- * заходе ещё не подключён к живым командам (см. план) — точка входа пока
- * недостижима вживую, но окно и команда уже готовы (тот же принцип, что
- * ранее с otpusk/allianceprivatepeace до появления кнопки открытия).
+ * xmlBuilder.ts). Открывается изнутри домена `cabinet` (теперь
+ * подключён, см. renderCabinet) — но КАКОЙ именно пункт `service_list`
+ * ведёт сюда (через `callsubmenu`, напрямую другим `command=`, или
+ * отдельным путём) не сверялся с сервером — не гадаем, окно и команда
+ * покупки готовы и сработают, как только маркой `artefact_shop` придёт
+ * ответ, вне зависимости от того, как именно он был запрошен.
  */
 function renderArtefactShop(_root: Element, xml: string, ctx: DispatchContext): void {
   const data = parseArtefactShop(xml);
@@ -924,6 +936,89 @@ function renderAuction(root: Element, xml: string, ctx: DispatchContext): void {
   );
 }
 
+/** Спред полей команды кабинета (кроме `command`) как атрибутов `<cabinetRequest>` — все build*Command() кабинета возвращают такую форму. */
+function sendCabinet(ctx: DispatchContext, cmd: { command: string } & Record<string, unknown>): void {
+  const { command, ...attrs } = cmd;
+  void ctx.send(cabinetRequestXml(command, attrs as Record<string, string | number | undefined>));
+}
+
+/**
+ * cabinetMainData.ts / submenuData.ts — три под-действия ОДНОЙ марки
+ * `cabinet` (`action="enter"|"submenuopen"|"operationStatistic"`,
+ * `parseCabinetResponse` уже их различает). Открывается автономной
+ * `<cabinetRequest command="open"/>` (reqvestdata.as:1017-1021,
+ * `cabinetRequest()` — вызывается из `game.as` напрямую с иконки
+ * статус-бара, БЕЗ платформенных условий; подтверждённый тег — "open",
+ * а не "enter", как предполагал план до сверки), не через getbuildmenu-
+ * семью — своя система команд `<cabinetRequest command="...">`.
+ *
+ * Список услуг (enter) и открытая подформа (submenuopen) — РАЗНЫЕ марки
+ * одного корня, поэтому свой стор `cabinet/cabinetStore.ts` по тому же
+ * паттерну, что и почта (см. `renderMailList`/`renderMailMessage`) —
+ * открытие подформы не должно терять уже показанный список услуг.
+ *
+ * `operationStatistic` — окна для него в Фазе 3 не строили (нет в
+ * реестре доменов плана), здесь только логируется, как и прочие
+ * "распознан, но без окна" случаи (см. PARSERS).
+ */
+function renderCabinet(_root: Element, xml: string, ctx: DispatchContext): void {
+  const result = parseCabinetResponse(xml);
+  if (result.action === 'enter') {
+    setCabinetMain(result.data);
+  } else if (result.action === 'submenuopen') {
+    setCabinetSubmenu(result.form);
+  } else {
+    console.log('[dispatch] cabinet operationStatistic разобран, окна для него в Фазе 3 нет:', result.data);
+    return;
+  }
+  renderCabinetWindow(ctx);
+}
+
+/**
+ * `buyGoldMode` — платформенный флаг (`_level0.socialNet`/`_level0.bill`,
+ * `RightBlock.as:201-218`), задаётся embed-параметрами HTML-страницы, вне
+ * игрового протокола. VK-режим — вне объёма этого порта (см. память
+ * проекта, VK переносится отдельно с нуля), `pop-service` требует
+ * непортированный `_level0.popmog_service`. Выбран `'pop-billing'` КАК
+ * ПРЕДПОЛОЖЕНИЕ, не факт — единственный вариант, опирающийся только на
+ * уже разобранные живые данные (`data.billingUrl` из самого ответа
+ * `cabinet`), а не на непортированный внешний флаг.
+ */
+function renderCabinetWindow(ctx: DispatchContext): void {
+  const data = cabinetMain.value;
+  if (!data) return;
+  openWindow(
+    <CabinetWindow
+      data={data}
+      openSubmenu={cabinetSubmenu.value}
+      onClose={closeWindow}
+      onSelectService={(id) => sendCabinet(ctx, buildOpenSubmenuCommand(id))}
+      onCloseSubmenu={() => {
+        setCabinetSubmenu(null);
+        renderCabinetWindow(ctx);
+      }}
+      onSubmitSubmenu={(buttonId, values) => {
+        const idmenu = cabinetSubmenu.value?.idmenu ?? '';
+        void ctx.send(cabinetRequestXml('confirmsubmenu', { button: buttonId, menu: idmenu, ...values }));
+      }}
+      onDismissPopup={() => {
+        dismissCabinetPopup();
+        renderCabinetWindow(ctx);
+      }}
+      rightBlock={{
+        buyGoldMode: 'pop-billing',
+        onBuyGold: () => console.log('[dispatch] onBuyGold — VK-режим вне объёма этого порта'),
+        onOpenExternal: (url) => window.open(url, '_blank'),
+        onChangeGoldToSilver: (count) => sendCabinet(ctx, buildChangeGoldToSilverCommand(count)),
+        onMoneyToWorld: (worldId, gold, silver) => sendCabinet(ctx, buildMoneyToWorldCommand(worldId, gold, silver)),
+        onMoneyFromWorld: (worldId, gold, silver) => sendCabinet(ctx, buildMoneyFromWorldCommand(worldId, gold, silver)),
+        onGiftMoney: (gold, silver) => sendCabinet(ctx, buildGiftMoneyCommand(gold, silver)),
+        onShowAllStatistic: () => sendCabinet(ctx, buildGetAllStatisticCommand()),
+      }}
+    />,
+  );
+}
+
 const RENDERERS: Record<string, (root: Element, xml: string, ctx: DispatchContext) => void> = {
   getbuildinfo: renderBuildInfo,
   buildingartefact: renderBuildArtefact,
@@ -959,6 +1054,7 @@ const RENDERERS: Record<string, (root: Element, xml: string, ctx: DispatchContex
   archeology_artefact: renderArtDepot,
   artefact_shop: renderArtefactShop,
   auction: renderAuction,
+  cabinet: renderCabinet,
 };
 
 /**
