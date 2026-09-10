@@ -74,7 +74,9 @@ function ArtefactRow({
         </div>
       </td>
       <td>
-        <button onClick={onAction}>{actionLabel}</button>
+        <button type="button" class="ds-popup__btn" disabled={actionLabel === 'Нет слотов'} onClick={onAction}>
+          {actionLabel}
+        </button>
       </td>
     </tr>
   );

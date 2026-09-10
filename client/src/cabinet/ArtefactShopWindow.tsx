@@ -82,7 +82,9 @@ export function ArtefactShopWindow({ data, onClose, onBuy }: ArtefactShopWindowP
               </option>
             ))}
           </select>
-          <button onClick={applyFilter}>Фильтр</button>
+          <button type="button" class="ds-popup__btn" onClick={applyFilter}>
+            Фильтр
+          </button>
 
           <label style={{ marginLeft: '12px' }}>
             <input type="radio" name="concurrency" checked={concurrency === 'gold'} onChange={() => setConcurrency('gold')} /> Золото
@@ -118,7 +120,7 @@ export function ArtefactShopWindow({ data, onClose, onBuy }: ArtefactShopWindowP
         <div>
           В корзине: {count} шт. на сумму {totalPrice}
         </div>
-        <button disabled={cart.length === 0} onClick={() => setShowCart(true)}>
+        <button type="button" class="ds-popup__btn" disabled={cart.length === 0} onClick={() => setShowCart(true)}>
           Корзина / Купить
         </button>
       </div>
@@ -144,6 +146,8 @@ export function ArtefactShopWindow({ data, onClose, onBuy }: ArtefactShopWindowP
             </table>
             <div>Итого: {totalPrice} {concurrency === 'gold' ? 'золота' : 'серебра'}</div>
             <button
+              type="button"
+              class="ds-popup__btn"
               onClick={() => {
                 onBuy(cart, concurrency);
                 setShowCart(false);

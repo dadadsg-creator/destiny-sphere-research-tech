@@ -33,12 +33,20 @@ export function VacationWindow({ data, tabs, onTabClick, onClose, onStart, onSto
         <input type="password" value={password} onInput={(e) => setPassword((e.target as HTMLInputElement).value)} />
       )}
 
-      {data.status === '1' && <button onClick={() => setConfirming(true)}>Уйти в отпуск</button>}
+      {data.status === '1' && (
+        <button type="button" class="ds-popup__btn" onClick={() => setConfirming(true)}>
+          Уйти в отпуск
+        </button>
+      )}
 
       {data.status === '3' && (
         <>
-          <button onClick={() => onStop(password)}>Выйти из отпуска</button>
-          <button onClick={onForgotPassword}>Забыл пароль</button>
+          <button type="button" class="ds-popup__btn" onClick={() => onStop(password)}>
+            Выйти из отпуска
+          </button>
+          <button type="button" class="ds-popup__btn" onClick={onForgotPassword}>
+            Забыл пароль
+          </button>
         </>
       )}
 

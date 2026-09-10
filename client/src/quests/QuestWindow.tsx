@@ -36,13 +36,9 @@ export function QuestWindow({ data, onClose }: QuestWindowProps) {
 
   return (
     <Window title="Задания" onClose={onClose}>
-      <div>
+      <div class="ds-popup__buttons ds-btn-row">
         {QUEST_TAB_LABELS.map((tab) => (
-          <button
-            key={tab.id}
-            disabled={tab.id === tabId}
-            onClick={() => setTabId(tab.id)}
-          >
+          <button type="button" class="ds-popup__btn" key={tab.id} disabled={tab.id === tabId} onClick={() => setTabId(tab.id)}>
             {tab.ln}
           </button>
         ))}

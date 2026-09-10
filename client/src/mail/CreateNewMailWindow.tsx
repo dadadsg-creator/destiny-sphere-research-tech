@@ -83,16 +83,35 @@ export function CreateNewMailWindow({ data, isVk, tabs, onTabClick, onClose, onS
           onInput={(e) => setBody((e.target as HTMLTextAreaElement).value)}
         />
       </div>
-      <button title="Жирный — обернуть весь текст в <b>" style={{ fontWeight: 'bold' }} onClick={() => setBody((b) => `<b>${b}</b>`)}>
+      <button
+        type="button"
+        class="ds-popup__btn"
+        title="Жирный — обернуть весь текст в <b>"
+        style={{ fontWeight: 'bold' }}
+        onClick={() => setBody((b) => `<b>${b}</b>`)}
+      >
         Ж
       </button>
-      <button title="Курсив — обернуть весь текст в <i>" style={{ fontStyle: 'italic' }} onClick={() => setBody((b) => `<i>${b}</i>`)}>
+      <button
+        type="button"
+        class="ds-popup__btn"
+        title="Курсив — обернуть весь текст в <i>"
+        style={{ fontStyle: 'italic' }}
+        onClick={() => setBody((b) => `<i>${b}</i>`)}
+      >
         К
       </button>
-      <button title="Обернуть весь текст в ссылку <a>" onClick={() => setBody((b) => `<a href="" target="blank">${b}</a>`)}>
+      <button
+        type="button"
+        class="ds-popup__btn"
+        title="Обернуть весь текст в ссылку <a>"
+        onClick={() => setBody((b) => `<a href="" target="blank">${b}</a>`)}
+      >
         Ссылка
       </button>
-      <button onClick={handleSend}>Отправить</button>
+      <button type="button" class="ds-popup__btn" onClick={handleSend}>
+        Отправить
+      </button>
     </Window>
   );
 }

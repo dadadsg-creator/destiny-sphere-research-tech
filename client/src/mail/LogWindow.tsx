@@ -19,8 +19,10 @@ export function LogWindow({ data, onClose, onCopy }: LogWindowProps) {
     <Window title={data.title} onClose={onClose}>
       <div dangerouslySetInnerHTML={{ __html: data.titleData }} />
       <div class="ds-window__content" dangerouslySetInnerHTML={{ __html: data.textData }} />
-      <button onClick={onCopy}>Копировать в буфер</button>
-      <button disabled title="Никогда не работало в оригинальном клиенте (logwindow.as)">
+      <button type="button" class="ds-popup__btn" onClick={onCopy}>
+        Копировать в буфер
+      </button>
+      <button type="button" class="ds-popup__btn" disabled title="Никогда не работало в оригинальном клиенте (logwindow.as)">
         Написать письмо
       </button>
     </Window>

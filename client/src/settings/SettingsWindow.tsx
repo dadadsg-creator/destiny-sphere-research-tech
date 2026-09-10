@@ -63,7 +63,9 @@ export function SettingsWindow({ onClose }: SettingsWindowProps) {
         ))}
       </div>
 
-      <button onClick={resetColor}>Восстановить тон окон по умолчанию</button>
+      <button type="button" class="ds-popup__btn" onClick={resetColor}>
+        Восстановить тон окон по умолчанию
+      </button>
     </Window>
   );
 }

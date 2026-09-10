@@ -21,7 +21,11 @@ export function SysMessageWindow({ messages, windowName, typeWin, gateOpen, onCl
 
   return (
     <Window title={windowName} onClose={onClose}>
-      {showSpyLogButton && <button onClick={onViewSpyLog}>Просмотр лога разведки</button>}
+      {showSpyLogButton && (
+        <button type="button" class="ds-popup__btn" onClick={onViewSpyLog}>
+          Просмотр лога разведки
+        </button>
+      )}
       <div class="ds-window__content" dangerouslySetInnerHTML={{ __html: messages.join('<br/>') }} />
     </Window>
   );

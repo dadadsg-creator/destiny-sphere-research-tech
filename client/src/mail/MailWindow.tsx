@@ -61,7 +61,7 @@ export function MailWindow({
 
   return (
     <Window title={data.type === 'in' ? 'Входящие' : 'Исходящие'} tabs={tabs} onTabClick={onTabClick} onClose={onClose}>
-      <div class="ds-popup__buttons ds-mail-toolbar">
+      <div class="ds-popup__buttons ds-btn-row">
         <button type="button" class="ds-popup__btn" onClick={onSwitchType}>
           {data.type === 'in' ? 'Показать исходящие' : 'Показать входящие'}
         </button>

@@ -28,9 +28,17 @@ export function AdviceWindow({ hint, onClose, onNext, onPrev, onJumpTo }: Advice
       <div dangerouslySetInnerHTML={{ __html: hint.txt }} />
       {hint.build && <div>Было: {hint.build}</div>}
       {hint.tobuild && <div>Станет: {hint.tobuild}</div>}
-      <div>
-        {showPrev && <button onClick={onPrev}>Назад</button>}
-        {showNext && <button onClick={onNext}>Вперёд</button>}
+      <div class="ds-popup__buttons ds-btn-row">
+        {showPrev && (
+          <button type="button" class="ds-popup__btn" onClick={onPrev}>
+            Назад
+          </button>
+        )}
+        {showNext && (
+          <button type="button" class="ds-popup__btn" onClick={onNext}>
+            Вперёд
+          </button>
+        )}
       </div>
       {hint.relatedHints.length > 0 && (
         <ul>
