@@ -46,8 +46,16 @@ export async function runLiveApp(renderer: MapRenderer, login: string, pass: str
   // `ctx.activeCell` — аналог debug.link.active_cell оригинала: ячейка
   // "прилипает" к открытому через getbuildmenu-семейство окну, клики по
   // вкладкам внутри него переиспользуют это же значение (см. dispatch.tsx).
+  //
+  // ВАЖНО (найдено 2026-09-10 живым кликом — сервер вернул SYSTEM ERROR):
+  // `num` из hexGrid.ts — 0-based (совпадает с индексом в 217-символьной
+  // строке грунта), а `c` в протоколе — 1-based. Подтверждено буквально
+  // `reqvestdata.as` (`cell_click`, вызывается из `sota.as:276`,
+  // `onRelease` на реальной ячейке): `debug.link.active_cell = " c=\"" +
+  // (Number(id_cell) + 1) + "\" "` — явный `+1`. Раньше здесь его не
+  // было (`c=String(num)` без сдвига).
   renderer.onCellClick = (num, hasBuilding) => {
-    ctx.activeCell = String(num);
+    ctx.activeCell = String(num + 1);
     const tab = hasBuilding ? 'BuildingInfo' : 'AllowBuildings';
     void session.sendCommand(tag('getbuildmenu', { c: ctx.activeCell, tab })).then((marks) => {
       handleResponse(marks, ctx);
