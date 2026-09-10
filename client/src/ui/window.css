@@ -416,6 +416,14 @@
   object-position: bottom;
   flex-shrink: 0;
 }
+/* Спрайты построек (build_{tech,bio,psi}.lib.swf) — тот же приём, что и ds-unit-icon. */
+.ds-building-icon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  object-position: bottom;
+  flex-shrink: 0;
+}
 .ds-artefact-row__bonuses {
   display: flex;
   flex-wrap: wrap;

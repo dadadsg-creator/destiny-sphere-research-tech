@@ -375,6 +375,8 @@ function renderBuildMenu(root: Element, xml: string, ctx: DispatchContext): void
       entries={entries}
       localBuildings={localBuildings}
       resources={combResToPlayerPool(combRes.value)}
+      race={ctx.race}
+      turn={root.getAttribute('turn')}
       tabs={parseTabsArray(root)}
       onTabClick={(tabId) => sendTabClick(ctx, tabId)}
       onClose={closeWindow}

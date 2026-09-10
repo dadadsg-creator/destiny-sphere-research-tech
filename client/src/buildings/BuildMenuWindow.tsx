@@ -18,15 +18,20 @@
  */
 import { Window } from '../ui/Window';
 import type { TabDef } from '../ui/tabs';
-import { computeBuildAllowed, type BuildMenuEntry, type PlayerResourcePoolFull } from './buildMenuData';
+import { buildTimeSeconds, computeBuildAllowed, formatBuildTime, type BuildMenuEntry, type PlayerResourcePoolFull } from './buildMenuData';
 import type { LocalBuilding } from '../data/localData';
 import { RESOURCE_LETTER_TO_NAME } from '../data/resourceIcons';
 import { ResourceList, type ResourceCost } from '../ui/ResourceValue';
+import { BUILDING_NAMES, buildingAssetPath, type Race } from '../map/buildingTypes';
 
 export interface BuildMenuWindowProps {
   entries: BuildMenuEntry[];
   localBuildings: Map<number, LocalBuilding>;
   resources: PlayerResourcePoolFull;
+  /** Раса игрока — определяет, какая картинка здания показывается (см. map/buildingTypes.ts). */
+  race: Race;
+  /** Живой атрибут корня `<getbuildmenu turn="">` — секунды на один "ход" мира, нужен для расчёта времени постройки. */
+  turn: string | null;
   tabs?: TabDef[];
   onTabClick?: (tabId: string) => void;
   onClose: () => void;
@@ -46,6 +51,8 @@ export function BuildMenuWindow({
   entries,
   localBuildings,
   resources,
+  race,
+  turn,
   tabs,
   onTabClick,
   onClose,
@@ -56,8 +63,10 @@ export function BuildMenuWindow({
       <table>
         <thead>
           <tr>
+            <th />
             <th>Здание</th>
             <th>Стоимость</th>
+            <th>Время</th>
             <th />
           </tr>
         </thead>
@@ -66,12 +75,17 @@ export function BuildMenuWindow({
             const local = localBuildings.get(entry.id);
             const allowed = computeBuildAllowed(entry, local, resources);
             const attrs = local?.attrs ?? {};
+            const buildingname = BUILDING_NAMES[entry.id];
             return (
               <tr key={entry.id}>
+                <td>
+                  {buildingname && <img class="ds-building-icon" src={buildingAssetPath(buildingname, race)} alt="" />}
+                </td>
                 <td>{local?.ln ?? entry.id}</td>
                 <td>
                   <ResourceList costs={buildCosts(attrs, entry)} />
                 </td>
+                <td>{formatBuildTime(buildTimeSeconds(attrs, turn))}</td>
                 <td>
                   <button type="button" class="ds-popup__btn" disabled={!allowed} onClick={() => onBuild(entry.id)}>
                     Построить

@@ -81,6 +81,52 @@ export function combResToPlayerPool(res: CombRes): PlayerResourcePoolFull {
 }
 
 /**
+ * Время постройки — `xmlparsers.as:2592`: `game.turnToTime(game.getLocalNames(id_build).C * xml.attributes.turn)`.
+ * `attrs.C` — CONSTRUCTION_TIME здания в турнах (`loaddata`), `turn` —
+ * живой атрибут корня `<getbuildmenu turn="">`, УЖЕ в секундах
+ * (`PN_AllowBuildings.class.php:278`: `set_attribute("turn",
+ * $this->worldSettings->get('TURN_TIME') * 60)`) — доп. `*60` из формулы
+ * `docs/mechanics-buildings.md` §4.2 сюда добавлять НЕ нужно, она уже
+ * учтена в живом `turn`.
+ */
+export function buildTimeSeconds(attrs: Record<string, string>, turn: string | null): number {
+  const c = Number(attrs.C);
+  const t = Number(turn);
+  if (!Number.isFinite(c) || !Number.isFinite(t)) return 0;
+  return c * t;
+}
+
+/**
+ * Порт `game.turnToTime()` (`game.as:2537-2598`) — секунды в строку вида
+ * "Xд Yч Zм Wс", показывая только ненулевые разряды, от старшего к
+ * младшему (подтверждено визуально скриншотом реального Flash-клиента,
+ * 2026-09-10: постройка с `C=2` турна на мире со `turn=12000` — "4ч 20м").
+ * Суффиксы "д"/"ч"/"м"/"с" — оригинал берёт их из живого `game.getLocalNames
+ * ("D_"/"H_"/"M_"/"S_")`, но это НЕ per-building loaddata-атрибут, а
+ * отдельная строковая таблица имён, которую порт ещё не разбирает —
+ * значения зафиксированы буквально по тому же скриншоту.
+ */
+export function formatBuildTime(totalSeconds: number): string {
+  let turn = Math.floor(totalSeconds);
+  if (turn <= 0) return `0с`;
+
+  const sec = turn % 60;
+  turn = Math.floor(turn / 60);
+  const mins = turn % 60;
+  turn = Math.floor(turn / 60);
+  const hour = turn % 24;
+  turn = Math.floor(turn / 24);
+  const days = turn;
+
+  const parts: string[] = [];
+  if (days > 0) parts.push(`${days}д`);
+  if (hour > 0) parts.push(`${hour}ч`);
+  if (mins > 0) parts.push(`${mins}м`);
+  if (sec > 0) parts.push(`${sec}с`);
+  return parts.join(' ');
+}
+
+/**
  * Категория «В» — итоговая доступность постройки для игрока
  * (`xmlparsers.as:2606-2620`): запрещена, если сервер сказал `s==0`,
  * ИЛИ если игроку не хватает хотя бы одного ресурса из его цены (K/N/S/F/

@@ -3,6 +3,7 @@ import './ui/window.css';
 import { render } from 'preact';
 import { MapRenderer } from './map/renderer';
 import type { BuildRecord } from './map/buildData';
+import type { Race } from './map/buildingTypes';
 import { runLiveApp } from './liveApp';
 import { BattleRenderer } from './battle/battleRenderer';
 import type { BattleRound } from './battle/battleData';
@@ -581,6 +582,12 @@ const TEST_PLAYER_RESOURCES: PlayerResourcePoolFull = {
   silverCredit: 10,
   goldCredit: 0,
 };
+// TURN_TIME=130мин условного мира ("turn" живого <getbuildmenu> — уже в
+// секундах, см. buildMenuData.ts::buildTimeSeconds) — при C=2 (CITY) даёт
+// "4ч 20м", буквально совпадая со скриншотом реального Flash-клиента,
+// использованным для сверки этого окна (2026-09-10).
+const TEST_BUILD_MENU_TURN = '7800';
+const TEST_BUILD_MENU_RACE: Race = 'bio';
 
 // Синтетические данные для проверки BuildInfoWindow (?screen=build-info).
 const TEST_BUILD_INFO: BuildInfoData = {
@@ -1467,6 +1474,8 @@ async function main() {
         entries={TEST_BUILD_MENU}
         localBuildings={TEST_LOCAL_BUILDINGS}
         resources={TEST_PLAYER_RESOURCES}
+        race={TEST_BUILD_MENU_RACE}
+        turn={TEST_BUILD_MENU_TURN}
         onClose={() => console.log('[build-menu] close')}
         onBuild={(id) => console.log('[build-menu] putbuild(', id, ')')}
       />,
