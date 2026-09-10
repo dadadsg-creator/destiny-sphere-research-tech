@@ -13,6 +13,28 @@
   z-index: 1000;
 }
 
+/* Временная замена статус-бара — только точки входа для живых тестов (см. ui/LiveToolbar.tsx). */
+.ds-live-toolbar {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 900;
+  display: flex;
+  gap: 6px;
+}
+.ds-live-toolbar__btn {
+  background: #16264d;
+  border: 1px solid #3a4d7a;
+  color: #e8ecf7;
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.ds-live-toolbar__btn:hover {
+  background: #33447a;
+}
+
 .ds-window {
   background: #0b1730;
   border: 2px solid #3a4d7a;

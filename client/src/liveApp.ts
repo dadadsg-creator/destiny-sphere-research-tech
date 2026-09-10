@@ -10,9 +10,10 @@
  */
 import { GameSession } from './protocol/gameProtocol';
 import { handleResponse, type DispatchContext } from './protocol/dispatch';
-import { tag } from './protocol/xmlBuilder';
+import { tag, cabinetRequestXml } from './protocol/xmlBuilder';
 import type { MapRenderer } from './map/renderer';
 import { raceFromNumber } from './map/buildingTypes';
+import { liveToolbarActions } from './ui/liveToolbarStore';
 
 export async function runLiveApp(renderer: MapRenderer, login: string, pass: string, uiid: string): Promise<void> {
   // baseUrl='' — запросы идут на текущий origin (localhost), прокси Vite
@@ -76,4 +77,17 @@ export async function runLiveApp(renderer: MapRenderer, login: string, pass: str
   ctx.race = raceFromNumber(session.getRace());
   const marks = await session.sendCommand('<load locations="3"/>');
   handleResponse(marks, ctx);
+
+  // Точки входа, явно включённые в первый проход "Сшивания" (план, §5) в
+  // дополнение к клику по карте — подтверждённые дословно форматы команд:
+  // `reqvestdata.as:380-388` (get_mail): `<getbuildmenu tab="MessageOverview"
+  // type="in|out"/>`, БЕЗ `c` (почта не привязана к ячейке); `dispatch.tsx`
+  // (docstring `renderCabinet`, уже сверено ранее чтением
+  // `reqvestdata.as:1017-1021`): `<cabinetRequest command="open"/>`.
+  // Настоящего статус-бара с графикой оригинала ещё нет — временные кнопки,
+  // см. ui/LiveToolbar.tsx.
+  liveToolbarActions.value = {
+    openMail: () => void ctx.send(tag('getbuildmenu', { tab: 'MessageOverview', type: 'in' })),
+    openCabinet: () => void ctx.send(cabinetRequestXml('open')),
+  };
 }

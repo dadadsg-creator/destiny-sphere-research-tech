@@ -8,6 +8,7 @@ import { runLiveApp } from './liveApp';
 import { BattleRenderer } from './battle/battleRenderer';
 import type { BattleRound } from './battle/battleData';
 import { WindowHost } from './ui/WindowHost';
+import { LiveToolbar } from './ui/LiveToolbar';
 import { openWindow } from './ui/windowStore';
 import { ArmyOverviewWindow } from './army/ArmyOverviewWindow';
 import { ArmyCreationWindow } from './army/ArmyCreationWindow';
@@ -1177,7 +1178,13 @@ const uiid = import.meta.env.VITE_TEST_UIID as string | undefined;
 
 async function main() {
   const uiRoot = document.querySelector<HTMLDivElement>('#ui-root')!;
-  render(<WindowHost />, uiRoot);
+  render(
+    <>
+      <WindowHost />
+      <LiveToolbar />
+    </>,
+    uiRoot,
+  );
 
   if (screen === 'army') {
     openWindow(
