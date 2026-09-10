@@ -12,6 +12,7 @@ import { GameSession } from './protocol/gameProtocol';
 import { handleResponse, type DispatchContext } from './protocol/dispatch';
 import { tag } from './protocol/xmlBuilder';
 import type { MapRenderer } from './map/renderer';
+import { raceFromNumber } from './map/buildingTypes';
 
 export async function runLiveApp(renderer: MapRenderer, login: string, pass: string, uiid: string): Promise<void> {
   // baseUrl='' — запросы идут на текущий origin (localhost), прокси Vite
@@ -23,6 +24,10 @@ export async function runLiveApp(renderer: MapRenderer, login: string, pass: str
     renderer,
     activeCell: undefined,
     gateOpen: false,
+    // Race подставляется ниже, сразу после enterWorld() — placeholder на
+    // случай раннего доступа (не должен реально сработать, т.к. никакие
+    // XML-команды до входа в мир ещё не отправлены).
+    race: 'bio',
     // Общий колбэк для команд, отправляемых из УЖЕ открытого окна
     // (кнопки действий) — без привязки к конкретной ячейке, аналог
     // произвольного reqvestdata-вызова в оригинале.
@@ -51,6 +56,7 @@ export async function runLiveApp(renderer: MapRenderer, login: string, pass: str
 
   await session.login(login, pass);
   await session.enterWorld(uiid);
+  ctx.race = raceFromNumber(session.getRace());
   const marks = await session.sendCommand('<load locations="3"/>');
   handleResponse(marks, ctx);
 }

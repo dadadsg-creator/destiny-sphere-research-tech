@@ -49,6 +49,22 @@ export function buildHexGrid(): CellPosition[] {
   return cells;
 }
 
+/**
+ * 6 вершин силуэта ОДНОЙ ячейки, в ЛОКАЛЬНЫХ координатах (0,0 = левый
+ * верхний угол bounding box 2h×2v) — буквально `sota.as:68-88`
+ * (`createSample()`, `sizeX=sota.h`, `sizeY=sota.v`, те же H/V, что и
+ * шаг сетки выше). В оригинале эта форма используется как `setMask()`
+ * для тайла грунта (`sota.as:417-422`) — без неё соседние тайлы просто
+ * закрывают друг друга сплошным прямоугольником без видимой границы
+ * ячейки (найдено 2026-09-10, владелец сравнил с реальным Flash-клиентом
+ * — там чётко видна гексагональная сетка, у нас её не было вовсе).
+ */
+export function hexPolygonPoints(): number[] {
+  const h = CELL_WEIGHT_H;
+  const v = CELL_WEIGHT_V;
+  return [h, 0, 2 * h, 0.5 * v, 2 * h, 1.5 * v, h, 2 * v, 0, 1.5 * v, 0, 0.5 * v];
+}
+
 /** Якорь постройки — нижняя вершина ячейки, НЕ центр (sota.as, см. §3.4 документа). */
 export function buildingAnchor(cell: CellPosition): { x: number; y: number } {
   return { x: cell.x + CELL_WEIGHT_H, y: cell.y + 2 * CELL_WEIGHT_V };

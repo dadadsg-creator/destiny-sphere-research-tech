@@ -36,6 +36,7 @@ import { parseXmlFragment } from './response';
 import { parseRefresh } from '../map/refreshData';
 import { parseBuild } from '../map/buildData';
 import type { MapRenderer } from '../map/renderer';
+import type { Race } from '../map/buildingTypes';
 import { parseLocalData } from '../data/localData';
 import { setLocalData, localData } from '../data/localDataStore';
 import { parseCombRes } from '../data/combResData';
@@ -192,6 +193,13 @@ export interface DispatchContext {
    * каждом `refresh`, используется `ArcheologyWindow`.
    */
   gateOpen: boolean;
+  /**
+   * Раса владельца соты — определяет графику построек, не влияет на
+   * протокол (`race` не приходит ни в одной XML-марке, только в FlashVars
+   * при входе в мир, см. `gameProtocol.ts:enterWorld()`). Проставляется
+   * один раз в `liveApp.ts` перед первым `renderBuildings()`.
+   */
+  race: Race;
 }
 
 /**
@@ -1268,7 +1276,7 @@ export function handleResponse(marks: ParsedMarks, ctx: DispatchContext): void {
   if (marks.refresh) {
     const refresh = parseRefresh(marks.refresh);
     void ctx.renderer.renderGround(refresh.sota);
-    void ctx.renderer.renderBuildings(parseBuild(refresh.build));
+    void ctx.renderer.renderBuildings(parseBuild(refresh.build), ctx.race);
     ctx.gateOpen = refresh.gate;
   }
 

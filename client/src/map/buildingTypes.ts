@@ -119,3 +119,56 @@ export function buildingAssetKey(buildingname: string): string {
   const sep = buildingname.indexOf('|');
   return sep === -1 ? buildingname : buildingname.slice(0, sep);
 }
+
+/**
+ * Раса владельца соты — определяет, КАК выглядят постройки, не какие
+ * именно можно строить (game.as:2342-2357, `getLibrary(1, race)`):
+ * здания с ОДНИМ и тем же `id_building`/`buildingname` рисуются
+ * СОВЕРШЕННО разной графикой в зависимости от расы игрока (подтверждено
+ * визуально — `RESIDENTIAL_BUILDING` в `build_tech.lib`/`build_bio.lib`/
+ * `build_psi.lib` — три никак не похожих друг на друга спрайта). 1
+ * (Voraner) → "tech", 2 (Liensu) → "bio", 3 (Psoleon) → "psi", иначе —
+ * "bio" (тот же дефолт, что и в оригинале, `default: lib = "buildlibb"`).
+ */
+export type Race = 'tech' | 'bio' | 'psi';
+
+export function raceFromNumber(race: number | null | undefined): Race {
+  if (race === 1) return 'tech';
+  if (race === 3) return 'psi';
+  return 'bio';
+}
+
+/**
+ * Обнаружено при извлечении спрайтов (2026-09-10): 11 построек существуют
+ * ТОЛЬКО в одной из трёх расовых библиотек — их id/имя в БД уже
+ * расово-специфичны (суффикс "2V"/"2L"/"2P" — Voraner/Liensu/Psoleon, или
+ * "_LIENSU"), либо здание вообще эксклюзивно для одной расы
+ * (`CLONE_FARM`/`HUGE_PRODIUM_COLLECTOR` — только у Liensu). Для них
+ * текущая раса игрока роли не играет — ассет только один, реальный.
+ */
+const RACE_EXCLUSIVE_BUILDING: Record<string, Race> = {
+  TRAINING_CAMP2V: 'tech',
+  LIGHT_WEAPON_MANUFACTURE2V: 'tech',
+  HEAVY_WEAPON_MANUFACTURE2V: 'tech',
+  TRAINING_CAMP2L: 'bio',
+  LIGHT_WEAPON_MANUFACTURE2L: 'bio',
+  HEAVY_WEAPON_MANUFACTURE2L: 'bio',
+  HUGE_KADERIUM_FORGE_LIENSU: 'bio',
+  HUGE_NANO_CRYSTALLIZER_LIENSU: 'bio',
+  HUGE_PRODIUM_COLLECTOR: 'bio',
+  CLONE_FARM: 'bio',
+  TRAINING_CAMP2P: 'psi',
+  LIGHT_WEAPON_MANUFACTURE2P: 'psi',
+  HEAVY_WEAPON_MANUFACTURE2P: 'psi',
+};
+
+/** Реальная раса ассета — переопределяется для расово-эксклюзивных построек (см. RACE_EXCLUSIVE_BUILDING), иначе раса игрока как есть. */
+export function effectiveBuildingRace(buildingname: string, race: Race): Race {
+  return RACE_EXCLUSIVE_BUILDING[buildingAssetKey(buildingname)] ?? race;
+}
+
+/** Путь к текстуре постройки с учётом расы владельца — client/public/assets/buildings/<tech|bio|psi>/<NAME>.png. */
+export function buildingAssetPath(buildingname: string, race: Race): string {
+  const key = buildingAssetKey(buildingname);
+  return `/assets/buildings/${effectiveBuildingRace(buildingname, race)}/${key}.png`;
+}

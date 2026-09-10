@@ -101,7 +101,7 @@ const TEST_BUILDINGS: BuildRecord[] = [
   { num: 8, id: 15, art: '', status: 'OK' }, // CITY
   { num: 108, id: 6, art: '', status: 'OK' }, // CENTRAL_GATE (центр соты)
   { num: 208, id: 17, art: '', status: 'OK' }, // FARM
-  { num: 216, id: 26, art: '', status: 'OK' }, // MILITARY_BASE
+  { num: 216, id: 26, art: '', status: '4' }, // MILITARY_BASE, деактивирована — проверка бейджа UNACTIVE (sota.as:864-868)
 ];
 
 // Синтетический раунд боя для проверки BattleRenderer (?screen=battle) —
@@ -1787,7 +1787,8 @@ async function main() {
 
   if (!wantsLive || !login || !pass || !uiid) {
     await renderer.renderGround('G'.repeat(217));
-    await renderer.renderBuildings(TEST_BUILDINGS);
+    // 'bio' — тот же дефолт, что в оригинале при неизвестной расе (game.as:2354-2356).
+    await renderer.renderBuildings(TEST_BUILDINGS, 'bio');
     (window as any).__renderDone = true;
     return;
   }

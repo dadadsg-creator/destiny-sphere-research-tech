@@ -60,6 +60,7 @@ export class GameProtocolError extends Error {}
 
 export class GameSession {
   private ck: string | null = null;
+  private race: number | null = null;
   private readonly baseUrl: string;
   private readonly cookieJar?: CookieJar;
   private readonly fetchImpl: typeof fetch;
@@ -74,6 +75,11 @@ export class GameSession {
 
   getClientKey(): string | null {
     return this.ck;
+  }
+
+  /** `debug.link.race` оригинала (1/2/3 = tech/bio/psi, см. map/buildingTypes.ts) — известна только после enterWorld(). */
+  getRace(): number | null {
+    return this.race;
   }
 
   /**
@@ -118,6 +124,16 @@ export class GameSession {
    * ни с чем из списка не совпадает). Явно указываем правдоподобный
    * `referrer` с `index_start.php` в пути — распространяется на весь
    * redirect-chain этого fetch(), включая финальный прыжок на index.php.
+   *
+   * `race` (1/2/3 = tech/bio/psi, см. map/buildingTypes.ts) НЕ приходит ни
+   * в одной XML-марке игрового протокола — подтверждено
+   * `docs/protocol-client-server.md`: это часть `FlashVars`, которые
+   * `flash_code.php:9,25` буквально вклеивает в HTML embed/object-тег
+   * страницы `ds/index.php` (`"&race=".$_SESSION['race'].$_SESSION[
+   * 'windowKey']` — без разделителя перед `windowKey`, поэтому регэксп
+   * читает только ведущие цифры). Раз `fetch()` в `enterWorld()` и так
+   * доходит до этой самой страницы (`redirect:'follow'`), читаем `race`
+   * прямо из её тела, а не игнорируем его как раньше.
    */
   async enterWorld(uiid: string): Promise<string> {
     this.assertLoggedIn();
@@ -127,13 +143,15 @@ export class GameSession {
     const res = await this.rawPost('/ds/index_start.php', body, referrer);
     const target = new URL(res.url);
     const ck = target.searchParams.get('ck');
+    const bodyText = await res.clone().text().catch(() => '');
     if (!ck) {
-      const bodyText = await res.clone().text().catch(() => '(не удалось прочитать тело)');
       console.error('[enterWorld debug] res.url=', res.url, 'res.status=', res.status, 'document.cookie=', typeof document !== 'undefined' ? document.cookie : '(n/a)', 'body=', bodyText.slice(0, 300));
       throw new GameProtocolError('Вход в мир не удался — сервер не перенаправил на ds/index.php (неверный uiid?).');
     }
     this.ck = ck;
     this.seedSessionCookieFromUrl(target);
+    const raceMatch = bodyText.match(/[?&]race=(\d+)/);
+    this.race = raceMatch ? Number(raceMatch[1]) : null;
     return res.url;
   }
 
