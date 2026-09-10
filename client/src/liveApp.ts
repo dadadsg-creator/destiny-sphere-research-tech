@@ -10,7 +10,7 @@
  */
 import { GameSession } from './protocol/gameProtocol';
 import { handleResponse, type DispatchContext } from './protocol/dispatch';
-import { tag, cabinetRequestXml } from './protocol/xmlBuilder';
+import { tag } from './protocol/xmlBuilder';
 import type { MapRenderer } from './map/renderer';
 import { raceFromNumber } from './map/buildingTypes';
 import { liveToolbarActions } from './ui/liveToolbarStore';
@@ -79,15 +79,34 @@ export async function runLiveApp(renderer: MapRenderer, login: string, pass: str
   handleResponse(marks, ctx);
 
   // Точки входа, явно включённые в первый проход "Сшивания" (план, §5) в
-  // дополнение к клику по карте — подтверждённые дословно форматы команд:
-  // `reqvestdata.as:380-388` (get_mail): `<getbuildmenu tab="MessageOverview"
-  // type="in|out"/>`, БЕЗ `c` (почта не привязана к ячейке); `dispatch.tsx`
-  // (docstring `renderCabinet`, уже сверено ранее чтением
-  // `reqvestdata.as:1017-1021`): `<cabinetRequest command="open"/>`.
-  // Настоящего статус-бара с графикой оригинала ещё нет — временные кнопки,
-  // см. ui/LiveToolbar.tsx.
+  // дополнение к клику по карте. Настоящего статус-бара с графикой
+  // оригинала ещё нет — временные кнопки, см. ui/LiveToolbar.tsx.
+  //
+  // Почта — подтверждённый формат `reqvestdata.as:380-388` (get_mail):
+  // `<getbuildmenu tab="MessageOverview" type="in|out"/>`, БЕЗ `c` (почта
+  // не привязана к ячейке).
+  //
+  // ИСПРАВЛЕНО (2026-09-10, уточнение владельца после живого теста):
+  // «Личный кабинет» — это НЕ команда игрового XML-протокола, а отдельная
+  // страница портала (`https://destinysphere.ru/ds/user_cabinet.php`,
+  // подтверждено файлом `ds/user_cabinet.php` — свой сессионный вход
+  // `SU_GameSessionWork::SessionContinue()`/`UC_ControlUserCabinet`,
+  // отдельный от `UA_`/`PN_`-классов игровых действий). Раньше здесь стоял
+  // `<cabinetRequest command="open"/>` — живой клик вернул РЕАЛЬНУЮ
+  // серверную ошибку (`ASSERT UserAction.class.php:297`, см.
+  // CLIENT_PORTING_PLAN.md), и это не баг конкретно порта: прямым
+  // SQL-запросом к `ds_useractiontype` подтверждено, что этот tagname на
+  // мире вообще не зарегистрирован. Причина нашлась в `game.as:1060-1134`
+  // (конфигурация кнопок статус-бара, `array_button` от сервера) —
+  // `cabinetRequest()` шлётся только в режиме `"flashcabinet"`
+  // (VK/POP-встраивание, вне объёма порта, см. память проекта), а в
+  // обычном режиме сайта та же кнопка настроена как `"service"` и просто
+  // делает `getURL(url, "_blank")` — открывает внешнюю ссылку. Реестр
+  // `cabinet`/`CabinetWindow.tsx` (Фаза 3) технически рабочий (сверен по
+  // коду), но на обычном сайте, судя по всему, мёртвый путь — не удалён
+  // (не в объёме этого исправления), просто не вызывается отсюда.
   liveToolbarActions.value = {
     openMail: () => void ctx.send(tag('getbuildmenu', { tab: 'MessageOverview', type: 'in' })),
-    openCabinet: () => void ctx.send(cabinetRequestXml('open')),
+    openCabinet: () => window.open('https://destinysphere.ru/ds/user_cabinet.php', '_blank'),
   };
 }
