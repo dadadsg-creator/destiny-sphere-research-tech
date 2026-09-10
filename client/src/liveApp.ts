@@ -39,10 +39,7 @@ export async function runLiveApp(renderer: MapRenderer, login: string, pass: str
 
   // Клик по ячейке соты — аналог onRelease на building/ground-спрайте в
   // sota.as: занятая ячейка открывает информацию о здании (формат
-  // подтверждён живым тестом 2026-09-08, см. buildInfoData.ts docstring);
-  // пустая — список построек для возведения (имя таба "AllowBuildings",
-  // подтверждено чтением PN_AllowBuildings.class.php, см. план §3 —
-  // исправлено после первоначальной неподтверждённой догадки "BuildMenu").
+  // подтверждён живым тестом 2026-09-08, см. buildInfoData.ts docstring).
   // `ctx.activeCell` — аналог debug.link.active_cell оригинала: ячейка
   // "прилипает" к открытому через getbuildmenu-семейство окну, клики по
   // вкладкам внутри него переиспользуют это же значение (см. dispatch.tsx).
@@ -54,12 +51,24 @@ export async function runLiveApp(renderer: MapRenderer, login: string, pass: str
   // `onRelease` на реальной ячейке): `debug.link.active_cell = " c=\"" +
   // (Number(id_cell) + 1) + "\" "` — явный `+1`. Раньше здесь его не
   // было (`c=String(num)` без сдвига).
+  //
+  // ВАЖНО #2 (найдено 2026-09-10 живым кликом по-настоящему пустой
+  // ячейки — SYSTEM ERROR UA_GetBuildMenu::performAction1): для пустой
+  // ячейки НЕЛЬЗЯ слать явный `tab` вообще — подтверждено чтением
+  // `UA_GetBuildMenu.class.php:200-208` (`performAction()`): если
+  // `attachedbid` пуст (постройки нет) И `tab` НЕ пуст — сервер
+  // возвращает именно эту ошибку. Если `tab` пуст — сервер сам
+  // подставляет `PN_AllowBuildings` без вопросов (:209-247). Раньше тут
+  // стоял явный `tab="AllowBuildings"` — неподтверждённая (несмотря на
+  // формулировку в старом докстринге "подтверждено чтением класса")
+  // догадка по аналогии с занятой ячейкой, которая как раз ломала запрос.
   renderer.onCellClick = (num, hasBuilding) => {
     ctx.activeCell = String(num + 1);
-    const tab = hasBuilding ? 'BuildingInfo' : 'AllowBuildings';
-    void session.sendCommand(tag('getbuildmenu', { c: ctx.activeCell, tab })).then((marks) => {
-      handleResponse(marks, ctx);
-    });
+    void session
+      .sendCommand(tag('getbuildmenu', { c: ctx.activeCell, tab: hasBuilding ? 'BuildingInfo' : undefined }))
+      .then((marks) => {
+        handleResponse(marks, ctx);
+      });
   };
 
   await session.login(login, pass);

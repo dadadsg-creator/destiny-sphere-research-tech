@@ -25,6 +25,17 @@ export class MapRenderer {
    */
   onCellClick: ((num: number, hasBuilding: boolean) => void) | null = null;
   private occupiedCells = new Set<number>();
+  /**
+   * Спрайт грунта по `num` — начиная с добавления гекс-маски (2026-09-10,
+   * см. `hexPolygonPoints()`) `groundLayer.children[num]` больше НЕ
+   * указывает на нужный спрайт (на каждую ячейку теперь 2 узла — маска +
+   * спрайт, оба сидят в `groundLayer`, `children[num]` съезжает на
+   * произвольный узел другой ячейки). Найдено живым тестом — скрипты
+   * тестирования (`scripts/live-map-click.ts` и т.п.) читали `children[num]`
+   * напрямую и молча кликали не туда. Этот массив — единственный надёжный
+   * способ найти "экранную позицию ячейки num" снаружи рендерера.
+   */
+  readonly groundSprites: Sprite[] = [];
 
   private constructor(app: Application) {
     this.app = app;
@@ -65,6 +76,7 @@ export class MapRenderer {
     // спрайты+маски копились бы бесконечно на повторных вызовах (сама сота
     // ведь редко меняет форму, но перерисовывается заново каждый раз).
     this.groundLayer.removeChildren();
+    this.groundSprites.length = 0;
     const names = parseGroundString(sotaString);
     const uniqueNames = [...new Set(Object.values(GROUND_LINKAGE))];
     await Assets.load(uniqueNames.map((n) => ({ alias: n, src: `/assets/ground/${n}.png` })));
@@ -90,6 +102,7 @@ export class MapRenderer {
       sprite.mask = mask;
 
       this.groundLayer.addChild(sprite);
+      this.groundSprites[num] = sprite;
     }
 
     const size = mapPixelSize();
@@ -129,16 +142,30 @@ export class MapRenderer {
    */
   async renderBuildings(records: BuildRecord[], race: Race): Promise<void> {
     this.buildLayer.removeChildren();
-    this.occupiedCells = new Set(
-      records.filter((r) => (BUILDING_NAMES[r.id] ?? 'NO_BUILDING') !== 'NO_BUILDING').map((r) => r.num),
-    );
+    // ВАЖНО (найдено 2026-09-10 живым кликом — сервер открыл getbuildinfo
+    // для ячейки, которую мы считали пустой): "занятость" ячейки для
+    // клика НЕ должна зависеть от того, умеем ли мы НАРИСОВАТЬ постройку
+    // (BUILDING_NAMES — снятый один раз живой манифест, может не знать
+    // id с других миров/новых построек) — иначе клик уходит с неверным
+    // табом ("AllowBuildings" вместо "BuildingInfo"). Единственный
+    // надёжный признак "пусто" — буквальный id_building=0 (NO_BUILDING).
+    this.occupiedCells = new Set(records.filter((r) => r.id !== 0).map((r) => r.num));
 
     const cells = buildHexGrid();
     const toLoad = new Map<string, string>();
     let needsUnactiveIcon = false;
     for (const record of records) {
       const buildingname = BUILDING_NAMES[record.id];
-      if (!buildingname || buildingname === 'NO_BUILDING') continue;
+      if (buildingname === undefined) {
+        // id_building отсутствует в BUILDING_NAMES (снят живым SQL-запросом
+        // к одному конкретному миру, 2026-09-04) — на ДРУГИХ мирах могут
+        // быть свои id, которых там не было. Не путать с id=0 (NO_BUILDING,
+        // осознанно пустая ячейка) — тут сервер действительно шлёт постройку,
+        // мы её просто не умеем нарисовать (не в списке, не на карте).
+        console.warn('[renderBuildings] неизвестный id_building (нет в BUILDING_NAMES):', record.id, 'ячейка', record.num);
+        continue;
+      }
+      if (buildingname === 'NO_BUILDING') continue;
       const key = buildingAssetKey(buildingname);
       const alias = `${effectiveBuildingRace(buildingname, race)}/${key}`;
       toLoad.set(alias, buildingAssetPath(buildingname, race));

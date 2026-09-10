@@ -37,10 +37,16 @@ async function main() {
   // __renderDone фиксируется до завершения renderGround() (fire-and-forget
   // в dispatch.tsx, см. handleResponse — не await'ится) — спрайты грунта
   // грузятся асинхронно (Assets.load), ждём отдельно.
+  //
+  // ВАЖНО (найдено 2026-09-10 живым тестом — клик попал не в ту ячейку):
+  // с гекс-маской (`hexPolygonPoints()`) на каждую ячейку в `groundLayer`
+  // теперь 2 узла (маска + спрайт), `groundLayer.children[num]` больше НЕ
+  // соответствует ячейке `num`. Используем `renderer.groundSprites[num]` —
+  // специально заведённый для этого массив (см. renderer.ts).
   await page.waitForFunction(
     (num) => {
       const renderer = (window as any).__mapRenderer;
-      return (renderer?.groundLayer?.children?.length ?? 0) > num;
+      return !!renderer?.groundSprites?.[num];
     },
     { timeout: 20000 },
     cellNum,
@@ -48,7 +54,7 @@ async function main() {
 
   const point = await page.evaluate((num) => {
     const renderer = (window as any).__mapRenderer;
-    const sprite = renderer?.groundLayer?.children?.[num];
+    const sprite = renderer?.groundSprites?.[num];
     if (!sprite) return null;
     const global = sprite.getGlobalPosition();
     return { x: global.x + sprite.width / 2, y: global.y + sprite.height / 2 };
