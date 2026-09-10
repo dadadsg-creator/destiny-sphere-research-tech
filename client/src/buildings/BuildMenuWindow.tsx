@@ -47,6 +47,18 @@ function buildCosts(attrs: Record<string, string>, entry: BuildMenuEntry): Resou
   return costs;
 }
 
+/**
+ * Всплывающая подсказка при наведении на иконку здания — `build_menu.as:154-155`
+ * (`text_info_build`, показывается через `game.init_decor_button(obj.win_build,
+ * "ONLY_HINT_", ...)`): название + описание. Оригинал переводит название в
+ * верхний регистр (`.toUpperCase()`) — здесь сознательно НЕ повторяем (по
+ * просьбе владельца), обычный регистр читается лучше.
+ */
+function buildingHint(local: LocalBuilding | undefined, fallbackId: number): string {
+  const name = local?.ln ?? String(fallbackId);
+  return local?.description ? `${name}\n${local.description}` : name;
+}
+
 export function BuildMenuWindow({
   entries,
   localBuildings,
@@ -78,7 +90,7 @@ export function BuildMenuWindow({
             const buildingname = BUILDING_NAMES[entry.id];
             return (
               <tr key={entry.id}>
-                <td>
+                <td title={buildingHint(local, entry.id)}>
                   {buildingname && <img class="ds-building-icon" src={buildingAssetPath(buildingname, race)} alt="" />}
                 </td>
                 <td>{local?.ln ?? entry.id}</td>
