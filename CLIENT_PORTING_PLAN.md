@@ -2475,6 +2475,30 @@ Preact** (решение владельца) — `client/` до этого не 
     (тоже был без класса — до этого захода не считался багом, т.к. белое
     поле визуально не выделялось на фоне остального минимализма окна).
 
+- [x] **Полный визуальный прогон оставшихся ~30 окон, ещё не проверенных
+  скриншотом в этом заходе (2026-09-10)** — раз в двух окнах из Фазы 3
+  (`MailWindow`, `VacationWindow`) нашлись реальные визуальные пропуски,
+  стоило проверить остальные, пока их не поймал сам владелец. Один
+  puppeteer-прогон, скриншот каждого `?screen=` (`alliance-join/-members/
+  -peace/-peace-detail/-settings`, `archeology`, `army`/`-calculator`/
+  `-create`, `art-depot`, `artefact-stat`, `auction`, `battle`/`-overview`/
+  `-window`, `build-info`, `cabinet-submenu`, `power-shield`,
+  `private-peace`, `protect-shield`, `reincarnate`, `research`, `scanner`,
+  `sell`, `spying`, `terraform`, `train-unit`, `transfer`, `war-statistic`,
+  `zond-create`) — новых визуальных багов не найдено, все в едином стиле.
+  - **Важное разграничение, чтобы не наплодить ложных "фиксов"**: в
+    `BuildInfoWindow` (апгрейд) и `ResearchWindow` (ветки науки) и
+    `TerraformWindow` время показывается СЫРЫМИ ходами ("12", а не
+    "1ч 5м") — это НЕ тот же баг, что был в `BuildMenuWindow`. Сверено
+    по оригиналу построчно: `buildinfo.as:345`
+    (`hint_mov.TIME.text = dataUpgrade.time`), `researchmenu.as:242`
+    (`obj.time_research.text = research_array[i].C`), `terraform_class.as:97`
+    (`obj.time_field.text = terraArray[i].time`) — ни один не вызывает
+    `game.turnToTime()`, оригинал ТОЖЕ показывает сырые ходы на этих трёх
+    экранах. `build_menu.as:2592` — единственное место во всей игре,
+    где это форматирование применяется. Порт ничего не трогает —
+    сырой вывод здесь верен, не пропуск.
+
 ### Фаза 4 — Проверка на паритет (объём: средне, но не сокращать)
 
 - [ ] Поднять тестовый/dev-мир (или использовать существующий, если
