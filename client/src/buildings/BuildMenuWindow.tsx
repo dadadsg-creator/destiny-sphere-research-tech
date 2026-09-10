@@ -16,6 +16,8 @@
  * ui/ResourceValue.tsx) вместо сырых чисел через слэш; нулевые ресурсы
  * не показываются.
  */
+import { useRef, useState } from 'preact/hooks';
+import { createPortal } from 'preact/compat';
 import { Window } from '../ui/Window';
 import type { TabDef } from '../ui/tabs';
 import { buildTimeSeconds, computeBuildAllowed, formatBuildTime, type BuildMenuEntry, type PlayerResourcePoolFull } from './buildMenuData';
@@ -48,15 +50,69 @@ function buildCosts(attrs: Record<string, string>, entry: BuildMenuEntry): Resou
 }
 
 /**
- * Всплывающая подсказка при наведении на иконку здания — `build_menu.as:154-155`
- * (`text_info_build`, показывается через `game.init_decor_button(obj.win_build,
- * "ONLY_HINT_", ...)`): название + описание. Оригинал переводит название в
- * верхний регистр (`.toUpperCase()`) — здесь сознательно НЕ повторяем (по
- * просьбе владельца), обычный регистр читается лучше.
+ * Иконка здания + всплывающая подсказка при наведении —
+ * `build_menu.as:154-155` (`text_info_build = "<b>"+name.toUpperCase()+
+ * "</b>\n"+desc`, показывается через `game.init_decor_button(obj.win_build,
+ * "ONLY_HINT_", ...)`). Оригинал переводит название в верхний регистр —
+ * здесь сознательно НЕ повторяем (по просьбе владельца), обычный регистр
+ * читается лучше.
+ *
+ * НЕ нативный атрибут `title` (была первая версия) — нативные тултипы
+ * браузера не попадают в скриншот headless-браузера (рисуются вне render
+ * tree), что не даёт визуально сверить результат со скриншотом
+ * Flash-клиента, а не только текстом.
+ *
+ * НЕ просто CSS `:hover` + `position:absolute` внутри строки таблицы —
+ * `.ds-window__content` (`window.css`) сознательно скроллится
+ * (`overflow:auto`, список построек может быть длинным), а `overflow`
+ * обрезает АБСОЛЮТНО позиционированных потомков по границе того же
+ * контейнера независимо от `z-index`, если их containing block — тоже
+ * внутри него. Подсказка для здания у нижних строк списка обрезалась
+ * ровно на границе окна (проверено скриншотом до этого исправления).
+ * Вместо этого — `createPortal` в `document.body` (`preact/compat`,
+ * подмодуль уже установленного `preact`, отдельная зависимость не нужна)
+ * с `position:fixed` и координатами, посчитанными от `getBoundingClientRect()`
+ * иконки — не зависит от скролла/обрезки ни одного предка.
  */
-function buildingHint(local: LocalBuilding | undefined, fallbackId: number): string {
+function BuildingIcon({
+  buildingname,
+  race,
+  local,
+  fallbackId,
+}: {
+  buildingname: string;
+  race: Race;
+  local: LocalBuilding | undefined;
+  fallbackId: number;
+}) {
+  const wrapRef = useRef<HTMLSpanElement>(null);
+  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
+
+  const show = () => {
+    const rect = wrapRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const hintWidth = 320;
+    const overflowsRight = rect.right + 10 + hintWidth > window.innerWidth;
+    const left = overflowsRight ? rect.left - 10 - hintWidth : rect.right + 10;
+    const top = Math.min(rect.top, Math.max(10, window.innerHeight - 330));
+    setPos({ top, left });
+  };
+
   const name = local?.ln ?? String(fallbackId);
-  return local?.description ? `${name}\n${local.description}` : name;
+
+  return (
+    <span ref={wrapRef} class="ds-building-hint-wrap" onMouseEnter={show} onMouseLeave={() => setPos(null)}>
+      <img class="ds-building-icon" src={buildingAssetPath(buildingname, race)} alt="" />
+      {pos &&
+        createPortal(
+          <div class="ds-building-hint" style={{ top: `${pos.top}px`, left: `${pos.left}px` }}>
+            <b>{name}</b>
+            {local?.description && <div class="ds-building-hint__desc">{local.description}</div>}
+          </div>,
+          document.body,
+        )}
+    </span>
+  );
 }
 
 export function BuildMenuWindow({
@@ -90,8 +146,8 @@ export function BuildMenuWindow({
             const buildingname = BUILDING_NAMES[entry.id];
             return (
               <tr key={entry.id}>
-                <td title={buildingHint(local, entry.id)}>
-                  {buildingname && <img class="ds-building-icon" src={buildingAssetPath(buildingname, race)} alt="" />}
+                <td>
+                  {buildingname && <BuildingIcon buildingname={buildingname} race={race} local={local} fallbackId={entry.id} />}
                 </td>
                 <td>{local?.ln ?? entry.id}</td>
                 <td>

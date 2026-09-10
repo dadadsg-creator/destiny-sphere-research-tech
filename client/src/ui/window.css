@@ -424,6 +424,31 @@
   object-position: bottom;
   flex-shrink: 0;
 }
+/* Подсказка при наведении на иконку здания (build_menu.as:154-155, "text_info_build") — свой DOM-блок, не нативный title (см. докстринг BuildMenuWindow.tsx). Рендерится порталом в document.body с position:fixed (см. BuildingIcon в BuildMenuWindow.tsx) — поэтому здесь координаты не задаются, только внешний вид. */
+.ds-building-hint-wrap {
+  display: inline-block;
+}
+.ds-building-hint {
+  position: fixed;
+  z-index: 2000;
+  width: 320px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 8px 10px;
+  background: #0e1a38;
+  border: 1px solid #3a4d7a;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  color: #cfd8ee;
+  font-size: 12px;
+  line-height: 1.4;
+  pointer-events: none;
+}
+.ds-building-hint b {
+  display: block;
+  margin-bottom: 4px;
+  color: #ffffff;
+}
 .ds-artefact-row__bonuses {
   display: flex;
   flex-wrap: wrap;
