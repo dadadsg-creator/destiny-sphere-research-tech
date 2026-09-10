@@ -30,7 +30,15 @@ export function VacationWindow({ data, tabs, onTabClick, onClose, onStart, onSto
       <p>{data.descText}</p>
 
       {(data.status === '1' || data.status === '3') && (
-        <input type="password" value={password} onInput={(e) => setPassword((e.target as HTMLInputElement).value)} />
+        <div class="ds-spying__row">
+          <span class="ds-spying__label">Пароль:</span>
+          <input
+            type="password"
+            class="ds-text-input"
+            value={password}
+            onInput={(e) => setPassword((e.target as HTMLInputElement).value)}
+          />
+        </div>
       )}
 
       {data.status === '1' && (
