@@ -61,25 +61,30 @@ export function MailWindow({
 
   return (
     <Window title={data.type === 'in' ? 'Входящие' : 'Исходящие'} tabs={tabs} onTabClick={onTabClick} onClose={onClose}>
-      <button onClick={onSwitchType}>{data.type === 'in' ? 'Показать исходящие' : 'Показать входящие'}</button>
-      <button onClick={onNewMail}>Новое письмо</button>
-      <button disabled={!currentId} onClick={() => currentId && onReply(currentId)}>
-        Ответить
-      </button>
-      <button disabled={!currentId} onClick={() => currentId && onReplyQuote(currentId)}>
-        Ответить с цитатой
-      </button>
-      <button disabled={selected.size === 0} onClick={() => onDeleteSelected([...selected])}>
-        Удалить выбранные
-      </button>
-      <button disabled={selected.size === 0} onClick={() => onReadSelected([...selected])}>
-        Прочитать выбранные
-      </button>
+      <div class="ds-popup__buttons ds-mail-toolbar">
+        <button type="button" class="ds-popup__btn" onClick={onSwitchType}>
+          {data.type === 'in' ? 'Показать исходящие' : 'Показать входящие'}
+        </button>
+        <button type="button" class="ds-popup__btn" onClick={onNewMail}>
+          Новое письмо
+        </button>
+        <button type="button" class="ds-popup__btn" disabled={!currentId} onClick={() => currentId && onReply(currentId)}>
+          Ответить
+        </button>
+        <button type="button" class="ds-popup__btn" disabled={!currentId} onClick={() => currentId && onReplyQuote(currentId)}>
+          Ответить с цитатой
+        </button>
+        <button type="button" class="ds-popup__btn" disabled={selected.size === 0} onClick={() => onDeleteSelected([...selected])}>
+          Удалить выбранные
+        </button>
+        <button type="button" class="ds-popup__btn" disabled={selected.size === 0} onClick={() => onReadSelected([...selected])}>
+          Прочитать выбранные
+        </button>
+      </div>
 
-      <div>
-        Фильтр типов:{' '}
+      <div class="ds-mail-filters">
         {[...typeFilters.entries()].map(([name, sel]) => (
-          <label key={name} style={{ marginRight: '8px' }}>
+          <label key={name}>
             <input type="checkbox" checked={sel} onChange={() => toggleType(name)} /> {name}
           </label>
         ))}
