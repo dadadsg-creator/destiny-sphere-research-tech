@@ -1003,11 +1003,11 @@ const TEST_ARTEFACT_SHOP: ArtefactShopData = {
   ],
   artefacts: [
     {
-      id: '1', name: 'Артефакт атаки', exp: '30', icon: 'ART1', priceSilver: 500, priceGold: 50,
+      id: '1', name: 'Артефакт атаки', exp: '30', icon: 'SUPREME_WAR_PRECISION', priceSilver: 500, priceGold: 50,
       bonusText: 'Атака +15%', life: '2592000', filterData: [{ id: 'filter1', value: '10' }, { id: 'filter2', value: '20' }],
     },
     {
-      id: '2', name: 'Артефакт защиты', exp: '30', icon: 'ART2', priceSilver: 300, priceGold: 30,
+      id: '2', name: 'Артефакт защиты', exp: '30', icon: 'SMALL_SPHERE_PROTECTION', priceSilver: 300, priceGold: 30,
       bonusText: 'Защита +10%', life: '2592000', filterData: [{ id: 'filter1', value: '11' }, { id: 'filter2', value: '20' }],
     },
   ],

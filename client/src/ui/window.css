@@ -426,6 +426,14 @@
   gap: 8px;
 }
 .ds-artefact-row__icon-wrap {
+  /* inline-block — раньше в BuildArtefactWindow.tsx работало только
+     потому, что элемент всегда сидел внутри flex-родителя (.ds-artefact-row),
+     который "блокифицирует" flex-детей независимо от их собственного
+     display. Найдено 2026-09-11: тот же span сам по себе, без flex-обёртки
+     (ArtefactShopWindow.tsx — прямо в <td>), оставался инлайновым и
+     игнорировал width/height (34x34 не применялись, span схлопывался в
+     0x0 — картинка есть в DOM, но невидима, т.к. внутри неё position:absolute). */
+  display: inline-block;
   position: relative;
   width: 34px;
   height: 34px;

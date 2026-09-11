@@ -104,6 +104,25 @@ export function parseArtefactShop(xml: string): ArtefactShopData {
   return { artefacts, filters };
 }
 
+/**
+ * `icon` — полный libname артефакта (`prefix_scope_postfix`, тот же
+ * формат, что и `BuildArtefact.libname` в `buildArtefactData.ts`), НЕ
+ * готовый путь к файлу — подтверждено комментарием прямо в оригинале
+ * (`artefact_shop_engine.as:665`: `//prefix="MINOR" scope="BUILDING"
+ * postfix="FORGING">`, прямо над `getScope(icon)`/`getSize(icon)`/
+ * `getName(icon)` — три геттера режут ОДНУ строку `icon` на три части).
+ * Экранная иконка (`completeSampleArt()`, :662-680) — те же два слоя
+ * (scope-маска + постфикс-картинка), что уже отрисовывает
+ * `BuildArtefactWindow.tsx` через `artefactScopeMaskUrl`/
+ * `artefactSizeColor`/`artefactIconUrl` из `resourceIcons.ts` — здесь
+ * просто разбираем `icon` на те же три части и переиспользуем то же API.
+ */
+export function parseArtefactIcon(icon: string): { prefix: string | null; scope: string | null; postfix: string | null } {
+  const parts = icon.split('_');
+  if (parts.length < 3) return { prefix: null, scope: null, postfix: null };
+  return { prefix: parts[0] ?? null, scope: parts[1] ?? null, postfix: parts.slice(2).join('_') };
+}
+
 /** artefact_shop_engine.as:389-402 checkFilter() — id=0 значит "Все" (без фильтра по этой оси). */
 export function checkArtefactFilter(art: ShopArtefact, filter1Id: string, filter2Id: string): boolean {
   if (filter1Id !== '0' && art.filterData[0] !== undefined && art.filterData[0].value !== filter1Id) return false;

@@ -13,9 +13,11 @@
  */
 import { useState } from 'preact/hooks';
 import { Stepper } from '../ui/Stepper';
+import { artefactIconUrl, artefactScopeMaskUrl, artefactSizeColor } from '../data/resourceIcons';
 import {
   checkArtefactFilter,
   computeCartTotal,
+  parseArtefactIcon,
   recomputeCart,
   shouldSkipFilterRefresh,
   type ArtefactShopData,
@@ -24,6 +26,28 @@ import {
 
 const UNBOUNDED = Number.MAX_SAFE_INTEGER;
 const ALL_FILTER_ID = '0';
+
+/**
+ * Иконка артефакта в списке магазина — раньше не рисовалась вообще (`icon`
+ * разбирался парсером, но никуда не подключался). Тот же двухслойный
+ * рендер (scope-маска + postfix-картинка), что и `BuildArtefactWindow.tsx`
+ * — см. `parseArtefactIcon()` в `artefactShopData.ts`.
+ */
+function ArtefactIcon({ icon }: { icon: string }) {
+  const { prefix, scope, postfix } = parseArtefactIcon(icon);
+  const scopeMask = artefactScopeMaskUrl(scope);
+  return (
+    <span class="ds-artefact-row__icon-wrap">
+      {scopeMask && (
+        <span
+          class="ds-artefact-row__scope"
+          style={{ '--scope-mask': `url(${scopeMask})`, '--size-color': artefactSizeColor(prefix) ?? undefined }}
+        />
+      )}
+      {postfix && <img class="ds-artefact-row__icon" src={artefactIconUrl(postfix)} alt="" />}
+    </span>
+  );
+}
 
 export interface ArtefactShopWindowProps {
   data: ArtefactShopData;
@@ -97,6 +121,7 @@ export function ArtefactShopWindow({ data, onClose, onBuy }: ArtefactShopWindowP
         <table>
           <thead>
             <tr>
+              <th />
               <th>Название</th>
               <th>Бонус</th>
               <th>Цена</th>
@@ -106,6 +131,9 @@ export function ArtefactShopWindow({ data, onClose, onBuy }: ArtefactShopWindowP
           <tbody>
             {visible.map((art) => (
               <tr key={art.id} class="ds-army-row">
+                <td>
+                  <ArtefactIcon icon={art.icon} />
+                </td>
                 <td>{art.name}</td>
                 <td>{art.bonusText}</td>
                 <td>{concurrency === 'gold' ? art.priceGold : art.priceSilver}</td>

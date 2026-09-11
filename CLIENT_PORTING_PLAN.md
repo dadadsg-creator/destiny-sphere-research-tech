@@ -2539,6 +2539,33 @@ Preact** (решение владельца) — `client/` до этого не 
       Player — AS2 не гарантирует порядок перечисления свойств объекта
       формально, но раз тот же паттерн уже отмечен как "не более и не
       менее хрупкий, чем в оригинале", дальше не копалось.
+  - **Дополнение (2026-09-11)**: попутно нашёлся реальный пропуск, о
+    котором владелец спросил напрямую — "а где картинки артефактов?" в
+    `ArtefactShopWindow`. `ShopArtefact.icon` парсился, но никогда не
+    рендерился. Сверено с оригиналом: `artefact_shop_engine.as:665`
+    (комментарий прямо в decompiled-исходнике —
+    `//prefix="MINOR" scope="BUILDING" postfix="FORGING">`, прямо над
+    `getScope(icon)`/`getSize(icon)`/`getName(icon)`) подтверждает, что
+    `icon` — это ОДНА строка `prefix_scope_postfix` (тот же формат, что
+    и `BuildArtefact.libname` в `buildArtefactData.ts`), не путь к файлу
+    и не отдельные атрибуты (в отличие от `buildingartefact`, где
+    `prefix`/`scope`/`postfix` — три раздельных XML-атрибута). Добавлен
+    `parseArtefactIcon()` (`artefactShopData.ts`) + компонент
+    `ArtefactIcon` (`ArtefactShopWindow.tsx`), переиспользующий тот же
+    двухслойный рендер (scope-маска + postfix-иконка), что уже есть в
+    `BuildArtefactWindow.tsx`. **Важная оговорка**: точный формат `icon`
+    подтверждён только декомпилированным комментарием (нет живого
+    захваченного примера ответа `artefact_shop` в этой сессии) — если
+    когда-то появится живой доступ к этому окну, стоит перепроверить.
+    Попутно найден и исправлен реальный CSS-баг:
+    `.ds-artefact-row__icon-wrap` (`window.css`) держится на явном
+    `width/height:34px`, но это работало только потому, что в
+    `BuildArtefactWindow.tsx` элемент всегда сидел внутри flex-родителя
+    (`.ds-artefact-row`, "блокифицирует" детей независимо от их
+    собственного `display`) — тот же `<span>` САМ ПО СЕБЕ (без
+    flex-обёртки, как в новом коде магазина) остаётся строчным и
+    игнорирует `width`/`height`, схлопывается в 0×0 (картинка есть в
+    DOM, просто невидима). Добавлен `display: inline-block`.
 - [x] **Живой доступ к БД настроен (2026-09-08)** — `ds/utils/ExecOnDB.php`
       (Basic Auth + пара `dsgame`/`nomoreshare` для PostgreSQL игровых
       миров, см. `REDACTED_CREDENTIALS.txt` [B]) реально работает,
