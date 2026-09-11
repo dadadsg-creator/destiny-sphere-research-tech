@@ -45,6 +45,7 @@ import { ConfirmPopup } from '../ui/Popup';
 import { pushPopup, popPopup } from '../ui/windowStore';
 import type { TabDef } from '../ui/tabs';
 import { formatTurnTime } from '../data/turnTime';
+import { unitIconUrl } from '../data/resourceIcons';
 import {
   ARMY_RESOURCE_OPTIONS,
   buildArmyActionCommand,
@@ -225,7 +226,8 @@ export function ArmyOverviewWindow({ overview, tabs, onTabClick, onClose, onDism
                   <td colSpan={5}>
                     <ul class="ds-army-units">
                       {army.units.map((unit) => (
-                        <li key={unit.id}>
+                        <li key={unit.id} class="ds-army-units__row">
+                          {unit.libname && <img class="ds-unit-icon" src={unitIconUrl(unit.libname)} alt="" />}
                           {unit.amount}× {unit.libname}
                         </li>
                       ))}

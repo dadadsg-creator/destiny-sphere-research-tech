@@ -6,7 +6,7 @@
  * <auction curpage="" pages="" onpage="" order="" trader="">
  *   <au id="" enddate="" amount="" getprice="K:v;N:v;S:v;F:v;P:v;T:v"
  *       price="" best_price="" seller="" tradeby="" tradescope=""
- *       immediate="0|1" libname="" resupkeep="" id_cat_on=""
+ *       immediate="0|1" libname="" resupkeep="" id_cat_on="1|2|3"
  *       death_message="" customer="" disable="0|1" nextprice=""
  *       maxprice=""/>
  *   <sort_place sortname="" lname="" cur="0|1"/>   (сортировка "где")
@@ -40,6 +40,15 @@ export interface AuctionLot {
   /** "1" — покупка мгновенная (по currentPrice), иначе ставка по nextPrice. */
   immediate: string | null;
   libname: string | null;
+  /**
+   * "1"/"2"/"3" — тот же формат категории, что и в трансфере/бирже
+   * (1=ресурс, 2=юнит, 3=артефакт) — подтверждено живыми примерами
+   * (`AUCT_LOTS.xml`): `id_cat_on="2" libname="SOLDIER"/"GRENADIER"`,
+   * `id_cat_on="1" libname="KADERIUM"`. Раньше не парсился вообще —
+   * нужен, чтобы показывать иконку юнита только для реальных юнитов, не
+   * для ресурсов/артефактов с тем же полем `libname`.
+   */
+  idCatOn: string | null;
   buyer: string | null;
   /** Живой атрибут — сервер уже сказал "недоступно"; см. computeLotDisabled() для доп. клиентской проверки по ресурсам. */
   serverDisabled: boolean;
@@ -112,6 +121,7 @@ export function parseAuction(xml: string): AuctionData {
       tradeScope: el.getAttribute('tradescope'),
       immediate: el.getAttribute('immediate'),
       libname: el.getAttribute('libname'),
+      idCatOn: el.getAttribute('id_cat_on'),
       buyer: el.getAttribute('customer'),
       serverDisabled: el.getAttribute('disable') === '1',
       nextPrice: nextPriceAttr !== null ? Number(nextPriceAttr) : currentPrice + 1,

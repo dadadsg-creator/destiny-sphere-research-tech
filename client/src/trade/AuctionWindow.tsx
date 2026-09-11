@@ -7,6 +7,7 @@
  */
 import { Window } from '../ui/Window';
 import type { TabDef } from '../ui/tabs';
+import { unitIconUrl } from '../data/resourceIcons';
 import { computeLotDisabled, type AuctionLot } from './auctionData';
 
 export interface AuctionWindowProps {
@@ -40,7 +41,10 @@ export function AuctionWindow({ lots, playerResourceByName, tabs, onTabClick, on
             const priceToBuy = lot.immediate === '1' ? lot.currentPrice : lot.nextPrice;
             return (
               <tr key={lot.id}>
-                <td>{lot.libname}</td>
+                <td class="ds-artefact-row">
+                  {lot.idCatOn === '2' && lot.libname && <img class="ds-unit-icon" src={unitIconUrl(lot.libname)} alt="" />}
+                  <span>{lot.libname}</span>
+                </td>
                 <td>{lot.amount}</td>
                 <td>{lot.currentPrice}</td>
                 <td>{lot.nextPrice}</td>

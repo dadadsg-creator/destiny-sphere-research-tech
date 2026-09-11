@@ -12,6 +12,7 @@ import { useState } from 'preact/hooks';
 import { Window } from '../ui/Window';
 import { Stepper } from '../ui/Stepper';
 import type { TabDef } from '../ui/tabs';
+import { unitIconUrl } from '../data/resourceIcons';
 import {
   buildGetReincarnateCommand,
   calcReincarnateAmount,
@@ -74,7 +75,10 @@ export function ReincarnateWindow({ data, playerResources, tabs, onTabClick, onC
             const maxAmount = calcReincarnateAmount(playerResources, prices, remainingQuota, unit.prodiumWeight || 1);
             return (
               <tr key={unit.id}>
-                <td>{unit.libname}</td>
+                <td class="ds-artefact-row">
+                  {unit.libname && <img class="ds-unit-icon" src={unitIconUrl(unit.libname)} alt="" />}
+                  <span>{unit.libname}</span>
+                </td>
                 <td>{unit.prodiumWeight}</td>
                 <td>
                   <Stepper
@@ -105,7 +109,10 @@ export function ReincarnateWindow({ data, playerResources, tabs, onTabClick, onC
             <tbody>
               {data.queue.map((q, i) => (
                 <tr key={i}>
-                  <td>{q.libname}</td>
+                  <td class="ds-artefact-row">
+                    {q.libname && <img class="ds-unit-icon" src={unitIconUrl(q.libname)} alt="" />}
+                    <span>{q.libname}</span>
+                  </td>
                   <td>{q.amount}</td>
                   <td>{q.time[0]}</td>
                   <td>{q.time[1]}</td>

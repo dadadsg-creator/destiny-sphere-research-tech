@@ -9,6 +9,7 @@ import type { TabDef } from '../ui/tabs';
 import type { LocalUnit } from '../data/localData';
 import type { ArmyCalculatorData, UnitPower } from './armyCreationData';
 import { ResourceValue } from '../ui/ResourceValue';
+import { unitIconUrl } from '../data/resourceIcons';
 
 export interface ArmyCalculatorWindowProps {
   data: ArmyCalculatorData;
@@ -51,7 +52,10 @@ export function ArmyCalculatorWindow({ data, localUnits, tabs, onTabClick, onClo
         <tbody>
           {data.units.map((u) => (
             <tr key={u.id}>
-              <td>{localUnits.get(u.libname)?.ln ?? u.libname}</td>
+              <td class="ds-artefact-row">
+                <img class="ds-unit-icon" src={unitIconUrl(u.libname)} alt="" />
+                <span>{localUnits.get(u.libname)?.ln ?? u.libname}</span>
+              </td>
               <td>{u.amount}</td>
               <td>{u.prodiumWeight}</td>
               <td>

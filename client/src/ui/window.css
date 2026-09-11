@@ -222,6 +222,13 @@
   margin: 0;
   padding-left: 18px;
 }
+.ds-army-units__row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  list-style: none;
+  margin-left: -18px;
+}
 
 .ds-stepper {
   display: inline-flex;

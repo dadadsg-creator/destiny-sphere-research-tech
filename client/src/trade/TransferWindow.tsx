@@ -9,7 +9,7 @@ import { useState } from 'preact/hooks';
 import { Window } from '../ui/Window';
 import { Stepper } from '../ui/Stepper';
 import { ResourceValue } from '../ui/ResourceValue';
-import { RESOURCE_NAME_RU } from '../data/resourceIcons';
+import { RESOURCE_NAME_RU, unitIconUrl } from '../data/resourceIcons';
 import type { TabDef } from '../ui/tabs';
 import { buildTransferCommand, type TransferArticle, type TransferCommand, type TransferMenuData } from './transferData';
 
@@ -77,7 +77,8 @@ export function TransferWindow({ data, tabs, onTabClick, onClose, onTransfer, on
           {category === 1 && article.libname ? (
             <ResourceValue name={article.libname} value={article.amount ?? '0'} />
           ) : (
-            <span>
+            <span class="ds-artefact-row">
+              {category === 2 && article.libname && <img class="ds-unit-icon" src={unitIconUrl(article.libname)} alt="" />}
               {article.amount ?? '0'} шт. ({articleLabel(article, category)})
             </span>
           )}

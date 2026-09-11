@@ -32,6 +32,7 @@ import { Stepper } from '../ui/Stepper';
 import type { TabDef } from '../ui/tabs';
 import { ResourceList, type ResourceCost } from '../ui/ResourceValue';
 import { formatTurnTime } from '../data/turnTime';
+import { unitIconUrl } from '../data/resourceIcons';
 import type { WarComplexData, Factory, FactoryUnit } from './warFactoryData';
 import {
   computeAllowMax,
@@ -106,6 +107,7 @@ export function WarStatisticWindow({ data, localUnits, playerResources, tabs, on
                   setSelectedCells(new Set());
                 }}
               />
+              <img class="ds-unit-icon" src={unitIconUrl(unit.unitname)} alt="" />
               {local?.ln ?? unit.unitname}
             </label>
           );
@@ -130,7 +132,14 @@ export function WarStatisticWindow({ data, localUnits, playerResources, tabs, on
                 checked={selectedCells.has(factory.idCell)}
                 onChange={() => toggleCell(factory.idCell)}
               />
-              #{factory.idCell} {factory.busy ? `(${factory.unit} × ${factory.count})` : '(свободна)'}
+              #{factory.idCell}{' '}
+              {factory.busy ? (
+                <>
+                  (<img class="ds-unit-icon" src={unitIconUrl(factory.unit ?? '')} alt="" /> {factory.unit} × {factory.count})
+                </>
+              ) : (
+                '(свободна)'
+              )}
             </label>
           );
         })}
