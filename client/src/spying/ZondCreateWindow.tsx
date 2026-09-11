@@ -11,6 +11,7 @@ import { useState } from 'preact/hooks';
 import { Window } from '../ui/Window';
 import { Stepper } from '../ui/Stepper';
 import type { TabDef } from '../ui/tabs';
+import { formatTurnTime } from '../data/turnTime';
 import { calculateProgressivePrice, type ZondCreateData, type ZondPriceMap } from './zondCreateData';
 
 export interface ZondCreateWindowProps {
@@ -22,9 +23,17 @@ export interface ZondCreateWindowProps {
   onTrain: (id: string, count: number) => void;
 }
 
-/** Округление теперь делает сама calculateProgressivePrice() (keyRound), значения сюда приходят уже готовые. */
+/**
+ * Округление теперь делает сама calculateProgressivePrice() (keyRound),
+ * значения сюда приходят уже готовые. `C` (время) сюда не передаётся —
+ * оригинал оборачивает именно её в `game.turnToTime()` (:111), в отличие
+ * от остальных ресурсов, показываемых сырым числом — см. formatTurnTime
+ * в месте вызова.
+ */
 function formatPrice(price: ZondPriceMap): string {
-  const parts = (Object.entries(price) as [string, number][]).filter(([, v]) => v > 0).map(([k, v]) => `${k}:${v}`);
+  const parts = (Object.entries(price) as [string, number][])
+    .filter(([k, v]) => k !== 'C' && v > 0)
+    .map(([k, v]) => `${k}:${v}`);
   return parts.length > 0 ? parts.join(' ') : '—';
 }
 
@@ -70,7 +79,10 @@ export function ZondCreateWindow({ data, zondNames, tabs, onTabClick, onClose, o
                 <td>
                   <Stepper value={count} min={0} onChange={(v) => setCounts({ ...counts, [zond.id]: v })} />
                 </td>
-                <td>{formatPrice(totalPrice)}</td>
+                <td>
+                  {formatPrice(totalPrice)}
+                  {(totalPrice.C ?? 0) > 0 && <> {formatTurnTime(totalPrice.C!)}</>}
+                </td>
                 <td>
                   <button
                     type="button"

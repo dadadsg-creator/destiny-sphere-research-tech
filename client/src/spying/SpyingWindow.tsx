@@ -14,11 +14,19 @@
  * НЕ реализовано: раздел "активные группы" (filter_obj.listGroup — уже
  * отправленные зонды) — данные (`data.activeGroups`) доступны, отдельный
  * список под них в этой версии не отрисован.
+ *
+ * При `timeAllow` оригинал ПОМИМО раз-в-ходах степпера показывает ещё и
+ * готовое человекочитаемое время рядом (`spying_class.as:305-307`:
+ * `time_text.text = game.turnToTime(val * object_list.turntime)`) — было
+ * пропущено, добавлено 2026-09-11 (см. `data/turnTime.ts::formatTurnTime`).
+ * `data.turn` — живой корневой атрибут `<spying turn="">`, уже в секундах
+ * (`PN_SpyAction.class.php:80`: `setTurnTime(TURN_TIME * 60)`).
  */
 import { useState } from 'preact/hooks';
 import { Window } from '../ui/Window';
 import { Stepper } from '../ui/Stepper';
 import type { TabDef } from '../ui/tabs';
+import { formatTurnTime } from '../data/turnTime';
 import type { SpyingData } from './spyingData';
 
 export interface SendZondParams {
@@ -125,6 +133,7 @@ export function SpyingWindow({ data, zondNames, tabs, onTabClick, onClose, onSen
           max={Number(needsTime ? undefined : data.speed.max) || Number.MAX_SAFE_INTEGER}
           onChange={setSpeedOrTime}
         />
+        {needsTime && <span>{formatTurnTime(speedOrTime * (Number(data.turn) || 0))}</span>}
       </div>
 
       <label class="ds-spying__choice">

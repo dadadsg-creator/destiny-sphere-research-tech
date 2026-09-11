@@ -14,8 +14,12 @@
  * большинства действий, где подтверждение — опциональный клиентский
  * тумблер `check_confirm_win()`).
  *
- * НЕ реализовано: перевод value*turn в человекочитаемое время
- * (`game.turnToTime()` — не установлено, что конкретно делает).
+ * Время активации — `powershieldclass.as:168`: `time_f.text =
+ * game.turnToTime(val*this.turn)`. Раньше не реализовывалось (докстринг
+ * "не установлено, что делает turnToTime" — закрыто 2026-09-10 при
+ * сверке `build_menu.as`, см. `data/turnTime.ts::formatTurnTime`).
+ * `data.turn` — живой атрибут `<powershild turn="">`, уже в секундах
+ * (`PN_PowerShild.class.php:59`: `TURN_TIME * 60`), доп. `*60` не нужно.
  */
 import { useState } from 'preact/hooks';
 import { Window } from '../ui/Window';
@@ -23,6 +27,7 @@ import { Stepper } from '../ui/Stepper';
 import { ConfirmPopup } from '../ui/Popup';
 import { pushPopup, popPopup } from '../ui/windowStore';
 import type { TabDef } from '../ui/tabs';
+import { formatTurnTime } from '../data/turnTime';
 import type { PowerShieldData } from './powerShieldData';
 
 export interface PowerShieldWindowProps {
@@ -70,6 +75,7 @@ export function PowerShieldWindow({ data, tabs, onTabClick, onClose, onCharge, o
             max={Number(data.maxTurn) || 0}
             onChange={setTurns}
           />
+          <span>Время: {formatTurnTime(turns * (Number(data.turn) || 0))}</span>
           <span>Цена: {totalPrice} стазиса</span>
           <button type="button" class="ds-popup__btn" disabled={turns <= 0} onClick={confirmActivate}>
             Активировать

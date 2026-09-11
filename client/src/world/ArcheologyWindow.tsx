@@ -8,6 +8,8 @@ import { useState } from 'preact/hooks';
 import { Window } from '../ui/Window';
 import { Stepper } from '../ui/Stepper';
 import type { TabDef } from '../ui/tabs';
+import { ResourceList, type ResourceCost } from '../ui/ResourceValue';
+import { formatTurnTime } from '../data/turnTime';
 import {
   computeArcheologistAllow,
   computeSendLocationOptions,
@@ -78,6 +80,16 @@ export function ArcheologyWindow({
           <h4>Тренировка археологов ({data.train.inProgress} в найме)</h4>
           <div class="ds-spying__row">
             <Stepper value={trainCount} min={0} max={allow} onChange={setTrainCount} />
+            <ResourceList
+              costs={
+                [
+                  { name: 'KADERIUM', value: trainCount * data.train.priceKad },
+                  { name: 'FOOD', value: trainCount * data.train.priceFood },
+                  { name: 'WORKER', value: trainCount * data.train.priceWork },
+                ] satisfies ResourceCost[]
+              }
+            />
+            <span>{formatTurnTime(trainCount * data.train.priceTime * (Number(data.train.turn) || 0))}</span>
             <button type="button" class="ds-popup__btn" disabled={trainCount <= 0} onClick={() => onTrain(trainCount)}>
               Нанять
             </button>

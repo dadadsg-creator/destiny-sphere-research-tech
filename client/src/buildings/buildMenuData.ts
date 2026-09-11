@@ -97,34 +97,12 @@ export function buildTimeSeconds(attrs: Record<string, string>, turn: string | n
 }
 
 /**
- * Порт `game.turnToTime()` (`game.as:2537-2598`) — секунды в строку вида
- * "Xд Yч Zм Wс", показывая только ненулевые разряды, от старшего к
- * младшему (подтверждено визуально скриншотом реального Flash-клиента,
- * 2026-09-10: постройка с `C=2` турна на мире со `turn=12000` — "4ч 20м").
- * Суффиксы "д"/"ч"/"м"/"с" — оригинал берёт их из живого `game.getLocalNames
- * ("D_"/"H_"/"M_"/"S_")`, но это НЕ per-building loaddata-атрибут, а
- * отдельная строковая таблица имён, которую порт ещё не разбирает —
- * значения зафиксированы буквально по тому же скриншоту.
+ * Порт `game.turnToTime()` — перенесён в `data/turnTime.ts` 2026-09-11
+ * (формула "цена_в_ходах × C × живой `turn`" общая минимум для 9 файлов
+ * категории «В», не только построек — см. докстринг там). Реэкспорт
+ * оставлен здесь, чтобы не трогать существующие импорты этого файла.
  */
-export function formatBuildTime(totalSeconds: number): string {
-  let turn = Math.floor(totalSeconds);
-  if (turn <= 0) return `0с`;
-
-  const sec = turn % 60;
-  turn = Math.floor(turn / 60);
-  const mins = turn % 60;
-  turn = Math.floor(turn / 60);
-  const hour = turn % 24;
-  turn = Math.floor(turn / 24);
-  const days = turn;
-
-  const parts: string[] = [];
-  if (days > 0) parts.push(`${days}д`);
-  if (hour > 0) parts.push(`${hour}ч`);
-  if (mins > 0) parts.push(`${mins}м`);
-  if (sec > 0) parts.push(`${sec}с`);
-  return parts.join(' ');
-}
+export { formatTurnTime as formatBuildTime } from '../data/turnTime';
 
 /**
  * Категория «В» — итоговая доступность постройки для игрока

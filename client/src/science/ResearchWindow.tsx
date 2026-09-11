@@ -12,6 +12,8 @@ import { Window } from '../ui/Window';
 import { Stepper } from '../ui/Stepper';
 import type { TabDef } from '../ui/tabs';
 import { researchBranchIconUrl, researchBranchName } from '../data/resourceIcons';
+import { ResourceList, type ResourceCost } from '../ui/ResourceValue';
+import { formatTurnTime } from '../data/turnTime';
 import {
   computeScientistAllow,
   getCancelResearchId,
@@ -108,6 +110,16 @@ export function ResearchWindow({
         <div class="ds-spying__row" style={{ marginTop: '12px' }}>
           <span class="ds-spying__label">Учёные ({data.train.inProgress} в найме):</span>
           <Stepper value={trainCount} min={0} max={scientistAllow} onChange={setTrainCount} />
+          <ResourceList
+            costs={
+              [
+                { name: 'WORKER', value: trainCount * data.train.priceWork },
+                { name: 'NANO_CRYSTAL', value: trainCount * data.train.priceNano },
+                { name: 'FOOD', value: trainCount * data.train.priceFood },
+              ] satisfies ResourceCost[]
+            }
+          />
+          <span>{formatTurnTime(trainCount * data.train.priceTime * (Number(data.train.turn) || 0))}</span>
           <button
             type="button"
             class="ds-popup__btn"
