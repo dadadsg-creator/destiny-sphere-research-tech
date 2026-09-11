@@ -11,7 +11,7 @@
  * `xmlparsers.as:2750,2753,2755`).
  */
 import { parseXmlFragment } from '../protocol/response';
-import { decodeMailMessage, encodeMailMessage } from './mailData';
+import { decodeMailMessage } from './mailData';
 
 export interface MessageScope {
   id: string;
@@ -94,19 +94,4 @@ export function buildCreateNewMailCommand(
   if (id !== undefined) cmd.id = id;
   if (name !== undefined) cmd.name = name;
   return cmd;
-}
-
-/** reqvestdata.as:467-505 — <sendmessage id_messagescope=""><to/><subject/><messagetext/></sendmessage>, тема/тело кодируются перед отправкой. */
-export function buildSendMailCommand(
-  to: string,
-  subject: string,
-  body: string,
-  typeScope: number,
-): { idMessagescope: number; to: string; subject: string; messagetext: string } {
-  return {
-    idMessagescope: typeScope,
-    to,
-    subject: encodeMailMessage(subject),
-    messagetext: encodeMailMessage(body),
-  };
 }

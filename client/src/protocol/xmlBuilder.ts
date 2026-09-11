@@ -15,6 +15,7 @@ import type { GetPPeaceCommand } from '../alliance/privatePeaceData';
 import type { SendColonyModuleCommand } from '../world/colonizationData';
 import type { CreateAllianceCommand, JoinAllianceCommand } from '../alliance/allianceData';
 import type { AlliancePeaceCommand } from '../alliance/alliancePeaceData';
+import { encodeMailMessage } from '../mail/mailData';
 
 export function tag(name: string, attrs: Record<string, string | number | boolean | undefined>): string {
   let out = `<${name}`;
@@ -30,13 +31,20 @@ function escapeXmlAttr(value: string): string {
   return value.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-/** reqvestdata.as:467-505 send_mail() — единственная команда с вложенными детьми в этом первом проходе. */
+/**
+ * reqvestdata.as:467-505 send_mail() — единственная команда с вложенными
+ * детьми в этом первом проходе. `subject`/`messagetext` кодируются
+ * hex-триплетами через `game.ENCRYPTTEXT` (зеркало `decodeMailMessage`,
+ * см. mailData.ts) ПЕРЕД оборачиванием в CDATA — оригинал делает и то, и
+ * то одновременно, не одно вместо другого. `to` — обычный текст без
+ * кодирования, как и в оригинале.
+ */
 export function sendMessageXml(idMessagescope: number, to: string, subject: string, messagetext: string): string {
   return (
     `<sendmessage id_messagescope="${escapeXmlAttr(String(idMessagescope))}">` +
     `<to><![CDATA[${to}]]></to>` +
-    `<subject><![CDATA[${subject}]]></subject>` +
-    `<messagetext><![CDATA[${messagetext}]]></messagetext>` +
+    `<subject><![CDATA[${encodeMailMessage(subject)}]]></subject>` +
+    `<messagetext><![CDATA[${encodeMailMessage(messagetext)}]]></messagetext>` +
     `</sendmessage>`
   );
 }
