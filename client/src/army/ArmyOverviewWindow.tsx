@@ -45,7 +45,7 @@ import { ConfirmPopup } from '../ui/Popup';
 import { pushPopup, popPopup } from '../ui/windowStore';
 import type { TabDef } from '../ui/tabs';
 import { formatTurnTime } from '../data/turnTime';
-import { unitIconUrl } from '../data/resourceIcons';
+import { RESOURCE_NAME_RU, unitIconUrl } from '../data/resourceIcons';
 import {
   ARMY_RESOURCE_OPTIONS,
   buildArmyActionCommand,
@@ -63,6 +63,12 @@ const INACTION_LABEL: Record<number, string> = {
   2: 'Возвращается домой',
   3: 'Дома',
 };
+
+/** ARMY_RESOURCE_OPTIONS — машинные имена (+ спец. значение ALL_RES), локализуем через RESOURCE_NAME_RU (см. также SellWindow/AuctionWindow — тот же баг с сырым именем). */
+function armyResourceLabel(name: string): string {
+  if (name === 'ALL_RES') return 'Все ресурсы';
+  return RESOURCE_NAME_RU[name] ?? name;
+}
 
 export interface ArmyOverviewWindowProps {
   overview: ArmyOverview;
@@ -157,7 +163,7 @@ function ArmyActionPanel({
           <select value={resource} onChange={(e) => setResource((e.target as HTMLSelectElement).value)}>
             {ARMY_RESOURCE_OPTIONS.map((r) => (
               <option key={r} value={r}>
-                {r}
+                {armyResourceLabel(r)}
               </option>
             ))}
           </select>

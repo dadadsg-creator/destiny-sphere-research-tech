@@ -24,13 +24,23 @@
  * налога с продажи (`setPrice()`, `trade_menu_class.as:1090-1096`) тоже
  * отсутствовал (был только коридор цены из того же `tax`) — добавлен,
  * см. `tradeData.ts::computeTradeTax()`.
+ *
+ * **Исправление (2026-09-11)**: категория "ресурс" (1) показывала сырое
+ * машинное имя (`NANO_CRYSTAL`) и в списке "Товар", и в списке "Взамен"
+ * — `TradeArticle.ln`/`TradeResourceColumn.ln` в этом формате XML
+ * (`<reses>name:price:cat_id</reses>`, `<article libname="">`) сервер
+ * никогда не присылает (`ln` всегда `null`, см. докстринг tradeData.ts),
+ * поэтому нужна локализация через `RESOURCE_NAME_RU` — тот же паттерн,
+ * что уже был в `TransferWindow.tsx::articleLabel()`. Для юнитов/
+ * артефактов (2/3) сырое `libname` остаётся как есть — локализованных
+ * имён для них сервер в этом формате тоже не даёт.
  */
 import { useState } from 'preact/hooks';
 import { Window } from '../ui/Window';
 import { Stepper } from '../ui/Stepper';
 import type { TabDef } from '../ui/tabs';
 import { ResourceList, type ResourceCost } from '../ui/ResourceValue';
-import { RESOURCE_LETTER_TO_NAME } from '../data/resourceIcons';
+import { RESOURCE_LETTER_TO_NAME, RESOURCE_NAME_RU } from '../data/resourceIcons';
 import { formatTurnTime } from '../data/turnTime';
 import {
   buildSellCommand,
@@ -38,6 +48,7 @@ import {
   computeTradeTax,
   computeTradeUpkeep,
   type SellCommand,
+  type TradeArticle,
   type TradeMenuData,
 } from './tradeData';
 
@@ -50,6 +61,17 @@ export interface SellWindowProps {
 }
 
 const CATEGORY_LABELS: Record<number, string> = { 1: 'Ресурсы', 2: 'Юниты', 3: 'Артефакты' };
+
+/** Категория 1 (ресурс) — libname это машинное имя, локализуем через RESOURCE_NAME_RU (см. докстринг файла). */
+function articleLabel(a: TradeArticle): string {
+  if (a.category === 1 && a.libname) return RESOURCE_NAME_RU[a.libname] ?? a.libname;
+  return a.libname ?? a.id ?? '';
+}
+
+/** То же самое для колонки "Взамен" — тот же формат `<reses>`, тот же вечно-null `ln`. */
+function resourceColumnLabel(name: string): string {
+  return RESOURCE_NAME_RU[name] ?? name;
+}
 
 export function SellWindow({ data, tabs, onTabClick, onClose, onSell }: SellWindowProps) {
   const [category, setCategory] = useState(1);
@@ -129,7 +151,7 @@ export function SellWindow({ data, tabs, onTabClick, onClose, onSell }: SellWind
         <select value={articleId} onChange={(e) => setArticleId((e.target as HTMLSelectElement).value)}>
           {articles.map((a) => (
             <option key={a.id} value={a.id ?? ''}>
-              {a.libname ?? a.id} (есть: {a.amount})
+              {articleLabel(a)} (есть: {a.amount})
             </option>
           ))}
         </select>
@@ -140,7 +162,7 @@ export function SellWindow({ data, tabs, onTabClick, onClose, onSell }: SellWind
         <select value={tradeByIndex} onChange={(e) => setTradeByIndex(Number((e.target as HTMLSelectElement).value))}>
           {(data.matrix?.reses ?? []).map((res, i) => (
             <option key={i} value={i} disabled={!data.matrix?.data[tradesRowIndex]?.[i]?.allow}>
-              {res.name}
+              {resourceColumnLabel(res.name)}
             </option>
           ))}
         </select>

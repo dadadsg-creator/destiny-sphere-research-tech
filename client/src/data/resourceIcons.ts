@@ -8,7 +8,7 @@
  */
 export const RESOURCE_NAME_RU: Record<string, string> = {
   KADERIUM: 'Кадериум',
-  NANO_CRYSTAL: 'Нанокристалл',
+  NANO_CRYSTAL: 'Нано-кристаллы',
   PRODIUM: 'Продиум',
   FOOD: 'Еда',
   STASIS_ENERGY: 'Энергия',

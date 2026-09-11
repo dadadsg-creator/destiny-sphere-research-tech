@@ -4,11 +4,22 @@
  * (parseAuction, computeLotDisabled). Форма фильтров (дерево по
  * категориям) сознательно не портирована в этой версии — см. докстринг
  * auctionData.ts.
+ *
+ * **Исправление (2026-09-11)**: лот-ресурс (`idCatOn === '1'`) показывал
+ * сырое машинное имя (`NANO_CRYSTAL`) вместо русского названия — тот же
+ * баг и то же исправление, что в `SellWindow.tsx`
+ * (`RESOURCE_NAME_RU[libname]`); для юнитов/артефактов `libname` остаётся
+ * как есть.
  */
 import { Window } from '../ui/Window';
 import type { TabDef } from '../ui/tabs';
-import { unitIconUrl } from '../data/resourceIcons';
+import { RESOURCE_NAME_RU, unitIconUrl } from '../data/resourceIcons';
 import { computeLotDisabled, type AuctionLot } from './auctionData';
+
+function lotLabel(lot: AuctionLot): string {
+  if (lot.idCatOn === '1' && lot.libname) return RESOURCE_NAME_RU[lot.libname] ?? lot.libname;
+  return lot.libname ?? '';
+}
 
 export interface AuctionWindowProps {
   lots: AuctionLot[];
@@ -43,7 +54,7 @@ export function AuctionWindow({ lots, playerResourceByName, tabs, onTabClick, on
               <tr key={lot.id}>
                 <td class="ds-artefact-row">
                   {lot.idCatOn === '2' && lot.libname && <img class="ds-unit-icon" src={unitIconUrl(lot.libname)} alt="" />}
-                  <span>{lot.libname}</span>
+                  <span>{lotLabel(lot)}</span>
                 </td>
                 <td>{lot.amount}</td>
                 <td>{lot.currentPrice}</td>
