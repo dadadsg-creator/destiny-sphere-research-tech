@@ -137,7 +137,7 @@ const TEST_ARMY_OVERVIEW: ArmyOverview = {
       inaction: 3,
       lastcoord: null,
       lastspeed: null,
-      mst: 0,
+      mst: 24,
       prodoweight: null,
       units: [
         { id: '9', libname: 'TANK', amount: 12 },
@@ -147,6 +147,7 @@ const TEST_ARMY_OVERVIEW: ArmyOverview = {
       allowAction: [
         { id: 'ATTACK', actionName: 'Атака' },
         { id: 'DEFEND', actionName: 'Защита' },
+        { id: 'HIDE_ARMY', actionName: 'Укрыть' },
       ],
     },
     {
@@ -1194,6 +1195,7 @@ async function main() {
         onTabClick={(tabId) => console.log('[army] tab click ->', tabId)}
         onClose={() => console.log('[army] close')}
         onDismissAll={() => console.log('[army] dismissAll()')}
+        onArmyAction={(command) => console.log('[army] action ->', command.tag, command.attrs)}
       />,
     );
     (window as any).__renderDone = true;

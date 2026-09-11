@@ -140,3 +140,67 @@ export function parseArmyOverview(xml: string): ArmyOverview {
     armies,
   };
 }
+
+/**
+ * `res_list` — комбобокс "за какой ресурс разрешить грабёж" при
+ * атаке/защите/переброске (`army_overview_class.as:17`, класс-переменная
+ * с буквальным комментарием-подсказкой прямо в объявлении: `= new
+ * Array("ALL_RES","KADERIUM","NANO_CRYSTAL","STASIS_ENERGY","FOOD",
+ * "PRODIUM")` — сама переменная заполняется снаружи класса (не найдено
+ * место вызова в этой ревизии), но комментарий и есть авторитетный
+ * список значений, других источников нет).
+ */
+export const ARMY_RESOURCE_OPTIONS = ['ALL_RES', 'KADERIUM', 'NANO_CRYSTAL', 'STASIS_ENERGY', 'FOOD', 'PRODIUM'] as const;
+
+/**
+ * `reqvestdata.as:670-709` (`army_action`) — словарь id_action → тег
+ * команды. `ATTACK_CONFIRM` — подтверждение атаки соты, которую нельзя
+ * колонизировать (обычная атака, просто другой повод её отправки).
+ */
+const ARMY_ACTION_TAG: Record<string, string> = {
+  CANCEL_ATTACK: 'cancelattack',
+  CANCEL_DEFEND: 'canceldefend',
+  ATTACK: 'attack',
+  ATTACK_CONFIRM: 'attack_confirm',
+  DEFEND: 'defend',
+  MOVE_TO_COMB: 'movetocomb',
+};
+
+/** `action.indexOf("CANCEL") >= 0` (`army_overview_class.as:821`) — единственная проверка валидности отправки для этих действий. */
+export function isCancelAction(actionId: string): boolean {
+  return actionId.includes('CANCEL');
+}
+
+/**
+ * `reqvestdata.as:706` — `<attack|defend|movetocomb|cancelattack|canceldefend
+ * res="" speed="" destination="ring.complex.sota" id_army=""/>`. Валидность
+ * отправки (`complex_action>0 || action=="HIDE_ARMY" || action содержит
+ * "CANCEL"`) — на вызывающей стороне (см. `ArmyOverviewWindow.tsx`).
+ */
+export interface ArmyActionCommand {
+  tag: string;
+  attrs: { res: string; speed: number; destination: string; id_army: string };
+}
+export function buildArmyActionCommand(
+  idArmy: string,
+  actionId: string,
+  ring: number,
+  complex: number,
+  sota: number,
+  speed: number,
+  resource: string,
+): ArmyActionCommand {
+  return {
+    tag: ARMY_ACTION_TAG[actionId] ?? `ERROR:${actionId}:`,
+    attrs: { res: resource, speed, destination: `${ring}.${complex}.${sota}`, id_army: idArmy },
+  };
+}
+
+/** `reqvestdata.as:711-728` (`army_action_hide`) — `<hide_army id_army="" timehide=""/>`. */
+export interface ArmyActionHideCommand {
+  tag: 'hide_army';
+  attrs: { id_army: string; timehide: number };
+}
+export function buildArmyActionHideCommand(idArmy: string, timeHide: number): ArmyActionHideCommand {
+  return { tag: 'hide_army', attrs: { id_army: idArmy, timehide: timeHide } };
+}

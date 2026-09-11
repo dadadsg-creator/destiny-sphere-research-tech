@@ -575,6 +575,7 @@ function renderArmyOverview(root: Element, xml: string, ctx: DispatchContext): v
       onTabClick={(tabId) => sendTabClick(ctx, tabId)}
       onClose={closeWindow}
       onDismissAll={() => void ctx.send(tag('dismissArmies', {}))}
+      onArmyAction={(command) => void ctx.send(tag(command.tag, command.attrs))}
     />,
   );
 }
