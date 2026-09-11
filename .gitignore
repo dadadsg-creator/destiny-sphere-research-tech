@@ -15,3 +15,16 @@ desktop.ini
 # .svn/ hold pre-redaction originals of files we've since redacted; never
 # let these be committed even if SPHERE_client/ itself gets added later.
 .svn/
+
+# Large local-only working directories (tens of thousands of files each) -
+# not meant to be committed, just tripped VS Code's Git "too many active
+# changes" warning (2026-09-11):
+# - old-sphere/SPHERE_client/ - SVN checkout of the decompiled Flash client
+#   source (game.as, reqvestdata.as, etc.), used as a read-only reference
+#   while porting; the old-sphere/ codebase proper (the archived PHP/AS
+#   already checked in) remains tracked as-is.
+# - client-assets/ - FFDec-decompiled building/ground sprites, a scratch
+#   extraction workspace; regenerable from the source .swf files. Only the
+#   final selected PNGs that make it into client/public/assets/ are tracked.
+/old-sphere/SPHERE_client/
+/client-assets/
