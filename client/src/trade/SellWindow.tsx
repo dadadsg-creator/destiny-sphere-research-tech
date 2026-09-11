@@ -15,12 +15,27 @@
  *
  * Калькулятор (4-я вкладка, только премиум, drawcalc() — чисто локальный
  * расчёт без сети) — НЕ портирован в этой версии.
+ *
+ * **Дополнение (2026-09-11, категория «В» §2.2/§2.4)**: `reinitupkeep()`
+ * (`trade_menu_class.as:853-869`) на каждое изменение количества/времени
+ * пересчитывает и показывает готовое время лота + расход ресурсов на
+ * его поддержание — раньше отсутствовало целиком, см.
+ * `tradeData.ts::computeTradeUpkeep()`.
  */
 import { useState } from 'preact/hooks';
 import { Window } from '../ui/Window';
 import { Stepper } from '../ui/Stepper';
 import type { TabDef } from '../ui/tabs';
-import { buildSellCommand, computeTradePriceCorridor, type SellCommand, type TradeMenuData } from './tradeData';
+import { ResourceList, type ResourceCost } from '../ui/ResourceValue';
+import { RESOURCE_LETTER_TO_NAME } from '../data/resourceIcons';
+import { formatTurnTime } from '../data/turnTime';
+import {
+  buildSellCommand,
+  computeTradePriceCorridor,
+  computeTradeUpkeep,
+  type SellCommand,
+  type TradeMenuData,
+} from './tradeData';
 
 export interface SellWindowProps {
   data: TradeMenuData;
@@ -53,6 +68,11 @@ export function SellWindow({ data, tabs, onTabClick, onClose, onSell }: SellWind
   const totalPrice = price * amount;
   const corridor =
     cell?.allow && cell.minOrder !== undefined ? computeTradePriceCorridor(totalPrice, cell.minOrder) : null;
+  const upkeep = article ? computeTradeUpkeep(article, amount, tradeTime) : {};
+  const upkeepCosts: ResourceCost[] = Object.entries(upkeep).map(([letter, value]) => ({
+    name: RESOURCE_LETTER_TO_NAME[letter] ?? letter,
+    value: value ?? 0,
+  }));
 
   const nameValid = !isPersonal || (nick.length >= 1 && nick.length <= 20);
   const quantityValid =
@@ -145,7 +165,15 @@ export function SellWindow({ data, tabs, onTabClick, onClose, onSell }: SellWind
       <div class="ds-spying__row">
         <span class="ds-spying__label">Время (ходов):</span>
         <Stepper value={tradeTime} min={1} max={data.time2Trade} onChange={setTradeTime} />
+        <span>{formatTurnTime(tradeTime * (Number(data.turn) || 0))}</span>
       </div>
+
+      {upkeepCosts.length > 0 && (
+        <div class="ds-spying__row">
+          <span class="ds-spying__label">Расход на поддержание лота:</span>
+          <ResourceList costs={upkeepCosts} />
+        </div>
+      )}
 
       <div class="ds-spying__row">
         <span class="ds-spying__label">Локация:</span>

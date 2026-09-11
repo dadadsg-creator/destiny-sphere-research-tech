@@ -242,6 +242,29 @@ export function computeTradePriceCorridor(totalPrice: number, minOrderPercent: n
   return { min: totalPrice - delta, max: totalPrice + delta };
 }
 
+/**
+ * Категория «В» (§2.2/§2.4 доклада) — `reinitupkeep()`
+ * (`trade_menu_class.as:853-869`, буквально дублируется в `reincarnate.as:559-575`
+ * для встроенной панели продажи там, НЕ портированной — см. докстринг
+ * `ReincarnateWindow.tsx`): время выставления лота — `turnToTime(turn *
+ * tradeTime)`; расход ресурсов на поддержание лота за это время —
+ * `amount * article.upkeep[K] * tradeTime` (округление вверх, отдельно
+ * по каждому из K/N/P/F/S). Раньше не отображалось в `SellWindow.tsx`.
+ */
+export function computeTradeUpkeep(
+  article: Pick<TradeArticle, 'upkeep'>,
+  amount: number,
+  tradeTime: number,
+): Partial<Record<'K' | 'N' | 'P' | 'F' | 'S', number>> {
+  const result: Partial<Record<'K' | 'N' | 'P' | 'F' | 'S', number>> = {};
+  for (const key of ['K', 'N', 'P', 'F', 'S'] as const) {
+    const perUnit = article.upkeep[key] ?? 0;
+    const value = amount * perUnit * tradeTime;
+    if (Number.isFinite(value) && value > 0) result[key] = Math.ceil(value);
+  }
+  return result;
+}
+
 export interface SellParams {
   scope: string;
   category: number;

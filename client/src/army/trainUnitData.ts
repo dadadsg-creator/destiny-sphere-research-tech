@@ -115,6 +115,8 @@ export interface UnitBuildPrice {
   food: number;
   prod: number;
   work: number;
+  /** `C` — цена постройки одного юнита в ходах (см. xmlparsers.as:437, `price.time = C * xml.attributes.turn`). */
+  time: number;
 }
 
 /** game.as:375 — `static function getMaxNumber() { return 2000000000; }`, буквальная константа-"бесконечность". */
@@ -130,7 +132,21 @@ export function unitBuildPriceFromLocal(local: LocalUnit | undefined): UnitBuild
     food: Number(attrs.F) || 0,
     prod: Number(attrs.P) || 0,
     work: Number(attrs.W) || 0,
+    time: Number(attrs.C) || 0,
   };
+}
+
+/**
+ * Категория «В» — время постройки ОДНОГО юнита в секундах
+ * (`xmlparsers.as:437`: `price.time = C × xml.attributes.turn`, `turn` —
+ * живой корневой атрибут `<warunit turn="">`, уже в секундах —
+ * `PN_TrainWarUnit.class.php`, тот же `TURN_TIME*60`, как везде).
+ * Домножение на `count` и деление на 2 — на вызывающей стороне
+ * (`trainvarunitclass.as:279-283`: `speedUp=='1'` — премиум-ускорение
+ * постройки юнитов вдвое, живой корневой атрибут `<warunit speedup="">`).
+ */
+export function unitBuildTimeSeconds(priceTime: number, turn: string | null): number {
+  return priceTime * (Number(turn) || 0);
 }
 
 export interface PlayerResourcePool {

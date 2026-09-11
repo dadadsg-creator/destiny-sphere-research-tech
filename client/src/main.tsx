@@ -344,8 +344,8 @@ const TEST_LOCAL_UNITS = new Map<string, LocalUnit>([
       damageMax: '10',
       hitpoints: '10',
       description: '',
-      // Цена постройки (не путать с upkeep живой марки) — game.getLocalNames(unitname).K/N/S/F, см. trainUnitData.ts:unitBuildPriceFromLocal().
-      attrs: { K: '10', N: '5', S: '2', F: '8' },
+      // Цена постройки (не путать с upkeep живой марки) — game.getLocalNames(unitname).K/N/S/F/C, см. trainUnitData.ts:unitBuildPriceFromLocal().
+      attrs: { K: '10', N: '5', S: '2', F: '8', C: '2' },
     },
   ],
   [
@@ -721,7 +721,7 @@ const TEST_TRADE_MENU: TradeMenuData = {
   },
   articlesByCategory: {
     1: [
-      { category: 1, idCat: '1_2', id: '2', amount: 1000, upkeep: { K: 0, N: 0, P: 0, F: 0, S: 0 }, power: {}, libname: 'NANO_CRYSTAL', ln: null, isArtefact: false },
+      { category: 1, idCat: '1_2', id: '2', amount: 1000, upkeep: { K: 0.1, N: 0, P: 0, F: 0.05, S: 0 }, power: {}, libname: 'NANO_CRYSTAL', ln: null, isArtefact: false },
     ],
     2: [
       { category: 2, idCat: '2_9', id: '9', amount: 20, upkeep: { K: 0, N: 0, P: 0, F: 0, S: 0 }, power: {}, libname: 'TANK', ln: null, isArtefact: false },

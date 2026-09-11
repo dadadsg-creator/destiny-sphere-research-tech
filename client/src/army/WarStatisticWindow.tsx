@@ -15,13 +15,31 @@
  * `allowMax` (категория «В», формула подтверждена — см. докстринг
  * `trainUnitData.ts`) теперь ограничивает степпер количества для
  * выбранного юнита.
+ *
+ * **Дополнение (2026-09-11, категория «В» §2.2)**: `warstatistic.as:184-208`
+ * на каждое изменение количества/выбора фабрик пересчитывает и
+ * показывает — раньше отсутствовало целиком:
+ *  - цену постройки ×amount (не делится на число фабрик — сама цена
+ *    ресурсов одна и та же, распределение по фабрикам влияет только на
+ *    время);
+ *  - время постройки ОДНОЙ штуки (`ts`) и время всей партии (`tm`) —
+ *    `Math.ceil(amount / count_factory)` "раундов" на выбранных
+ *    фабриках параллельно, `/2` при `speedup=="1"` (премиум-ускорение).
  */
 import { useState } from 'preact/hooks';
 import { Window } from '../ui/Window';
 import { Stepper } from '../ui/Stepper';
 import type { TabDef } from '../ui/tabs';
+import { ResourceList, type ResourceCost } from '../ui/ResourceValue';
+import { formatTurnTime } from '../data/turnTime';
 import type { WarComplexData, Factory, FactoryUnit } from './warFactoryData';
-import { computeAllowMax, unitBuildPriceFromLocal, GLOBAL_MAX_NUMBER, type PlayerResourcePool } from './trainUnitData';
+import {
+  computeAllowMax,
+  unitBuildPriceFromLocal,
+  unitBuildTimeSeconds,
+  GLOBAL_MAX_NUMBER,
+  type PlayerResourcePool,
+} from './trainUnitData';
 import type { LocalUnit } from '../data/localData';
 
 export interface WarStatisticWindowProps {
@@ -47,14 +65,21 @@ export function WarStatisticWindow({ data, localUnits, playerResources, tabs, on
 
   const selectedUnit = data.units.find((u) => u.unitname === selectedUnitName);
   const factories = [...data.factories.values()];
-  const allowMax = selectedUnit
-    ? computeAllowMax(
-        GLOBAL_MAX_NUMBER,
-        unitBuildPriceFromLocal(localUnits.get(selectedUnit.unitname)),
-        playerResources,
-        selectedUnit.maxallow ?? undefined,
-      )
-    : 0;
+  const price = unitBuildPriceFromLocal(selectedUnit ? localUnits.get(selectedUnit.unitname) : undefined);
+  const allowMax = selectedUnit ? computeAllowMax(GLOBAL_MAX_NUMBER, price, playerResources, selectedUnit.maxallow ?? undefined) : 0;
+
+  const speedDivisor = data.speedup === '1' ? 2 : 1;
+  const perUnitSeconds = unitBuildTimeSeconds(price.time, data.turn) / speedDivisor;
+  const countFactory = selectedCells.size;
+  const batchSeconds = countFactory > 0 ? perUnitSeconds * Math.ceil(amount / countFactory) : 0;
+  const buildCosts: ResourceCost[] = [
+    { name: 'KADERIUM', value: price.kad * amount },
+    { name: 'NANO_CRYSTAL', value: price.nano * amount },
+    { name: 'STASIS_ENERGY', value: price.energy * amount },
+    { name: 'FOOD', value: price.food * amount },
+    { name: 'PRODIUM', value: price.prod * amount },
+    { name: 'WORKER', value: price.work * amount },
+  ];
 
   function toggleCell(idCell: string) {
     const next = new Set(selectedCells);
@@ -113,6 +138,9 @@ export function WarStatisticWindow({ data, localUnits, playerResources, tabs, on
 
       <div class="ds-war-statistic__controls">
         <Stepper value={amount} min={0} max={allowMax} onChange={setAmount} />
+        <ResourceList costs={buildCosts} />
+        <span>1 шт.: {formatTurnTime(perUnitSeconds)}</span>
+        <span>Партия: {formatTurnTime(batchSeconds)}</span>
         <button
           type="button"
           class="ds-popup__btn"
