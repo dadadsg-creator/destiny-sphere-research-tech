@@ -4,12 +4,20 @@
  * логистика между собственными сотами игрока в одном мире (см. докстринг
  * transferData.ts). Данные — transferData.ts (parseTransferMenu,
  * buildTransferCommand).
+ *
+ * **Исправление (2026-09-11)**: категории 1/2 показывали сырое машинное
+ * имя вместо названия — исправлено через `resourceDisplayName()`/
+ * `unitDisplayName()` (живая локализация из `loaddata`, не выдуманные
+ * строки, см. `resourceIcons.ts`). Категория 3 (артефакты) — своя, ещё не
+ * подключённая локализация (см. докстринг `transferData.ts`,
+ * форматирование `parser.artrp()` не портировано), `libname` остаётся как
+ * есть.
  */
 import { useState } from 'preact/hooks';
 import { Window } from '../ui/Window';
 import { Stepper } from '../ui/Stepper';
 import { ResourceValue } from '../ui/ResourceValue';
-import { RESOURCE_NAME_RU, unitIconUrl } from '../data/resourceIcons';
+import { resourceDisplayName, unitDisplayName, unitIconUrl } from '../data/resourceIcons';
 import type { TabDef } from '../ui/tabs';
 import { buildTransferCommand, type TransferArticle, type TransferCommand, type TransferMenuData } from './transferData';
 
@@ -24,9 +32,9 @@ export interface TransferWindowProps {
 
 const CATEGORY_LABELS: Record<number, string> = { 1: 'Ресурсы', 2: 'Юниты', 3: 'Артефакты' };
 
-/** Категория 1 (ресурсы) — libname это машинное имя (NANO_CRYSTAL и т.п.), локализуем через уже готовый RESOURCE_NAME_RU. Категории 2/3 — libname остаётся сырым (см. докстринг transferData.ts, форматирование parser.artrp() не портировано). */
 function articleLabel(a: TransferArticle, category: number): string {
-  if (category === 1 && a.libname) return RESOURCE_NAME_RU[a.libname] ?? a.libname;
+  if (category === 1 && a.libname) return resourceDisplayName(a.libname);
+  if (category === 2 && a.libname) return unitDisplayName(a.libname);
   return a.libname ?? a.id ?? '';
 }
 

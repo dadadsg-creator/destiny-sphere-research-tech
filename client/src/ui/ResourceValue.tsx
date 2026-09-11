@@ -4,7 +4,7 @@
  * отображается стоимость/бонус в игровых ресурсах (постройки, артефакты,
  * и т.д. — см. CLIENT_PORTING_PLAN.md, «Визуальный примитив ресурсов»).
  */
-import { RESOURCE_NAME_RU, resourceIconUrl } from '../data/resourceIcons';
+import { resourceDisplayName, resourceIconUrl } from '../data/resourceIcons';
 
 export interface ResourceValueProps {
   /** Внутреннее имя ресурса (KADERIUM, STASIS_ENERGY, ...) — неизвестное имя просто показывается как есть, без иконки. */
@@ -13,10 +13,10 @@ export interface ResourceValueProps {
 }
 
 export function ResourceValue({ name, value }: ResourceValueProps) {
-  const label = RESOURCE_NAME_RU[name];
+  const label = resourceDisplayName(name);
   return (
-    <span class="ds-resource" title={label ?? name}>
-      {label && <img class="ds-resource__icon" src={resourceIconUrl(name)} alt="" />}
+    <span class="ds-resource" title={label}>
+      {label !== name && <img class="ds-resource__icon" src={resourceIconUrl(name)} alt="" />}
       <span class="ds-resource__value">{value}</span>
     </span>
   );

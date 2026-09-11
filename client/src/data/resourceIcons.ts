@@ -1,11 +1,24 @@
 /**
- * Отображение внутренних имён ресурсов/валют (см. combResData.ts) —
- * короткое русское название + путь к иконке. Иконки извлечены из
- * `client-assets/menu.lib/sprites/DefineSprite_*_<ИМЯ>/1.png` (FFDec-экспорт
+ * Отображение внутренних имён ресурсов/валют (см. combResData.ts) — путь
+ * к иконке + русское название. Иконки извлечены из `client-assets/
+ * menu.lib/sprites/DefineSprite_*_<ИМЯ>/1.png` (FFDec-экспорт
  * `menu.lib.swf`, см. CLIENT_PORTING_PLAN.md «Экспорт графики») в
- * `public/assets/resources/`. Термины сверены с уже устоявшимися в порте
- * (ReincarnateWindow, RightBlock.tsx, main.tsx тестовые данные и т.д.).
+ * `public/assets/resources/`.
+ *
+ * **Название — из живой локализации, не отсебятина.** Настоящий источник
+ * — `<att id="KADERIUM" ln="кадериум"/>` и т.п. внутри mark `loaddata`
+ * (`resolveLocalName()`/`localData.attributeNames`, зеркало
+ * `game.getLocalNames()`, подтверждено живым дампом 2026-09-11 —
+ * `NANO_CRYSTAL` реально даёт "нано-кристаллы", НЕ "нанокристалл", как
+ * было здесь раньше по ошибке). `RESOURCE_NAME_RU` ниже — ТОЛЬКО
+ * запасной вариант на случай, если `loaddata` ещё не пришла (синтетическое
+ * тестирование через `?screen=`, где живых данных нет) — в реальном
+ * сеансе игры используется `resourceDisplayName()`, не эта константа
+ * напрямую.
  */
+import { localData } from './localDataStore';
+import { capitalizeFirst, resolveLocalName } from './localNameResolver';
+
 export const RESOURCE_NAME_RU: Record<string, string> = {
   KADERIUM: 'Кадериум',
   NANO_CRYSTAL: 'Нано-кристаллы',
@@ -18,6 +31,13 @@ export const RESOURCE_NAME_RU: Record<string, string> = {
   GOLD_CREDIT: 'Золото',
   SILVER_CREDIT: 'Серебро',
 };
+
+/** Реальное название ресурса — живая локализация (см. докстринг выше), с fallback на RESOURCE_NAME_RU/сырое имя. */
+export function resourceDisplayName(name: string): string {
+  const live = resolveLocalName(localData.value, name);
+  if (live) return capitalizeFirst(live);
+  return RESOURCE_NAME_RU[name] ?? name;
+}
 
 /**
  * Однобуквенные коды из `<b K="" N="" S="" F="" P="" W=""/>` и подобных
@@ -48,6 +68,20 @@ export function resourceIconUrl(name: string): string {
  */
 export function unitIconUrl(unitname: string): string {
   return `/assets/units/${unitname}.png`;
+}
+
+/**
+ * Название юнита — живая локализация из `loaddata` (`<unit id="" ln="">`,
+ * `localData.units`, уже правильно капитализировано в исходных данных —
+ * "Солдат"/"Танк" и т.п., без доп. обработки). Уже применяется через явный
+ * проп `localUnits` в части окон (`TrainUnitWindow`, `ArmyCreationWindow`,
+ * `WarStatisticWindow`, `ArmyCalculatorWindow`) — здесь тот же живой
+ * сигнал напрямую, для окон, куда `localUnits` проп не прокидывался
+ * (см. CLIENT_PORTING_PLAN.md, находка 2026-09-11 — сырые машинные имена
+ * юнитов вроде "TANK" вместо "Танк").
+ */
+export function unitDisplayName(libname: string): string {
+  return localData.value?.units.get(libname)?.ln ?? libname;
 }
 
 /**
@@ -153,21 +187,30 @@ export function artefactScopeMaskUrl(scope: string | null): string | null {
  * (`branchid`) отдельных иконок в `menu.lib` не имеют вовсе — только
  * здесь.
  */
-const RESEARCH_BRANCH_NAMES: Record<string, string> = {
-  KADERIUM: 'Кадериум',
-  NANO_CRYSTAL: 'Нанокристаллы',
-  STASIS_ENERGY: 'Энергия',
-  PRODIUM: 'Продиум',
-  FOOD: 'Еда',
+const RESOURCE_BRANCH_IDS = new Set(['KADERIUM', 'NANO_CRYSTAL', 'STASIS_ENERGY', 'PRODIUM', 'FOOD']);
+
+/**
+ * TRADE/SPYING — НЕ настоящие ресурсы, реальных названий этих двух веток
+ * дерева науки в порте сейчас нет: у `tree_scients/tree.as` в оригинале
+ * СВОЙ собственный, отдельный от `loaddata` набор строк (`textArr`,
+ * подгружается своим отдельным XML-модулем, не портирован — см.
+ * докстринг выше). `<interface id="TRADE">` из `loaddata` для этой цели
+ * НЕ подходит — тот же id переиспользован в интерфейсе под ДРУГОЙ смысл
+ * ("Башня артефактов", подтверждено живым дампом 2026-09-11), это
+ * коллизия ключей, а не то же самое понятие. Оставлены как есть до
+ * портирования `tree_scients`.
+ */
+const RESEARCH_BRANCH_NAMES_FALLBACK: Record<string, string> = {
   TRADE: 'Торговля',
   SPYING: 'Шпионаж',
 };
 
 export function researchBranchName(branchId: string): string {
-  return RESEARCH_BRANCH_NAMES[branchId] ?? branchId;
+  if (RESOURCE_BRANCH_IDS.has(branchId)) return resourceDisplayName(branchId);
+  return RESEARCH_BRANCH_NAMES_FALLBACK[branchId] ?? branchId;
 }
 
 export function researchBranchIconUrl(branchId: string): string | null {
-  if (!(branchId in RESEARCH_BRANCH_NAMES)) return null;
+  if (!RESOURCE_BRANCH_IDS.has(branchId) && !(branchId in RESEARCH_BRANCH_NAMES_FALLBACK)) return null;
   return `/assets/research/${branchId}.png`;
 }

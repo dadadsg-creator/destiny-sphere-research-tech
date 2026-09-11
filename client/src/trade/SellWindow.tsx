@@ -29,18 +29,18 @@
  * машинное имя (`NANO_CRYSTAL`) и в списке "Товар", и в списке "Взамен"
  * — `TradeArticle.ln`/`TradeResourceColumn.ln` в этом формате XML
  * (`<reses>name:price:cat_id</reses>`, `<article libname="">`) сервер
- * никогда не присылает (`ln` всегда `null`, см. докстринг tradeData.ts),
- * поэтому нужна локализация через `RESOURCE_NAME_RU` — тот же паттерн,
- * что уже был в `TransferWindow.tsx::articleLabel()`. Для юнитов/
- * артефактов (2/3) сырое `libname` остаётся как есть — локализованных
- * имён для них сервер в этом формате тоже не даёт.
+ * никогда не присылает (`ln` всегда `null`, см. докстринг tradeData.ts).
+ * Названия — НЕ отсебятина: `resourceDisplayName()`/`unitDisplayName()`
+ * (`resourceIcons.ts`) читают живую локализацию из `loaddata`
+ * (`<att>`/`<unit>`, зеркало `game.getLocalNames()`), тот же источник,
+ * что уже используют иконки ресурсов/юнитов везде в порте.
  */
 import { useState } from 'preact/hooks';
 import { Window } from '../ui/Window';
 import { Stepper } from '../ui/Stepper';
 import type { TabDef } from '../ui/tabs';
 import { ResourceList, type ResourceCost } from '../ui/ResourceValue';
-import { RESOURCE_LETTER_TO_NAME, RESOURCE_NAME_RU } from '../data/resourceIcons';
+import { RESOURCE_LETTER_TO_NAME, resourceDisplayName, unitDisplayName } from '../data/resourceIcons';
 import { formatTurnTime } from '../data/turnTime';
 import {
   buildSellCommand,
@@ -62,15 +62,16 @@ export interface SellWindowProps {
 
 const CATEGORY_LABELS: Record<number, string> = { 1: 'Ресурсы', 2: 'Юниты', 3: 'Артефакты' };
 
-/** Категория 1 (ресурс) — libname это машинное имя, локализуем через RESOURCE_NAME_RU (см. докстринг файла). */
+/** Категория 1 (ресурс)/2 (юнит) — libname это машинное имя, локализуем через живую loaddata (см. докстринг файла). Артефакты (3) — своя, ещё не подключённая локализация (см. docs), оставлены как есть. */
 function articleLabel(a: TradeArticle): string {
-  if (a.category === 1 && a.libname) return RESOURCE_NAME_RU[a.libname] ?? a.libname;
+  if (a.category === 1 && a.libname) return resourceDisplayName(a.libname);
+  if (a.category === 2 && a.libname) return unitDisplayName(a.libname);
   return a.libname ?? a.id ?? '';
 }
 
 /** То же самое для колонки "Взамен" — тот же формат `<reses>`, тот же вечно-null `ln`. */
 function resourceColumnLabel(name: string): string {
-  return RESOURCE_NAME_RU[name] ?? name;
+  return resourceDisplayName(name);
 }
 
 export function SellWindow({ data, tabs, onTabClick, onClose, onSell }: SellWindowProps) {

@@ -5,19 +5,21 @@
  * категориям) сознательно не портирована в этой версии — см. докстринг
  * auctionData.ts.
  *
- * **Исправление (2026-09-11)**: лот-ресурс (`idCatOn === '1'`) показывал
- * сырое машинное имя (`NANO_CRYSTAL`) вместо русского названия — тот же
- * баг и то же исправление, что в `SellWindow.tsx`
- * (`RESOURCE_NAME_RU[libname]`); для юнитов/артефактов `libname` остаётся
- * как есть.
+ * **Исправление (2026-09-11)**: лот-ресурс (`idCatOn === '1'`) и лот-юнит
+ * (`idCatOn === '2'`) показывали сырое машинное имя (`NANO_CRYSTAL`/`TANK`)
+ * вместо названия — исправлено через `resourceDisplayName()`/
+ * `unitDisplayName()` (живая локализация из `loaddata`, см. `resourceIcons.ts`),
+ * не выдуманные строки. Артефакты (3) — своя, ещё не подключённая
+ * локализация, `libname` остаётся как есть.
  */
 import { Window } from '../ui/Window';
 import type { TabDef } from '../ui/tabs';
-import { RESOURCE_NAME_RU, unitIconUrl } from '../data/resourceIcons';
+import { resourceDisplayName, unitDisplayName, unitIconUrl } from '../data/resourceIcons';
 import { computeLotDisabled, type AuctionLot } from './auctionData';
 
 function lotLabel(lot: AuctionLot): string {
-  if (lot.idCatOn === '1' && lot.libname) return RESOURCE_NAME_RU[lot.libname] ?? lot.libname;
+  if (lot.idCatOn === '1' && lot.libname) return resourceDisplayName(lot.libname);
+  if (lot.idCatOn === '2' && lot.libname) return unitDisplayName(lot.libname);
   return lot.libname ?? '';
 }
 

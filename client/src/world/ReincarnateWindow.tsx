@@ -12,7 +12,7 @@ import { useState } from 'preact/hooks';
 import { Window } from '../ui/Window';
 import { Stepper } from '../ui/Stepper';
 import type { TabDef } from '../ui/tabs';
-import { unitIconUrl } from '../data/resourceIcons';
+import { unitDisplayName, unitIconUrl } from '../data/resourceIcons';
 import {
   buildGetReincarnateCommand,
   calcReincarnateAmount,
@@ -77,7 +77,7 @@ export function ReincarnateWindow({ data, playerResources, tabs, onTabClick, onC
               <tr key={unit.id}>
                 <td class="ds-artefact-row">
                   {unit.libname && <img class="ds-unit-icon" src={unitIconUrl(unit.libname)} alt="" />}
-                  <span>{unit.libname}</span>
+                  <span>{unit.libname && unitDisplayName(unit.libname)}</span>
                 </td>
                 <td>{unit.prodiumWeight}</td>
                 <td>
@@ -111,7 +111,7 @@ export function ReincarnateWindow({ data, playerResources, tabs, onTabClick, onC
                 <tr key={i}>
                   <td class="ds-artefact-row">
                     {q.libname && <img class="ds-unit-icon" src={unitIconUrl(q.libname)} alt="" />}
-                    <span>{q.libname}</span>
+                    <span>{q.libname && unitDisplayName(q.libname)}</span>
                   </td>
                   <td>{q.amount}</td>
                   <td>{q.time[0]}</td>

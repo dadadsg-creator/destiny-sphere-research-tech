@@ -45,7 +45,7 @@ import { ConfirmPopup } from '../ui/Popup';
 import { pushPopup, popPopup } from '../ui/windowStore';
 import type { TabDef } from '../ui/tabs';
 import { formatTurnTime } from '../data/turnTime';
-import { RESOURCE_NAME_RU, unitIconUrl } from '../data/resourceIcons';
+import { resourceDisplayName, unitDisplayName, unitIconUrl } from '../data/resourceIcons';
 import {
   ARMY_RESOURCE_OPTIONS,
   buildArmyActionCommand,
@@ -63,12 +63,6 @@ const INACTION_LABEL: Record<number, string> = {
   2: 'Возвращается домой',
   3: 'Дома',
 };
-
-/** ARMY_RESOURCE_OPTIONS — машинные имена (+ спец. значение ALL_RES), локализуем через RESOURCE_NAME_RU (см. также SellWindow/AuctionWindow — тот же баг с сырым именем). */
-function armyResourceLabel(name: string): string {
-  if (name === 'ALL_RES') return 'Все ресурсы';
-  return RESOURCE_NAME_RU[name] ?? name;
-}
 
 export interface ArmyOverviewWindowProps {
   overview: ArmyOverview;
@@ -159,11 +153,11 @@ function ArmyActionPanel({
           <Stepper value={sota} min={1} max={6} onChange={setSota} />
           <span class="ds-spying__label">Скорость:</span>
           <Stepper value={speed} min={minSpeed} max={maxSpeed} onChange={setSpeed} />
-          <span class="ds-spying__label">Ресурс (грабёж):</span>
+          <span class="ds-spying__label">Приоритетный ресурс:</span>
           <select value={resource} onChange={(e) => setResource((e.target as HTMLSelectElement).value)}>
             {ARMY_RESOURCE_OPTIONS.map((r) => (
               <option key={r} value={r}>
-                {armyResourceLabel(r)}
+                {resourceDisplayName(r)}
               </option>
             ))}
           </select>
@@ -234,7 +228,7 @@ export function ArmyOverviewWindow({ overview, tabs, onTabClick, onClose, onDism
                       {army.units.map((unit) => (
                         <li key={unit.id} class="ds-army-units__row">
                           {unit.libname && <img class="ds-unit-icon" src={unitIconUrl(unit.libname)} alt="" />}
-                          {unit.amount}× {unit.libname}
+                          {unit.amount}× {unit.libname && unitDisplayName(unit.libname)}
                         </li>
                       ))}
                     </ul>
