@@ -22,10 +22,9 @@ export interface ZondCreateWindowProps {
   onTrain: (id: string, count: number) => void;
 }
 
+/** Округление теперь делает сама calculateProgressivePrice() (keyRound), значения сюда приходят уже готовые. */
 function formatPrice(price: ZondPriceMap): string {
-  const parts = (Object.entries(price) as [string, number][])
-    .filter(([, v]) => v > 0)
-    .map(([k, v]) => `${k}:${Math.ceil(v)}`);
+  const parts = (Object.entries(price) as [string, number][]).filter(([, v]) => v > 0).map(([k, v]) => `${k}:${v}`);
   return parts.length > 0 ? parts.join(' ') : '—';
 }
 
@@ -52,7 +51,14 @@ export function ZondCreateWindow({ data, zondNames, tabs, onTabClick, onClose, o
             for (const key of Object.keys(zond.price) as (keyof ZondPriceMap)[]) {
               const base = zond.price[key] ?? 0;
               const delta = zond.delta[key] ?? 1;
-              totalPrice[key] = count > 0 ? calculateProgressivePrice(base, delta, zond.already, count) : 0;
+              /**
+               * `currentReady` — `Number(obj.ready)+Number(obj.inact)`
+               * (`zondcreateclass.as:59` и далее), НЕ только `already`:
+               * цена следующего зонда зависит от уже забронированной
+               * позиции в прогрессии, включая те, что ещё строятся.
+               * `keyRound=false` только для WR (военный ранг) — :104.
+               */
+              totalPrice[key] = calculateProgressivePrice(base, delta, zond.already + zond.inAction, count, key !== 'WR');
             }
             return (
               <tr key={zond.id}>

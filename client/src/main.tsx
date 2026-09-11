@@ -472,7 +472,7 @@ const TEST_ZOND_CREATE: ZondCreateData = {
   battleXp: '10',
   alert: null,
   allowZond: [
-    { type: '1', id: 'Z1', count: 5, inAction: 2, already: 15, awail: '1', price: { K: 100, N: 20 }, delta: { K: 1.05, N: 1.05 } },
+    { type: '1', id: 'Z1', count: 5, inAction: 2, already: 15, awail: '1', price: { K: 100, N: 20, WR: 2.2 }, delta: { K: 1.05, N: 1.05, WR: 1.2 } },
     { type: '2', id: 'Z2', count: 1, inAction: 0, already: 3, awail: '1', price: { K: 400, N: 80, S: 50 }, delta: { K: 1.1, N: 1.1, S: 1.1 } },
   ],
 };

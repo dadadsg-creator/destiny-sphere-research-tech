@@ -28,7 +28,15 @@
  */
 import { parseXmlFragment } from '../protocol/response';
 
-export type ZondPriceMap = Partial<Record<'K' | 'N' | 'S' | 'F' | 'P' | 'W' | 'C', number>>;
+/**
+ * `WR` (военный ранг) добавлен к обычным K/N/S/F/P/W/C — сервер шлёт его
+ * в тех же `price="..."`/`delta="..."` картах (`zondcreateclass.as:104`,
+ * `calculatePriceWithProgressiv(obj.price["WR"], obj.delta["WR"], ...,
+ * false)`), просто `parsePriceMap()` ниже раньше не знал этот ключ в
+ * типе (в рантайме он всё равно попадал в объект, раз парсер кладёт
+ * "что пришло, то и легло" — но TS не давал явно на него сослаться).
+ */
+export type ZondPriceMap = Partial<Record<'K' | 'N' | 'S' | 'F' | 'P' | 'W' | 'C' | 'WR', number>>;
 
 export interface AllowZondCreate {
   /** "1"/"2" — см. TL_SpyTrainUnit.class.php:17 (SPY_ZOND_SCOUT/EXPLORER). */
@@ -94,20 +102,45 @@ export function parseZondCreate(xml: string): ZondCreateData {
 
 /**
  * Прогрессивная цена постройки — категория «В», уже задокументирована в
- * docs/client-side-computed-logic.md и docs/client-combat-ui.md §11
- * (`calculatePriceWithProgressiv`, zondcreateclass.as:29-67). Каждый
- * следующий зонд дороже предыдущего в `deltaPrice` раз (сумма
- * геометрической прогрессии между позициями `ready` и `ready+count`).
+ * docs/client-side-computed-logic.md и docs/client-combat-ui.md §11.
+ * Портировано 1:1 из `zondcreateclass.as:11-51` (`calculatePriceWithProgressiv`)
+ * — построчно перепроверено 2026-09-11 (Фаза 4, «граничные значения не
+ * только типичный случай»), нашлись два расхождения с прежней версией
+ * этой функции:
+ *
+ * 1. **`keyRound`** (5-й параметр оригинала, по умолчанию `true` —
+ *    `Math.ceil` применяется). Единственное место, где он явно передаётся
+ *    `false` — вызов для `WR` (военный ранг, `:104`); все 6 денежно-
+ *    ресурсных вызовов (K/N/S/F/P/W) и `C` (время) его не передают, то
+ *    есть остаются на дефолтном округлении вверх. Раньше округление
+ *    делалось СНАРУЖИ, безусловно для всех полей сразу
+ *    (`ZondCreateWindow.tsx::formatPrice`) — для `WR` это разошлось бы с
+ *    оригиналом (там `WR` НЕ округляется).
+ * 2. **`countForCreate === 0` — не ноль, а "сколько стоят уже готовые"**
+ *    (`:17-20,27-30`): при нулевом запрашиваемом количестве оригинал
+ *    возвращает не 0, а `pricefull` — то же выражение, что и в общем
+ *    случае, но с `count_for_create=0` внутри показателя степени, что
+ *    математически равно `priceready` (сумме прогрессии ДО текущей
+ *    позиции). Не "странная утечка", а буквально то, что написано в
+ *    коде — воспроизведено 1:1, не округлено до интуитивно ожидаемого 0
+ *    (см. общее правило сессии: воспроизводить находки категории «В»
+ *    как есть, не "исправлять" на лету).
  */
 export function calculateProgressivePrice(
   basePrice: number,
   deltaPrice: number,
   currentReady: number,
   countForCreate: number,
+  keyRound = true,
 ): number {
-  if (deltaPrice === 1) {
-    return basePrice * countForCreate;
-  }
   const geometricSum = (n: number) => (1 - deltaPrice ** n) / (1 - deltaPrice);
-  return basePrice * (geometricSum(currentReady + countForCreate) - geometricSum(currentReady));
+  let price: number;
+  if (deltaPrice === 1) {
+    price = countForCreate !== 0 ? countForCreate * basePrice : basePrice;
+  } else {
+    const priceFull = basePrice * geometricSum(currentReady + countForCreate);
+    const priceReady = basePrice * geometricSum(currentReady);
+    price = countForCreate !== 0 ? priceFull - priceReady : priceFull;
+  }
+  return keyRound ? Math.ceil(price) : price;
 }
