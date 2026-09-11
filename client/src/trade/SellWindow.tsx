@@ -20,7 +20,10 @@
  * (`trade_menu_class.as:853-869`) на каждое изменение количества/времени
  * пересчитывает и показывает готовое время лота + расход ресурсов на
  * его поддержание — раньше отсутствовало целиком, см.
- * `tradeData.ts::computeTradeUpkeep()`.
+ * `tradeData.ts::computeTradeUpkeep()`. Отдельно от этого — предпросмотр
+ * налога с продажи (`setPrice()`, `trade_menu_class.as:1090-1096`) тоже
+ * отсутствовал (был только коридор цены из того же `tax`) — добавлен,
+ * см. `tradeData.ts::computeTradeTax()`.
  */
 import { useState } from 'preact/hooks';
 import { Window } from '../ui/Window';
@@ -32,6 +35,7 @@ import { formatTurnTime } from '../data/turnTime';
 import {
   buildSellCommand,
   computeTradePriceCorridor,
+  computeTradeTax,
   computeTradeUpkeep,
   type SellCommand,
   type TradeMenuData,
@@ -68,6 +72,7 @@ export function SellWindow({ data, tabs, onTabClick, onClose, onSell }: SellWind
   const totalPrice = price * amount;
   const corridor =
     cell?.allow && cell.minOrder !== undefined ? computeTradePriceCorridor(totalPrice, cell.minOrder) : null;
+  const tax = data.flags.nalog && cell?.allow && cell.tax ? computeTradeTax(totalPrice, cell.tax) : null;
   const upkeep = article ? computeTradeUpkeep(article, amount, tradeTime) : {};
   const upkeepCosts: ResourceCost[] = Object.entries(upkeep).map(([letter, value]) => ({
     name: RESOURCE_LETTER_TO_NAME[letter] ?? letter,
@@ -161,6 +166,15 @@ export function SellWindow({ data, tabs, onTabClick, onClose, onSell }: SellWind
           </span>
         )}
       </div>
+
+      {tax && (
+        <div class="ds-spying__row">
+          <span class="ds-spying__label">Налог с продажи:</span>
+          <span class="ds-train-unit__idle">
+            {tax.taxAmount} ({cell?.tax}%) — получите {tax.afterTax}
+          </span>
+        </div>
+      )}
 
       <div class="ds-spying__row">
         <span class="ds-spying__label">Время (ходов):</span>

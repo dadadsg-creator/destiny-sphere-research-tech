@@ -243,6 +243,19 @@ export function computeTradePriceCorridor(totalPrice: number, minOrderPercent: n
 }
 
 /**
+ * Категория «В» (§2.4 доклада) — `setPrice()`
+ * (`trade_menu_class.as:1090-1096`): предпросмотр налога с продажи —
+ * `nalog_value = Math.ceil(totalPrice * tax / 100)`, `price_total =
+ * totalPrice - nalog_value` (сколько реально получит продавец). Раньше
+ * не отображалось в `SellWindow.tsx` — там уже был коридор цены (тот же
+ * `tax`-источник, `cell.minOrder`/`cell.maxOrder`), но не сам налог.
+ */
+export function computeTradeTax(totalPrice: number, taxPercent: number): { taxAmount: number; afterTax: number } {
+  const taxAmount = Math.ceil((totalPrice * taxPercent) / 100);
+  return { taxAmount, afterTax: totalPrice - taxAmount };
+}
+
+/**
  * Категория «В» (§2.2/§2.4 доклада) — `reinitupkeep()`
  * (`trade_menu_class.as:853-869`, буквально дублируется в `reincarnate.as:559-575`
  * для встроенной панели продажи там, НЕ портированной — см. докстринг
