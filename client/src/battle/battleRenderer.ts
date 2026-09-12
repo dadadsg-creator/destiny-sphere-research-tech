@@ -7,6 +7,7 @@
  */
 import { Application, Container, Sprite, Text, Assets } from 'pixi.js';
 import type { BattleRound, BattleUnit } from './battleData';
+import { unitDisplayName } from '../data/resourceIcons';
 
 const ROW_HEIGHT = 40;
 const ARMY_GAP = 12;
@@ -78,7 +79,7 @@ export class BattleRenderer {
         }
 
         const text = new Text({
-          text: `${unit.amount}× ${unit.libname}`,
+          text: `${unit.amount}× ${unitDisplayName(unit.libname)}`,
           style: { fill: 0xffffff, fontSize: 13 },
         });
         text.x = ICON_SIZE + 8;

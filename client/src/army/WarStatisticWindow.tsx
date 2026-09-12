@@ -135,7 +135,7 @@ export function WarStatisticWindow({ data, localUnits, playerResources, tabs, on
               #{factory.idCell}{' '}
               {factory.busy ? (
                 <>
-                  (<img class="ds-unit-icon" src={unitIconUrl(factory.unit ?? '')} alt="" /> {factory.unit} × {factory.count})
+                  (<img class="ds-unit-icon" src={unitIconUrl(factory.unit ?? '')} alt="" /> {factory.unit && (localUnits.get(factory.unit)?.ln ?? factory.unit)} × {factory.count})
                 </>
               ) : (
                 '(свободна)'
