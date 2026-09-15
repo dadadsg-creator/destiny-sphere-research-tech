@@ -563,3 +563,81 @@
   align-items: center;
   gap: 4px;
 }
+
+/* world/ComplexViewWindow.tsx — гекс-сцена комплекса (SVG) + всплывающие
+   карточки игроков поверх неё (foreignObject). Сама сцена шире обычного
+   окна — .ds-window уже допускает рост до max-width:90vw, здесь просто
+   не мешаем ему растянуться под контент. */
+.ds-complex-scene {
+  display: flex;
+  justify-content: center;
+  overflow: auto;
+}
+.ds-complex-card {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  background: rgba(11, 23, 48, 0.92);
+  border: 2px solid #3a4d7a;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-family: Arial, sans-serif;
+  font-size: 11px;
+  color: #e8ecf7;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+/* flex-shrink:0 на всех строках — без этого строки с overflow:hidden
+   (name/combname, нужен для text-overflow:ellipsis) сжимаются flexbox'ом
+   до нуля первыми при нехватке высоты (их "автоматический минимальный
+   размер" в спеке flexbox равен 0, а не min-content, в отличие от строк
+   без overflow:hidden) — см. докстринг ComplexViewWindow.tsx про cardH. */
+.ds-complex-card > * {
+  flex-shrink: 0;
+}
+.ds-complex-card__top {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: #8fa3d6;
+}
+.ds-complex-card__name {
+  font-weight: bold;
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ds-complex-card__combname {
+  font-size: 10px;
+  color: #b7c2e6;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ds-complex-card__meta {
+  display: flex;
+  gap: 8px;
+  font-size: 10px;
+  color: #cfd8f5;
+}
+.ds-complex-card__badges {
+  display: flex;
+  gap: 4px;
+  font-size: 12px;
+}
+.ds-complex-card__mail {
+  margin-top: auto;
+  align-self: flex-start;
+  background: #33447a;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  padding: 2px 6px;
+  font-size: 10px;
+  cursor: pointer;
+}
+.ds-complex-card__mail:hover {
+  background: #44579a;
+}
