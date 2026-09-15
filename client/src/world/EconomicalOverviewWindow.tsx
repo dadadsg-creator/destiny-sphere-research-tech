@@ -10,7 +10,7 @@ import type { TabDef } from '../ui/tabs';
 import { RESOURCE_ATTRIBUTE_ID, type EconomicalOverviewData } from './economicalOverviewData';
 import { localData } from '../data/localDataStore';
 import { resolveLocalName, capitalizeFirst } from '../data/localNameResolver';
-import { resourceDisplayName } from '../data/resourceIcons';
+import { resourceDisplayName, resourceIconUrl } from '../data/resourceIcons';
 
 export interface EconomicalOverviewWindowProps {
   data: EconomicalOverviewData;
@@ -34,7 +34,9 @@ export function EconomicalOverviewWindow({ data, tabs, onTabClick, onClose, onAc
           <tr>
             <th />
             {data.resources.map((r) => (
-              <th key={r}>{resourceDisplayName(r)}</th>
+              <th key={r} title={resourceDisplayName(r)}>
+                <img class="ds-resource__icon" src={resourceIconUrl(r)} alt={resourceDisplayName(r)} />
+              </th>
             ))}
           </tr>
         </thead>
