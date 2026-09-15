@@ -44,6 +44,7 @@ import { setCombRes, combRes } from '../data/combResStore';
 import { parseSysMsg } from '../mail/logData';
 import { parsePremiumStatus } from '../data/premiumData';
 import { setPremiumStatus, premiumStatus } from '../data/premiumStore';
+import { parseOutsideAlert } from '../data/outsideAlertData';
 import { appendSysMsgBatch } from '../mail/sysMessageStore';
 import { AdviceWindow } from '../settings/AdviceWindow';
 import { parseAdviceHint, buildGetNubHelpCommand } from '../settings/adviceData';
@@ -1339,6 +1340,12 @@ export function handleResponse(marks: ParsedMarks, ctx: DispatchContext): void {
   if (marks.xmlerror) {
     const doc = parseXmlFragment(marks.xmlerror);
     pushPopup(<InfoPopup message={doc.documentElement?.textContent ?? marks.xmlerror} onClose={popPopup} />);
+  }
+
+  if (marks.outside) {
+    const alert = parseOutsideAlert(marks.outside);
+    const message = alert.title ? `${alert.title}\n\n${alert.text}` : alert.text;
+    pushPopup(<InfoPopup message={message} onClose={popPopup} />);
   }
 
   if (marks.refresh) {

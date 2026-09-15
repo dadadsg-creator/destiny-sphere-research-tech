@@ -9,7 +9,9 @@ import { BattleRenderer } from './battle/battleRenderer';
 import type { BattleRound } from './battle/battleData';
 import { WindowHost } from './ui/WindowHost';
 import { LiveToolbar } from './ui/LiveToolbar';
-import { openWindow } from './ui/windowStore';
+import { openWindow, pushPopup, popPopup } from './ui/windowStore';
+import { InfoPopup } from './ui/Popup';
+import { parseOutsideAlert } from './data/outsideAlertData';
 import { ArmyOverviewWindow } from './army/ArmyOverviewWindow';
 import { ArmyCreationWindow } from './army/ArmyCreationWindow';
 import { TrainUnitWindow } from './army/TrainUnitWindow';
@@ -1401,6 +1403,19 @@ async function main() {
         onClose={() => console.log('[economical] close')}
       />,
     );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'outside') {
+    // Точный шаблон из UA_Attack.class.php:198-200 (реальный, не
+    // выдуманный), с правдоподобными значениями — проверка разбора
+    // марки outside (см. CLIENT_PORTING_PLAN.md, пункт 4 аудита).
+    const REAL_OUTSIDE_XML = `<?xml version="1.0" encoding="utf-8"?>
+<swfloader override="1" url="flash/dialog_alert.swf" title="Внимание!" res="ALL_RES" speed="100" destination="4.844.3" id_army="1234395"><txt><![CDATA[Вы уверены, что хотите атаковать игрока старшей лиги? Ваша лига будет повышена до лиги III.]]></txt></swloader>`;
+    const alert = parseOutsideAlert(REAL_OUTSIDE_XML);
+    console.log('[outside] parsed:', alert);
+    pushPopup(<InfoPopup message={`${alert.title}\n\n${alert.text}`} onClose={popPopup} />);
     (window as any).__renderDone = true;
     return;
   }
