@@ -93,6 +93,8 @@ import { ComplexViewWindow } from '../world/ComplexViewWindow';
 import { parseComplexView, buildComplexViewCommand } from '../world/complexViewData';
 import { ColonyNavigateWindow } from '../world/ColonyNavigateWindow';
 import { parseColonyNavigate, buildNavigateCommand, buildLeaveColonyCommand } from '../world/colonyNavigateData';
+import { EconomicalOverviewWindow } from '../world/EconomicalOverviewWindow';
+import { parseEconomicalOverview } from '../world/economicalOverviewData';
 import { ArmyOverviewWindow } from '../army/ArmyOverviewWindow';
 import { AllianceMemberWindow } from '../alliance/AllianceMemberWindow';
 import { AllianceManagementWindow } from '../alliance/AllianceManagementWindow';
@@ -231,6 +233,26 @@ function sendTabClick(ctx: DispatchContext, tabId: string): void {
     return;
   }
   void ctx.send(tag('getbuildmenu', { c: ctx.activeCell, tab: stripTabPrefix(tabId) }));
+}
+
+/**
+ * economicalOverviewData.ts — <table>, гнездо из 3 вкладок
+ * (`PN_EconomicalOverview`/`...Incoming`/`...Outcoming`), открывается
+ * зданием SHELTER. Реальный live-тест 2026-09-16 (см.
+ * CLIENT_PORTING_PLAN.md) подтвердил, что все три панели действительно
+ * шлют один и тот же корневой тег `table` — один рендерер на все три,
+ * переключение через стандартный механизм вкладок.
+ */
+function renderEconomicalOverview(root: Element, xml: string, ctx: DispatchContext): void {
+  const data = parseEconomicalOverview(xml);
+  openWindow(
+    <EconomicalOverviewWindow
+      data={data}
+      tabs={parseTabsArray(root)}
+      onTabClick={(tabId) => sendTabClick(ctx, tabId)}
+      onClose={closeWindow}
+    />,
+  );
 }
 
 /** reqvestdata.as — кнопки BuildInfoWindow, все семь — <тег c=""/>, подтверждено ds_useractiontype (2026-09-08). */
@@ -1281,6 +1303,7 @@ const RENDERERS: Record<string, (root: Element, xml: string, ctx: DispatchContex
   colonizestatus: renderColonization,
   combcomplex: renderComplexView,
   colonynavigate: renderColonyNavigate,
+  table: renderEconomicalOverview,
   armyoverview: renderArmyOverview,
   allianceoverview: renderAllianceOverview,
   alliancemanagement: renderAllianceManagement,

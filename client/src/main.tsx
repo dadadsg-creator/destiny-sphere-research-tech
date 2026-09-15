@@ -35,6 +35,9 @@ import { ArcheologyWindow } from './world/ArcheologyWindow';
 import { ColonizationWindow } from './world/ColonizationWindow';
 import { ComplexViewWindow } from './world/ComplexViewWindow';
 import type { ComplexViewData } from './world/complexViewData';
+import { EconomicalOverviewWindow } from './world/EconomicalOverviewWindow';
+import { parseEconomicalOverview } from './world/economicalOverviewData';
+import { parseTabsArray } from './protocol/tabsParser';
 import { ReincarnateWindow } from './world/ReincarnateWindow';
 import { ArtefactStatWindow } from './artefacts/ArtefactStatWindow';
 import { BuildArtefactWindow } from './artefacts/BuildArtefactWindow';
@@ -1377,6 +1380,25 @@ async function main() {
         onClose={() => console.log('[complex] close')}
         onNavigate={(cmd) => console.log('[complex] navigate(', cmd, ')')}
         onWriteMail={(nick) => console.log('[complex] writeMail(', nick, ')')}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'economical') {
+    // Реальный ответ живого <getbuildmenu c="124" tab="EconomicalOverview"/>
+    // на premium (здание SHELTER), 2026-09-16 — не выдуманные данные,
+    // см. CLIENT_PORTING_PLAN.md.
+    const REAL_ECONOMICAL_XML = `<?xml version="1.0" encoding="utf-8"?>
+<table><tr><td width="38" rcol="0xBBBBBB" fcol="0x222222" alpha="80"> - </td><img width="12" rcol="0xBBBBBB" fcol="0x222222" alpha="80">KADERIUM</img><img width="12" rcol="0xBBBBBB" fcol="0x222222" alpha="80">NANO_CRYSTAL</img><img width="12" rcol="0xBBBBBB" fcol="0x222222" alpha="80">STASIS_ENERGY</img><img width="12" rcol="0xBBBBBB" fcol="0x222222" alpha="80">FOOD</img><img width="12" rcol="0xBBBBBB" fcol="0x222222" alpha="80">PRODIUM</img></tr><tr><td width="38" rcol="0xBBBBBB" fcol="0x222222" alpha="80"><FONT COLOR="#FFFFFF" FACE="Arial"><b>{:VENDORS_COUNT:}</b></FONT></td><td width="12" rcol="0xBBBBBB" fcol="0x222222" style="center" alpha="80"><b><FONT COLOR="#FFC77B" FACE="Arial">7</FONT></b></td><td width="12" rcol="0xBBBBBB" fcol="0x222222" style="center" alpha="80"><b><FONT COLOR="#6396E7" FACE="Arial">4</FONT></b></td><td width="12" rcol="0xBBBBBB" fcol="0x222222" style="center" alpha="80"><b><FONT COLOR="#B5B28C" FACE="Arial">24</FONT></b></td><td width="12" rcol="0xBBBBBB" fcol="0x222222" style="center" alpha="80"><b><FONT COLOR="#63B263" FACE="Arial">22</FONT></b></td><td width="12" rcol="0xBBBBBB" fcol="0x222222" style="center" alpha="80"><b><FONT COLOR="#9C9E4A" FACE="Arial">1</FONT></b></td></tr><tr><td width="38" rcol="0xBBBBBB" fcol="0x222222" alpha="80"><FONT COLOR="#FFFFFF" FACE="Arial"><b>{:BASE_PRODUCTION:}</b></FONT></td><td width="12" rcol="0xBBBBBB" fcol="0x222222" style="center" alpha="80"><b><FONT COLOR="#FFC77B" FACE="Arial">525</FONT></b></td><td width="12" rcol="0xBBBBBB" fcol="0x222222" style="center" alpha="80"><b><FONT COLOR="#6396E7" FACE="Arial">175</FONT></b></td><td width="12" rcol="0xBBBBBB" fcol="0x222222" style="center" alpha="80"><b><FONT COLOR="#B5B28C" FACE="Arial">12 800</FONT></b></td><td width="12" rcol="0xBBBBBB" fcol="0x222222" style="center" alpha="80"><b><FONT COLOR="#63B263" FACE="Arial">1 600</FONT></b></td><td width="12" rcol="0xBBBBBB" fcol="0x222222" style="center" alpha="80"><b><FONT COLOR="#9C9E4A" FACE="Arial">250</FONT></b></td></tr><tr><td width="38" rcol="0xBBBBBB" fcol="0x222222" alpha="80"><FONT COLOR="#FFFFFF" FACE="Arial"><b>{:EO_SP:}</b></FONT></td><td width="12" rcol="0xBBBBBB" fcol="0x222222" style="center" alpha="80"><b><FONT COLOR="#FFC77B" FACE="Arial">1 034</FONT></b></td><td width="12" rcol="0xBBBBBB" fcol="0x222222" style="center" alpha="80"><b><FONT COLOR="#6396E7" FACE="Arial">335</FONT></b></td><td width="12" rcol="0xBBBBBB" fcol="0x222222" style="center" alpha="80"><b><FONT COLOR="#B5B28C" FACE="Arial">38 400</FONT></b></td><td width="12" rcol="0xBBBBBB" fcol="0x222222" style="center" alpha="80"><b><FONT COLOR="#63B263" FACE="Arial">3 920</FONT></b></td><td width="12" rcol="0xBBBBBB" fcol="0x222222" style="center" alpha="80"><b><FONT COLOR="#9C9E4A" FACE="Arial">405</FONT></b></td></tr><tr><td width="38" rcol="0xBBBBBB" fcol="0x222222" alpha="80"><FONT COLOR="#FFFFFF" FACE="Arial"><b>{:EO_SU:}</b></FONT></td><td width="12" rcol="0xBBBBBB" fcol="0x222222" style="center" alpha="80"><b><FONT COLOR="#FFC77B" FACE="Arial">0</FONT></b></td><td width="12" rcol="0xBBBBBB" fcol="0x222222" style="center" alpha="80"><b><FONT COLOR="#6396E7" FACE="Arial">0</FONT></b></td><td width="12" rcol="0xBBBBBB" fcol="0x222222" style="center" alpha="80"><b><FONT COLOR="#B5B28C" FACE="Arial">19 140</FONT></b></td><td width="12" rcol="0xBBBBBB" fcol="0x222222" style="center" alpha="80"><b><FONT COLOR="#63B263" FACE="Arial">3 183</FONT></b></td><td width="12" rcol="0xBBBBBB" fcol="0x222222" style="center" alpha="80"><b><FONT COLOR="#9C9E4A" FACE="Arial">0</FONT></b></td></tr><tr><td width="38" rcol="0xBBBBBB" fcol="0x222222" alpha="80"><FONT COLOR="#FFFFFF" FACE="Arial"><b>{:EO_B:}</b></FONT></td><td width="12" rcol="0xBBBBBB" fcol="0x222222" style="center" alpha="80"><b><FONT COLOR="#FFC77B" FACE="Arial">1 034</FONT></b></td><td width="12" rcol="0xBBBBBB" fcol="0x222222" style="center" alpha="80"><b><FONT COLOR="#6396E7" FACE="Arial">335</FONT></b></td><td width="12" rcol="0xBBBBBB" fcol="0x222222" style="center" alpha="80"><b><FONT COLOR="#B5B28C" FACE="Arial">19 260</FONT></b></td><td width="12" rcol="0xBBBBBB" fcol="0x222222" style="center" alpha="80"><b><FONT COLOR="#63B263" FACE="Arial">737</FONT></b></td><td width="12" rcol="0xBBBBBB" fcol="0x222222" style="center" alpha="80"><b><FONT COLOR="#9C9E4A" FACE="Arial">405</FONT></b></td></tr><tr><td width="38" rcol="0xBBBBBB" fcol="0x222222" alpha="80"><FONT COLOR="#FFFFFF" FACE="Arial"><b>{:BUY_RESOURCES:}</b></FONT></td></tr><tr><td width="38" rcol="0xBBBBBB" fcol="0x222222" alpha="80"><FONT COLOR="#FFFFFF" FACE="Arial"><b>{:BUY_BONUSES:}</b></FONT></td></tr><alltabs><tab id="PN_BuildingInfo" ln="Информация" icon="BUILD_INFO"/><tab id="PN_EconomicalOverview" ln="Обзор экономики" icon="ECONOMIC" cur="1"/><tab id="PN_EconomicalOverviewIncoming" ln="Доходы" icon="INCOME"/><tab id="PN_EconomicalOverviewOutcoming" ln="Расходы" icon="OUTCOME"/></alltabs></table>`;
+    const doc = new DOMParser().parseFromString(REAL_ECONOMICAL_XML, 'application/xml');
+    openWindow(
+      <EconomicalOverviewWindow
+        data={parseEconomicalOverview(REAL_ECONOMICAL_XML)}
+        tabs={parseTabsArray(doc.documentElement)}
+        onTabClick={(tabId) => console.log('[economical] tab click', tabId)}
+        onClose={() => console.log('[economical] close')}
       />,
     );
     (window as any).__renderDone = true;
