@@ -21,6 +21,9 @@ export function LiveToolbar() {
       <button type="button" class="ds-live-toolbar__btn" onClick={actions.openComplex}>
         Комплекс
       </button>
+      <button type="button" class="ds-live-toolbar__btn" onClick={actions.openColonies}>
+        Мои колонии
+      </button>
     </div>
   );
 }

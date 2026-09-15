@@ -15,6 +15,7 @@ export interface LiveToolbarActions {
   openMail: () => void;
   openCabinet: () => void;
   openComplex: () => void;
+  openColonies: () => void;
 }
 
 export const liveToolbarActions = signal<LiveToolbarActions | null>(null);

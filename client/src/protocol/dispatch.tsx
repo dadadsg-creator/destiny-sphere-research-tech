@@ -91,6 +91,8 @@ import { ColonizationWindow } from '../world/ColonizationWindow';
 import { buildSendColonyModuleCommand } from '../world/colonizationData';
 import { ComplexViewWindow } from '../world/ComplexViewWindow';
 import { parseComplexView, buildComplexViewCommand } from '../world/complexViewData';
+import { ColonyNavigateWindow } from '../world/ColonyNavigateWindow';
+import { parseColonyNavigate, buildNavigateCommand, buildLeaveColonyCommand } from '../world/colonyNavigateData';
 import { ArmyOverviewWindow } from '../army/ArmyOverviewWindow';
 import { AllianceMemberWindow } from '../alliance/AllianceMemberWindow';
 import { AllianceManagementWindow } from '../alliance/AllianceManagementWindow';
@@ -211,12 +213,10 @@ export interface DispatchContext {
  * `xmldata_action` (parser.as:1413-1621+). Домены без записи здесь —
  * подтверждённые пробелы Фазы 3 (`spylog` пробел закрыт — парсер есть в
  * `scannerData.ts`, изначальная пометка в плане была ошибочной;
- * `colonynavigate` — реальный пробел, `colonynavigate.as` не портирован).
+ * `colonynavigate` закрыт 2026-09-16, см. `RENDERERS` ниже — по итогам
+ * полного аудита панелей, CLIENT_PORTING_PLAN.md).
  */
-const PARSERS: Record<string, (xml: string) => unknown> = {
-  // Не портировано (см. план, «Реестр доменов»):
-  // colonynavigate — colonynavigate.as не читался в Фазе 3.
-};
+const PARSERS: Record<string, (xml: string) => unknown> = {};
 
 /**
  * Клик по вкладке внутри уже открытого `getbuildmenu`-семейства окна —
@@ -465,6 +465,31 @@ function renderComplexView(_root: Element, xml: string, ctx: DispatchContext): v
       onClose={closeWindow}
       onNavigate={(cmd) => void ctx.send(tag('complexview', buildComplexViewCommand(cmd)))}
       onWriteMail={(nick) => void ctx.send(tag('getbuildmenu', { tab: 'CreateMessage', type: 'new', name: nick }))}
+    />,
+  );
+}
+
+/**
+ * colonyNavigateData.ts — <colonynavigate>, открывается через
+ * `<getbuildmenu tab="ColonyNavigatePanel"/>` (без `c`), но корень
+ * ОТВЕТА — `colonynavigate`, не `getbuildmenu` (см. докстринг
+ * файла). Клик "Перейти" шлёт `<navigate cell="1" dest="R.C.C"/>` —
+ * у этой команды своего xmldata-ответа нет (`UA_Navigate::
+ * performAction()` только вызывает `refresh()`), поэтому здесь же
+ * закрываем окно: дальше пользователь смотрит на карту новой соты
+ * через уже подключённую обработку марки `refresh`.
+ */
+function renderColonyNavigate(_root: Element, xml: string, ctx: DispatchContext): void {
+  const colonies = parseColonyNavigate(xml);
+  openWindow(
+    <ColonyNavigateWindow
+      colonies={colonies}
+      onClose={closeWindow}
+      onNavigate={(coords) => {
+        void ctx.send(tag('navigate', buildNavigateCommand(coords)));
+        closeWindow();
+      }}
+      onLeaveColony={(idComb) => void ctx.send(tag('leaveColony', buildLeaveColonyCommand(idComb)))}
     />,
   );
 }
@@ -1255,6 +1280,7 @@ const RENDERERS: Record<string, (root: Element, xml: string, ctx: DispatchContex
   colonize: renderColonization,
   colonizestatus: renderColonization,
   combcomplex: renderComplexView,
+  colonynavigate: renderColonyNavigate,
   armyoverview: renderArmyOverview,
   allianceoverview: renderAllianceOverview,
   alliancemanagement: renderAllianceManagement,
