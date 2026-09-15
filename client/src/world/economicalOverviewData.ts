@@ -75,3 +75,29 @@ export function parseEconomicalOverview(xml: string): EconomicalOverviewData {
 
   return { resources, rows };
 }
+
+/**
+ * `activateall` (`reqvestdata.as:1036-1046`, `activateAllProducers`) —
+ * массовая активация/деактивация всех производящих конкретный ресурс
+ * зданий на соте сразу (все 3 слоя ячеек, `UA_ActivateAll.class.php`
+ * сам крутит `<navigate>`+`<activatebuild>`/`<deactivatebuild>`
+ * внутри, клиенту достаточно одной команды). `res=` — НЕ имя ресурса,
+ * а числовой `id_attributename` (`ds_attributename`, подтверждено
+ * живым запросом к БД 2026-09-16: KADERIUM=1, NANO_CRYSTAL=2,
+ * STASIS_ENERGY=3, FOOD=4, PRODIUM=5) — оригинал берёт это число из
+ * скомпилированного `.fla`-символа (`tablecreate.as`/`menuLibCode.as`
+ * ссылаются на библиотечный клип `table_menu`, исходника которого нет
+ * в дереве), поэтому здесь используется независимо подтверждённая по
+ * БД таблица соответствия вместо реконструкции недоступного байткода.
+ */
+export const RESOURCE_ATTRIBUTE_ID: Record<string, number> = {
+  KADERIUM: 1,
+  NANO_CRYSTAL: 2,
+  STASIS_ENERGY: 3,
+  FOOD: 4,
+  PRODIUM: 5,
+};
+
+export function buildActivateAllCommand(resource: string, activate: boolean): Record<string, string> {
+  return { res: String(RESOURCE_ATTRIBUTE_ID[resource] ?? ''), switch: activate ? 'on' : 'off' };
+}

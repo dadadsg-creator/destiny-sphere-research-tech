@@ -1270,6 +1270,9 @@ async function main() {
         onClose={() => console.log('[army] close')}
         onDismissAll={() => console.log('[army] dismissAll()')}
         onArmyAction={(command) => console.log('[army] action ->', command.tag, command.attrs)}
+        onTransferUnit={(idUnit, count, idArmyFrom, idArmyTo) =>
+          console.log('[army] transferUnit ->', idUnit, count, idArmyFrom, idArmyTo)
+        }
       />,
     );
     (window as any).__renderDone = true;

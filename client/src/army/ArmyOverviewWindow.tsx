@@ -71,6 +71,53 @@ export interface ArmyOverviewWindowProps {
   onClose: () => void;
   onDismissAll: () => void;
   onArmyAction: (command: ArmyActionCommand | ArmyActionHideCommand) => void;
+  onTransferUnit: (idUnit: string, count: number, idArmyFrom: string, idArmyTo: string) => void;
+}
+
+/**
+ * Передача юнитов между армиями — `allowTransfer`/`unit.id` парсятся
+ * давно (см. armyData.ts), просто не были подключены к команде (Фаза
+ * 3.1, найдено аудитом панелей 2026-09-16, CLIENT_PORTING_PLAN.md).
+ */
+function TransferUnitPanel({ army, onSend }: { army: Army; onSend: (idUnit: string, count: number, idArmyTo: string) => void }) {
+  const [unitId, setUnitId] = useState(army.units[0]?.id ?? '');
+  const [targetId, setTargetId] = useState(army.allowTransfer[0]?.id ?? '');
+  const [count, setCount] = useState(1);
+
+  if (army.units.length === 0 || army.allowTransfer.length === 0) return null;
+
+  const unit = army.units.find((u) => u.id === unitId);
+  const maxCount = unit?.amount ?? 1;
+
+  return (
+    <div class="ds-spying__row">
+      <span class="ds-spying__label">Передать юнита:</span>
+      <select value={unitId ?? ''} onChange={(e) => setUnitId((e.target as HTMLSelectElement).value)}>
+        {army.units.map((u) => (
+          <option key={u.id} value={u.id ?? ''}>
+            {u.libname && unitDisplayName(u.libname)} ({u.amount})
+          </option>
+        ))}
+      </select>
+      <Stepper value={count} min={1} max={maxCount} onChange={setCount} />
+      <span class="ds-spying__label">в армию:</span>
+      <select value={targetId ?? ''} onChange={(e) => setTargetId((e.target as HTMLSelectElement).value)}>
+        {army.allowTransfer.map((t) => (
+          <option key={t.id} value={t.id ?? ''}>
+            {t.armyName}
+          </option>
+        ))}
+      </select>
+      <button
+        type="button"
+        class="ds-popup__btn"
+        disabled={!unitId || !targetId}
+        onClick={() => unitId && targetId && onSend(unitId, count, targetId)}
+      >
+        Передать
+      </button>
+    </div>
+  );
 }
 
 function ArmyActionPanel({
@@ -179,7 +226,15 @@ function ArmyActionPanel({
   );
 }
 
-export function ArmyOverviewWindow({ overview, tabs, onTabClick, onClose, onDismissAll, onArmyAction }: ArmyOverviewWindowProps) {
+export function ArmyOverviewWindow({
+  overview,
+  tabs,
+  onTabClick,
+  onClose,
+  onDismissAll,
+  onArmyAction,
+  onTransferUnit,
+}: ArmyOverviewWindowProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   function confirmDismissAll() {
@@ -238,6 +293,10 @@ export function ArmyOverviewWindow({ overview, tabs, onTabClick, onClose, onDism
                       minSpeed={overview.minSpeed}
                       maxSpeed={overview.maxSpeed}
                       onSend={onArmyAction}
+                    />
+                    <TransferUnitPanel
+                      army={army}
+                      onSend={(idUnit, count, idArmyTo) => onTransferUnit(idUnit, count, army.idArmy ?? '', idArmyTo)}
                     />
                   </td>
                 </tr>

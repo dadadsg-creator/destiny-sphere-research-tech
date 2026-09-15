@@ -177,6 +177,17 @@ export function createArmyXml(name: string, units: { id: string; count: number }
 }
 
 /**
+ * army_overview_class.as (`allowTransfer`/`trasfer_unit`, не
+ * портировано при первом проходе Фазы 3.1) + `UA_TransferUnit.
+ * class.php:33-58` — по одному `<unit>` на вызов (протокол
+ * технически допускает несколько сразу, но UI этого порта — один
+ * перевод за клик, как и остальные действия армии).
+ */
+export function transferUnitXml(idUnit: string, count: number, idArmyFrom: string, idArmyTo: string): string {
+  return `<transferunit>${tag('unit', { id: idUnit, count, id_army_from: idArmyFrom, id_army_to: idArmyTo })}</transferunit>`;
+}
+
+/**
  * spying/spyingData.ts + spying_class.as:196-274 (send_zond,
  * reqvestdata.as:987-999) — ветвление подтверждено буквально:
  * чекбокс "один раунд боя" в оригинале существует, только когда действие

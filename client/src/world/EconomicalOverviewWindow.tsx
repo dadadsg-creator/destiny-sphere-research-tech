@@ -7,7 +7,7 @@
  */
 import { Window } from '../ui/Window';
 import type { TabDef } from '../ui/tabs';
-import type { EconomicalOverviewData } from './economicalOverviewData';
+import { RESOURCE_ATTRIBUTE_ID, type EconomicalOverviewData } from './economicalOverviewData';
 import { localData } from '../data/localDataStore';
 import { resolveLocalName, capitalizeFirst } from '../data/localNameResolver';
 import { resourceDisplayName } from '../data/resourceIcons';
@@ -17,6 +17,8 @@ export interface EconomicalOverviewWindowProps {
   tabs?: TabDef[];
   onTabClick?: (tabId: string) => void;
   onClose: () => void;
+  /** undefined — кнопки "Активировать/деактивировать все" не показываются (только на панели "Обзор экономики" в оригинале, tablecreate.as). */
+  onActivateAll?: (resource: string, activate: boolean) => void;
 }
 
 function rowLabel(key: string): string {
@@ -24,7 +26,7 @@ function rowLabel(key: string): string {
   return ln ? capitalizeFirst(ln) : key;
 }
 
-export function EconomicalOverviewWindow({ data, tabs, onTabClick, onClose }: EconomicalOverviewWindowProps) {
+export function EconomicalOverviewWindow({ data, tabs, onTabClick, onClose, onActivateAll }: EconomicalOverviewWindowProps) {
   return (
     <Window title="Обзор экономики" tabs={tabs} onTabClick={onTabClick} onClose={onClose}>
       <table>
@@ -49,6 +51,23 @@ export function EconomicalOverviewWindow({ data, tabs, onTabClick, onClose }: Ec
           ))}
         </tbody>
       </table>
+      {onActivateAll && (
+        <div class="ds-btn-row">
+          {data.resources
+            .filter((r) => r in RESOURCE_ATTRIBUTE_ID)
+            .map((r) => (
+              <span key={r} class="ds-spying__choice">
+                {resourceDisplayName(r)}:
+                <button type="button" class="ds-popup__btn" onClick={() => onActivateAll(r, true)}>
+                  Включить все
+                </button>
+                <button type="button" class="ds-popup__btn" onClick={() => onActivateAll(r, false)}>
+                  Выключить все
+                </button>
+              </span>
+            ))}
+        </div>
+      )}
     </Window>
   );
 }

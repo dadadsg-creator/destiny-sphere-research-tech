@@ -63,6 +63,7 @@ import {
   joinAllianceXml,
   leaveAllianceXml,
   createArmyXml,
+  transferUnitXml,
   sendMessageXml,
   sendZondXml,
   buyArtefactInShopXml,
@@ -95,7 +96,7 @@ import { parseComplexView, buildComplexViewCommand } from '../world/complexViewD
 import { ColonyNavigateWindow } from '../world/ColonyNavigateWindow';
 import { parseColonyNavigate, buildNavigateCommand, buildLeaveColonyCommand } from '../world/colonyNavigateData';
 import { EconomicalOverviewWindow } from '../world/EconomicalOverviewWindow';
-import { parseEconomicalOverview } from '../world/economicalOverviewData';
+import { parseEconomicalOverview, buildActivateAllCommand } from '../world/economicalOverviewData';
 import { ArmyOverviewWindow } from '../army/ArmyOverviewWindow';
 import { AllianceMemberWindow } from '../alliance/AllianceMemberWindow';
 import { AllianceManagementWindow } from '../alliance/AllianceManagementWindow';
@@ -252,6 +253,7 @@ function renderEconomicalOverview(root: Element, xml: string, ctx: DispatchConte
       tabs={parseTabsArray(root)}
       onTabClick={(tabId) => sendTabClick(ctx, tabId)}
       onClose={closeWindow}
+      onActivateAll={(resource, activate) => void ctx.send(tag('activateall', buildActivateAllCommand(resource, activate)))}
     />,
   );
 }
@@ -641,6 +643,7 @@ function renderArmyOverview(root: Element, xml: string, ctx: DispatchContext): v
       onClose={closeWindow}
       onDismissAll={() => void ctx.send(tag('dismissArmies', {}))}
       onArmyAction={(command) => void ctx.send(tag(command.tag, command.attrs))}
+      onTransferUnit={(idUnit, count, idArmyFrom, idArmyTo) => void ctx.send(transferUnitXml(idUnit, count, idArmyFrom, idArmyTo))}
     />,
   );
 }
