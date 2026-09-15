@@ -26,10 +26,10 @@
  * `reqvestdata.as` — `<vacationstart/>`/`<getprivatepeace/>` без `c`),
  * в отличие от большинства этой "семьи". Остальные домены пока только
  * логируются в консоль — подключение оставлено отдельным объёмом
- * работы; часть из них по-прежнему упирается в неизвестный источник
- * премиум-статуса (`TerraformWindow`/`ArcheologyWindow` получают
- * `isPremium={false}` как заведомо безопасный дефолт) — сознательно не
- * подключены, чтобы не подставлять выдуманные данные.
+ * работы. Премиум-статус (`TerraformWindow`/`ArcheologyWindow`/
+ * `ArtefactStatWindow` — `isPremium`) — марка верхнего уровня `mode`
+ * (см. `data/premiumData.ts`/`premiumStore.ts`), найдена и подключена
+ * 2026-09-16 по итогам полного аудита панелей (CLIENT_PORTING_PLAN.md).
  */
 import type { ParsedMarks } from './response';
 import { parseXmlFragment } from './response';
@@ -42,6 +42,8 @@ import { setLocalData, localData } from '../data/localDataStore';
 import { parseCombRes } from '../data/combResData';
 import { setCombRes, combRes } from '../data/combResStore';
 import { parseSysMsg } from '../mail/logData';
+import { parsePremiumStatus } from '../data/premiumData';
+import { setPremiumStatus, premiumStatus } from '../data/premiumStore';
 import { appendSysMsgBatch } from '../mail/sysMessageStore';
 import { AdviceWindow } from '../settings/AdviceWindow';
 import { parseAdviceHint, buildGetNubHelpCommand } from '../settings/adviceData';
@@ -286,10 +288,7 @@ function renderTerraform(root: Element, xml: string, ctx: DispatchContext): void
   openWindow(
     <TerraformWindow
       options={options}
-      // Премиум-статус нигде не парсится (как и combres, см. докстринг
-      // файла) — реальный пробел, пока считаем false (безопасный дефолт:
-      // просто не покажет кнопку отмены терраформинга премиум-аккаунту).
-      isPremium={false}
+      isPremium={premiumStatus.value?.isPremium ?? false}
       tabs={parseTabsArray(root)}
       onTabClick={(tabId) => sendTabClick(ctx, tabId)}
       onClose={closeWindow}
@@ -418,9 +417,7 @@ function renderArcheology(root: Element, xml: string, ctx: DispatchContext): voi
     <ArcheologyWindow
       data={data}
       playerResources={combResToKadFoodPool(combRes.value)}
-      // Как и в TerraformWindow — источник премиум-статуса нигде не
-      // распарсен, безопасный дефолт false.
-      isPremium={false}
+      isPremium={premiumStatus.value?.isPremium ?? false}
       gateOpen={ctx.gateOpen}
       tabs={parseTabsArray(root)}
       onTabClick={(tabId) => sendTabClick(ctx, tabId)}
@@ -903,16 +900,14 @@ function renderLogWindow(_root: Element, xml: string, _ctx: DispatchContext): vo
  * getbuildmenu-семью — `onTabClick` не подключаем. Клик по ячейке в
  * таблице — ДРУГАЯ, уже подключённая команда `getbuildmenu c=""
  * tab="BuildingArtefact"` (renderBuildArtefact), не связана с текущим
- * "гнездом" вкладок этого окна. `isPremium` — источник статуса нигде не
- * распарсен, безопасный дефолт false (как в TerraformWindow/
- * ArcheologyWindow).
+ * "гнездом" вкладок этого окна.
  */
 function renderArtefactStat(_root: Element, xml: string, ctx: DispatchContext): void {
   const data = parseArtefactStat(xml);
   openWindow(
     <ArtefactStatWindow
       data={data}
-      isPremium={false}
+      isPremium={premiumStatus.value?.isPremium ?? false}
       onClose={closeWindow}
       onCellClick={(cellNum) => void ctx.send(tag('getbuildmenu', { c: cellNum, tab: 'BuildingArtefact' }))}
     />,
@@ -1310,6 +1305,10 @@ export function handleResponse(marks: ParsedMarks, ctx: DispatchContext): void {
 
   if (marks.combres) {
     setCombRes(parseCombRes(marks.combres));
+  }
+
+  if (marks.mode) {
+    setPremiumStatus(parsePremiumStatus(marks.mode));
   }
 
   if (marks.sysmsg) {
