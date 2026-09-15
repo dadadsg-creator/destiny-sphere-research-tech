@@ -87,6 +87,8 @@ import { ProtectShieldWindow } from '../spying/ProtectShieldWindow';
 import { ResearchWindow } from '../science/ResearchWindow';
 import { ColonizationWindow } from '../world/ColonizationWindow';
 import { buildSendColonyModuleCommand } from '../world/colonizationData';
+import { ComplexViewWindow } from '../world/ComplexViewWindow';
+import { parseComplexView, buildComplexViewCommand } from '../world/complexViewData';
 import { ArmyOverviewWindow } from '../army/ArmyOverviewWindow';
 import { AllianceMemberWindow } from '../alliance/AllianceMemberWindow';
 import { AllianceManagementWindow } from '../alliance/AllianceManagementWindow';
@@ -448,6 +450,24 @@ function renderVacation(root: Element, xml: string, ctx: DispatchContext): void 
       onStart={(password) => void ctx.send(tag('vacationstart', { password }))}
       onStop={(password) => void ctx.send(tag('vacationstop', { password }))}
       onForgotPassword={() => void ctx.send(tag('vacationsedpass', {}))}
+    />,
+  );
+}
+
+/**
+ * complexViewData.ts — <combcomplex>, тоже без `c` и без `<alltabs>`
+ * (см. докстринг файла и `ComplexViewWindow.tsx`). Живая команда —
+ * `<complexview direction="" ring="" complexnum=""/>`
+ * (`reqvestdata.as:791-806`), не через `getbuildmenu`.
+ */
+function renderComplexView(_root: Element, xml: string, ctx: DispatchContext): void {
+  const data = parseComplexView(xml);
+  openWindow(
+    <ComplexViewWindow
+      data={data}
+      onClose={closeWindow}
+      onNavigate={(cmd) => void ctx.send(tag('complexview', buildComplexViewCommand(cmd)))}
+      onWriteMail={(nick) => void ctx.send(tag('getbuildmenu', { tab: 'CreateMessage', type: 'new', name: nick }))}
     />,
   );
 }
@@ -1239,6 +1259,7 @@ const RENDERERS: Record<string, (root: Element, xml: string, ctx: DispatchContex
   research: renderResearch,
   colonize: renderColonization,
   colonizestatus: renderColonization,
+  combcomplex: renderComplexView,
   armyoverview: renderArmyOverview,
   allianceoverview: renderAllianceOverview,
   alliancemanagement: renderAllianceManagement,

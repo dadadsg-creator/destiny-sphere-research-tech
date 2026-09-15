@@ -14,6 +14,7 @@ import { signal } from '@preact/signals';
 export interface LiveToolbarActions {
   openMail: () => void;
   openCabinet: () => void;
+  openComplex: () => void;
 }
 
 export const liveToolbarActions = signal<LiveToolbarActions | null>(null);

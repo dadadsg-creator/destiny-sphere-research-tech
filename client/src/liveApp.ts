@@ -108,5 +108,6 @@ export async function runLiveApp(renderer: MapRenderer, login: string, pass: str
   liveToolbarActions.value = {
     openMail: () => void ctx.send(tag('getbuildmenu', { tab: 'MessageOverview', type: 'in' })),
     openCabinet: () => window.open('https://destinysphere.ru/ds/user_cabinet.php', '_blank'),
+    openComplex: () => void ctx.send(tag('complexview', { direction: 'HOME', ring: '', complexnum: '' })),
   };
 }

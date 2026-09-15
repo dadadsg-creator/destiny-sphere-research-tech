@@ -33,6 +33,8 @@ import { TerraformWindow } from './world/TerraformWindow';
 import { ReligionWindow } from './world/ReligionWindow';
 import { ArcheologyWindow } from './world/ArcheologyWindow';
 import { ColonizationWindow } from './world/ColonizationWindow';
+import { ComplexViewWindow } from './world/ComplexViewWindow';
+import type { ComplexViewData } from './world/complexViewData';
 import { ReincarnateWindow } from './world/ReincarnateWindow';
 import { ArtefactStatWindow } from './artefacts/ArtefactStatWindow';
 import { BuildArtefactWindow } from './artefacts/BuildArtefactWindow';
@@ -923,6 +925,71 @@ const TEST_COLONIZATION: ColonizationData = {
   textStatus: '',
 };
 
+// Данные для проверки ComplexViewWindow (?screen=complex) — не выдуманные:
+// реальный ответ живого <complexview direction="HOME"/> на premium
+// 2026-09-16 (см. CLIENT_PORTING_PLAN.md), совпадает со скриншотом
+// оригинала, которым владелец сверял этот экран.
+const TEST_COMPLEX_VIEW: ComplexViewData = {
+  complexNumber: 90,
+  ringNumber: 1,
+  ringName: 'Ворания',
+  gateOpen: true,
+  combs: [
+    {
+      num: 1,
+      cscore: 13210,
+      home: true,
+      league: 'I',
+      combName: 'Enzo_test',
+      captured: false,
+      userName: 'Enzo',
+      avatar: '',
+      race: '1',
+      newbee: false,
+      gateOpen: true,
+      banned: false,
+      godModeMs: null,
+      premium: true,
+      frozen: false,
+      npc: false,
+      allianceTag: '[ENZOTEST]',
+      allianceIconUrl: null,
+      sameAlliance: true,
+    },
+    { num: 2, cscore: 0, home: false, league: '', combName: null, captured: false, userName: null, avatar: null, race: null, newbee: false, gateOpen: false, banned: false, godModeMs: null, premium: false, frozen: false, npc: false, allianceTag: null, allianceIconUrl: null, sameAlliance: false },
+    { num: 3, cscore: 0, home: false, league: '', combName: null, captured: false, userName: null, avatar: null, race: null, newbee: false, gateOpen: false, banned: false, godModeMs: null, premium: false, frozen: false, npc: false, allianceTag: null, allianceIconUrl: null, sameAlliance: false },
+    { num: 4, cscore: 0, home: false, league: '', combName: null, captured: false, userName: null, avatar: null, race: null, newbee: false, gateOpen: false, banned: false, godModeMs: null, premium: false, frozen: false, npc: false, allianceTag: null, allianceIconUrl: null, sameAlliance: false },
+    { num: 5, cscore: 0, home: false, league: '', combName: null, captured: false, userName: null, avatar: null, race: null, newbee: false, gateOpen: false, banned: false, godModeMs: null, premium: false, frozen: false, npc: false, allianceTag: null, allianceIconUrl: null, sameAlliance: false },
+    {
+      num: 6,
+      cscore: 54220,
+      home: false,
+      league: 'I',
+      combName: 'Franklinss',
+      captured: false,
+      userName: 'Franklinss',
+      avatar: '',
+      race: '1',
+      newbee: false,
+      gateOpen: true,
+      banned: false,
+      godModeMs: null,
+      premium: false,
+      frozen: false,
+      npc: false,
+      allianceTag: null,
+      allianceIconUrl: null,
+      sameAlliance: false,
+    },
+  ],
+  rings: [
+    { id: 'RING_TECH', ln: 'Ворания' },
+    { id: 'RING_BIO', ln: 'Лиенсорд' },
+    { id: 'RING_PSI', ln: 'Псолеон' },
+    { id: 'RING_COLONIZE', ln: 'Мелсион' },
+  ],
+};
+
 // Синтетические данные для проверки ReincarnateWindow (?screen=reincarnate).
 const TEST_REINCARNATE: ReincarnateData = {
   fork: {
@@ -1297,6 +1364,19 @@ async function main() {
         onClose={() => console.log('[colonization] close')}
         onSend={(dest, name) => console.log('[colonization] sendColonyModule(', dest, name, ')')}
         onCancel={() => console.log('[colonization] cancelColonyModule()')}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'complex') {
+    openWindow(
+      <ComplexViewWindow
+        data={TEST_COMPLEX_VIEW}
+        onClose={() => console.log('[complex] close')}
+        onNavigate={(cmd) => console.log('[complex] navigate(', cmd, ')')}
+        onWriteMail={(nick) => console.log('[complex] writeMail(', nick, ')')}
       />,
     );
     (window as any).__renderDone = true;
