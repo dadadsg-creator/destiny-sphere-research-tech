@@ -119,27 +119,55 @@ const OWNER_COLOR: Record<Ownership, string> = {
   empty: '#5c72b0',
 };
 
-/** Векторное кольцо врат — см. докстринг файла про отказ от растровых GATE_-иконок (обычной и _WRECK, пикселизация при увеличении). r=22 ⇒ диаметр 44, примерно на треть меньше прежних растровых 56×74. */
+/** 8 коротких делений по окружности радиуса r с центром (cx,cy) — "технологический ободок" GateGlyph ниже, не просто голая окружность. */
+function ringTicks(cx: number, cy: number, rInner: number, rOuter: number, count = 8) {
+  return Array.from({ length: count }, (_, i) => {
+    const a = (i / count) * Math.PI * 2;
+    return {
+      x1: cx + Math.cos(a) * rInner,
+      y1: cy + Math.sin(a) * rInner,
+      x2: cx + Math.cos(a) * rOuter,
+      y2: cy + Math.sin(a) * rOuter,
+    };
+  });
+}
+
+/**
+ * Векторный портал врат — см. докстринг файла про отказ от растровых
+ * GATE_-иконок (обычной и _WRECK, пикселизация при увеличении). Первая
+ * векторная версия (простое кольцо+точка) владелец справедливо назвал
+ * "убого" — здесь тот же принцип (крупная простая форма, никакого
+ * растра), но с настоящей многослойной композицией: внешний
+ * технологический ободок с делениями, энергетическое кольцо с бликом,
+ * светящееся ядро на радиальном градиенте (`ds-complex-gate-core-*`,
+ * `<defs>` выше). r внешнего ободка=28 ⇒ диаметр 56 — сопоставимо с
+ * прежним растровым размером, но чёткое на любом масштабе.
+ */
 function GateGlyph({ cx, cy, open }: { cx: number; cy: number; open: boolean }) {
+  const ticks = ringTicks(cx, cy, 24, 28);
+
   if (open) {
     return (
       <g class="ds-complex-gate-glyph ds-complex-gate-glyph--open">
-        <circle cx={cx} cy={cy} r={22} fill="none" stroke="#4fc3ff" stroke-width={5} />
-        <circle cx={cx} cy={cy} r={9} fill="#4fc3ff" opacity={0.55} />
+        <circle cx={cx} cy={cy} r={26} fill="none" stroke="#3d5580" stroke-width={1.5} opacity={0.6} />
+        {ticks.map((t, i) => (
+          <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} stroke="#a8e4ff" stroke-width={1.5} opacity={0.85} />
+        ))}
+        <circle cx={cx} cy={cy} r={19} fill="none" stroke="#4fc3ff" stroke-width={4.5} />
+        <circle cx={cx} cy={cy} r={19} fill="none" stroke="#eafcff" stroke-width={1} opacity={0.65} />
+        <circle cx={cx} cy={cy} r={11} fill="url(#ds-complex-gate-core-open)" />
       </g>
     );
   }
   return (
-    <circle
-      cx={cx}
-      cy={cy}
-      r={20}
-      fill="none"
-      stroke="#7683ad"
-      stroke-width={3.5}
-      stroke-dasharray="7 6"
-      class="ds-complex-gate-glyph ds-complex-gate-glyph--closed"
-    />
+    <g class="ds-complex-gate-glyph ds-complex-gate-glyph--closed">
+      <circle cx={cx} cy={cy} r={26} fill="none" stroke="#2c3a5e" stroke-width={1.5} opacity={0.5} />
+      {ticks.map((t, i) => (
+        <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} stroke="#5c6a9c" stroke-width={1.2} opacity={0.55} />
+      ))}
+      <circle cx={cx} cy={cy} r={19} fill="none" stroke="#5c6a9c" stroke-width={3} stroke-dasharray="6 7" opacity={0.85} />
+      <circle cx={cx} cy={cy} r={10} fill="url(#ds-complex-gate-core-closed)" />
+    </g>
   );
 }
 
@@ -228,15 +256,22 @@ export function ComplexViewWindow({ data, onClose, onNavigate, onWriteMail }: Co
         </span>
         <span class="ds-complex-legend__sep" />
         <span class="ds-complex-legend__item">
-          <svg width="18" height="18" viewBox="-11 -11 22 22" class="ds-complex-legend__gateicon">
-            <circle cx={0} cy={0} r={7} fill="none" stroke="#4fc3ff" stroke-width={3} />
-            <circle cx={0} cy={0} r={2.8} fill="#4fc3ff" opacity={0.55} />
+          <svg width="20" height="20" viewBox="-11 -11 22 22" class="ds-complex-legend__gateicon">
+            <defs>
+              <radialGradient id="ds-complex-legend-core-open" cx="38%" cy="35%" r="65%">
+                <stop offset="0%" stop-color="#f2fdff" />
+                <stop offset="40%" stop-color="#6fe0ff" />
+                <stop offset="100%" stop-color="#0e5a86" stop-opacity="0" />
+              </radialGradient>
+            </defs>
+            <circle cx={0} cy={0} r={8.5} fill="none" stroke="#4fc3ff" stroke-width={2.5} class="ds-complex-gate-glyph--open" />
+            <circle cx={0} cy={0} r={4} fill="url(#ds-complex-legend-core-open)" />
           </svg>
           врата открыты
         </span>
         <span class="ds-complex-legend__item">
-          <svg width="18" height="18" viewBox="-11 -11 22 22" class="ds-complex-legend__gateicon">
-            <circle cx={0} cy={0} r={7} fill="none" stroke="#7683ad" stroke-width={2.5} stroke-dasharray="3 2.5" />
+          <svg width="20" height="20" viewBox="-11 -11 22 22" class="ds-complex-legend__gateicon">
+            <circle cx={0} cy={0} r={8.5} fill="none" stroke="#7683ad" stroke-width={2.2} stroke-dasharray="3.5 3" />
           </svg>
           врата закрыты
         </span>
@@ -249,6 +284,15 @@ export function ComplexViewWindow({ data, onClose, onNavigate, onWriteMail }: Co
               <radialGradient id="ds-complex-hub-glow" cx="50%" cy="50%" r="50%">
                 <stop offset="0%" stop-color="#6fd6ff" stop-opacity={0.45} />
                 <stop offset="100%" stop-color="#6fd6ff" stop-opacity="0" />
+              </radialGradient>
+              <radialGradient id="ds-complex-gate-core-open" cx="38%" cy="35%" r="65%">
+                <stop offset="0%" stop-color="#f2fdff" />
+                <stop offset="40%" stop-color="#6fe0ff" />
+                <stop offset="100%" stop-color="#0e5a86" stop-opacity="0" />
+              </radialGradient>
+              <radialGradient id="ds-complex-gate-core-closed" cx="38%" cy="35%" r="65%">
+                <stop offset="0%" stop-color="#8892b8" stop-opacity="0.55" />
+                <stop offset="100%" stop-color="#1a2242" stop-opacity="0" />
               </radialGradient>
             </defs>
 
