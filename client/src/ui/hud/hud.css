@@ -301,11 +301,33 @@ body {
   color: var(--hud-text2);
 }
 
-/* §11 — круговое меню. Вторая версия (2026-09-16), полная переделка по
-   детальному разбору владельца — единый SVG вместо пяти отдельных
-   кругов, см. докстринг RadialMenu.tsx. Прижато вплотную к правому
-   краю и к верху нижней панели (без зазора) — "визуально соединено с
-   рамкой интерфейса", не плавающий отдельно элемент. */
+/* §11 — круговое меню. Третий заход (2026-09-16): владелец попросил
+   голую структуру без градиентов/металлических рамок/теней — "графика
+   меню будет сделана отдельно и подключена поверх готовой структуры"
+   позже. Только 5 клиновидных SVG-секторов на плоских однотонных
+   заливках + отдельная круглая кнопка "Обновить" в центре, см.
+   докстринг RadialMenu.tsx. Прижато вплотную к правому краю и к верху
+   нижней панели (без зазора). Цвета/размеры — через CSS-переменные,
+   чтобы будущую графику можно было накладывать, не трогая разметку. */
+.ds-hud-radial2 {
+  --ds-radial-size: 210px;
+  --ds-radial-center-size: 95px;
+  --ds-radial-color-normal: #16233f;
+  --ds-radial-color-hover: #1f345c;
+  --ds-radial-color-pressed: #0d1730;
+  --ds-radial-color-active: rgba(40, 184, 255, 0.35);
+  --ds-radial-color-locked: #0e1524;
+  --ds-radial-color-center: #1f345c;
+  --ds-radial-color-center-hover: #2b4a80;
+  --ds-radial-color-center-pressed: #14213d;
+  --ds-radial-border-width: 2px;
+  --ds-radial-border-color: var(--hud-active);
+  --ds-radial-text-color: var(--hud-text);
+  --ds-radial-text-color-locked: var(--hud-text2);
+  --ds-radial-text-color-center: #eaf6ff;
+  --ds-radial-font-size: 12px;
+  --ds-radial-center-font-size: 13px;
+}
 .ds-hud-radial-wrap {
   position: absolute;
   right: 0;
@@ -314,28 +336,22 @@ body {
 }
 .ds-hud-radial2 svg {
   display: block;
+  width: var(--ds-radial-size);
+  height: var(--ds-radial-size);
   overflow: visible;
-}
-/* Корпус-подложка позади колеса — угловая панель того же цвета, что и
-   остальные панели HUD, с скруглением только со стороны карты (левый
-   верхний угол), к правому/нижнему краю экрана заходит вплотную. */
-.ds-hud-radial2__housing {
-  fill: rgba(10, 23, 48, 0.94);
-  stroke: var(--hud-border);
-  stroke-width: 1;
 }
 
 .ds-hud-radial2__sector path {
-  fill: #16233f;
+  fill: var(--ds-radial-color-normal);
   stroke: transparent;
-  stroke-width: 2;
-  transition: fill 150ms, stroke 150ms, filter 150ms;
+  stroke-width: var(--ds-radial-border-width);
+  transition: fill 150ms, stroke 150ms;
   transform-box: fill-box;
   transform-origin: center;
 }
 .ds-hud-radial2__sector text {
-  fill: var(--hud-text);
-  font-size: 12px;
+  fill: var(--ds-radial-text-color);
+  font-size: var(--ds-radial-font-size);
   font-weight: 600;
   pointer-events: none;
   user-select: none;
@@ -343,21 +359,20 @@ body {
 .ds-hud-radial2__sector {
   cursor: pointer;
 }
-/* Наведение — голубая подсветка по краю сектора (владелец, дословно). */
+/* Наведение — плоская смена заливки + контур сектора, без свечения/тени. */
 .ds-hud-radial2__sector:hover path {
-  stroke: var(--hud-active);
-  filter: drop-shadow(0 0 4px rgba(40, 184, 255, 0.6));
+  fill: var(--ds-radial-color-hover);
+  stroke: var(--ds-radial-border-color);
 }
-/* Нажатие — темнее и "уходит внутрь" (лёгкое уменьшение). */
+/* Нажатие — темнее и "уходит внутрь" (лёгкое уменьшение, без анимации/тени). */
 .ds-hud-radial2__sector--pressed path {
-  fill: #0d1730;
+  fill: var(--ds-radial-color-pressed);
   transform: scale(0.97);
 }
-/* Активный раздел — синяя заливка + яркая внутренняя обводка. */
+/* Активный раздел — плоская синяя заливка + контур, без свечения. */
 .ds-hud-radial2__sector--active path {
-  fill: rgba(40, 184, 255, 0.35);
-  stroke: var(--hud-active);
-  stroke-width: 2.5;
+  fill: var(--ds-radial-color-active);
+  stroke: var(--ds-radial-border-color);
 }
 .ds-hud-radial2__sector--active text {
   font-weight: 700;
@@ -365,10 +380,10 @@ body {
 /* Недоступный раздел — притушен + значок замка (ни один из пяти сейчас
    таким не является, все подключены — состояние на будущее). */
 .ds-hud-radial2__sector--locked path {
-  fill: #0e1524;
+  fill: var(--ds-radial-color-locked);
 }
 .ds-hud-radial2__sector--locked text {
-  fill: var(--hud-text2);
+  fill: var(--ds-radial-text-color-locked);
 }
 .ds-hud-radial2__sector--locked {
   cursor: default;
@@ -381,30 +396,25 @@ body {
   cursor: pointer;
 }
 .ds-hud-radial2__center circle {
-  transition: filter 200ms;
+  fill: var(--ds-radial-color-center);
+  transition: fill 150ms;
 }
 .ds-hud-radial2__center:hover circle {
-  filter: url(#ds-radial-glow) brightness(1.15);
+  fill: var(--ds-radial-color-center-hover);
+}
+.ds-hud-radial2__center--pressed circle {
+  fill: var(--ds-radial-color-center-pressed);
+}
+.ds-hud-radial2__center--loading {
+  cursor: default;
+  opacity: 0.7;
 }
 .ds-hud-radial2__center-label {
-  fill: #eaf6ff;
-  font-size: 13px;
+  fill: var(--ds-radial-text-color-center);
+  font-size: var(--ds-radial-center-font-size);
   font-weight: 700;
   pointer-events: none;
   user-select: none;
-}
-.ds-hud-radial2__spinner {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: ds-hud-radial-spin 900ms linear infinite;
-}
-@keyframes ds-hud-radial-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 /* §9 — панель выбранного здания. Обёртка без pointer-events, чтобы

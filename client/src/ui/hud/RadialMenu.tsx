@@ -1,38 +1,32 @@
 /**
- * Круговое меню (docs/main_screen.md §11) — второй заход, полная
- * переделка по детальному разбору владельца (2026-09-16): "текущее
- * меню выглядит как временная схема из пяти обычных кругов… это не
- * единое круговое меню… потеряна металлическая конструкция". Прошлая
- * версия (отдельные круглые кнопки, разложенные абсолютным
- * позиционированием) была сознательным упрощением "форма не финальна"
- * — здесь она заменена на честную геометрию: единый SVG, клиновидные
- * секторы (donut-сегменты, не отдельные круги), металлическое кольцо
- * вокруг центра, центральная "сфера" с градиентом и свечением.
+ * Круговое меню (docs/main_screen.md §11) — третий заход (2026-09-16):
+ * владелец явно попросил остановиться на голой структуре, без
+ * градиентов/металлических рамок/теней/свечения — "графика меню будет
+ * сделана отдельно и подключена поверх готовой структуры" позже. Эта
+ * версия — только геометрия (5 клиновидных SVG-секторов без промежутков
+ * и наложений + отдельная круглая кнопка "Обновить" в центре) и
+ * состояния (обычное/наведение/нажатие/активное/заблокированное) на
+ * плоских однотонных заливках из CSS-переменных (см. hud.css).
  *
- * Разделов теперь 5 (было 4 — "Нейтрал" отсутствовал): Дом/Центр/
- * Комплекс/Колонии/Нейтрал. Все пять уже реально подключены —
- * `<navigate cell="1" dest="HOME|CENTRAL|NEUTRAL"/>` (то же семейство
- * команд, что и "Мои колонии", `world/colonyNavigateData.ts`) плюс уже
- * существовавшие Комплекс/Колонии — ни один сектор не заглушка, в
- * отличие от MainNav.tsx/BottomBar.tsx (там протокол для остальных
- * разделов не исследован).
+ * Порядок разделов — по ТЗ: Дом сверху, дальше по часовой стрелке
+ * Центр (справа), Комплекс (справа снизу), Нейтрал (слева снизу),
+ * Колонии (слева). Команды подключены по-настоящему — `<navigate
+ * cell="1" dest="HOME|CENTRAL|NEUTRAL"/>` (`world/colonyNavigateData.ts`)
+ * плюс уже существовавшие Комплекс/Колонии.
  *
- * Геометрия (центр 110,110 в 220×220 viewBox):
- * - центральная сфера r=50 (диаметр 100px, точно по ТЗ);
- * - металлическое кольцо 50→74 (~24px, "около 30" по ТЗ);
- * - секторы (донат-сегменты) 74→105 (диаметр меню 210px, точно по ТЗ).
- * Секторы — SVG `<path>` дуга-линия-дуга-линия, не CSS-трюки с
- * border-radius (для КЛИНЬЕВ, а не кругов, это единственный практичный
- * способ без готовой библиотеки).
+ * Геометрия (центр 105,105 в 210×210 viewBox — ровно диаметр 210px из
+ * ТЗ, без служебных полей): секторы — донат-сегменты от R_CENTER до
+ * R_OUTER, единое кольцо без зазора между кольцом и центральной кнопкой
+ * (R_SECTOR_INNER === R_CENTER). Центральная кнопка r=47.5 (диаметр
+ * ~95px, по ТЗ).
  */
 import { useState } from 'preact/hooks';
 import { hudActions } from './hudActionsStore';
 
-const CX = 110;
-const CY = 110;
+const CX = 105;
+const CY = 105;
 const R_OUTER = 105;
-const R_SECTOR_INNER = 74;
-const R_CENTER = 50;
+const R_CENTER = 47.5;
 
 function toRad(deg: number): number {
   return (deg * Math.PI) / 180;
@@ -44,7 +38,7 @@ function polar(r: number, deg: number): { x: number; y: number } {
   return { x: CX + r * Math.sin(rad), y: CY - r * Math.cos(rad) };
 }
 
-/** Донат-сегмент (клин с "дыркой" в середине) между двумя углами — путь дуга/линия/дуга/линия, замкнутый. */
+/** Клиновидный (донат-)сегмент между двумя углами — путь дуга/линия/дуга/линия, замкнутый. Общая граница соседних секторов совпадает, зазоров и наложений нет. */
 function sectorPath(startDeg: number, endDeg: number, rInner: number, rOuter: number): string {
   const p1 = polar(rOuter, startDeg);
   const p2 = polar(rOuter, endDeg);
@@ -63,12 +57,10 @@ interface Sector {
 
 export function RadialMenu() {
   const actions = hudActions.value;
-  // "Дом" — активный сектор по умолчанию: это и есть главный экран
-  // (владелец: "если это главный экран, в круговом меню нужно выделить
-  // Домой" — на верхней навигации выделять нечего, ни один из 11
-  // разделов не представляет сам главный экран).
+  // "Дом" — активный сектор по умолчанию: это и есть главный экран.
   const [active, setActive] = useState<string | null>('home');
   const [pressed, setPressed] = useState<string | null>(null);
+  const [centerPressed, setCenterPressed] = useState(false);
   const [loading, setLoading] = useState(false);
   if (!actions) return null;
 
@@ -92,51 +84,21 @@ export function RadialMenu() {
 
   return (
     <div class="ds-hud-radial2">
-      <svg width="220" height="220" viewBox="0 0 220 220">
-        {/* Корпус-подложка — визуально соединяет меню с рамкой интерфейса (не "плавающий" кружок сам по себе). */}
-        <rect x="0" y="0" width="220" height="220" rx="0" class="ds-hud-radial2__housing" />
-
-        <defs>
-          <radialGradient id="ds-radial-center-grad" cx="35%" cy="30%" r="75%">
-            <stop offset="0%" stop-color="#7fd0ff" />
-            <stop offset="55%" stop-color="#2a6fd6" />
-            <stop offset="100%" stop-color="#0e2c5c" />
-          </radialGradient>
-          <linearGradient id="ds-radial-ring-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#8b96ab" />
-            <stop offset="50%" stop-color="#3a4256" />
-            <stop offset="100%" stop-color="#181d29" />
-          </linearGradient>
-          <filter id="ds-radial-glow" x="-60%" y="-60%" width="220%" height="220%">
-            <feGaussianBlur stdDeviation="6" result="blur" />
-            <feMerge>
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-        </defs>
-
-        {/* Металлическое кольцо вокруг центра. */}
-        <circle
-          cx={CX}
-          cy={CY}
-          r={(R_CENTER + R_SECTOR_INNER) / 2}
-          fill="none"
-          stroke="url(#ds-radial-ring-grad)"
-          stroke-width={R_SECTOR_INNER - R_CENTER}
-        />
-
-        {/* Секторы. */}
+      <svg width="210" height="210" viewBox="0 0 210 210">
         {sectors.map((s) => {
           const start = s.mid - step / 2;
           const end = s.mid + step / 2;
           const isActive = active === s.key;
           const isPressed = pressed === s.key;
           const isLocked = !s.onClick;
-          const labelPos = polar((R_SECTOR_INNER + R_OUTER) / 2, s.mid);
+          const labelPos = polar((R_CENTER + R_OUTER) / 2, s.mid);
           return (
             <g
               key={s.key}
+              role="button"
+              tabIndex={isLocked ? -1 : 0}
+              aria-label={s.label}
+              aria-disabled={isLocked}
               class={[
                 'ds-hud-radial2__sector',
                 isActive && 'ds-hud-radial2__sector--active',
@@ -154,7 +116,7 @@ export function RadialMenu() {
                 s.onClick!();
               }}
             >
-              <path d={sectorPath(start, end, R_SECTOR_INNER, R_OUTER)} />
+              <path d={sectorPath(start, end, R_CENTER, R_OUTER)} />
               <text x={labelPos.x} y={labelPos.y} text-anchor="middle" dominant-baseline="middle">
                 {s.label}
               </text>
@@ -167,26 +129,23 @@ export function RadialMenu() {
           );
         })}
 
-        {/* Центральная сфера — "Обновить" / индикатор загрузки. */}
-        <g class="ds-hud-radial2__center" onClick={() => void handleCenterClick()}>
-          <circle cx={CX} cy={CY} r={R_CENTER} fill="url(#ds-radial-center-grad)" filter="url(#ds-radial-glow)" />
-          {loading ? (
-            <circle
-              cx={CX}
-              cy={CY}
-              r={R_CENTER - 14}
-              fill="none"
-              stroke="#eaf6ff"
-              stroke-width="4"
-              stroke-linecap="round"
-              stroke-dasharray="60 200"
-              class="ds-hud-radial2__spinner"
-            />
-          ) : (
-            <text x={CX} y={CY} text-anchor="middle" dominant-baseline="middle" class="ds-hud-radial2__center-label">
-              Обновить
-            </text>
-          )}
+        {/* Центральная кнопка "Обновить" — отдельная от секторов, круглая. */}
+        <g
+          role="button"
+          tabIndex={0}
+          aria-label="Обновить"
+          class={['ds-hud-radial2__center', centerPressed && 'ds-hud-radial2__center--pressed', loading && 'ds-hud-radial2__center--loading']
+            .filter(Boolean)
+            .join(' ')}
+          onPointerDown={() => setCenterPressed(true)}
+          onPointerUp={() => setCenterPressed(false)}
+          onPointerLeave={() => setCenterPressed(false)}
+          onClick={() => void handleCenterClick()}
+        >
+          <circle cx={CX} cy={CY} r={R_CENTER} />
+          <text x={CX} y={CY} text-anchor="middle" dominant-baseline="middle" class="ds-hud-radial2__center-label">
+            {loading ? '...' : 'Обновить'}
+          </text>
         </g>
       </svg>
     </div>
