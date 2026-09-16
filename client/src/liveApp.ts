@@ -41,11 +41,10 @@ export async function runLiveApp(renderer: MapRenderer, login: string, pass: str
   };
 
   // Клик по ячейке соты — аналог onRelease на building/ground-спрайте в
-  // sota.as: занятая ячейка открывает информацию о здании (формат
-  // подтверждён живым тестом 2026-09-08, см. buildInfoData.ts docstring).
-  // `ctx.activeCell` — аналог debug.link.active_cell оригинала: ячейка
-  // "прилипает" к открытому через getbuildmenu-семейство окну, клики по
-  // вкладкам внутри него переиспользуют это же значение (см. dispatch.tsx).
+  // sota.as. `ctx.activeCell` — аналог debug.link.active_cell оригинала:
+  // ячейка "прилипает" к открытому через getbuildmenu-семейство окну,
+  // клики по вкладкам внутри него переиспользуют это же значение (см.
+  // dispatch.tsx).
   //
   // ВАЖНО (найдено 2026-09-10 живым кликом — сервер вернул SYSTEM ERROR):
   // `num` из hexGrid.ts — 0-based (совпадает с индексом в 217-символьной
@@ -55,33 +54,52 @@ export async function runLiveApp(renderer: MapRenderer, login: string, pass: str
   // (Number(id_cell) + 1) + "\" "` — явный `+1`. Раньше здесь его не
   // было (`c=String(num)` без сдвига).
   //
-  // ВАЖНО #2 (найдено 2026-09-10 живым кликом по-настоящему пустой
-  // ячейки — SYSTEM ERROR UA_GetBuildMenu::performAction1): для пустой
-  // ячейки НЕЛЬЗЯ слать явный `tab` вообще — подтверждено чтением
-  // `UA_GetBuildMenu.class.php:200-208` (`performAction()`): если
-  // `attachedbid` пуст (постройки нет) И `tab` НЕ пуст — сервер
-  // возвращает именно эту ошибку. Если `tab` пуст — сервер сам
-  // подставляет `PN_AllowBuildings` без вопросов (:209-247). Раньше тут
-  // стоял явный `tab="AllowBuildings"` — неподтверждённая (несмотря на
-  // формулировку в старом докстринге "подтверждено чтением класса")
-  // догадка по аналогии с занятой ячейкой, которая как раз ломала запрос.
-  renderer.onCellClick = (num, hasBuilding) => {
+  // ВАЖНО #2 (найдено 2026-09-16, разбор реального клика оригинала —
+  // владелец справедливо спросил, как разрешается противоречие "панель
+  // здания vs окно домена, привязанное к зданию"): `cell_click`/
+  // `cell_click_m` (`reqvestdata.as:160-185`) шлют РОВНО ОДНУ и ту же
+  // команду для ЛЮБОЙ ячейки, занятой ИЛИ пустой — БЕЗ `tab` вообще,
+  // `<getbuildmenu c=""/>`. Клиент НИКОГДА не решает сам, какой экран
+  // открыть по типу постройки. Решает сервер:
+  // `UA_GetBuildMenu::performAction():272-275` — если `tab` пуст, берёт
+  // `GL_DefaultBuildingTab::Get($bid)` (таблица `ds_buildinghasspecialfunction`
+  // /`ds_specialfunction`, `isdefault='t'` по конкретному `id_building`)
+  // и подставляет ЕЁ как реальный класс-обработчик (`:337`,
+  // `$panel = new $this->tab`) — КОРЕНЬ ОТВЕТА РАЗНЫЙ ПО ТИПУ ЗДАНИЯ:
+  // военная база вернёт `<armyoverview>` НАПРЯМУЮ, а не `<getbuildinfo>`;
+  // институт археологии — `<archeology>`; коннектор альянса —
+  // `<alliancemanagement>` и т.д. (подтверждено реальными зафиксированными
+  // ответами `SPHERE_client/army_overview_3.txt`/`archeology.txt`/
+  // `allianceCreate.txt` — не декомпиляция, реальный трафик). Только у
+  // зданий БЕЗ спецфункции (простые производственные/жилые) дефолт
+  // — сама `PN_BuildingInfo` (`<getbuildinfo>`). Для недостроенных/
+  // неактивных построек сервер тоже сам форсирует `PN_BuildingInfo`
+  // (`:290-295`) — не нужно повторять эту проверку на клиенте.
+  //
+  // Отсюда — ответ на "чей экран открывать": ничей заранее, сервер уже
+  // решил. Здесь только один универсальный клик; какой корневой тег
+  // придёт — решает уже подключённый общий диспетчер (`RENDERERS` в
+  // dispatch.tsx, был построен ещё в фазе "Сшивание" именно для этого):
+  // `getbuildinfo` → докнутая панель (`renderBuildInfo`), любой другой
+  // домен (`armyoverview`/`archeology`/`alliancemanagement`/`religion`/
+  // `table` и т.д.) → его уже существующее модальное окно, как и раньше.
+  // Прежний ЖЁСТКИЙ `tab="BuildingInfo"` для занятых ячеек был неверным
+  // упрощением — он подавлял этот серверный выбор и всегда показывал
+  // только общую информацию, даже для военной базы/института и т.п.
+  // Раньше для пустой ячейки `tab` уже не слался по той же причине,
+  // что и здесь (иначе SYSTEM ERROR, `UA_GetBuildMenu.class.php:200-208`)
+  // — теперь то же правило просто распространено на все ячейки.
+  renderer.onCellClick = (num) => {
     ctx.activeCell = String(num + 1);
-    // Панель здания (docs/main_screen.md §9) — имя/картинка/состояние/
-    // процент готовности уже известны из последнего <build> (кэш в
-    // MapRenderer), показываем сразу, не дожидаясь ответа сервера;
-    // `actions`/`info` (стоимость апгрейда, кнопки) допишет
-    // renderBuildInfo() в dispatch.tsx, когда придёт getbuildinfo.
-    // Клик по пустой ячейке снимает выбор — соответствует "снятие
-    // выбора со здания" (§17, список нужных событий).
-    selectedBuilding.value = hasBuilding
-      ? { cellNum: num, record: renderer.getBuildRecord(num) ?? null, info: null, actions: null, race: ctx.race }
-      : null;
-    void session
-      .sendCommand(tag('getbuildmenu', { c: ctx.activeCell, tab: hasBuilding ? 'BuildingInfo' : undefined }))
-      .then((marks) => {
-        handleResponse(marks, ctx);
-      });
+    // Снимаем текущий выбор ДО ответа сервера — какой бы экран ни
+    // пришёл (докнутая панель или чужой модальный домен), не показывать
+    // одновременно панель здания от предыдущего клика и что-то новое.
+    // Панель здания снова заполнится сама, если ответ действительно
+    // окажется `<getbuildinfo>` (см. renderBuildInfo() в dispatch.tsx).
+    selectedBuilding.value = null;
+    void session.sendCommand(tag('getbuildmenu', { c: ctx.activeCell })).then((marks) => {
+      handleResponse(marks, ctx);
+    });
   };
 
   await session.login(login, pass);
