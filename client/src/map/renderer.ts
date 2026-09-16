@@ -5,15 +5,7 @@
  * и docs/client-map-and-grid.md (основной репозиторий документации).
  */
 import { Application, Container, Sprite, Assets, Graphics } from 'pixi.js';
-import {
-  buildHexGrid,
-  buildingAnchor,
-  mapPixelSize,
-  hexPolygonPoints,
-  LENGTH_SIDE,
-  CELL_WEIGHT_H,
-  CELL_WEIGHT_V,
-} from './hexGrid';
+import { buildHexGrid, buildingAnchor, mapPixelSize, hexPolygonPoints, CELL_WEIGHT_H, CELL_WEIGHT_V } from './hexGrid';
 import { parseGroundString, GROUND_LINKAGE } from './groundTypes';
 import { BUILDING_NAMES, buildingAssetKey, buildingAssetPath, effectiveBuildingRace, type Race } from './buildingTypes';
 import type { BuildRecord } from './buildData';
@@ -21,125 +13,91 @@ import type { BuildRecord } from './buildData';
 /**
  * Декоративное окружение вокруг домашней соты (владелец, 2026-09-16:
  * "убери синее пустое пространство вокруг соты, продолжи шестиугольную
- * сетку за её границы"). ТРЕТЬЯ версия геометрии — первые две (см. git-
- * историю этого файла) строили 6 ОТДЕЛЬНЫХ копий 217-клеточного "цветка"
- * (`buildHexGrid()`), сдвинутых на пиксельные офсеты из `sota.as:379-403`.
- * Владелец прислал скриншот крупным планом: на стыках соседних копий
- * ячейки рвутся/накладываются друг на друга ("бред", дословно) — 6
- * НЕЗАВИСИМО подобранных офсетов не образуют одну бесшовную решётку на
- * практике, хотя формально взяты из оригинала.
+ * сетку за её границы"). ЧЕТВЁРТАЯ версия — первые три (см. git-историю
+ * файла) изобретали геометрию/покрытие сами (то 6 копий с придуманной
+ * пёстрой заливкой, то одно математически бесшовное кольцо с
+ * придуманными "зонами" central/side/desert) — владелец в итоге прямо
+ * спросил: "где у тебя ячейки-разделители, и где они на Флеше?" —
+ * справедливо, ни то ни другое не было взято из реального клиента.
  *
- * Эта версия НЕ копирует "цветок" 6 раз — она строит ОДНО кольцо ячеек
- * вокруг соты ТОЙ ЖЕ формулой `buildHexGrid()` (`hexGrid.ts`), просто с
- * большим `LENGTH_SIDE`. Бесшовность гарантирована математически (не на
- * глаз): для строки на угловом расстоянии `dr` от центральной строки
- * формула `x = (2j + |dr|) * H` не зависит от `LENGTH_SIDE` — то есть
- * решётка большего "цветка" содержит решётку меньшего как точное
- * подмножество (те же координаты, без сдвига). Расширение достраивает:
- * 1) k новых строк сверху и k снизу (используя `LENGTH_SIDE+k` вместо
- *    `LENGTH_SIDE` — там, где у соты кончаются строки, кольцо их
- *    продолжает);
- * 2) новые ячейки СПРАВА в каждой из существующих строк (тот же приём);
- * 3) зеркальное отражение (2) по оси симметрии соты
- *    (`x' = width - 2H - x`, доказано алгебраически) — даёт недостающие
- *    ячейки СЛЕВА, т.к. у "цветка" есть точная лево-правая симметрия.
- * Вместе (1)+(2)+(3) — сплошное кольцо без разрывов и наложений со всех
- * сторон, а не 6 независимо расположенных пятен.
+ * Реальный источник — `sota.as:286-405` (`createsotasos`), ветка
+ * `obj.location == "HOME"` (главный экран): 6 соседей, каждый —
+ * ГОТОВАЯ 217-символьная строка грунта (`sota.as:19-21`) на
+ * ЗАФИКСИРОВАННОМ пиксельном офсете (`sota.as:379-403`), без какой-либо
+ * "бесшовной" геометрии — это в оригинале и есть 6 независимых копий
+ * `buildHexGrid()`-формы:
+ * - `icount=0` (offset -24,-333, "сверху") → `center_loopback` — смесь
+ *   FROG/E_FIELD/SOIL/ROCK (буквы E/F/S/R).
+ * - `icount=1,5` (offset -625,-157 / 601,-176, "сверху слева/справа") →
+ *   `home_loopback` — ручной узор DESERT/SOIL/GRASS/WATER (D/S/G/W).
+ * - `icount=2,3,4` (offset -601,176 / 24,333 / 625,157, "снизу-слева/
+ *   снизу/снизу-справа") → `neutral_loopback` — "D"×217, сплошная
+ *   пустыня.
+ * Раньше здесь пробовали "исправить" геометрию математическим кольцом —
+ * это и было ошибкой: (x,y) кольца физически не совпадали с (x,y) этих
+ * 6 офсетов (две независимые системы координат), поэтому НИ ОДНА
+ * настоящая буква грунта не находила пару, и весь рендер незаметно
+ * скатывался в запасной цвет. Теперь ячейки строятся НАПРЯМУЮ из
+ * `buildHexGrid()` + офсета — те самые позиции и та самая буква, что и
+ * в оригинале, без посредников.
+ *
+ * Полные 6×217=1302 ячейки текстурами рендерить нельзя (роняло WebGL,
+ * см. более раннюю запись плана) — `ENV_MARGIN` обрезает каждую копию
+ * до полосы вблизи главной соты (типичный экран всё равно показывает
+ * только тонкий срез у самого шва, см. `docs/main_screen.md`).
  */
-const ENV_RINGS = 5;
+const ENV_MARGIN = 150;
+
+const HOME_LOOPBACK_NEIGHBORS: { dx: number; dy: number; ground: string[] }[] = [
+  {
+    dx: -24,
+    dy: -333,
+    ground: parseGroundString(
+      'EFFFFFFFEFEFFFFFFEFFFEFFFFFEFFFFFEFFFFEFFFFFFFEFFFEFFFFFFFFFEFFEFFFFFFFFFFFEFEFFFFFFFFFFFFFEEFFFFFFFEEEEEEEEEEEEEEEEEFFFFFFFEEFFFFFFFFFFFFFESEFFFFFFFFFFFESREFFFFFFFFFERSSEFFFFFFFESSSREFFFFFESRRSSEFFFESRRRSSEFESSRRSRRE',
+    ),
+  },
+  {
+    dx: -625,
+    dy: -157,
+    ground: parseGroundString(
+      'DDDDDSSSSDDDSSSDDDDDDDSSSDDDDDDDDDSSDDDGGGSDDDDSSDGGGGGSDDDGGSDGGGGGGSSSSGGSGGGWWWSGSSSSGGSGGGWWWSSSSSSGGGGSGWWWWSSSSSSGGGGSSWWWWSSSSSSGWWWWWWWWGSSSSSDWWWSSGGWGSSSSWWWSSGGWGGSSSSSWSSWWWSSSSSSWWWWWSSGSWWWWSSSSSSSSSSSSS',
+    ),
+  },
+  { dx: -601, dy: 176, ground: parseGroundString('D'.repeat(217)) },
+  { dx: 24, dy: 333, ground: parseGroundString('D'.repeat(217)) },
+  { dx: 625, dy: 157, ground: parseGroundString('D'.repeat(217)) },
+  {
+    dx: 601,
+    dy: -176,
+    ground: parseGroundString(
+      'DDDDDSSSSDDDSSSDDDDDDDSSSDDDDDDDDDSSDDDGGGSDDDDSSDGGGGGSDDDGGSDGGGGGGSSSSGGSGGGWWWSGSSSSGGSGGGWWWSSSSSSGGGGSGWWWWSSSSSSGGGGSSWWWWSSSSSSGWWWWWWWWGSSSSSDWWWSSGGWGSSSSWWWSSGGWGGSSSSSWSSWWWSSSSSSWWWWWSSGSWWWWSSSSSSSSSSSSS',
+    ),
+  },
+];
 
 interface EnvCell {
   x: number;
   y: number;
-  /** dx/dy центра ячейки от центра соты — для выбора покрытия по зоне (верх/низ/бок). */
-  dx: number;
-  dy: number;
+  ground: string;
+  /** Индекс соседа 0-5 (порядок `HOME_LOOPBACK_NEIGHBORS`/`icount` из sota.as) — для границ, см. renderEnvironment(). */
+  neighbor: number;
 }
 
-function buildEnvironmentRing(k: number): EnvCell[] {
-  const L = LENGTH_SIDE;
-  const Lp = L + k;
-  const H = CELL_WEIGHT_H;
-  const V = CELL_WEIGHT_V;
+/** Настоящие ячейки 6 соседей (sota.as), обрезанные полосой ENV_MARGIN вокруг главной соты — см. докстринг выше. */
+function buildEnvironmentCells(): EnvCell[] {
   const width = mapPixelSize().width;
-  const cx = width / 2;
-  const cy = mapPixelSize().height / 2;
-  const mirrorX = (x: number) => width - 2 * H - x;
-
+  const height = mapPixelSize().height;
+  const mainCells = buildHexGrid();
   const cells: EnvCell[] = [];
-  let NN = 0;
-  let dNN = 1;
-  for (let i = 0; i < Lp * 2 - 1; i++) {
-    const rowLength = Lp + NN;
-    const dr = i - (Lp - 1);
-    // "Своя" ячейка соты (|dr|<=L-1 и j в исходном диапазоне строки) —
-    // уже нарисована groundLayer'ом, кольцо её пропускает.
-    for (let j = 0; j < rowLength; j++) {
-      const withinOriginalRow = Math.abs(dr) <= L - 1 && j < 2 * L - 1 - Math.abs(dr);
-      if (!withinOriginalRow) {
-        const x = (j * 2 - NN + (Lp - 1)) * H;
-        const y = i * 1.5 * V - k * 1.5 * V; // выравнивание под координаты исходной соты, см. докстринг
-        const dx = x + H - cx;
-        const dy = y + V - cy;
-        cells.push({ x, y, dx, dy });
-        cells.push({ x: mirrorX(x), y, dx: -dx, dy }); // зеркало слева — та же |dx| по доказанной симметрии
-      }
+  HOME_LOOPBACK_NEIGHBORS.forEach((n, neighbor) => {
+    for (const cell of mainCells) {
+      const x = cell.x + n.dx;
+      const y = cell.y + n.dy;
+      if (x < -ENV_MARGIN || x > width + ENV_MARGIN || y < -ENV_MARGIN || y > height + ENV_MARGIN) continue;
+      cells.push({ x, y, ground: n.ground[cell.num], neighbor });
     }
-    dNN = i < Lp - 1 ? 1 : -1;
-    NN += dNN;
-  }
+  });
   return cells;
-}
-
-/**
- * Покрытие по зоне (владелец, дословно): "над сотой — центральная сота
- * комплекса" (туман `FROG`/`E_FIELD`, см. реальный скриншот вида "Центр"
- * — `docs/client-map-and-grid.md` §6), "сверху слева/справа — соседние
- * соты" (камень/грунт/песок), "снизу/снизу-слева/снизу-справа —
- * пустыня". Зона считается по положению ЦЕНТРА ячейки относительно
- * центра соты — верх/низ по знаку `dy`, "центральная полоса" по `|dx|`
- * — непрерывно, без стыков между зонами (в отличие от 6 копий, тут все
- * ячейки — одна решётка, зона лишь красит).
- *
- * Настоящие текстуры грунта (`ROCK`/`SOIL`/`DESERT`/`FROG`/`E_FIELD` —
- * те же PNG, что и у основной сетки, `public/assets/ground/`), не
- * плоская заливка (владелец, 2026-09-16: "есть же картинки с почвой,
- * зачем ты рисуешь моноцвет?") — первая версия окружения рисовала
- * плоским цветом именно потому, что 6 ОТДЕЛЬНЫХ копий "цветка" ×217
- * текстурированных ячеек (1302 маски) роняли WebGL; после перехода на
- * единое кольцо (см. докстринг `buildEnvironmentRing`) ячеек в кольце
- * на порядок меньше — тот же приём `Sprite`+гекс-маска, что уже
- * безопасно работал для тумана, покрывает всё кольцо целиком.
- */
-// ИСПРАВЛЕНО (2026-09-16): 0.3 оказалось слишком широко — владелец
-// отметил, что крайние ячейки на такой ширине визуально относятся уже
-// к боковым соседним сотам, а не к центральной ("Они относятся к
-// соседним правой и левой соте, а не к центральной"). Сужено так, чтобы
-// central-зона покрывала только сами врата с небольшим полем вокруг,
-// не расползаясь до боковых сот.
-const CENTRAL_ZONE_HALF_WIDTH = 130;
-type EnvZone = 'central' | 'side' | 'desert';
-function zoneFor(cell: EnvCell): EnvZone {
-  if (cell.dy >= 0) return 'desert';
-  return Math.abs(cell.dx) < CENTRAL_ZONE_HALF_WIDTH ? 'central' : 'side';
-}
-/**
- * Имя текстуры на ячейку — детерминированно (не случайно, стабильно
- * между рендерами). `central`-зона: `E_FIELD` ровно у внешнего края (в
- * пределах ~2 ширин ячейки от порога `zoneFor`, владелец отметил на
- * скриншоте именно эти пограничные ячейки, 2026-09-16), `FROG` —
- * внутри, у самих врат. `side`-зона — чередование камень/грунт/песок.
- * `desert` — сплошной песок.
- */
-function groundNameFor(cell: EnvCell): string {
-  const zone = zoneFor(cell);
-  if (zone === 'desert') return 'DESERT';
-  if (zone === 'side') {
-    const bucket = Math.round((cell.x + cell.y) / CELL_WEIGHT_H) % 3;
-    return ['ROCK', 'SOIL', 'DESERT'][(bucket + 3) % 3];
-  }
-  const distanceToEdge = CENTRAL_ZONE_HALF_WIDTH - Math.abs(cell.dx);
-  return distanceToEdge < CELL_WEIGHT_H * 2.2 ? 'E_FIELD' : 'FROG';
 }
 
 function cellKey(x: number, y: number): string {
@@ -152,7 +110,7 @@ function cellKey(x: number, y: number): string {
  * ровно к соседу с тем же индексом ниже) — владелец, 2026-09-16: "между
  * ячейками вообще не должно быть границ, только между сотами". Поэтому
  * граница рисуется НЕ по всему контуру ячейки, а только по тем рёбрам,
- * где сосед принадлежит ДРУГОЙ зоне (или это главная сота, или там
+ * где сосед принадлежит ДРУГОЙ сотe (или это главная сота, или там
  * вообще ничего нет) — см. `renderEnvironment()`.
  */
 const NEIGHBOR_OFFSETS: { dx: number; dy: number }[] = [
@@ -320,32 +278,34 @@ export class MapRenderer {
   }
 
   /**
-   * Рисует декоративное окружение (buildEnvironmentRing) один раз при
-   * создании рендерера — статичный фон, не зависит от ответов сервера,
-   * поэтому не пересоздаётся на каждый `renderGround()` (в отличие от
-   * groundLayer).
+   * Рисует декоративное окружение (buildEnvironmentCells, настоящие
+   * данные `sota.as`) один раз при создании рендерера — статичный фон,
+   * не зависит от ответов сервера, поэтому не пересоздаётся на каждый
+   * `renderGround()` (в отличие от groundLayer).
    */
   private async renderEnvironment(): Promise<void> {
     const hexPoints = hexPolygonPoints();
-    const ring = buildEnvironmentRing(ENV_RINGS);
+    const cells = buildEnvironmentCells();
 
-    // Настоящие текстуры грунта на всё кольцо — тот же приём, что и у
-    // основной сетки (`renderGround()`): Sprite + гекс-маска на ячейку.
-    // БЕЗ обводки здесь — контур ячейки сам по себе не граница, см. ниже.
+    // Настоящие текстуры грунта — тот же приём, что и у основной сетки
+    // (`renderGround()`): Sprite + гекс-маска на ячейку. БЕЗ обводки
+    // здесь — контур ячейки сам по себе не граница, см. ниже.
     await Assets.load([
       { alias: 'ROCK', src: '/assets/ground/ROCK.png' },
       { alias: 'SOIL', src: '/assets/ground/SOIL.png' },
       { alias: 'DESERT', src: '/assets/ground/DESERT.png' },
+      { alias: 'GRASS', src: '/assets/ground/GRASS.png' },
+      { alias: 'WATER', src: '/assets/ground/WATER.png' },
       { alias: 'FROG', src: '/assets/ground/FROG.png' },
       { alias: 'E_FIELD', src: '/assets/ground/E_FIELD.png' },
     ]);
-    for (const cell of ring) {
+    for (const cell of cells) {
       const mask = new Graphics().poly(hexPoints).fill(0xffffff);
       mask.x = cell.x;
       mask.y = cell.y;
       this.envLayer.addChild(mask);
 
-      const sprite = Sprite.from(groundNameFor(cell));
+      const sprite = Sprite.from(cell.ground);
       sprite.x = cell.x;
       sprite.y = cell.y;
       sprite.width = 48;
@@ -356,27 +316,27 @@ export class MapRenderer {
 
     // Границы — ТОЛЬКО между разными сотами (владелец, дословно: "между
     // ячейками вообще не должно быть границ, только между сотами"), не
-    // по контуру каждой ячейки. Для каждой ячейки кольца проверяем все
-    // 6 соседних позиций: если сосед — главная сота или другая зона (или
-    // там вообще ничего нет), рисуем ИМЕННО ЭТО ребро; если сосед той же
-    // зоны — ребро остаётся без обводки, зона читается одним сплошным
-    // пятном. Один общий Graphics, каждое ребро — отдельный moveTo/lineTo,
-    // общий .stroke() в конце.
+    // по контуру каждой ячейки и не по типу грунта внутри одной соты
+    // (`home_loopback` сам по себе содержит D/S/G/W вперемешку — это не
+    // повод рисовать линию). Регион ячейки — индекс её настоящего соседа
+    // (0-5, `icount` из sota.as) или главная сота; для каждой ячейки
+    // проверяем все 6 соседних позиций: ребро обводится, только если
+    // сосед — другая сота (другой индекс/главная сота) или вне охвата
+    // вообще.
     const mainKeys = new Set(buildHexGrid().map((c) => cellKey(c.x, c.y)));
-    const ringZoneByKey = new Map(ring.map((c) => [cellKey(c.x, c.y), zoneFor(c)]));
-    const regionOf = (x: number, y: number): EnvZone | 'main' | null => {
+    const regionByKey = new Map(cells.map((c) => [cellKey(c.x, c.y), c.neighbor]));
+    const regionOf = (x: number, y: number): number | 'main' | null => {
       const key = cellKey(x, y);
       if (mainKeys.has(key)) return 'main';
-      return ringZoneByKey.get(key) ?? null;
+      return regionByKey.get(key) ?? null;
     };
 
     const border = new Graphics();
-    for (const cell of ring) {
-      const zone = zoneFor(cell);
+    for (const cell of cells) {
       for (let e = 0; e < 6; e++) {
         const nb = NEIGHBOR_OFFSETS[e];
         const neighborRegion = regionOf(cell.x + nb.dx, cell.y + nb.dy);
-        if (neighborRegion === null || neighborRegion === zone) continue;
+        if (neighborRegion === null || neighborRegion === cell.neighbor) continue;
         const p1 = e * 2;
         const p2 = ((e + 1) % 6) * 2;
         border
