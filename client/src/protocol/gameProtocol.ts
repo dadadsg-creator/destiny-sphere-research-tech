@@ -130,10 +130,22 @@ export class GameSession {
    * `docs/protocol-client-server.md`: это часть `FlashVars`, которые
    * `flash_code.php:9,25` буквально вклеивает в HTML embed/object-тег
    * страницы `ds/index.php` (`"&race=".$_SESSION['race'].$_SESSION[
-   * 'windowKey']` — без разделителя перед `windowKey`, поэтому регэксп
-   * читает только ведущие цифры). Раз `fetch()` в `enterWorld()` и так
-   * доходит до этой самой страницы (`redirect:'follow'`), читаем `race`
-   * прямо из её тела, а не игнорируем его как раньше.
+   * 'windowKey']` — БЕЗ разделителя перед `windowKey`). Раз `fetch()` в
+   * `enterWorld()` и так доходит до этой самой страницы
+   * (`redirect:'follow'`), читаем `race` прямо из её тела, а не
+   * игнорируем его как раньше.
+   *
+   * НАЙДЕННЫЙ И ИСПРАВЛЕННЫЙ БАГ (2026-09-16, живой тест на premium,
+   * Enzo/race=1/TECH): регэксп раньше был `(\d+)` — "жадно" захватывал
+   * не только сам `race` (всегда ровно одна цифра, 1-3), но и ведущие
+   * цифры СЛЕДОМ ИДУЩЕГО `windowKey` (раз разделителя между ними нет).
+   * Живой ответ содержал буквально `race=191...` (race=1, windowKey
+   * начинается на "91...") — `(\d+)` читал это как `race=191`, отсюда
+   * `raceFromNumber(191)` проваливался в default-ветку 'bio' вместо
+   * 'tech', и постройки рисовались чужой расой (найдено владельцем по
+   * скриншоту, сравнение с оригиналом). Исправлено на `(\d)` — ровно
+   * одна цифра, т.к. race больше одной цифры не бывает по определению
+   * (`game.as:2319-2359`, switch только на 1/2/3).
    */
   async enterWorld(uiid: string): Promise<string> {
     this.assertLoggedIn();
@@ -150,7 +162,7 @@ export class GameSession {
     }
     this.ck = ck;
     this.seedSessionCookieFromUrl(target);
-    const raceMatch = bodyText.match(/[?&]race=(\d+)/);
+    const raceMatch = bodyText.match(/[?&]race=(\d)/);
     this.race = raceMatch ? Number(raceMatch[1]) : null;
     return res.url;
   }
