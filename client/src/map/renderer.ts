@@ -10,9 +10,55 @@ import { parseGroundString, GROUND_LINKAGE } from './groundTypes';
 import { BUILDING_NAMES, buildingAssetKey, buildingAssetPath, effectiveBuildingRace, type Race } from './buildingTypes';
 import type { BuildRecord } from './buildData';
 
+/**
+ * Декоративное окружение вокруг домашней соты (владелец, 2026-09-16:
+ * "убери синее пустое пространство вокруг соты, продолжи шестиугольную
+ * сетку за её границы") — "розетка" из 6 соседних сот-заглушек вокруг
+ * центральной, без построек, без кликов. Смещения (dx,dy) — буквально
+ * `sota.as:379-403` (`createsotasos`, задокументировано
+ * `docs/client-map-and-grid.md` §3.5): те же H/V=24/13, тот же 217-клеточный
+ * "цветок" (`buildHexGrid()`), просто целая копия сдвинута на фиксированный
+ * пиксельный офсет — этим геометрия (размер/перспектива/положение ячеек)
+ * автоматически совпадает с основной сеткой один-в-один, без пересчёта.
+ *
+ * `pick` — детерминированный (не случайный, стабилен между рендерами)
+ * выбор покрытия на ячейку. Верхние три (над и по бокам — "центральная
+ * сота комплекса" и "соседние соты", владелец) — смесь камня/песка/
+ * нейтрального грунта ("каменное, песчаное, нейтральное покрытие",
+ * дословно из ТЗ). Нижние три (под и по бокам снизу) — сплошная пустыня
+ * ("продолжить поверхность пустынным покрытием"). Реальных данных этих
+ * сот нет и не будет — декоративный фон, как и в оригинале (сота не
+ * "висит в пустоте").
+ *
+ * ЗАЛИВКА, НЕ ТЕКСТУРА (важно): первая попытка через `Sprite.from()` +
+ * гекс-маску на ячейку (тот же приём, что в `renderGround()`) уронила
+ * WebGL-контекст ("CONTEXT_LOST_WEBGL") — 6×217=1302 добавочных
+ * замаскированных спрайтов поверх уже имеющихся 217 основной сетки
+ * оказались слишком дорогими именно из-за маскирования (каждая маска —
+ * отдельная стенсил-операция), не из-за числа вершин как такового.
+ * Однотонная заливка того же `Graphics`, что рисует контур, устраняет
+ * маски полностью (весь "цветок" соседа — один `Graphics`-объект с 217
+ * залитыми+обведёнными фигурами, а не 217 масштабированных спрайтов).
+ */
+const ENV_FILL: Record<string, number> = {
+  ROCK: 0x585b62, // камень
+  SOIL: 0x4a3f30, // нейтральный грунт
+  DESERT: 0x8a7040, // песок/пустыня
+};
+const ENV_NEIGHBORS: { dx: number; dy: number; pick: (num: number) => string }[] = [
+  { dx: -24, dy: -333, pick: (num) => ['ROCK', 'SOIL', 'DESERT'][num % 3] }, // сверху — центральная сота комплекса
+  { dx: -625, dy: -157, pick: (num) => ['SOIL', 'ROCK', 'DESERT'][num % 3] }, // сверху слева — соседняя сота
+  { dx: 601, dy: -176, pick: (num) => ['DESERT', 'ROCK', 'SOIL'][num % 3] }, // сверху справа — соседняя сота
+  { dx: 24, dy: 333, pick: () => 'DESERT' }, // снизу — пустыня
+  { dx: -601, dy: 176, pick: () => 'DESERT' }, // снизу слева — пустыня
+  { dx: 625, dy: 157, pick: () => 'DESERT' }, // снизу справа — пустыня
+];
+
 export class MapRenderer {
   readonly app: Application;
   readonly worldLayer: Container;
+  /** Декоративное окружение (см. ENV_NEIGHBORS) — под groundLayer/buildLayer, не кликабельно. */
+  readonly envLayer: Container;
   readonly groundLayer: Container;
   readonly buildLayer: Container;
 
@@ -114,8 +160,16 @@ export class MapRenderer {
   private constructor(app: Application) {
     this.app = app;
     this.worldLayer = new Container();
+    this.envLayer = new Container();
     this.groundLayer = new Container();
     this.buildLayer = new Container();
+    // Владелец: "окружающие клетки не должны быть кликабельными, все
+    // события мыши должны проходить только к основной соте и интерфейсу"
+    // — отключает hit-testing для всего поддерева разом, а не по спрайту.
+    this.envLayer.eventMode = 'none';
+    // envLayer — первым, чтобы быть визуально ПОД groundLayer/buildLayer
+    // ("окружение... не должно закрывать её здания").
+    this.worldLayer.addChild(this.envLayer);
     this.worldLayer.addChild(this.groundLayer);
     this.worldLayer.addChild(this.buildLayer);
     this.app.stage.addChild(this.worldLayer);
@@ -150,7 +204,38 @@ export class MapRenderer {
       roundPixels: true,
     });
     parent.appendChild(app.canvas);
-    return new MapRenderer(app);
+    const renderer = new MapRenderer(app);
+    renderer.renderEnvironment();
+    return renderer;
+  }
+
+  /**
+   * Рисует декоративное окружение (ENV_NEIGHBORS) один раз при создании
+   * рендерера — статичный фон, не зависит от ответов сервера, поэтому не
+   * пересоздаётся на каждый `renderGround()` (в отличие от groundLayer).
+   */
+  private renderEnvironment(): void {
+    const cells = buildHexGrid();
+    const hexPoints = hexPolygonPoints();
+
+    for (const { dx, dy, pick } of ENV_NEIGHBORS) {
+      // Один Graphics на весь "цветок" соседа — 217 залитых+обведённых
+      // шестиугольников копятся в одном объекте (каждый .poly().fill()
+      // .stroke() в Pixi v8 Graphics завершает свою фигуру и не мешает
+      // следующей) — ни текстур, ни масок, см. докстринг ENV_NEIGHBORS.
+      const g = new Graphics();
+      for (const cell of cells) {
+        const x = cell.x + dx;
+        const y = cell.y + dy;
+        // Абсолютные координаты полигона (не x/y узла) — чтобы все 217
+        // фигур легли в один и тот же Graphics, не в 217 отдельных.
+        const absPoints = hexPoints.map((v, i) => (i % 2 === 0 ? v + x : v + y));
+        g.poly(absPoints)
+          .fill(ENV_FILL[pick(cell.num)])
+          .stroke({ width: 1, color: 0x0b1220, alpha: 0.85 });
+      }
+      this.envLayer.addChild(g);
+    }
   }
 
   /**
