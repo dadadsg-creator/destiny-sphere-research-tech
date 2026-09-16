@@ -515,6 +515,20 @@
 .ds-build-info__upgrade p {
   margin: 0 0 8px;
 }
+/* "Снести" — отдельно и ниже основных действий, с подтверждением (владелец: "опасное действие... должно появляться подтверждение"). */
+.ds-build-info__danger {
+  margin-top: 10px;
+  border-top: 1px solid #23325c;
+  padding-top: 10px;
+}
+.ds-build-info__confirm {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 12px;
+  color: #ffe1e0;
+}
 
 /* battle/BattleWindow.tsx — точка монтирования PixiJS-канваса (battleRenderer.ts), нужен явный размер (resizeTo: parent). */
 .ds-battle-window__canvas {
@@ -641,6 +655,15 @@
 }
 .ds-popup__btn--primary:hover {
   background: #4a73d8;
+}
+/* buildings/BuildInfoActions.tsx — "Снести" необратимо, должна визуально отличаться от обычных действий (владелец: "выглядит как обычное действие"). */
+.ds-popup__btn--danger {
+  background: #7a2020;
+  border: 1px solid #ef5350;
+  color: #ffe1e0;
+}
+.ds-popup__btn--danger:hover {
+  background: #9a2828;
 }
 /* Кнопки навигации — крупнее общего .ds-popup__btn (владелец: "поля и
    кнопки выглядят как элементы старого интерфейса"), только в этом

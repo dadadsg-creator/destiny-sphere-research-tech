@@ -6,16 +6,20 @@
  * общий `BuildInfoActions.tsx`, тот же, что использует модалка (для
  * `?screen=`-тестов).
  *
- * Название/картинка/уровень: в этой игре нет числового "уровня" здания
- * как такового — апгрейд МЕНЯЕТ `id_building` целиком на другую
- * постройку (`upgradedata.id_next_build`), не инкрементирует счётчик
- * (подтверждено — ни в одном месте протокола, ни в БД нет generic
- * поля "level"; единственное исключение — ARTEFACT_TOWER, чей "ранг"
- * закодирован прямо в имени, `map/buildingTypes.ts`). Показывать
- * выдуманный уровень значило бы нарушить правило проекта "не
- * выдумывать данные" — вместо этого показано текущее название здания
- * (оно и есть "уровень" в терминах этой игры) плюс машинное имя мелким
- * текстом, если оно отличается от локализованного.
+ * Структура — по прямому списку владельца (2026-09-16): название+закрытие,
+ * иконка+тип+ячейка одной строкой, состояние, производство/потребление,
+ * время, действия (порядок кнопок — см. BuildInfoActions.tsx).
+ *
+ * Название/уровень: в этой игре нет числового "уровня" здания как
+ * такового — апгрейд МЕНЯЕТ `id_building` целиком на другую постройку
+ * (`upgradedata.id_next_build`), не инкрементирует счётчик (подтверждено
+ * — ни в одном месте протокола, ни в БД нет generic поля "level";
+ * единственное исключение — ARTEFACT_TOWER, чей "ранг" закодирован
+ * прямо в имени, `map/buildingTypes.ts`). Показывать выдуманный уровень
+ * значило бы нарушить правило проекта "не выдумывать данные" — вместо
+ * этого показано текущее название здания (оно и есть "уровень" в
+ * терминах этой игры) плюс машинное имя, если оно отличается от
+ * локализованного.
  */
 import { selectedBuilding } from './selectedBuildingStore';
 import { localData } from '../../data/localDataStore';
@@ -54,6 +58,17 @@ function toResourceCosts(bag: Record<'K' | 'N' | 'S' | 'F' | 'P', string>): Reso
   }));
 }
 
+/** "—" читается как ошибка загрузки (владелец) — явное слово вместо тире, когда все ресурсы нулевые. */
+function ResourceRow({ label, costs }: { label: string; costs: ResourceCost[] }) {
+  const nonZero = costs.some((c) => c.value > 0);
+  return (
+    <div class="ds-hud-buildpanel__row ds-hud-buildpanel__row--stack">
+      <span class="ds-hud-buildpanel__label">{label}</span>
+      {nonZero ? <ResourceList costs={costs} /> : <span class="ds-hud-buildpanel__none">Нет</span>}
+    </div>
+  );
+}
+
 export function BuildingPanel() {
   const sel = selectedBuilding.value;
   if (!sel) return null;
@@ -76,21 +91,23 @@ export function BuildingPanel() {
         </button>
       </div>
 
-      {machineName && displayName !== machineName && <div class="ds-hud-buildpanel__machine">{machineName}</div>}
-
-      {imageUrl && (
-        <div class="ds-hud-buildpanel__image-wrap">
-          <img class="ds-hud-buildpanel__image" src={imageUrl} alt="" />
+      <div class="ds-hud-buildpanel__identity">
+        {imageUrl && (
+          <div class="ds-hud-buildpanel__image-wrap">
+            <img class="ds-hud-buildpanel__image" src={imageUrl} alt="" />
+          </div>
+        )}
+        <div class="ds-hud-buildpanel__identity-text">
+          {machineName && displayName !== machineName && <div class="ds-hud-buildpanel__machine">{machineName}</div>}
+          <div class="ds-hud-buildpanel__row">
+            <span class="ds-hud-buildpanel__label">Ячейка</span>
+            <span>№{sel.cellNum + 1}</span>
+          </div>
+          <div class="ds-hud-buildpanel__row">
+            <span class="ds-hud-buildpanel__label">Состояние</span>
+            <span>{stateLabel(status)}</span>
+          </div>
         </div>
-      )}
-
-      <div class="ds-hud-buildpanel__row">
-        <span class="ds-hud-buildpanel__label">Ячейка</span>
-        <span>№{sel.cellNum + 1}</span>
-      </div>
-      <div class="ds-hud-buildpanel__row">
-        <span class="ds-hud-buildpanel__label">Состояние</span>
-        <span>{stateLabel(status)}</span>
       </div>
 
       {inProgress && sel.record?.percent !== undefined && (
@@ -108,14 +125,8 @@ export function BuildingPanel() {
 
       {sel.info && (
         <>
-          <div class="ds-hud-buildpanel__row ds-hud-buildpanel__row--stack">
-            <span class="ds-hud-buildpanel__label">Производство</span>
-            <ResourceList costs={toResourceCosts(sel.info.production)} />
-          </div>
-          <div class="ds-hud-buildpanel__row ds-hud-buildpanel__row--stack">
-            <span class="ds-hud-buildpanel__label">Потребление</span>
-            <ResourceList costs={toResourceCosts(sel.info.upkeep)} />
-          </div>
+          <ResourceRow label="Производство" costs={toResourceCosts(sel.info.production)} />
+          <ResourceRow label="Потребление" costs={toResourceCosts(sel.info.upkeep)} />
 
           {sel.actions && <BuildInfoActions data={sel.info} {...sel.actions} />}
         </>

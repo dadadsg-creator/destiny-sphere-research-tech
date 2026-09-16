@@ -10,10 +10,18 @@ import { resourceDisplayName, resourceIconUrl } from '../../data/resourceIcons';
 
 const POPULATION_ORDER: CombResName[] = ['WORKER', 'SCIENTIST', 'ARCHEOLOGIST'];
 
+/**
+ * Заполнение до максимума — ОЖИДАЕМОЕ нормальное состояние в этой игре
+ * (рабочие/учёные обычно все заняты), не ошибка и не повод для красного
+ * — красный воспринимается как "что-то сломалось" (замечание владельца,
+ * 2026-09-16). Красный оставлен только на генетически аномальный случай
+ * `current > max` (в норме структурно невозможен, но если сервер вдруг
+ * пришлёт такое — это уже действительно критично, не "просто полно").
+ */
 function fillState(current: number, max: number): 'ok' | 'warn' | 'full' {
   if (max <= 0) return 'ok';
+  if (current > max) return 'full';
   const ratio = current / max;
-  if (ratio >= 1) return 'full';
   if (ratio >= 0.9) return 'warn';
   return 'ok';
 }

@@ -53,11 +53,17 @@ export function MainNav() {
           class={`ds-hud-nav__btn${active === item.key ? ' ds-hud-nav__btn--active' : ''}${!item.onClick ? ' ds-hud-nav__btn--stub' : ''}`}
           title={item.onClick ? undefined : 'Раздел ещё не подключён к живому протоколу'}
           onClick={() => {
+            if (!item.onClick) return;
             setActive(item.key);
-            item.onClick?.();
+            item.onClick();
           }}
         >
           {item.label}
+          {!item.onClick && (
+            <span class="ds-hud-nav__lock" aria-hidden="true">
+              🔒
+            </span>
+          )}
         </button>
       ))}
     </nav>

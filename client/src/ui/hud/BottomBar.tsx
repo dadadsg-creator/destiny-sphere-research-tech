@@ -8,12 +8,17 @@
  * наука в этом порте открываются через `getbuildmenu` у конкретной
  * ячейки с MILITARY_BASE/RESEARCH_CENTER, обобщённого входа "не с
  * карты" для них ни разу не встречалось в живой сверке сценариев) —
- * помечены как заглушки по той же причине, что и 7 разделов навигации.
+ * помечены как заглушки (значок замка) по той же причине, что и 7
+ * разделов навигации, но текст читаем как обычная кнопка, не "похож на
+ * случайно ставший полупрозрачным" (замечание владельца, 2026-09-16).
  *
  * Время — реальное системное время браузера (тикает раз в секунду), НЕ
  * игровое серверное время: марка с игровым временем сервера в этом
  * порте нигде не парсится, подставлять браузерное под видом игрового
- * было бы обманом пользователя, поэтому подписано отдельно.
+ * было бы обманом пользователя, поэтому подписано отдельно. Слева и
+ * отдельно от остальных кнопок — как в оригинале, чтобы центр панели
+ * оставался под игровые действия (было — время смешано с кнопками
+ * одним блоком слева, справа пусто).
  */
 import { useEffect, useState } from 'preact/hooks';
 import { hudActions } from './hudActionsStore';
@@ -38,8 +43,14 @@ export function BottomBar({ collapsed, onToggleCollapsed }: BottomBarProps) {
 
   return (
     <div class={`ds-hud-bottombar${collapsed ? ' ds-hud-bottombar--collapsed' : ''}`}>
-      <button type="button" class="ds-hud-bottombar__collapse" onClick={onToggleCollapsed} title={collapsed ? 'Развернуть панель' : 'Свернуть панель'}>
-        {collapsed ? '▲' : '▼'}
+      <button
+        type="button"
+        class="ds-hud-bottombar__collapse"
+        onClick={onToggleCollapsed}
+        title={collapsed ? 'Развернуть нижнюю панель' : 'Свернуть нижнюю панель'}
+        aria-label={collapsed ? 'Развернуть нижнюю панель' : 'Свернуть нижнюю панель'}
+      >
+        {collapsed ? '⌃' : '⌄'}
       </button>
       {!collapsed && (
         <>
@@ -47,14 +58,16 @@ export function BottomBar({ collapsed, onToggleCollapsed }: BottomBarProps) {
             <span class="ds-hud-bottombar__clock" title="Системное время (игровое время сервера в порте пока не читается)">
               {formatClock(now)}
             </span>
+          </div>
+          <div class="ds-hud-bottombar__center">
             <button type="button" class="ds-hud-bottombar__btn ds-hud-bottombar__btn--stub" title="Раздел ещё не подключён к живому протоколу">
-              Армия
+              Армия <span class="ds-hud-nav__lock" aria-hidden="true">🔒</span>
             </button>
             <button type="button" class="ds-hud-bottombar__btn ds-hud-bottombar__btn--stub" title="Раздел ещё не подключён к живому протоколу">
-              Анализ
+              Анализ <span class="ds-hud-nav__lock" aria-hidden="true">🔒</span>
             </button>
             <button type="button" class="ds-hud-bottombar__btn ds-hud-bottombar__btn--stub" title="Раздел ещё не подключён к живому протоколу">
-              Действие
+              Действие <span class="ds-hud-nav__lock" aria-hidden="true">🔒</span>
             </button>
           </div>
           <div class="ds-hud-bottombar__right">

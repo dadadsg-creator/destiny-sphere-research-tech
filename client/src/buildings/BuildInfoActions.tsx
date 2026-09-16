@@ -4,7 +4,13 @@
  * панель главного экрана, docs/main_screen.md §9) — вынесено отдельно,
  * чтобы не дублировать логику показа кнопок в двух местах (см. таблицу
  * поле→команда в докстринге `buildInfoData.ts`).
+ *
+ * Порядок — по прямому указанию владельца (2026-09-16): "Деактивировать"
+ * первой (основное действие в норме), "Снести" — отдельно, НИЖЕ, с явным
+ * опасным оформлением и подтверждением перед отправкой (необратимое
+ * действие — раньше выглядело как обычная кнопка в общем ряду).
  */
+import { useState } from 'preact/hooks';
 import { ResourceList, type ResourceCost } from '../ui/ResourceValue';
 import type { BuildInfoData } from './buildInfoData';
 
@@ -38,6 +44,7 @@ export function BuildInfoActions({
   const hasAc = 'ac' in info;
   const hasDeact = 'deact' in info;
   const hasUpgrade = 'upgrade' in info && !!upgrade?.allow;
+  const [confirmingDemolish, setConfirmingDemolish] = useState(false);
 
   const upgradeCosts: ResourceCost[] = upgrade
     ? [
@@ -53,24 +60,24 @@ export function BuildInfoActions({
   return (
     <>
       <div class="ds-build-info__actions">
-        {hasUn && (
-          <button type="button" class="ds-popup__btn" onClick={onCancelBuild}>
-            Отменить постройку
-          </button>
-        )}
-        {hasDestr && (
-          <button type="button" class="ds-popup__btn" onClick={onDemolish}>
-            Снести
-          </button>
-        )}
-        {hasUp && (
-          <button type="button" class="ds-popup__btn" onClick={onCancelUpgrade}>
-            Отменить апгрейд
+        {hasDeact && (
+          <button type="button" class="ds-popup__btn" onClick={onDeactivate}>
+            Деактивировать
           </button>
         )}
         {hasActivate && (
           <button type="button" class="ds-popup__btn" onClick={onActivate}>
             Активировать
+          </button>
+        )}
+        {hasUn && (
+          <button type="button" class="ds-popup__btn" onClick={onCancelBuild}>
+            Отменить постройку
+          </button>
+        )}
+        {hasUp && (
+          <button type="button" class="ds-popup__btn" onClick={onCancelUpgrade}>
+            Отменить апгрейд
           </button>
         )}
         {hasIa && hasAc && (
@@ -79,11 +86,6 @@ export function BuildInfoActions({
           </button>
         )}
         {hasIa && !hasAc && <p class="ds-train-unit__idle">Деактивируется…</p>}
-        {hasDeact && (
-          <button type="button" class="ds-popup__btn" onClick={onDeactivate}>
-            Деактивировать
-          </button>
-        )}
       </div>
 
       {upgrade && (
@@ -94,6 +96,33 @@ export function BuildInfoActions({
           <button type="button" class="ds-popup__btn" disabled={!hasUpgrade} onClick={onUpgrade}>
             Апгрейд
           </button>
+        </div>
+      )}
+
+      {hasDestr && (
+        <div class="ds-build-info__danger">
+          {!confirmingDemolish ? (
+            <button type="button" class="ds-popup__btn ds-popup__btn--danger" onClick={() => setConfirmingDemolish(true)}>
+              Снести
+            </button>
+          ) : (
+            <div class="ds-build-info__confirm">
+              <span>Точно снести здание? Действие необратимо.</span>
+              <button
+                type="button"
+                class="ds-popup__btn ds-popup__btn--danger"
+                onClick={() => {
+                  setConfirmingDemolish(false);
+                  onDemolish();
+                }}
+              >
+                Да, снести
+              </button>
+              <button type="button" class="ds-popup__btn" onClick={() => setConfirmingDemolish(false)}>
+                Отмена
+              </button>
+            </div>
+          )}
         </div>
       )}
     </>

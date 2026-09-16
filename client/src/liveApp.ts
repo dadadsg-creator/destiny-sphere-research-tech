@@ -8,6 +8,7 @@
  * дальше огромный список `?screen=`-веток для изолированного тестирования
  * каждого окна (см. main.tsx) — тот путь тестирования не трогается.
  */
+import { effect } from '@preact/signals';
 import { GameSession } from './protocol/gameProtocol';
 import { handleResponse, type DispatchContext } from './protocol/dispatch';
 import { tag } from './protocol/xmlBuilder';
@@ -22,6 +23,25 @@ export async function runLiveApp(renderer: MapRenderer, login: string, pass: str
   // перенаправляет /ds/* на https://destinysphere.ru server-side (иначе
   // браузерный fetch() упрётся в CORS, см. vite.config.ts).
   const session = new GameSession({ baseUrl: '' });
+
+  // Безопасная зона карты (docs/main_screen.md §8) — держать синхронно с
+  // фактическими размерами панелей в ui/hud/hud.css (resbar 48 + nav 46,
+  // bottombar 60, правая панель здания 280 — константы здесь НЕ читаются
+  // из CSS автоматически, единственный источник совпадения — этот
+  // комментарий, аналогично остальным местам в порте, где JS-константы
+  // сверяются с CSS вручную). Правая зона зарезервирована ВСЕГДА, даже
+  // когда панель здания закрыта — иначе карта меняла бы масштаб при
+  // каждом открытии/закрытии панели.
+  renderer.setSafeAreaInsets({ top: 100, bottom: 70, right: 300 });
+
+  // Подсветка выбранной ячейки (docs/main_screen.md §9) — реактивно на
+  // изменение selectedBuilding, а не отдельными ручными вызовами на
+  // каждом месте, где сигнал меняется (клик/закрытие панели/ответ
+  // сервера) — так не потерять синхронизацию, если появится ещё одно
+  // место записи сигнала.
+  effect(() => {
+    renderer.setSelectedCell(selectedBuilding.value?.cellNum ?? null);
+  });
 
   const ctx: DispatchContext = {
     renderer,
