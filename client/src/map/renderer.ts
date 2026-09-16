@@ -109,7 +109,11 @@ const ENV_FILL: Record<string, number> = {
 type EnvZone = 'central' | 'side' | 'desert';
 function zoneFor(cell: EnvCell): EnvZone {
   if (cell.dy >= 0) return 'desert';
-  return Math.abs(cell.dx) < mapPixelSize().width * 0.22 ? 'central' : 'side';
+  // 0.22 не спорно охватывал сами "врата" — владелец отметил на
+  // скриншоте ещё 2 ячейки чуть дальше от центра, которые визуально
+  // должны быть тёмно-серыми (как E_FIELD), а не камнем/песком; порог
+  // расширен, чтобы их накрыло centralGround().
+  return Math.abs(cell.dx) < mapPixelSize().width * 0.3 ? 'central' : 'side';
 }
 function sideGround(cell: EnvCell): string {
   const bucket = Math.round((cell.x + cell.y) / CELL_WEIGHT_H) % 3;
