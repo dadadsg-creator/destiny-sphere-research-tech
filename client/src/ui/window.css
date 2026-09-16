@@ -564,36 +564,147 @@
   gap: 4px;
 }
 
-/* world/ComplexViewWindow.tsx — гекс-сцена комплекса (SVG) + всплывающие
-   карточки игроков поверх неё (foreignObject). Сама сцена шире обычного
-   окна — .ds-window уже допускает рост до max-width:90vw, здесь просто
-   не мешаем ему растянуться под контент. */
+/* world/ComplexViewWindow.tsx — полноэкранный каркас (НЕ стандартный
+   ui/Window — владелец дважды указал, что маленький диалог с
+   крестиком читается как попап, а не как экран игры) + SVG гекс-сцена
+   с всплывающими карточками игроков (foreignObject). Занимает почти
+   весь вьюпорт вместо центрированного диалога .ds-window. */
+.ds-complex-screen {
+  box-sizing: border-box;
+  width: 96vw;
+  height: 92vh;
+  background: #060e22;
+  border: 1px solid #2a3a66;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  color: #e8ecf7;
+  font-family: Arial, sans-serif;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+}
+.ds-complex-screen__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  background: #0e1a3a;
+  border-bottom: 1px solid #2a3a66;
+}
+.ds-complex-screen__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 0.02em;
+}
+.ds-complex-screen__close {
+  background: #33447a;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  width: 32px;
+  height: 32px;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+.ds-complex-screen__close:hover {
+  background: #44579a;
+}
+.ds-complex-screen__nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 18px;
+  font-size: 12px;
+  border-bottom: 1px solid #1c2848;
+  flex-wrap: wrap;
+}
+.ds-complex-screen__navsep {
+  width: 1px;
+  align-self: stretch;
+  background: #2a3a66;
+  margin: 0 4px;
+}
 .ds-complex-scene {
+  flex: 1;
+  min-height: 0;
   display: flex;
   justify-content: center;
-  overflow: auto;
+  align-items: center;
+  overflow: hidden;
 }
+
+.ds-complex-hex:hover polygon {
+  filter: brightness(1.25);
+}
+/* Разбитые врата (_WRECK, gate=0) — исходные растровые ассеты FFDec
+   отличаются от целых слишком тонко на мелком масштабе (см. докстринг
+   файла), поэтому состояние усилено явно: приглушение + обесцвечивание. */
+.ds-complex-gate--closed {
+  opacity: 0.45;
+  filter: grayscale(0.6) brightness(0.7);
+}
+
 .ds-complex-card {
   box-sizing: border-box;
   width: 100%;
   height: 100%;
-  background: rgba(11, 23, 48, 0.92);
+  background: rgba(11, 23, 48, 0.94);
   border: 2px solid #3a4d7a;
-  border-radius: 6px;
-  padding: 6px 8px;
+  border-radius: 8px;
+  padding: 8px;
   font-family: Arial, sans-serif;
   font-size: 11px;
   color: #e8ecf7;
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  gap: 8px;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
-/* flex-shrink:0 на всех строках — без этого строки с overflow:hidden
+.ds-complex-card--selected {
+  box-shadow: 0 0 0 2px #ffffff, 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+.ds-complex-card__avatar {
+  position: relative;
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  border: 2px solid #3a4d7a;
+  background: #0b1730;
+  overflow: visible;
+}
+.ds-complex-card__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 6px;
+}
+.ds-complex-card__alliance-badge {
+  position: absolute;
+  right: -8px;
+  bottom: -8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid #0b1730;
+  background: #0b1730;
+  object-fit: contain;
+}
+.ds-complex-card__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+/* flex-shrink:0 на строках тела — без этого строки с overflow:hidden
    (name/combname, нужен для text-overflow:ellipsis) сжимаются flexbox'ом
    до нуля первыми при нехватке высоты (их "автоматический минимальный
    размер" в спеке flexbox равен 0, а не min-content, в отличие от строк
-   без overflow:hidden) — см. докстринг ComplexViewWindow.tsx про cardH. */
-.ds-complex-card > * {
+   без overflow:hidden). */
+.ds-complex-card__body > * {
   flex-shrink: 0;
 }
 .ds-complex-card__top {
@@ -604,7 +715,7 @@
 }
 .ds-complex-card__name {
   font-weight: bold;
-  font-size: 13px;
+  font-size: 14px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -618,14 +729,14 @@
 }
 .ds-complex-card__meta {
   display: flex;
+  align-items: center;
   gap: 8px;
   font-size: 10px;
   color: #cfd8f5;
 }
-.ds-complex-card__badges {
-  display: flex;
-  gap: 4px;
-  font-size: 12px;
+.ds-complex-card__premium {
+  color: #ffcc33;
+  font-size: 13px;
 }
 .ds-complex-card__mail {
   margin-top: auto;
@@ -634,7 +745,7 @@
   color: #fff;
   border: none;
   border-radius: 3px;
-  padding: 2px 6px;
+  padding: 3px 8px;
   font-size: 10px;
   cursor: pointer;
 }
