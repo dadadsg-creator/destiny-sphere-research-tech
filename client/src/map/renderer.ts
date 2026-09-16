@@ -11,90 +11,89 @@ import { BUILDING_NAMES, buildingAssetKey, buildingAssetPath, effectiveBuildingR
 import type { BuildRecord } from './buildData';
 
 /**
- * Декоративное окружение вокруг домашней соты (владелец, 2026-09-16:
- * "убери синее пустое пространство вокруг соты, продолжи шестиугольную
- * сетку за её границы"). ЧЕТВЁРТАЯ версия — первые три (см. git-историю
- * файла) изобретали геометрию/покрытие сами (то 6 копий с придуманной
- * пёстрой заливкой, то одно математически бесшовное кольцо с
- * придуманными "зонами" central/side/desert) — владелец в итоге прямо
- * спросил: "где у тебя ячейки-разделители, и где они на Флеше?" —
- * справедливо, ни то ни другое не было взято из реального клиента.
+ * Декоративное окружение вокруг соты (владелец, 2026-09-16: "убери синее
+ * пустое пространство вокруг соты, продолжи шестиугольную сетку за её
+ * границы"). Реальный источник — `sota.as:286-405` (`createsotasos`):
+ * 6 соседей на ЗАФИКСИРОВАННЫХ пиксельных офсетах (`sota.as:379-403`),
+ * каждый — готовая 217-символьная строка грунта (`sota.as:19-22`), БЕЗ
+ * какой-либо "бесшовной" геометрии — 6 независимых копий
+ * `buildHexGrid()`-формы, как в оригинале, не выдуманное кольцо/зоны
+ * (были в более ранних заходах, см. git-историю и CLIENT_PORTING_PLAN.md).
  *
- * Реальный источник — `sota.as:286-405` (`createsotasos`), ветка
- * `obj.location == "HOME"` (главный экран): 6 соседей, каждый —
- * ГОТОВАЯ 217-символьная строка грунта (`sota.as:19-21`) на
- * ЗАФИКСИРОВАННОМ пиксельном офсете (`sota.as:379-403`), без какой-либо
- * "бесшовной" геометрии — это в оригинале и есть 6 независимых копий
- * `buildHexGrid()`-формы:
- * - `icount=0` (offset -24,-333, "сверху") → `center_loopback` — смесь
- *   FROG/E_FIELD/SOIL/ROCK (буквы E/F/S/R).
- * - `icount=1,5` (offset -625,-157 / 601,-176, "сверху слева/справа") →
- *   `home_loopback` — ручной узор DESERT/SOIL/GRASS/WATER (D/S/G/W).
- * - `icount=2,3,4` (offset -601,176 / 24,333 / 625,157, "снизу-слева/
- *   снизу/снизу-справа") → `neutral_loopback` — "D"×217, сплошная
- *   пустыня.
- * Раньше здесь пробовали "исправить" геометрию математическим кольцом —
- * это и было ошибкой: (x,y) кольца физически не совпадали с (x,y) этих
- * 6 офсетов (две независимые системы координат), поэтому НИ ОДНА
- * настоящая буква грунта не находила пару, и весь рендер незаметно
- * скатывался в запасной цвет. Теперь ячейки строятся НАПРЯМУЮ из
- * `buildHexGrid()` + офсета — те самые позиции и та самая буква, что и
- * в оригинале, без посредников.
+ * ВАЖНО: раскладка "какой icount → какая строка" — РАЗНАЯ для каждого
+ * `location` (`sota.as:298-367`, три отдельные ветки switch), не только
+ * для HOME:
+ * - `HOME` (главный экран): 0→`center_loopback` (FROG/E_FIELD/SOIL/ROCK
+ *   смесь), 1 и 5→`home_loopback` (ручной узор DESERT/SOIL/GRASS/WATER),
+ *   2,3,4→`neutral_loopback` ("D"×217, пустыня).
+ * - `CENTRAL` (вид "Центр" — владелец, 2026-09-16: "вокруг центральной
+ *   соты не пустыня, там по кругу 6 домашних сот от шести игроков"):
+ *   1,2,4,5,0→`unknown_loopback` ("F"×217, чистый туман — те самые 6
+ *   игроков скрыты туманом, не показаны как пустыня), 3→`neutral_loopback`.
+ * - `NEUTRAL`: 0→`home_loopback`, 1-5→`neutral_loopback`.
+ * Прошлая версия жёстко использовала HOME-раскладку всегда, даже на
+ * экране "Центр" — отсюда и жалоба: там, где должен быть туман над
+ * другими игроками, появлялась пустыня/трава/вода домашнего окружения.
  *
  * Полные 6×217=1302 ячейки текстурами рендерить нельзя (роняло WebGL,
  * см. более раннюю запись плана) — `ENV_MARGIN` обрезает каждую копию
- * до полосы вблизи главной соты (типичный экран всё равно показывает
- * только тонкий срез у самого шва, см. `docs/main_screen.md`).
+ * до полосы вблизи соты (типичный экран всё равно показывает только
+ * тонкий срез у самого шва).
  */
 const ENV_MARGIN = 150;
 
-const HOME_LOOPBACK_NEIGHBORS: { dx: number; dy: number; ground: string[] }[] = [
-  {
-    dx: -24,
-    dy: -333,
-    ground: parseGroundString(
-      'EFFFFFFFEFEFFFFFFEFFFEFFFFFEFFFFFEFFFFEFFFFFFFEFFFEFFFFFFFFFEFFEFFFFFFFFFFFEFEFFFFFFFFFFFFFEEFFFFFFFEEEEEEEEEEEEEEEEEFFFFFFFEEFFFFFFFFFFFFFESEFFFFFFFFFFFESREFFFFFFFFFERSSEFFFFFFFESSSREFFFFFESRRSSEFFFESRRRSSEFESSRRSRRE',
-    ),
-  },
-  {
-    dx: -625,
-    dy: -157,
-    ground: parseGroundString(
-      'DDDDDSSSSDDDSSSDDDDDDDSSSDDDDDDDDDSSDDDGGGSDDDDSSDGGGGGSDDDGGSDGGGGGGSSSSGGSGGGWWWSGSSSSGGSGGGWWWSSSSSSGGGGSGWWWWSSSSSSGGGGSSWWWWSSSSSSGWWWWWWWWGSSSSSDWWWSSGGWGSSSSWWWSSGGWGGSSSSSWSSWWWSSSSSSWWWWWSSGSWWWWSSSSSSSSSSSSS',
-    ),
-  },
-  { dx: -601, dy: 176, ground: parseGroundString('D'.repeat(217)) },
-  { dx: 24, dy: 333, ground: parseGroundString('D'.repeat(217)) },
-  { dx: 625, dy: 157, ground: parseGroundString('D'.repeat(217)) },
-  {
-    dx: 601,
-    dy: -176,
-    ground: parseGroundString(
-      'DDDDDSSSSDDDSSSDDDDDDDSSSDDDDDDDDDSSDDDGGGSDDDDSSDGGGGGSDDDGGSDGGGGGGSSSSGGSGGGWWWSGSSSSGGSGGGWWWSSSSSSGGGGSGWWWWSSSSSSGGGGSSWWWWSSSSSSGWWWWWWWWGSSSSSDWWWSSGGWGSSSSWWWSSGGWGGSSSSSWSSWWWSSSSSSWWWWWSSGSWWWWSSSSSSSSSSSSS',
-    ),
-  },
+const LOOPBACK = {
+  center: parseGroundString(
+    'EFFFFFFFEFEFFFFFFEFFFEFFFFFEFFFFFEFFFFEFFFFFFFEFFFEFFFFFFFFFEFFEFFFFFFFFFFFEFEFFFFFFFFFFFFFEEFFFFFFFEEEEEEEEEEEEEEEEEFFFFFFFEEFFFFFFFFFFFFFESEFFFFFFFFFFFESREFFFFFFFFFERSSEFFFFFFFESSSREFFFFFESRRSSEFFFESRRRSSEFESSRRSRRE',
+  ),
+  home: parseGroundString(
+    'DDDDDSSSSDDDSSSDDDDDDDSSSDDDDDDDDDSSDDDGGGSDDDDSSDGGGGGSDDDGGSDGGGGGGSSSSGGSGGGWWWSGSSSSGGSGGGWWWSSSSSSGGGGSGWWWWSSSSSSGGGGSSWWWWSSSSSSGWWWWWWWWGSSSSSDWWWSSGGWGSSSSWWWSSGGWGGSSSSSWSSWWWSSSSSSWWWWWSSGSWWWWSSSSSSSSSSSSS',
+  ),
+  neutral: parseGroundString('D'.repeat(217)),
+  unknown: parseGroundString('F'.repeat(217)),
+};
+
+/** Офсеты 6 соседей (`icount` 0-5) — те же для любого `location`, `sota.as:379-403`. */
+const NEIGHBOR_OFFSET_LIST: { dx: number; dy: number }[] = [
+  { dx: -24, dy: -333 },
+  { dx: -625, dy: -157 },
+  { dx: -601, dy: 176 },
+  { dx: 24, dy: 333 },
+  { dx: 625, dy: 157 },
+  { dx: 601, dy: -176 },
 ];
+
+export type SotaLocation = 'HOME' | 'CENTRAL' | 'NEUTRAL';
+
+/** `icount` → строка грунта, по `location` — буквально `sota.as:298-367`. */
+const LOOPBACK_BY_LOCATION: Record<SotaLocation, string[][]> = {
+  HOME: [LOOPBACK.center, LOOPBACK.home, LOOPBACK.neutral, LOOPBACK.neutral, LOOPBACK.neutral, LOOPBACK.home],
+  CENTRAL: [LOOPBACK.unknown, LOOPBACK.unknown, LOOPBACK.unknown, LOOPBACK.neutral, LOOPBACK.unknown, LOOPBACK.unknown],
+  NEUTRAL: [LOOPBACK.home, LOOPBACK.neutral, LOOPBACK.neutral, LOOPBACK.neutral, LOOPBACK.neutral, LOOPBACK.neutral],
+};
 
 interface EnvCell {
   x: number;
   y: number;
   ground: string;
-  /** Индекс соседа 0-5 (порядок `HOME_LOOPBACK_NEIGHBORS`/`icount` из sota.as) — для границ, см. renderEnvironment(). */
+  /** Индекс соседа 0-5 (`icount` из sota.as) — для границ, см. renderEnvironment(). */
   neighbor: number;
 }
 
-/** Настоящие ячейки 6 соседей (sota.as), обрезанные полосой ENV_MARGIN вокруг главной соты — см. докстринг выше. */
-function buildEnvironmentCells(): EnvCell[] {
+/** Настоящие ячейки 6 соседей для конкретного `location` (sota.as), обрезанные полосой ENV_MARGIN вокруг соты. */
+function buildEnvironmentCells(location: SotaLocation): EnvCell[] {
   const width = mapPixelSize().width;
   const height = mapPixelSize().height;
   const mainCells = buildHexGrid();
+  const groundByIcount = LOOPBACK_BY_LOCATION[location];
   const cells: EnvCell[] = [];
-  HOME_LOOPBACK_NEIGHBORS.forEach((n, neighbor) => {
+  NEIGHBOR_OFFSET_LIST.forEach((offset, neighbor) => {
+    const ground = groundByIcount[neighbor];
     for (const cell of mainCells) {
-      const x = cell.x + n.dx;
-      const y = cell.y + n.dy;
+      const x = cell.x + offset.dx;
+      const y = cell.y + offset.dy;
       if (x < -ENV_MARGIN || x > width + ENV_MARGIN || y < -ENV_MARGIN || y > height + ENV_MARGIN) continue;
-      cells.push({ x, y, ground: n.ground[cell.num], neighbor });
+      cells.push({ x, y, ground: ground[cell.num], neighbor });
     }
   });
   return cells;
@@ -129,6 +128,18 @@ export class MapRenderer {
   readonly envLayer: Container;
   readonly groundLayer: Container;
   readonly buildLayer: Container;
+  /**
+   * Один суб-контейнер окружения на `location` (HOME/CENTRAL/NEUTRAL) —
+   * строится лениво при первом обращении и переиспользуется (не
+   * перестраивается на каждый переход), переключение — просто
+   * `.visible`. Раскладка грунта РАЗНАЯ для каждого `location`
+   * (`sota.as:298-367`, см. докстринг `LOOPBACK_BY_LOCATION`) — владелец,
+   * 2026-09-16: "вокруг центральной соты не пустыня, там по кругу 6
+   * домашних сот от шести игроков" — раньше здесь всегда использовалась
+   * HOME-раскладка, даже на экране "Центр".
+   */
+  private envContainers = new Map<SotaLocation, Container>();
+  private envLocation: SotaLocation = 'HOME';
 
   /**
    * Клик по ячейке соты (аналог onRelease на building/ground-спрайте в
@@ -278,18 +289,57 @@ export class MapRenderer {
   }
 
   /**
-   * Рисует декоративное окружение (buildEnvironmentCells, настоящие
-   * данные `sota.as`) один раз при создании рендерера — статичный фон,
-   * не зависит от ответов сервера, поэтому не пересоздаётся на каждый
-   * `renderGround()` (в отличие от groundLayer).
+   * Строит декоративное окружение (buildEnvironmentCells, настоящие
+   * данные `sota.as`) для главного экрана (HOME) один раз при создании
+   * рендерера — статичный фон, не зависит от ответов сервера. Другие
+   * `location` (CENTRAL/NEUTRAL) строятся лениво в `setEnvironmentLocation()`
+   * при первом обращении, не здесь — нет смысла грузить окружение вида
+   * "Центр", если игрок туда ни разу не заходил.
    */
   private async renderEnvironment(): Promise<void> {
+    const container = await this.buildEnvironmentContainer('HOME');
+    this.envContainers.set('HOME', container);
+    this.envLayer.addChild(container);
+  }
+
+  /**
+   * Переключить декоративное окружение на нужный `location` (HOME/
+   * CENTRAL/NEUTRAL) — вызывается из dispatch.tsx при каждом `refresh`
+   * с его атрибутом `location`. Раскладка грунта разная для каждого
+   * `location` (`sota.as:298-367`) — владелец, 2026-09-16: "вокруг
+   * центральной соты не пустыня, там по кругу 6 домашних сот от шести
+   * игроков" (на экране "Центр" соседи скрыты туманом `unknown_loopback`,
+   * а не домашней раскладкой камня/песка/травы/воды). Неизвестный/
+   * отсутствующий `location` — трактуется как `HOME` (дефолт по факту).
+   */
+  async setEnvironmentLocation(location: string | null | undefined): Promise<void> {
+    const next: SotaLocation = location === 'CENTRAL' || location === 'NEUTRAL' ? location : 'HOME';
+    if (next === this.envLocation && this.envContainers.has(next)) {
+      return;
+    }
+    this.envLocation = next;
+    let container = this.envContainers.get(next);
+    if (!container) {
+      container = await this.buildEnvironmentContainer(next);
+      this.envContainers.set(next, container);
+      this.envLayer.addChild(container);
+    }
+    for (const [loc, c] of this.envContainers) {
+      c.visible = loc === next;
+    }
+  }
+
+  /** Строит один суб-контейнер окружения (заливка+границы) для конкретного `location` — см. setEnvironmentLocation(). */
+  private async buildEnvironmentContainer(location: SotaLocation): Promise<Container> {
     const hexPoints = hexPolygonPoints();
-    const cells = buildEnvironmentCells();
+    const cells = buildEnvironmentCells(location);
+    const container = new Container();
 
     // Настоящие текстуры грунта — тот же приём, что и у основной сетки
     // (`renderGround()`): Sprite + гекс-маска на ячейку. БЕЗ обводки
-    // здесь — контур ячейки сам по себе не граница, см. ниже.
+    // здесь — контур ячейки сам по себе не граница, см. ниже. Assets.load
+    // с уже загруженными алиасами — дёшево (кэш PixiJS), не грузит
+    // повторно при переключении между HOME/CENTRAL/NEUTRAL.
     await Assets.load([
       { alias: 'ROCK', src: '/assets/ground/ROCK.png' },
       { alias: 'SOIL', src: '/assets/ground/SOIL.png' },
@@ -303,7 +353,7 @@ export class MapRenderer {
       const mask = new Graphics().poly(hexPoints).fill(0xffffff);
       mask.x = cell.x;
       mask.y = cell.y;
-      this.envLayer.addChild(mask);
+      container.addChild(mask);
 
       const sprite = Sprite.from(cell.ground);
       sprite.x = cell.x;
@@ -311,7 +361,7 @@ export class MapRenderer {
       sprite.width = 48;
       sprite.height = 26;
       sprite.mask = mask;
-      this.envLayer.addChild(sprite);
+      container.addChild(sprite);
     }
 
     // Границы — ТОЛЬКО между разными сотами (владелец, дословно: "между
@@ -345,7 +395,9 @@ export class MapRenderer {
       }
     }
     border.stroke({ width: 1, color: 0x0b1220, alpha: 0.85 });
-    this.envLayer.addChild(border);
+    container.addChild(border);
+
+    return container;
   }
 
   /**

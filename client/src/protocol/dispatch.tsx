@@ -1363,6 +1363,11 @@ export function handleResponse(marks: ParsedMarks, ctx: DispatchContext): void {
     void ctx.renderer.renderGround(refresh.sota);
     void ctx.renderer.renderBuildings(parseBuild(refresh.build), ctx.race);
     ctx.gateOpen = refresh.gate;
+    // Декоративное окружение вокруг соты разное для HOME/CENTRAL/NEUTRAL
+    // (sota.as:298-367, см. map/renderer.ts) — переключаем на каждый
+    // refresh, не только на входе в мир, иначе вид "Центр" показывал бы
+    // окружение главного экрана (владелец, 2026-09-16).
+    void ctx.renderer.setEnvironmentLocation(refresh.location);
   }
 
   if (marks.loaddata) {
