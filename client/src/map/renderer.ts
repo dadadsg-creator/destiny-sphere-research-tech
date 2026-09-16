@@ -45,6 +45,11 @@ export class MapRenderer {
     this.worldLayer.addChild(this.groundLayer);
     this.worldLayer.addChild(this.buildLayer);
     this.app.stage.addChild(this.worldLayer);
+    // Пересчёт масштаба при изменении размера окна, не только на
+    // следующий ответ сервера (`resizeTo: parent` в create() уже меняет
+    // сам канвас — этот колбэк держит содержимое отцентрированным под
+    // новый размер сразу, см. fitToViewport()).
+    this.app.renderer.on('resize', () => this.fitToViewport());
   }
 
   static async create(parent: HTMLElement): Promise<MapRenderer> {
@@ -105,9 +110,29 @@ export class MapRenderer {
       this.groundSprites[num] = sprite;
     }
 
+    this.fitToViewport();
+  }
+
+  /**
+   * Масштабирует и центрирует `worldLayer` под текущий размер канваса
+   * (docs/main_screen.md §8: "сота должна занимать максимальную площадь
+   * экрана... карта пересчитывает масштаб, но сохраняет исходную
+   * шестиугольную геометрию"). Раньше сота рисовалась в нативном
+   * пиксельном размере (scale=1) без учёта размера канваса — при полном
+   * `#app` на весь вьюпорт (главный экран) сота оставалась маленькой в
+   * центре большого тёмного поля. Масштаб — единый коэффициент по обеим
+   * осям (не растягивает пропорции), с небольшим отступом (0.92), чтобы
+   * гекс-цветок не упирался краями точно в край канваса. Не трогает САМУ
+   * отрисовку (грунт/постройки/гекс-математика) — только позицию/масштаб
+   * готового слоя, поэтому не пересекается с "не входит в задачу:
+   * отрисовка соты" (§3 ТЗ).
+   */
+  fitToViewport(): void {
     const size = mapPixelSize();
-    this.worldLayer.x = (this.app.screen.width - size.width) / 2;
-    this.worldLayer.y = (this.app.screen.height - size.height) / 2;
+    const scale = Math.min((this.app.screen.width * 0.92) / size.width, (this.app.screen.height * 0.92) / size.height);
+    this.worldLayer.scale.set(scale);
+    this.worldLayer.x = (this.app.screen.width - size.width * scale) / 2;
+    this.worldLayer.y = (this.app.screen.height - size.height * scale) / 2;
   }
 
   /**

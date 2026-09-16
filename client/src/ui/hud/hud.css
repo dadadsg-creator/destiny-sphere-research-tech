@@ -1,0 +1,415 @@
+/**
+ * Главный экран (docs/main_screen.md) — палитра и раскладка ТЗ §12-15.
+ * Слой поверх карты (см. докстринг MainScreenHud.tsx про pointer-events).
+ */
+/* §4 — без белых полей/прокрутки страницы. Затрагивает всё приложение
+   (не только live-HUD), но безобидно и для ?screen=-тестов. */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #07142b;
+}
+
+:root {
+  --hud-bg: #07142b;
+  --hud-bg2: #0d1e3d;
+  --hud-border: #284c82;
+  --hud-active: #28b8ff;
+  --hud-text: #f2f6ff;
+  --hud-text2: #9fb2d4;
+  --hud-ok: #42d77d;
+  --hud-warn: #f4c542;
+  --hud-error: #ef5350;
+}
+
+.ds-hud-root {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  font-family: 'Exo 2', Roboto, Inter, Arial, sans-serif;
+  color: var(--hud-text);
+  z-index: 50;
+}
+.ds-hud-root button {
+  font-family: inherit;
+}
+
+/* §5-6 — верхний стек (ресурсы + навигация). */
+.ds-hud-topstack {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  pointer-events: auto;
+}
+
+.ds-hud-resbar {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 12px;
+  background: rgba(7, 20, 43, 0.92);
+  border-bottom: 1px solid var(--hud-border);
+  backdrop-filter: blur(2px);
+}
+.ds-hud-resbar--loading {
+  color: var(--hud-text2);
+  font-size: 14px;
+}
+.ds-hud-resbar__item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--hud-bg2);
+  border: 1px solid var(--hud-border);
+  border-radius: 5px;
+  padding: 4px 10px;
+  min-width: 0;
+}
+.ds-hud-resbar__icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+.ds-hud-resbar__value {
+  font-size: 16px;
+  font-weight: 600;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.ds-hud-nav {
+  height: 46px;
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  padding: 0 12px;
+  background: var(--hud-bg);
+  border-bottom: 1px solid var(--hud-border);
+  overflow-x: auto;
+}
+.ds-hud-nav__btn {
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--hud-text2);
+  font-size: 14px;
+  padding: 0 14px;
+  cursor: pointer;
+  min-height: 44px;
+  transition: background-color 180ms, color 180ms, border-color 180ms;
+}
+.ds-hud-nav__btn:hover {
+  color: var(--hud-text);
+  background: rgba(40, 76, 130, 0.25);
+}
+.ds-hud-nav__btn:active {
+  background: rgba(40, 76, 130, 0.45);
+}
+.ds-hud-nav__btn--active {
+  color: var(--hud-text);
+  background: rgba(40, 184, 255, 0.12);
+  border-bottom-color: var(--hud-active);
+  box-shadow: inset 0 0 12px rgba(40, 184, 255, 0.15);
+}
+.ds-hud-nav__btn--stub {
+  opacity: 0.5;
+}
+.ds-hud-nav__btn--stub:hover {
+  opacity: 0.75;
+}
+
+/* §7 — левая панель населения. */
+.ds-hud-left {
+  position: absolute;
+  left: 0;
+  top: 106px;
+  width: 210px;
+  padding: 10px;
+  pointer-events: auto;
+}
+.ds-hud-population {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ds-hud-population--loading {
+  color: var(--hud-text2);
+  font-size: 12px;
+  background: rgba(7, 20, 43, 0.85);
+  border: 1px solid var(--hud-border);
+  border-radius: 6px;
+  padding: 8px;
+}
+.ds-hud-population__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(7, 20, 43, 0.85);
+  border: 1px solid var(--hud-border);
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+.ds-hud-population__icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+.ds-hud-population__body {
+  flex: 1;
+  min-width: 0;
+}
+.ds-hud-population__values {
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 3px;
+}
+.ds-hud-population__bar {
+  height: 5px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.ds-hud-population__fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 200ms;
+}
+.ds-hud-population__fill--ok {
+  background: var(--hud-ok);
+}
+.ds-hud-population__fill--warn {
+  background: var(--hud-warn);
+}
+.ds-hud-population__fill--full {
+  background: var(--hud-error);
+}
+
+/* §10 — нижняя панель. */
+.ds-hud-bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: auto;
+}
+.ds-hud-bottombar {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 14px;
+  background: rgba(7, 20, 43, 0.92);
+  border-top: 1px solid var(--hud-border);
+}
+.ds-hud-bottombar--collapsed {
+  height: 22px;
+  justify-content: flex-start;
+}
+.ds-hud-bottombar__collapse {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  background: var(--hud-bg2);
+  border: 1px solid var(--hud-border);
+  border-radius: 4px;
+  color: var(--hud-text2);
+  cursor: pointer;
+}
+.ds-hud-bottombar--collapsed .ds-hud-bottombar__collapse {
+  width: 100%;
+  height: 22px;
+}
+.ds-hud-bottombar__left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.ds-hud-bottombar__clock {
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+  color: var(--hud-text);
+  min-width: 90px;
+}
+.ds-hud-bottombar__btn {
+  min-height: 44px;
+  padding: 0 14px;
+  background: var(--hud-bg2);
+  border: 1px solid var(--hud-border);
+  border-radius: 5px;
+  color: var(--hud-text);
+  font-size: 14px;
+  cursor: pointer;
+}
+.ds-hud-bottombar__btn--stub {
+  opacity: 0.5;
+}
+.ds-hud-bottombar__right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ds-hud-bottombar__icon-btn {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  background: var(--hud-bg2);
+  border: 1px solid var(--hud-border);
+  border-radius: 50%;
+  color: var(--hud-text);
+  font-size: 18px;
+  cursor: pointer;
+}
+.ds-hud-bottombar__icon-btn--stub {
+  opacity: 0.5;
+}
+
+/* §11 — круговое меню. */
+.ds-hud-radial-wrap {
+  position: absolute;
+  right: 16px;
+  bottom: 70px;
+  pointer-events: auto;
+}
+.ds-hud-radial {
+  position: relative;
+  width: 190px;
+  height: 190px;
+}
+.ds-hud-radial__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid var(--hud-border);
+  background: radial-gradient(circle, var(--hud-bg2) 0%, var(--hud-bg) 80%);
+}
+.ds-hud-radial__btn {
+  position: absolute;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--hud-bg2);
+  border: 1px solid var(--hud-border);
+  color: var(--hud-text2);
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 180ms, color 180ms, box-shadow 180ms;
+}
+.ds-hud-radial__btn:hover {
+  color: var(--hud-text);
+}
+.ds-hud-radial__btn--active {
+  color: var(--hud-text);
+  border-color: var(--hud-active);
+  box-shadow: 0 0 12px rgba(40, 184, 255, 0.55);
+}
+.ds-hud-radial__btn--n {
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, 0);
+}
+.ds-hud-radial__btn--e {
+  top: 50%;
+  right: 0;
+  transform: translate(0, -50%);
+}
+.ds-hud-radial__btn--s {
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, 0);
+}
+.ds-hud-radial__btn--w {
+  top: 50%;
+  left: 0;
+  transform: translate(0, -50%);
+}
+.ds-hud-radial__center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: var(--hud-active);
+  border: none;
+  color: #04101f;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 0 16px rgba(40, 184, 255, 0.5);
+}
+
+.ds-hud-error-block {
+  background: rgba(239, 83, 80, 0.15);
+  border: 1px solid var(--hud-error);
+  color: var(--hud-error);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+  pointer-events: auto;
+}
+
+/* §15 — адаптивность. */
+@media (max-width: 1365px) {
+  .ds-hud-left {
+    width: 170px;
+  }
+  .ds-hud-nav__btn {
+    padding: 0 10px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 1199px) {
+  /* "круговое меню заменяется компактной горизонтальной панелью" — та же разметка, просто раскладка в ряд вместо окружности. */
+  .ds-hud-radial-wrap {
+    right: 8px;
+    bottom: 66px;
+  }
+  .ds-hud-radial {
+    width: auto;
+    height: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .ds-hud-radial__ring {
+    display: none;
+  }
+  .ds-hud-radial__btn {
+    position: static;
+    transform: none;
+    width: 44px;
+    height: 44px;
+  }
+  .ds-hud-radial__center {
+    position: static;
+    transform: none;
+    width: 50px;
+    height: 50px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .ds-hud-left {
+    width: 140px;
+  }
+  .ds-hud-population__values {
+    font-size: 12px;
+  }
+  .ds-hud-resbar {
+    padding: 0 6px;
+  }
+  .ds-hud-resbar__item {
+    padding: 3px 6px;
+  }
+}

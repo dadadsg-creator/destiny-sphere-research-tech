@@ -1,5 +1,6 @@
 import './style.css';
 import './ui/window.css';
+import './ui/hud/hud.css';
 import { render } from 'preact';
 import { MapRenderer } from './map/renderer';
 import type { BuildRecord } from './map/buildData';
@@ -8,7 +9,7 @@ import { runLiveApp } from './liveApp';
 import { BattleRenderer } from './battle/battleRenderer';
 import type { BattleRound } from './battle/battleData';
 import { WindowHost } from './ui/WindowHost';
-import { LiveToolbar } from './ui/LiveToolbar';
+import { MainScreenHud } from './ui/hud/MainScreenHud';
 import { openWindow, pushPopup, popPopup } from './ui/windowStore';
 import { InfoPopup } from './ui/Popup';
 import { parseOutsideAlert } from './data/outsideAlertData';
@@ -1243,8 +1244,6 @@ const TEST_LOCAL_ARTEFACTS = new Map<string, LocalArtefact>([
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
 app.innerHTML = '';
-app.style.width = '900px';
-app.style.height = '400px';
 
 const params = new URLSearchParams(location.search);
 const wantsLive = params.has('live');
@@ -1253,12 +1252,24 @@ const login = import.meta.env.VITE_TEST_LOGIN as string | undefined;
 const pass = import.meta.env.VITE_TEST_PASS as string | undefined;
 const uiid = import.meta.env.VITE_TEST_UIID as string | undefined;
 
+// Главный экран (docs/main_screen.md §4) — карта на весь вьюпорт, без
+// прокрутки страницы. Для изолированных `?screen=`-тестов (окна поверх
+// произвольного фона) размер #app не важен — оставлен прежним
+// компактным, чтобы не менять поведение уже устоявшихся скриншот-тестов.
+if (wantsLive && !screen) {
+  app.style.width = '100vw';
+  app.style.height = '100vh';
+} else {
+  app.style.width = '900px';
+  app.style.height = '400px';
+}
+
 async function main() {
   const uiRoot = document.querySelector<HTMLDivElement>('#ui-root')!;
   render(
     <>
       <WindowHost />
-      <LiveToolbar />
+      {wantsLive && !screen && <MainScreenHud />}
     </>,
     uiRoot,
   );

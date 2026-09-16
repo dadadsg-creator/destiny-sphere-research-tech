@@ -13,7 +13,8 @@ import { handleResponse, type DispatchContext } from './protocol/dispatch';
 import { tag } from './protocol/xmlBuilder';
 import type { MapRenderer } from './map/renderer';
 import { raceFromNumber } from './map/buildingTypes';
-import { liveToolbarActions } from './ui/liveToolbarStore';
+import { buildNavigateCommand } from './world/colonyNavigateData';
+import { hudActions } from './ui/hud/hudActionsStore';
 
 export async function runLiveApp(renderer: MapRenderer, login: string, pass: string, uiid: string): Promise<void> {
   // baseUrl='' — запросы идут на текущий origin (localhost), прокси Vite
@@ -78,9 +79,8 @@ export async function runLiveApp(renderer: MapRenderer, login: string, pass: str
   const marks = await session.sendCommand('<load locations="3"/>');
   handleResponse(marks, ctx);
 
-  // Точки входа, явно включённые в первый проход "Сшивания" (план, §5) в
-  // дополнение к клику по карте. Настоящего статус-бара с графикой
-  // оригинала ещё нет — временные кнопки, см. ui/LiveToolbar.tsx.
+  // Точки входа главного экрана, не привязанные к клику по карте
+  // (docs/main_screen.md — верхняя навигация + круговое меню).
   //
   // Почта — подтверждённый формат `reqvestdata.as:380-388` (get_mail):
   // `<getbuildmenu tab="MessageOverview" type="in|out"/>`, БЕЗ `c` (почта
@@ -105,10 +105,17 @@ export async function runLiveApp(renderer: MapRenderer, login: string, pass: str
   // `cabinet`/`CabinetWindow.tsx` (Фаза 3) технически рабочий (сверен по
   // коду), но на обычном сайте, судя по всему, мёртвый путь — не удалён
   // (не в объёме этого исправления), просто не вызывается отсюда.
-  liveToolbarActions.value = {
+  hudActions.value = {
     openMail: () => void ctx.send(tag('getbuildmenu', { tab: 'MessageOverview', type: 'in' })),
     openCabinet: () => window.open('https://destinysphere.ru/ds/user_cabinet.php', '_blank'),
     openComplex: () => void ctx.send(tag('complexview', { direction: 'HOME', ring: '', complexnum: '' })),
     openColonies: () => void ctx.send(tag('getbuildmenu', { tab: 'ColonyNavigatePanel' })),
+    // "Домой"/"Центр" кругового меню — тот же `<navigate cell="1"
+    // dest="..."/>`, что уже подтверждён для перехода на другую свою соту
+    // (colonyNavigateData.ts), просто с константным dest вместо RING.COMPLEX.COMB.
+    navigateHome: () => void ctx.send(tag('navigate', buildNavigateCommand('HOME'))),
+    navigateCentral: () => void ctx.send(tag('navigate', buildNavigateCommand('CENTRAL'))),
+    // "Обновить" в центре кругового меню — та же команда первичной загрузки, что и вход в мир.
+    refresh: () => void ctx.send('<load locations="3"/>'),
   };
 }
