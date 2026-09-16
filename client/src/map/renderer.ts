@@ -132,6 +132,28 @@ function centralGround(cell: EnvCell): string {
   return distanceToEdge < CELL_WEIGHT_H * 2.2 ? 'E_FIELD' : 'FROG';
 }
 
+function cellKey(x: number, y: number): string {
+  return `${Math.round(x)},${Math.round(y)}`;
+}
+
+/**
+ * Смещения 6 соседей ячейки, в том же порядке, что рёбра
+ * `hexPolygonPoints()` (ребро i — между вершинами i и i+1, направлено
+ * ровно к соседу с тем же индексом ниже) — владелец, 2026-09-16: "между
+ * ячейками вообще не должно быть границ, только между сотами". Поэтому
+ * граница рисуется НЕ по всему контуру ячейки, а только по тем рёбрам,
+ * где сосед принадлежит ДРУГОЙ зоне (или это главная сота, или там
+ * вообще ничего нет) — см. `renderEnvironment()`.
+ */
+const NEIGHBOR_OFFSETS: { dx: number; dy: number }[] = [
+  { dx: CELL_WEIGHT_H, dy: -1.5 * CELL_WEIGHT_V },
+  { dx: 2 * CELL_WEIGHT_H, dy: 0 },
+  { dx: CELL_WEIGHT_H, dy: 1.5 * CELL_WEIGHT_V },
+  { dx: -CELL_WEIGHT_H, dy: 1.5 * CELL_WEIGHT_V },
+  { dx: -2 * CELL_WEIGHT_H, dy: 0 },
+  { dx: -CELL_WEIGHT_H, dy: -1.5 * CELL_WEIGHT_V },
+];
+
 export class MapRenderer {
   readonly app: Application;
   readonly worldLayer: Container;
@@ -301,12 +323,13 @@ export class MapRenderer {
 
     // Плоская заливка — камень/грунт/песок (боковые зоны) и пустыня
     // (нижняя зона), один Graphics на всё кольцо (см. докстринг выше —
-    // текстуры+маски на такое количество ячеек роняли WebGL).
+    // текстуры+маски на такое количество ячеек роняли WebGL). БЕЗ
+    // обводки здесь — контур ячейки сам по себе не граница, см. ниже.
     const flat = new Graphics();
     for (const cell of flatCells) {
       const absPoints = hexPoints.map((v, i) => (i % 2 === 0 ? v + cell.x : v + cell.y));
       const fillName = zoneFor(cell) === 'desert' ? 'DESERT' : sideGround(cell);
-      flat.poly(absPoints).fill(ENV_FILL[fillName]).stroke({ width: 1, color: 0x0b1220, alpha: 0.85 });
+      flat.poly(absPoints).fill(ENV_FILL[fillName]);
     }
     this.envLayer.addChild(flat);
 
@@ -320,7 +343,6 @@ export class MapRenderer {
         { alias: 'FROG', src: '/assets/ground/FROG.png' },
         { alias: 'E_FIELD', src: '/assets/ground/E_FIELD.png' },
       ]);
-      const outline = new Graphics();
       for (const cell of centralCells) {
         const mask = new Graphics().poly(hexPoints).fill(0xffffff);
         mask.x = cell.x;
@@ -334,12 +356,41 @@ export class MapRenderer {
         sprite.height = 26;
         sprite.mask = mask;
         this.envLayer.addChild(sprite);
-
-        const absPoints = hexPoints.map((v, i) => (i % 2 === 0 ? v + cell.x : v + cell.y));
-        outline.poly(absPoints).stroke({ width: 1, color: 0x0b1220, alpha: 0.85 });
       }
-      this.envLayer.addChild(outline);
     }
+
+    // Границы — ТОЛЬКО между разными сотами (владелец, дословно: "между
+    // ячейками вообще не должно быть границ, только между сотами"), не
+    // по контуру каждой ячейки. Для каждой ячейки кольца проверяем все
+    // 6 соседних позиций: если сосед — главная сота или другая зона (или
+    // там вообще ничего нет), рисуем ИМЕННО ЭТО ребро; если сосед той же
+    // зоны — ребро остаётся без обводки, зона читается одним сплошным
+    // пятном. Один общий Graphics, каждое ребро — отдельный moveTo/lineTo,
+    // общий .stroke() в конце.
+    const mainKeys = new Set(buildHexGrid().map((c) => cellKey(c.x, c.y)));
+    const ringZoneByKey = new Map(ring.map((c) => [cellKey(c.x, c.y), zoneFor(c)]));
+    const regionOf = (x: number, y: number): EnvZone | 'main' | null => {
+      const key = cellKey(x, y);
+      if (mainKeys.has(key)) return 'main';
+      return ringZoneByKey.get(key) ?? null;
+    };
+
+    const border = new Graphics();
+    for (const cell of ring) {
+      const zone = zoneFor(cell);
+      for (let e = 0; e < 6; e++) {
+        const nb = NEIGHBOR_OFFSETS[e];
+        const neighborRegion = regionOf(cell.x + nb.dx, cell.y + nb.dy);
+        if (neighborRegion === null || neighborRegion === zone) continue;
+        const p1 = e * 2;
+        const p2 = ((e + 1) % 6) * 2;
+        border
+          .moveTo(hexPoints[p1] + cell.x, hexPoints[p1 + 1] + cell.y)
+          .lineTo(hexPoints[p2] + cell.x, hexPoints[p2 + 1] + cell.y);
+      }
+    }
+    border.stroke({ width: 1, color: 0x0b1220, alpha: 0.85 });
+    this.envLayer.addChild(border);
   }
 
   /**
