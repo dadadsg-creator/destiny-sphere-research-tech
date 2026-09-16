@@ -348,6 +348,112 @@ body {
   box-shadow: 0 0 16px rgba(40, 184, 255, 0.5);
 }
 
+/* §9 — панель выбранного здания. Обёртка без pointer-events, чтобы
+   пустая (здание не выбрано) не перехватывала клики по карте — сама
+   панель включает их обратно только когда реально показана. */
+.ds-hud-right {
+  position: absolute;
+  right: 0;
+  top: 106px;
+  /* Ниже кругового меню (190px + отступ) не заходит — иначе панель
+     здания перекрывает RadialMenu.tsx целиком в правом нижнем углу. */
+  bottom: 220px;
+  pointer-events: none;
+  display: flex;
+  justify-content: flex-end;
+}
+.ds-hud-buildpanel {
+  pointer-events: auto;
+  width: 280px;
+  max-width: 90vw;
+  overflow-y: auto;
+  background: rgba(7, 20, 43, 0.94);
+  border: 1px solid var(--hud-border);
+  border-radius: 8px 0 0 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.35);
+}
+.ds-hud-buildpanel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.ds-hud-buildpanel__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: bold;
+}
+.ds-hud-buildpanel__close {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  background: var(--hud-bg2);
+  border: 1px solid var(--hud-border);
+  border-radius: 4px;
+  color: var(--hud-text2);
+  cursor: pointer;
+}
+.ds-hud-buildpanel__machine {
+  font-size: 12px;
+  color: var(--hud-text2);
+  margin-top: -6px;
+}
+.ds-hud-buildpanel__image-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0;
+}
+.ds-hud-buildpanel__image {
+  max-width: 100%;
+  max-height: 140px;
+  object-fit: contain;
+}
+.ds-hud-buildpanel__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  gap: 8px;
+}
+.ds-hud-buildpanel__row--stack {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+.ds-hud-buildpanel__label {
+  color: var(--hud-text2);
+  font-size: 12px;
+}
+.ds-hud-buildpanel__progress {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.ds-hud-buildpanel__progress-bar {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.ds-hud-buildpanel__progress-fill {
+  height: 100%;
+  background: var(--hud-active);
+  transition: width 200ms;
+}
+.ds-hud-buildpanel__progress-text {
+  font-size: 12px;
+  color: var(--hud-text2);
+}
+.ds-hud-buildpanel__loading {
+  font-size: 12px;
+  color: var(--hud-text2);
+  font-style: italic;
+}
+
 .ds-hud-error-block {
   background: rgba(239, 83, 80, 0.15);
   border: 1px solid var(--hud-error);

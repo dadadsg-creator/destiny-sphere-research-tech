@@ -36,6 +36,19 @@ export class MapRenderer {
    * способ найти "экранную позицию ячейки num" снаружи рендерера.
    */
   readonly groundSprites: Sprite[] = [];
+  /**
+   * Последний известный `BuildRecord` по `num` ячейки — снапшот на
+   * момент последнего `renderBuildings()`. Нужен панели выбранного
+   * здания (`ui/hud/BuildingPanel.tsx`, docs/main_screen.md §9): имя,
+   * картинка, состояние и процент готовности уже есть в этих данных
+   * ДО ответа `getbuildinfo` — не нужно ждать сервер, чтобы показать
+   * базовые поля панели сразу по клику.
+   */
+  private buildRecords = new Map<number, BuildRecord>();
+
+  getBuildRecord(num: number): BuildRecord | undefined {
+    return this.buildRecords.get(num);
+  }
 
   private constructor(app: Application) {
     this.app = app;
@@ -175,6 +188,7 @@ export class MapRenderer {
     // табом ("AllowBuildings" вместо "BuildingInfo"). Единственный
     // надёжный признак "пусто" — буквальный id_building=0 (NO_BUILDING).
     this.occupiedCells = new Set(records.filter((r) => r.id !== 0).map((r) => r.num));
+    this.buildRecords = new Map(records.map((r) => [r.num, r]));
 
     const cells = buildHexGrid();
     const toLoad = new Map<string, string>();

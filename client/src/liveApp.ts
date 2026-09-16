@@ -15,6 +15,7 @@ import type { MapRenderer } from './map/renderer';
 import { raceFromNumber } from './map/buildingTypes';
 import { buildNavigateCommand } from './world/colonyNavigateData';
 import { hudActions } from './ui/hud/hudActionsStore';
+import { selectedBuilding } from './ui/hud/selectedBuildingStore';
 
 export async function runLiveApp(renderer: MapRenderer, login: string, pass: string, uiid: string): Promise<void> {
   // baseUrl='' — запросы идут на текущий origin (localhost), прокси Vite
@@ -66,6 +67,16 @@ export async function runLiveApp(renderer: MapRenderer, login: string, pass: str
   // догадка по аналогии с занятой ячейкой, которая как раз ломала запрос.
   renderer.onCellClick = (num, hasBuilding) => {
     ctx.activeCell = String(num + 1);
+    // Панель здания (docs/main_screen.md §9) — имя/картинка/состояние/
+    // процент готовности уже известны из последнего <build> (кэш в
+    // MapRenderer), показываем сразу, не дожидаясь ответа сервера;
+    // `actions`/`info` (стоимость апгрейда, кнопки) допишет
+    // renderBuildInfo() в dispatch.tsx, когда придёт getbuildinfo.
+    // Клик по пустой ячейке снимает выбор — соответствует "снятие
+    // выбора со здания" (§17, список нужных событий).
+    selectedBuilding.value = hasBuilding
+      ? { cellNum: num, record: renderer.getBuildRecord(num) ?? null, info: null, actions: null, race: ctx.race }
+      : null;
     void session
       .sendCommand(tag('getbuildmenu', { c: ctx.activeCell, tab: hasBuilding ? 'BuildingInfo' : undefined }))
       .then((marks) => {

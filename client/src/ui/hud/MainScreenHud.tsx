@@ -7,11 +7,9 @@
  * панели по отдельности (`pointer-events:auto`) — иначе прозрачные
  * промежутки между панелями блокировали бы клики по карте под ними.
  *
- * Сознательно НЕ реализовано в этом проходе (см. переписку с владельцем):
- * панель выбранного здания (§9 ТЗ) — по клику на постройку по-прежнему
- * открывается существующее модальное `BuildInfoWindow` (см.
- * `protocol/dispatch.tsx`), а не отдельная пристыкованная панель
- * справа — самый крупный из оставшихся пунктов ТЗ, отдельный проход.
+ * Панель выбранного здания (§9 ТЗ) — докнутая справа (BuildingPanel.tsx),
+ * заменила модальное открытие BuildInfoWindow для живой сессии (модалка
+ * осталась для `?screen=build-info`).
  */
 import { useState } from 'preact/hooks';
 import { ResourceBar } from './ResourceBar';
@@ -19,6 +17,7 @@ import { MainNav } from './MainNav';
 import { PopulationPanel } from './PopulationPanel';
 import { BottomBar } from './BottomBar';
 import { RadialMenu } from './RadialMenu';
+import { BuildingPanel } from './BuildingPanel';
 import { HudErrorBoundary } from './HudErrorBoundary';
 import { hudActions } from './hudActionsStore';
 
@@ -47,6 +46,12 @@ export function MainScreenHud() {
       <div class="ds-hud-radial-wrap">
         <HudErrorBoundary label="Круговое меню">
           <RadialMenu />
+        </HudErrorBoundary>
+      </div>
+
+      <div class="ds-hud-right">
+        <HudErrorBoundary label="Панель здания">
+          <BuildingPanel />
         </HudErrorBoundary>
       </div>
 

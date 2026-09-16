@@ -50,7 +50,7 @@ import { AdviceWindow } from '../settings/AdviceWindow';
 import { parseAdviceHint, buildGetNubHelpCommand } from '../settings/adviceData';
 import { openWindow, closeWindow, pushPopup, popPopup } from '../ui/windowStore';
 import { InfoPopup } from '../ui/Popup';
-import { BuildInfoWindow } from '../buildings/BuildInfoWindow';
+import { selectedBuilding, type SelectedBuildingActions } from '../ui/hud/selectedBuildingStore';
 import { parseInfoBuild } from '../buildings/buildInfoData';
 import {
   tag,
@@ -263,28 +263,35 @@ function buildInfoActionCommand(actionTag: string, cellNum: string): string {
   return tag(actionTag, { c: cellNum });
 }
 
-function renderBuildInfo(root: Element, xml: string, ctx: DispatchContext): void {
+function renderBuildInfo(_root: Element, xml: string, ctx: DispatchContext): void {
   const cellNum = ctx.activeCell;
   if (cellNum === undefined) return;
   const data = parseInfoBuild(xml);
   const act = (actionTag: string) => () => {
     void ctx.send(buildInfoActionCommand(actionTag, cellNum));
   };
-  openWindow(
-    <BuildInfoWindow
-      data={data}
-      tabs={parseTabsArray(root)}
-      onTabClick={(tabId) => sendTabClick(ctx, tabId)}
-      onClose={closeWindow}
-      onCancelBuild={act('cancelbuild')}
-      onDemolish={act('delbuild')}
-      onCancelUpgrade={act('cancelupgrade')}
-      onActivate={act('activatebuild')}
-      onCancelActivate={act('cancelactivate')}
-      onDeactivate={act('deactivatebuild')}
-      onUpgrade={act('upgradebuild')}
-    />,
-  );
+  const actions: SelectedBuildingActions = {
+    onCancelBuild: act('cancelbuild'),
+    onDemolish: act('delbuild'),
+    onCancelUpgrade: act('cancelupgrade'),
+    onActivate: act('activatebuild'),
+    onCancelActivate: act('cancelactivate'),
+    onDeactivate: act('deactivatebuild'),
+    onUpgrade: act('upgradebuild'),
+  };
+  // Панель здания (docs/main_screen.md §9) — докнутая справа панель в
+  // главном экране, не модалка (см. ui/hud/BuildingPanel.tsx и
+  // селектор selectedBuildingStore.ts). `record` уже был выставлен
+  // оптимистично по клику (liveApp.ts) — здесь только дополняем его
+  // данными `getbuildinfo`, не перезаписываем целиком, чтобы не
+  // потерять `record`, если по какой-то причине он ещё не пришёл.
+  selectedBuilding.value = {
+    cellNum: Number(cellNum) - 1,
+    record: selectedBuilding.value?.record ?? ctx.renderer.getBuildRecord(Number(cellNum) - 1) ?? null,
+    info: data,
+    actions,
+    race: selectedBuilding.value?.race ?? ctx.race,
+  };
 }
 
 /** buildArtefactData.ts:81 — <attachartefact c="" id=""/> / <detachartefact c="" id=""/>. */

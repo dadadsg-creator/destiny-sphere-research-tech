@@ -4,15 +4,26 @@
  * docs/client-economy-social-ui.md §1.8), портировано 1:1 из
  * `xmlparsers.as:2629-2732` (`ParseInfoBuild`).
  *
- * <getbuildinfo un="" destr="" up="" activate="" ia="" ac="" deact=""
- *               upgrade="" ...прочие поля состояния здания...>
+ * <getbuildinfo bid="" un="" destr="" up="" activate="" ia="" ac="" deact=""
+ *               upgrade="" enddate="" ...прочие поля состояния здания...>
  *   <upgradedata id_next_build="" allow="0|1" kad="" nano="" stat=""
  *                food="" prod="" time="" work="" sctarg="" sccur=""/>
- *   <tu K="" N="" S="" F="" P=""/>   (добавляемые ресурсы — не установлено точно "tu"/"tp" как аббревиатуры)
- *   <tp K="" N="" S="" F="" P=""/>   (снимаемые ресурсы)
+ *   <tu K="" N="" S="" F="" P=""/>   TURN_UPKEEP — потребление за ход
+ *   <tp K="" N="" S="" F="" P=""/>   TURN_PRODUCTION — производство за ход (с учётом бонусов артефактов)
  *   <bo ctype="" gtype=""/>          (разрешённые сочетания тип-ячейки/тип-грунта, повторяется)
  *   <MSG id="" titl="" head="" txt="" desc="" avail="" status=""/>  (повторяется, ключ — id)
  * </getbuildinfo>
+ *
+ * `tu`/`tp` — раньше в этом файле были перепутаны местами ("добавляемые"/
+ * "снимаемые", без уверенности в расшифровке аббревиатур). Найдено и
+ * исправлено 2026-09-16 по серверному источнику
+ * (`PN_BuildingInfo.class.php:534-549` строит `<tu>` СРАЗУ после запроса
+ * `att.typename = 'TURN_UPKEEP'`, `:598-603` строит `<tp>` сразу после
+ * запроса продукции/бонусов — однозначно, не декомпиляция клиента).
+ * `bid` — числовой id постройки (`game.getLocalNames(bid)` в
+ * `buildinfo.as:28-35` — ключ каталога `loaddata`, тот же, что
+ * `LocalBuilding.id` в `data/localData.ts`). `enddate` — дата завершения
+ * текущего действия (стройка/апгрейд/деактивация), строка, формат сервера.
  *
  * Кнопки-действия по полям корня (буквальная таблица из доклада,
  * подтверждена реальными вызовами buildinfo.as:162-305):
@@ -81,11 +92,15 @@ export interface BuildInfoMessage {
 export interface BuildInfoData {
   /** Сырые атрибуты корня — un/destr/up/activate/ia/ac/deact/upgrade и прочие поля состояния, см. таблицу выше. */
   info: Record<string, string>;
+  /** `bid` — числовой id постройки, ключ каталога `loaddata` (`LocalData.buildings`). `null`, если сервер почему-то не прислал (не должно случаться на практике). */
+  buildingId: number | null;
+  /** `enddate` — дата завершения текущего действия (стройка/апгрейд/деактивация), как прислал сервер, без парсинга в Date (формат не документирован отдельно). */
+  endDate: string | null;
   upgrade: UpgradeData | null;
-  /** <tu> — добавляемые при постройке ресурсы (K/N/S/F/P, "0" если сервер не прислал). */
-  added: Record<'K' | 'N' | 'S' | 'F' | 'P', string>;
-  /** <tp> — снимаемые (например при сносе) ресурсы. */
-  removed: Record<'K' | 'N' | 'S' | 'F' | 'P', string>;
+  /** <tp> TURN_PRODUCTION — производство за ход (K/N/S/F/P, "0" если сервер не прислал). */
+  production: Record<'K' | 'N' | 'S' | 'F' | 'P', string>;
+  /** <tu> TURN_UPKEEP — потребление за ход. */
+  upkeep: Record<'K' | 'N' | 'S' | 'F' | 'P', string>;
   allowGround: AllowGround[];
   messages: Record<string, BuildInfoMessage>;
 }
@@ -103,8 +118,8 @@ export function parseInfoBuild(xml: string): BuildInfoData {
   for (const attr of Array.from(root.attributes)) info[attr.name] = attr.value;
 
   let upgrade: UpgradeData | null = null;
-  const added: Record<string, string> = {};
-  const removed: Record<string, string> = {};
+  const upkeep: Record<string, string> = {};
+  const production: Record<string, string> = {};
   const allowGround: AllowGround[] = [];
   const messages: Record<string, BuildInfoMessage> = {};
 
@@ -124,9 +139,9 @@ export function parseInfoBuild(xml: string): BuildInfoData {
         sccur: el.getAttribute('sccur'),
       };
     } else if (el.nodeName === 'tu') {
-      for (const key of RES_KEYS) added[key] = el.getAttribute(key) ?? '0';
+      for (const key of RES_KEYS) upkeep[key] = el.getAttribute(key) ?? '0';
     } else if (el.nodeName === 'tp') {
-      for (const key of RES_KEYS) removed[key] = el.getAttribute(key) ?? '0';
+      for (const key of RES_KEYS) production[key] = el.getAttribute(key) ?? '0';
     } else if (el.nodeName === 'bo') {
       allowGround.push({ ctype: el.getAttribute('ctype'), gtype: el.getAttribute('gtype') });
     } else if (el.nodeName === 'MSG') {
@@ -144,15 +159,19 @@ export function parseInfoBuild(xml: string): BuildInfoData {
   }
 
   for (const key of RES_KEYS) {
-    if (added[key] === undefined) added[key] = '0';
-    if (removed[key] === undefined) removed[key] = '0';
+    if (upkeep[key] === undefined) upkeep[key] = '0';
+    if (production[key] === undefined) production[key] = '0';
   }
+
+  const bidAttr = root.getAttribute('bid');
 
   return {
     info,
+    buildingId: bidAttr !== null && bidAttr !== '' ? Number(bidAttr) : null,
+    endDate: root.getAttribute('enddate'),
     upgrade,
-    added: added as BuildInfoData['added'],
-    removed: removed as BuildInfoData['removed'],
+    production: production as BuildInfoData['production'],
+    upkeep: upkeep as BuildInfoData['upkeep'],
     allowGround,
     messages,
   };

@@ -607,6 +607,8 @@ const TEST_BUILD_MENU_RACE: Race = 'bio';
 // Синтетические данные для проверки BuildInfoWindow (?screen=build-info).
 const TEST_BUILD_INFO: BuildInfoData = {
   info: { destr: '1', deact: '1', upgrade: '1' },
+  buildingId: 2,
+  endDate: null,
   upgrade: {
     idNextBuild: '40',
     allow: true,
@@ -620,8 +622,8 @@ const TEST_BUILD_INFO: BuildInfoData = {
     sctarg: null,
     sccur: null,
   },
-  added: { K: '0', N: '0', S: '0', F: '0', P: '0' },
-  removed: { K: '0', N: '0', S: '0', F: '0', P: '0' },
+  production: { K: '0', N: '0', S: '0', F: '0', P: '0' },
+  upkeep: { K: '0', N: '0', S: '0', F: '0', P: '0' },
   allowGround: [],
   messages: {},
 };
