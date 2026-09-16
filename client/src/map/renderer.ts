@@ -106,21 +106,30 @@ const ENV_FILL: Record<string, number> = {
   SOIL: 0x4a3f30,
   DESERT: 0x8a7040,
 };
+const CENTRAL_ZONE_HALF_WIDTH = mapPixelSize().width * 0.3;
 type EnvZone = 'central' | 'side' | 'desert';
 function zoneFor(cell: EnvCell): EnvZone {
   if (cell.dy >= 0) return 'desert';
-  // 0.22 не спорно охватывал сами "врата" — владелец отметил на
-  // скриншоте ещё 2 ячейки чуть дальше от центра, которые визуально
-  // должны быть тёмно-серыми (как E_FIELD), а не камнем/песком; порог
-  // расширен, чтобы их накрыло centralGround().
-  return Math.abs(cell.dx) < mapPixelSize().width * 0.3 ? 'central' : 'side';
+  return Math.abs(cell.dx) < CENTRAL_ZONE_HALF_WIDTH ? 'central' : 'side';
 }
 function sideGround(cell: EnvCell): string {
   const bucket = Math.round((cell.x + cell.y) / CELL_WEIGHT_H) % 3;
   return ['ROCK', 'SOIL', 'DESERT'][(bucket + 3) % 3];
 }
+/**
+ * ИСПРАВЛЕНО (2026-09-16): владелец отметил на скриншоте ровно те
+ * ячейки, что стоят на ГРАНИЦЕ central/side-зон, и попросил сделать их
+ * "тем же цветом, что разделитель" — т.е. `E_FIELD` (по названию и
+ * смыслу это и есть "граница между секторами", см.
+ * `docs/client-map-and-grid.md` §6). Прошлая версия раскидывала
+ * `E_FIELD` почти случайно по всей central-зоне (`num%11===0`) — не по
+ * границе, поэтому конкретные отмеченные ячейки оставались `FROG`.
+ * Теперь `E_FIELD` — ровно у внешнего края central-зоны (в пределах
+ * ~2 ширин ячейки от порога `zoneFor`), `FROG` — внутри, у самих врат.
+ */
 function centralGround(cell: EnvCell): string {
-  return Math.round((cell.x + cell.y) / CELL_WEIGHT_H) % 11 === 0 ? 'E_FIELD' : 'FROG';
+  const distanceToEdge = CENTRAL_ZONE_HALF_WIDTH - Math.abs(cell.dx);
+  return distanceToEdge < CELL_WEIGHT_H * 2.2 ? 'E_FIELD' : 'FROG';
 }
 
 export class MapRenderer {
