@@ -565,8 +565,8 @@
 }
 
 /* world/ComplexViewWindow.tsx — полноэкранный каркас (НЕ стандартный
-   ui/Window). Четвёртая итерация (2026-09-16, полировка читаемости и
-   атмосферы по второму развёрнутому UX-разбору владельца) — структура
+   ui/Window). Пятая итерация (2026-09-16, качество/масштаб конкретных
+   элементов по третьему развёрнутому UX-разбору владельца) — структура
    не менялась (карта слева / сайдбар справа / легенда / навигация
    тремя блоками), см. докстринг файла. */
 .ds-complex-screen {
@@ -630,8 +630,8 @@
   background: #0e1a3a;
   border: 1px solid #223260;
   border-radius: 7px;
-  padding: 8px 13px;
-  font-size: 13px;
+  padding: 11px 14px;
+  font-size: 14px;
 }
 .ds-complex-nav__label {
   color: #8fa3d6;
@@ -662,6 +662,13 @@
 }
 .ds-popup__btn--primary:hover {
   background: #4a73d8;
+}
+/* Кнопки навигации — крупнее общего .ds-popup__btn (владелец: "поля и
+   кнопки выглядят как элементы старого интерфейса"), только в этом
+   экране — не трогаем общий класс, используемый по всему порту. */
+.ds-complex-nav__group .ds-popup__btn {
+  padding: 9px 18px;
+  font-size: 13px;
 }
 
 /* Легенда — крупнее (+20%), у врат подложка-индикатор состояния (сама
@@ -697,25 +704,8 @@
   height: 16px;
   background: #223260;
 }
-.ds-complex-legend__gatewrap {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-}
-.ds-complex-legend__gatewrap--open {
-  background: radial-gradient(circle, rgba(111, 214, 255, 0.5) 0%, rgba(111, 214, 255, 0) 75%);
-}
-.ds-complex-legend__gatewrap--closed {
-  background: rgba(140, 150, 180, 0.3);
-  border: 1px solid rgba(128, 146, 200, 0.5);
-}
-.ds-complex-legend__icon {
-  width: 16px;
-  height: 21px;
-  object-fit: contain;
+.ds-complex-legend__gateicon {
+  flex-shrink: 0;
 }
 
 .ds-complex-screen__main {
@@ -756,30 +746,37 @@
 .ds-complex-hex--active .ds-complex-hex__active-ring {
   filter: drop-shadow(0 0 6px #4fc3ff) drop-shadow(0 0 12px #4fc3ff);
 }
-/* Разбитые врата (_WRECK, gate=0) — исходные растровые ассеты FFDec
-   отличаются от целых слишком тонко на мелком масштабе, поэтому
-   состояние усилено явно: приглушение + обесцвечивание (плюс
-   подложка-диск в разметке самого гекса и в легенде). */
-.ds-complex-gate--closed {
-  opacity: 0.8;
-  filter: grayscale(0.55) brightness(1.15);
+/* Векторное кольцо врат (ComplexViewWindow.tsx, GateGlyph) — открытое
+   светится, закрытое — просто приглушённый пунктир, обе версии
+   идеально чёткие на любом масштабе (см. докстринг файла про отказ от
+   растровых GATE_*/_WRECK ради этого). */
+.ds-complex-gate-glyph--open {
+  filter: drop-shadow(0 0 4px #4fc3ff) drop-shadow(0 0 8px rgba(79, 195, 255, 0.6));
+}
+.ds-complex-gate-glyph--closed {
+  opacity: 0.85;
+}
+.ds-complex-status-dot {
+  filter: drop-shadow(0 0 3px currentColor);
 }
 
-/* Подпись сектора на карте — непрозрачная плашка, вынесена наружу от
-   гекса (не поверх врат/герба). */
+/* Подпись сектора — план владельца буквально: номер сверху, герб+имя
+   строкой, статус ворот компактной точкой в углу плашки. Одна
+   непрозрачная подложка на всё (без текстуры под ней). */
 .ds-complex-hex__label {
   box-sizing: border-box;
+  position: relative;
   width: 100%;
   height: 100%;
-  background: rgba(6, 14, 34, 0.75);
+  background: rgba(6, 14, 34, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 5px;
-  padding: 3px 6px;
+  border-radius: 6px;
+  padding: 4px 8px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1px;
+  gap: 2px;
   pointer-events: none;
   text-align: center;
 }
@@ -787,14 +784,44 @@
   font-size: 10px;
   color: #9db0e0;
 }
+.ds-complex-hex__namerow {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 100%;
+}
+.ds-complex-hex__emblem {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  border-radius: 3px;
+}
 .ds-complex-hex__name {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: bold;
   color: #f2f5ff;
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+/* Компактный статус ворот — в углу плашки, тот же язык (свечение/пунктир), что и GateGlyph на карте и .ds-complex-side-card__gatetag в сайдбаре. */
+.ds-complex-hex__gatedot {
+  position: absolute;
+  right: 6px;
+  bottom: 5px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1.5px dashed #7683ad;
+  flex-shrink: 0;
+}
+.ds-complex-hex__gatedot--open {
+  border-style: solid;
+  border-color: #4fc3ff;
+  background: #4fc3ff;
+  box-shadow: 0 0 4px #4fc3ff;
 }
 
 /* Сайдбар — единая базовая высота строки у всех 6 слотов; подробности
@@ -824,8 +851,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
-  min-height: 22px;
+  font-size: 13px;
+  min-height: 24px;
 }
 .ds-complex-side-card__owner-dot {
   flex-shrink: 0;
@@ -835,31 +862,52 @@
 }
 .ds-complex-side-card__name {
   font-weight: bold;
-  font-size: 14px;
+  font-size: 15px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .ds-complex-side-card__addr {
   flex: 1;
-  color: #8fa3d6;
-  font-size: 11px;
+  color: #9fb0dc;
+  font-size: 12px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .ds-complex-side-card__free {
   font-style: italic;
-  font-size: 12px;
+  font-size: 13px;
 }
+/* Статус ворот — не только текст (низкий контраст), но и маленький светящийся/пунктирный индикатор рядом, тот же язык, что у GateGlyph на карте. */
 .ds-complex-side-card__gatetag {
   flex-shrink: 0;
-  font-size: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
   color: #7fd8ff;
   white-space: nowrap;
 }
+.ds-complex-side-card__gatetag .ds-complex-hex__gatedot {
+  position: static;
+}
 .ds-complex-side-card__gatetag--closed {
-  color: #6a7396;
+  color: #8b96c0;
+}
+.ds-complex-side-card__mail-compact {
+  flex-shrink: 0;
+  background: #33447a;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.ds-complex-side-card__mail-compact:hover {
+  background: #44579a;
 }
 
 .ds-complex-side-card__expand {
@@ -868,7 +916,7 @@
   margin-top: 8px;
   padding-top: 8px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
-  font-size: 11px;
+  font-size: 12px;
   color: #cfd8f5;
 }
 .ds-complex-side-card__avatar {
@@ -894,7 +942,7 @@
 }
 .ds-complex-side-card__combname {
   color: #b7c2e6;
-  font-size: 11px;
+  font-size: 12px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -913,8 +961,8 @@
   color: #fff;
   border: none;
   border-radius: 4px;
-  padding: 5px 10px;
-  font-size: 11px;
+  padding: 6px 11px;
+  font-size: 12px;
   cursor: pointer;
 }
 .ds-complex-side-card__mail:hover {

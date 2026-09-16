@@ -2,48 +2,51 @@
  * Экран «Обзор комплекса» — `fillComplex()` (`sota.as:1013-1300+`).
  * Данные — complexViewData.ts.
  *
- * ЧЕТВЁРТАЯ переделка в этой сессии (2026-09-16) — полировка по второму
- * развёрнутому разбору владельца. Структура (карта слева / список
- * карточек справа / легенда / перегруппированная навигация) сохранена
- * без изменений — владелец её одобрил ("уже рабочий интерфейс"),
- * менялась только читаемость/масштаб/атмосфера:
+ * ПЯТАЯ переделка в этой сессии (2026-09-16) — по третьему развёрнутому
+ * разбору владельца, узко про качество/масштаб конкретных элементов
+ * (структура снова не менялась):
  *
- * - `viewBox` карты подогнан ВПЛОТНУЮ к реальным границам контента
- *   (раньше 900×600 при фактическом содержимом ~640×285 — лишние
- *   ~300px "мёртвого" поля в системе координат ужимали видимый размер
- *   гекс-цветка при подгонке под контейнер, отсюда "карта занимает
- *   четверть области"). Теперь 720×350 — почти без запаса.
- * - Подсветка ВЫБОРА отделена от пунктира "свободно": раньше обе
- *   использовали белый пунктир — смешивались смыслы. Теперь выбор —
- *   отдельное сплошное голубое свечение (`filter:drop-shadow`) поверх
- *   обычной (уже не белой) рамки владения; строка в сайдбаре при
- *   выборе получает собственный акцентный фон+рамку, не просто тонкую
- *   обводку.
- * - Аватар-квадрат на гексе убран (visually "случайный") — на карте
- *   остались только: врата (крупнее, по центру, главный визуальный
- *   элемент сектора — важно для геймплея) и компактный герб альянса
- *   (маленький, только если есть альянс). Портрет/ник — в сайдбаре.
- * - Легенда крупнее (+20% шрифт/иконки), у врат в легенде и на карте
- *   добавлена подложка-индикатор (голубое свечение под открытыми,
- *   тусклый диск под закрытыми) — растровая разница open/wreck сама по
- *   себе слишком тонкая, подложка даёт однозначный сигнал состояния.
- * - Сайдбар — единая базовая высота строки для всех 6 слотов (было
- *   "карточки крупные, свободные — узкие"), подробности разворачиваются
- *   только у ВЫБРАННОГО слота (accordion), а не показаны все разом —
- *   меньше визуального шума в базовом состоянии.
- * - Немного игровой атмосферы возвращено: свечение хаба, глубина теней
- *   на гексах, акцентная кнопка "Перейти".
+ * - **Врата перерисованы как векторная SVG-графика вместо растровых
+ *   `GATE_*`/`GATE_*_WRECK` PNG.** Причина прямая: исходные ассеты из
+ *   `complex_lib.swf` — крошечные растры (~23×30, FFDec-экспорт
+ *   плоского превью символа), при увеличении до нужного на экране
+ *   размера растягивались ~2.4× и давали заметную пикселизацию —
+ *   ровно то, на что владелец указал ("простое увеличение старых Flash
+ *   изображений даёт заметную пикселизацию"). Векторная замена не
+ *   размывается ни при каком масштабе и вдобавок делает состояние
+ *   открыто/закрыто однозначным без сравнения двух похожих растров:
+ *   открытые — голубое кольцо+свечение+заполненное ядро, закрытые —
+ *   серое ПУНКТИРНОЕ кольцо без свечения (кольцо разорвано физически,
+ *   не только цветом). Растровые `GATE_*` PNG остались в
+ *   `public/assets/complex/` неиспользуемыми в этом файле — на случай
+ *   будущего апскейла набора графики (см. TODO в docs), не удалены.
+ * - Размер врат уменьшен (диаметр кольца ~44 против прежних 56×74).
+ * - **Герб (портрет расы) вернулся, но не на гекс, а В ПОДПИСЬ**, рядом
+ *   с именем — маленький (18px), нигде не увеличивается сверх
+ *   нативного размера ассета (60×60), поэтому не размывается.
+ * - Плашка подписи переработана под макет, буквально описанный
+ *   владельцем: сверху — номер сектора (мелко), затем герб+имя одной
+ *   строкой, в углу плашки — компактный статус ворот (точка-индикатор).
+ * - Одна из "прозрачных прослоек" убрана: грунтовая текстура на гексах
+ *   и соединительные линии хаб→сектор — оба источника лишнего
+ *   визуального шума ("тёмная полоса на секторах" — это и была линия,
+ *   которая просвечивала сквозь полупрозрачную заливку гекса) — сняты
+ *   полностью. Осталась одна заливка цветом владения + один контур.
+ * - Легенда приведена в соответствие содержимому: ★ рейтинг и ✦ премиум
+ *   не показывались нигде, кроме раскрытой карточки (где они и так
+ *   подписаны словами) — убраны из легенды как отдельные пункты.
+ * - Статус "врата открыты/закрыты" в сайдбаре — рядом с текстом теперь
+ *   маленький светящийся/пунктирный индикатор (та же графика, что и на
+ *   карте), а не только текст низкого контраста.
+ * - Кнопка письма продублирована компактной иконкой в базовой
+ *   (свёрнутой) строке сайдбара — не только в развёрнутой карточке.
+ * - "Домой" — убран непонятный эмодзи-домик, осталась только подпись.
+ * - Шрифт в сайдбаре/навигации увеличен (+2px по большинству строк),
+ *   поля/кнопки навигации — выше (padding увеличен).
  *
- * Сознательно НЕ сделано (см. фидбэк): тонкая светящаяся линия от
- * выбранной карточки в сайдбаре до сектора на карте — карточка живёт
- * в обычном HTML-потоке сайдбара, а сектор в независимой системе
- * координат SVG; линия через границу DOM/SVG требует постоянного
- * пересчёта экранных координат обоих концов (ResizeObserver/rAF) ради
- * декоративного эффекта — вместо этого связь подчёркнута совпадающей
- * яркой подсветкой на обеих сторонах одновременно (см. `active` ниже).
+ * Сознательно НЕ сделано: см. предыдущую версию про светящуюся линию
+ * карточка↔сектор (тот же компромисс в силе).
  *
- * Врата/портал-оверлей/приоритет статусов — без изменений с прошлой
- * версии, см. `sota.as:1486-1533`, комментарии на местах ниже.
  * Графика — `public/assets/complex/` (извлечена из `complex_lib.swf`).
  * VK-профиль/кнопки не портированы — см. memory
  * remaster_vk_integration_rebuild.
@@ -83,45 +86,21 @@ const SLOT_DIRECTIONS: Array<{ x: number; y: number }> = [
   { x: -H, y: -1.5 * V },
 ];
 
-const RACE_GATE_KEY: Record<string, 'TECH' | 'BIO' | 'PSI'> = { '1': 'TECH', '2': 'BIO', '3': 'PSI' };
-
-function gateAssetUrl(race: string | null, open: boolean): string {
-  const key = RACE_GATE_KEY[race ?? '1'] ?? 'TECH';
-  return `/assets/complex/GATE_${key}${open ? '' : '_WRECK'}.png`;
-}
-
 const RACE_LOGO: Record<string, string> = {
   '1': '/assets/complex/VORAN_LOGO_DEF.png',
   '2': '/assets/complex/LIENSU_LOGO_DEF.png',
   '3': '/assets/complex/PSOLAO_LOGO_DEF.png',
 };
 
-/** Приоритет портал-оверлея — sota.as:1491-1513, каждая проверка перекрывает предыдущую (npc "побеждает" всех). Только при открытых воротах. */
-function portalOverlay(comb: ComplexViewComb): { url: string; title: string } | null {
+/** Приоритет статуса — sota.as:1491-1513 (каждая проверка перекрывает предыдущую, npc "побеждает" всех). `null` — обычные открытые/закрытые врата без особого статуса, отдельный значок не нужен (сам факт открыт/закрыт уже показан кольцом). */
+function specialStatus(comb: ComplexViewComb): { color: string; title: string } | null {
   if (!comb.gateOpen) return null;
-  let type = 'OPEN';
-  let title = 'Врата открыты';
-  if (comb.banned) {
-    type = 'BAN';
-    title = 'Игрок забанен';
-  }
-  if (comb.frozen) {
-    type = 'FREEZE';
-    title = 'Заморожен / отпуск';
-  }
-  if (comb.godModeMs !== null) {
-    type = 'GODPRO';
-    title = 'Защита богов (новичок)';
-  }
-  if (comb.captured) {
-    type = 'CAPTURED';
-    title = 'Захвачена';
-  }
-  if (comb.npc) {
-    type = 'NPC';
-    title = 'NPC';
-  }
-  return { url: `/assets/complex/PORTAL_${type}.png`, title };
+  if (comb.npc) return { color: '#9aa4c8', title: 'NPC' };
+  if (comb.captured) return { color: '#ff9933', title: 'Захвачена' };
+  if (comb.godModeMs !== null) return { color: '#ffcc33', title: 'Защита богов (новичок)' };
+  if (comb.frozen) return { color: '#4fc3ff', title: 'Заморожен / отпуск' };
+  if (comb.banned) return { color: '#ff5555', title: 'Игрок забанен' };
+  return null;
 }
 
 type Ownership = 'home' | 'ally' | 'other' | 'empty';
@@ -140,6 +119,30 @@ const OWNER_COLOR: Record<Ownership, string> = {
   empty: '#5c72b0',
 };
 
+/** Векторное кольцо врат — см. докстринг файла про отказ от растровых GATE_-иконок (обычной и _WRECK, пикселизация при увеличении). r=22 ⇒ диаметр 44, примерно на треть меньше прежних растровых 56×74. */
+function GateGlyph({ cx, cy, open }: { cx: number; cy: number; open: boolean }) {
+  if (open) {
+    return (
+      <g class="ds-complex-gate-glyph ds-complex-gate-glyph--open">
+        <circle cx={cx} cy={cy} r={22} fill="none" stroke="#4fc3ff" stroke-width={5} />
+        <circle cx={cx} cy={cy} r={9} fill="#4fc3ff" opacity={0.55} />
+      </g>
+    );
+  }
+  return (
+    <circle
+      cx={cx}
+      cy={cy}
+      r={20}
+      fill="none"
+      stroke="#7683ad"
+      stroke-width={3.5}
+      stroke-dasharray="7 6"
+      class="ds-complex-gate-glyph ds-complex-gate-glyph--closed"
+    />
+  );
+}
+
 export function ComplexViewWindow({ data, onClose, onNavigate, onWriteMail }: ComplexViewWindowProps) {
   const [ring, setRing] = useState(data.rings.find((r) => r.ln === data.ringName)?.id ?? data.rings[0]?.id ?? '');
   const [complexNum, setComplexNum] = useState(data.complexNumber);
@@ -154,8 +157,6 @@ export function ComplexViewWindow({ data, onClose, onNavigate, onWriteMail }: Co
     sideRefs.current[num]?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   }
 
-  // viewBox подогнан вплотную к реальным границам контента (гекс-цветок
-  // + подписи-плашки на mult=1.35) — см. докстринг выше.
   const sceneW = 720;
   const sceneH = 350;
   const originX = sceneW / 2;
@@ -203,7 +204,7 @@ export function ComplexViewWindow({ data, onClose, onNavigate, onWriteMail }: Co
           </button>
           <span class="ds-complex-nav__spacer" />
           <button type="button" class="ds-popup__btn" onClick={() => onNavigate({ direction: 'HOME' })}>
-            ⌂ Домой
+            Домой
           </button>
           <span class="ds-complex-nav__spacer" />
           <button type="button" class="ds-popup__btn" onClick={() => onNavigate({ direction: 'RIGHT' })}>
@@ -226,18 +227,17 @@ export function ComplexViewWindow({ data, onClose, onNavigate, onWriteMail }: Co
           <span class="ds-complex-legend__swatch ds-complex-legend__swatch--empty" /> Свободно
         </span>
         <span class="ds-complex-legend__sep" />
-        <span class="ds-complex-legend__item">★ рейтинг</span>
-        <span class="ds-complex-legend__item">✦ премиум</span>
         <span class="ds-complex-legend__item">
-          <span class="ds-complex-legend__gatewrap ds-complex-legend__gatewrap--open">
-            <img src="/assets/complex/GATE_TECH.png" class="ds-complex-legend__icon" alt="" />
-          </span>
+          <svg width="18" height="18" viewBox="-11 -11 22 22" class="ds-complex-legend__gateicon">
+            <circle cx={0} cy={0} r={7} fill="none" stroke="#4fc3ff" stroke-width={3} />
+            <circle cx={0} cy={0} r={2.8} fill="#4fc3ff" opacity={0.55} />
+          </svg>
           врата открыты
         </span>
         <span class="ds-complex-legend__item">
-          <span class="ds-complex-legend__gatewrap ds-complex-legend__gatewrap--closed">
-            <img src="/assets/complex/GATE_TECH_WRECK.png" class="ds-complex-legend__icon ds-complex-gate--closed" alt="" />
-          </span>
+          <svg width="18" height="18" viewBox="-11 -11 22 22" class="ds-complex-legend__gateicon">
+            <circle cx={0} cy={0} r={7} fill="none" stroke="#7683ad" stroke-width={2.5} stroke-dasharray="3 2.5" />
+          </svg>
           врата закрыты
         </span>
       </div>
@@ -246,9 +246,6 @@ export function ComplexViewWindow({ data, onClose, onNavigate, onWriteMail }: Co
         <div class="ds-complex-scene">
           <svg width="100%" height="100%" viewBox={`0 0 ${sceneW} ${sceneH}`} preserveAspectRatio="xMidYMid meet">
             <defs>
-              <pattern id="ds-complex-ground" patternUnits="userSpaceOnUse" width="96" height="96">
-                <image href="/assets/complex/GROUND_TEXTURE.jpg" width="96" height="96" />
-              </pattern>
               <radialGradient id="ds-complex-hub-glow" cx="50%" cy="50%" r="50%">
                 <stop offset="0%" stop-color="#6fd6ff" stop-opacity={0.45} />
                 <stop offset="100%" stop-color="#6fd6ff" stop-opacity="0" />
@@ -256,11 +253,6 @@ export function ComplexViewWindow({ data, onClose, onNavigate, onWriteMail }: Co
             </defs>
 
             <g transform={`translate(${originX},${originY})`}>
-              {/* Линии-переходы хаб → сектор — видна структура связи, не набор несвязанных гексов. */}
-              {SLOT_DIRECTIONS.map((dir, i) => (
-                <line key={i} x1={0} y1={0} x2={dir.x} y2={dir.y} stroke="#2a3a66" stroke-width={3} opacity={0.6} />
-              ))}
-
               <circle cx={0} cy={0} r={H * 1.5} fill="url(#ds-complex-hub-glow)" />
               <polygon points={hexPoints(0, 0)} fill="#111a35" stroke="#4a5d9a" stroke-width={2} />
               <text x={0} y={5} text-anchor="middle" font-size="15" font-weight="bold" fill="#d3ddfa">
@@ -275,13 +267,12 @@ export function ComplexViewWindow({ data, onClose, onNavigate, onWriteMail }: Co
                 const occ = ownership(comb);
                 const active = selected === num || hovered === num;
                 const gateOpen = comb?.gateOpen ?? false;
-                const gateUrl = gateAssetUrl(comb?.race ?? null, gateOpen);
-                const overlay = comb ? portalOverlay(comb) : null;
+                const status = comb ? specialStatus(comb) : null;
 
                 const labelX = cx * 1.35;
                 const labelY = cy * 1.35;
-                const labelW = 120;
-                const labelH = 36;
+                const labelW = 128;
+                const labelH = 40;
 
                 return (
                   <g
@@ -292,8 +283,11 @@ export function ComplexViewWindow({ data, onClose, onNavigate, onWriteMail }: Co
                     onMouseLeave={() => setHovered((h) => (h === num ? null : h))}
                     style={{ cursor: 'pointer' }}
                   >
-                    <polygon points={hexPoints(cx, cy)} fill={OWNER_COLOR[occ]} opacity={occ === 'empty' ? 0.32 : 0.58} />
-                    <polygon points={hexPoints(cx, cy)} fill="url(#ds-complex-ground)" opacity={occ === 'empty' ? 0.3 : 0.2} />
+                    {/* Одна заливка цветом владения + один контур — без
+                        текстуры и без соединительных линий (обе были лишним
+                        визуальным шумом, вторая ещё и просвечивала сквозь
+                        полупрозрачную заливку тёмной полосой). */}
+                    <polygon points={hexPoints(cx, cy)} fill={OWNER_COLOR[occ]} opacity={occ === 'empty' ? 0.3 : 0.5} />
                     <polygon
                       points={hexPoints(cx, cy)}
                       fill="none"
@@ -301,54 +295,29 @@ export function ComplexViewWindow({ data, onClose, onNavigate, onWriteMail }: Co
                       stroke-width={2}
                       stroke-dasharray={occ === 'empty' ? '6 4' : undefined}
                     />
-                    {/* Подсветка ВЫБОРА — отдельный сплошной контур поверх, не путается с пунктиром "свободно". */}
                     {active && (
                       <polygon points={hexPoints(cx, cy)} fill="none" stroke="#4fc3ff" stroke-width={4} class="ds-complex-hex__active-ring" />
                     )}
 
-                    {/* Врата — главный визуальный элемент сектора (важны для
-                        геймплея), крупные, по центру. Подложка под открытыми —
-                        светлое голубое свечение (контраст с тёмной сотой);
-                        под закрытыми — светло-серый диск с ободком, НЕ тёмный:
-                        сама по себе разница ассетов open/_WRECK слишком тонкая
-                        (см. докстринг файла), тёмная подложка на тёмном фоне
-                        делала закрытые врата на свободных секторах почти
-                        невидимыми — ровно то, на что владелец и указал. */}
-                    {gateOpen ? (
-                      <circle cx={cx} cy={cy} r={32} fill="#2f7fae" opacity={0.55} />
-                    ) : (
-                      <circle cx={cx} cy={cy} r={32} fill="#5c6a9c" opacity={0.35} stroke="#8092c8" stroke-width={1.5} />
-                    )}
-                    <g class={gateOpen ? undefined : 'ds-complex-gate--closed'}>
-                      <image href={gateUrl} x={cx - 28} y={cy - 38} width={56} height={74} />
-                    </g>
-                    {overlay && (
-                      <g>
-                        <circle cx={cx} cy={cy - 30} r={11} fill="#0b1730" opacity={0.75} />
-                        <image href={overlay.url} x={cx - 9} y={cy - 39} width={18} height={18} />
-                      </g>
-                    )}
-                    {comb?.newbee && (
-                      <image href="/assets/complex/NEWBEE.png" x={cx - 42} y={cy - 54} width={20} height={16} />
-                    )}
-                    {/* Компактный маркер владельца — герб альянса, только если есть. Без него — просто цвет+врата, без лишних картинок. */}
-                    {comb?.allianceTag && (
-                      <image
-                        href={comb.allianceIconUrl || '/assets/complex/ALLIANCE_LOGO_DEF.png'}
-                        x={cx - 11}
-                        y={cy + 24}
-                        width={22}
-                        height={22}
-                      />
-                    )}
+                    <GateGlyph cx={cx} cy={cy} open={gateOpen} />
+                    {status && <circle cx={cx + 17} cy={cy - 17} r={5} fill={status.color} class="ds-complex-status-dot" />}
 
-                    {/* Подпись — на непрозрачной плашке, вынесена наружу от гекса, не прямо на текстуре. */}
+                    {/* Подпись — макет по запросу владельца: номер сверху,
+                        герб+имя одной строкой, статус ворот компактной
+                        точкой в углу плашки. */}
                     <foreignObject x={labelX - labelW / 2} y={labelY - labelH / 2} width={labelW} height={labelH}>
                       <div class="ds-complex-hex__label">
                         <span class="ds-complex-hex__addr">
                           {data.ringName}.{data.complexNumber}.{num}
                         </span>
-                        <span class="ds-complex-hex__name">{comb?.userName ?? 'свободно'}</span>
+                        <span class="ds-complex-hex__namerow">
+                          {comb?.race && RACE_LOGO[comb.race] && <img class="ds-complex-hex__emblem" src={RACE_LOGO[comb.race]} alt="" />}
+                          <span class="ds-complex-hex__name">{comb?.userName ?? 'Свободно'}</span>
+                        </span>
+                        <span
+                          class={`ds-complex-hex__gatedot${gateOpen ? ' ds-complex-hex__gatedot--open' : ''}`}
+                          title={gateOpen ? 'Врата открыты' : 'Врата закрыты'}
+                        />
                       </div>
                     </foreignObject>
                   </g>
@@ -364,7 +333,7 @@ export function ComplexViewWindow({ data, onClose, onNavigate, onWriteMail }: Co
             const occ = ownership(comb);
             const active = selected === num || hovered === num;
             const open = selected === num;
-            const overlay = comb ? portalOverlay(comb) : null;
+            const status = comb ? specialStatus(comb) : null;
 
             if (occ === 'empty') {
               return (
@@ -382,9 +351,7 @@ export function ComplexViewWindow({ data, onClose, onNavigate, onWriteMail }: Co
                     </span>
                     <span class="ds-complex-side-card__free">Свободно</span>
                   </div>
-                  {open && (
-                    <div class="ds-complex-side-card__expand">Сектор свободен — пока никем не заселён.</div>
-                  )}
+                  {open && <div class="ds-complex-side-card__expand">Сектор свободен — пока никем не заселён.</div>}
                 </div>
               );
             }
@@ -407,8 +374,20 @@ export function ComplexViewWindow({ data, onClose, onNavigate, onWriteMail }: Co
                     {data.ringName}.{data.complexNumber}.{num}
                   </span>
                   <span class={`ds-complex-side-card__gatetag${comb2.gateOpen ? '' : ' ds-complex-side-card__gatetag--closed'}`}>
-                    {comb2.gateOpen ? 'врата открыты' : 'врата закрыты'}
+                    <span class={`ds-complex-hex__gatedot${comb2.gateOpen ? ' ds-complex-hex__gatedot--open' : ''}`} />
+                    {comb2.gateOpen ? 'открыты' : 'закрыты'}
                   </span>
+                  <button
+                    type="button"
+                    class="ds-complex-side-card__mail-compact"
+                    title="Написать игроку"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onWriteMail(comb2.userName!);
+                    }}
+                  >
+                    ✉
+                  </button>
                 </div>
                 {open && (
                   <div class="ds-complex-side-card__expand">
@@ -426,7 +405,7 @@ export function ComplexViewWindow({ data, onClose, onNavigate, onWriteMail }: Co
                             ✦ премиум
                           </span>
                         )}
-                        {overlay && overlay.title !== 'Врата открыты' && <span title={overlay.title}>{overlay.title}</span>}
+                        {status && <span title={status.title}>{status.title}</span>}
                       </div>
                       <button
                         type="button"
