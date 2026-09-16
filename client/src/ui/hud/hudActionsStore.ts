@@ -22,8 +22,10 @@ export interface HudActions {
   navigateHome: () => void;
   /** `<navigate cell="1" dest="CENTRAL"/>` — центральный слой соты. */
   navigateCentral: () => void;
-  /** Перезапрос текущего состояния — тот же `<load locations="3"/>`, что и при первом входе. */
-  refresh: () => void;
+  /** `<navigate cell="1" dest="NEUTRAL"/>` — нейтральный слой соты (пятый сектор кругового меню оригинала). */
+  navigateNeutral: () => void;
+  /** Перезапрос текущего состояния — тот же `<load locations="3"/>`, что и при первом входе. Promise — центр кругового меню показывает индикатор загрузки, пока запрос летит. */
+  refresh: () => Promise<void>;
 }
 
 export const hudActions = signal<HudActions | null>(null);

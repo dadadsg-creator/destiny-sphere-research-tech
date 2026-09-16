@@ -25,14 +25,15 @@ export async function runLiveApp(renderer: MapRenderer, login: string, pass: str
   const session = new GameSession({ baseUrl: '' });
 
   // Безопасная зона карты (docs/main_screen.md §8) — держать синхронно с
-  // фактическими размерами панелей в ui/hud/hud.css (resbar 48 + nav 46,
-  // bottombar 60, правая панель здания 280 — константы здесь НЕ читаются
-  // из CSS автоматически, единственный источник совпадения — этот
-  // комментарий, аналогично остальным местам в порте, где JS-константы
-  // сверяются с CSS вручную). Правая зона зарезервирована ВСЕГДА, даже
-  // когда панель здания закрыта — иначе карта меняла бы масштаб при
-  // каждом открытии/закрытии панели.
-  renderer.setSafeAreaInsets({ top: 100, bottom: 70, right: 300 });
+  // фактическими размерами панелей в ui/hud/hud.css (resbar 48 + nav 46
+  // = верхний отступ; bottombar 60 + явный зазор 20px, запрошенный
+  // владельцем, = нижний). Правая панель здания больше НЕ резервируется
+  // (владелец, 2026-09-16: "справа много пустого места… правый край
+  // может частично заходить под область правой панели, пока она
+  // закрыта") — она уже непрозрачная накладка поверх готового канваса,
+  // а не часть безопасной зоны; открытие/закрытие панели не вызывает
+  // `fitToViewport()`, поэтому масштаб карты и правда не меняется.
+  renderer.setSafeAreaInsets({ top: 92, bottom: 80 });
 
   // Подсветка выбранной ячейки (docs/main_screen.md §9) — реактивно на
   // изменение selectedBuilding, а не отдельными ручными вызовами на
@@ -159,12 +160,19 @@ export async function runLiveApp(renderer: MapRenderer, login: string, pass: str
     openCabinet: () => window.open('https://destinysphere.ru/ds/user_cabinet.php', '_blank'),
     openComplex: () => void ctx.send(tag('complexview', { direction: 'HOME', ring: '', complexnum: '' })),
     openColonies: () => void ctx.send(tag('getbuildmenu', { tab: 'ColonyNavigatePanel' })),
-    // "Домой"/"Центр" кругового меню — тот же `<navigate cell="1"
-    // dest="..."/>`, что уже подтверждён для перехода на другую свою соту
-    // (colonyNavigateData.ts), просто с константным dest вместо RING.COMPLEX.COMB.
+    // "Домой"/"Центр"/"Нейтрал" кругового меню — тот же `<navigate
+    // cell="1" dest="..."/>`, что уже подтверждён для перехода на
+    // другую свою соту (colonyNavigateData.ts, `dest` документирован
+    // как "HOME"/"CENTRAL"/"NEUTRAL"/"RING.COMPLEX.COMB"), просто с
+    // константным dest вместо координат другой соты.
     navigateHome: () => void ctx.send(tag('navigate', buildNavigateCommand('HOME'))),
     navigateCentral: () => void ctx.send(tag('navigate', buildNavigateCommand('CENTRAL'))),
-    // "Обновить" в центре кругового меню — та же команда первичной загрузки, что и вход в мир.
-    refresh: () => void ctx.send('<load locations="3"/>'),
+    navigateNeutral: () => void ctx.send(tag('navigate', buildNavigateCommand('NEUTRAL'))),
+    // "Обновить" в центре кругового меню — та же команда первичной
+    // загрузки, что и вход в мир. Возвращает Promise (не void) — центр
+    // кругового меню показывает индикатор загрузки, пока запрос летит
+    // (docs/main_screen.md: "во время обновления вместо текста —
+    // круговой индикатор"), ему нужно дождаться реального ответа.
+    refresh: () => ctx.send('<load locations="3"/>'),
   };
 }

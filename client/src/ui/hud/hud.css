@@ -301,87 +301,110 @@ body {
   color: var(--hud-text2);
 }
 
-/* §11 — круговое меню. */
+/* §11 — круговое меню. Вторая версия (2026-09-16), полная переделка по
+   детальному разбору владельца — единый SVG вместо пяти отдельных
+   кругов, см. докстринг RadialMenu.tsx. Прижато вплотную к правому
+   краю и к верху нижней панели (без зазора) — "визуально соединено с
+   рамкой интерфейса", не плавающий отдельно элемент. */
 .ds-hud-radial-wrap {
   position: absolute;
-  right: 16px;
-  bottom: 70px;
+  right: 0;
+  bottom: 60px;
   pointer-events: auto;
 }
-.ds-hud-radial {
-  position: relative;
-  width: 190px;
-  height: 190px;
+.ds-hud-radial2 svg {
+  display: block;
+  overflow: visible;
 }
-/* Обводка/подписи кругового меню были слишком тёмными и терялись рядом
-   с панелью здания (владелец, 2026-09-16) — контур и текст заметно
-   светлее, плюс лёгкая тень для отделения от фона карты. */
-.ds-hud-radial__ring {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  border: 2px solid rgba(159, 178, 212, 0.55);
-  background: radial-gradient(circle, rgba(13, 30, 61, 0.9) 0%, rgba(7, 20, 43, 0.9) 80%);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+/* Корпус-подложка позади колеса — угловая панель того же цвета, что и
+   остальные панели HUD, с скруглением только со стороны карты (левый
+   верхний угол), к правому/нижнему краю экрана заходит вплотную. */
+.ds-hud-radial2__housing {
+  fill: rgba(10, 23, 48, 0.94);
+  stroke: var(--hud-border);
+  stroke-width: 1;
 }
-.ds-hud-radial__btn {
-  position: absolute;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: var(--hud-bg2);
-  border: 2px solid rgba(159, 178, 212, 0.6);
-  color: var(--hud-text);
+
+.ds-hud-radial2__sector path {
+  fill: #16233f;
+  stroke: transparent;
+  stroke-width: 2;
+  transition: fill 150ms, stroke 150ms, filter 150ms;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.ds-hud-radial2__sector text {
+  fill: var(--hud-text);
   font-size: 12px;
   font-weight: 600;
+  pointer-events: none;
+  user-select: none;
+}
+.ds-hud-radial2__sector {
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
-  transition: background-color 180ms, color 180ms, box-shadow 180ms;
 }
-.ds-hud-radial__btn:hover {
-  color: var(--hud-text);
-  border-color: var(--hud-active);
+/* Наведение — голубая подсветка по краю сектора (владелец, дословно). */
+.ds-hud-radial2__sector:hover path {
+  stroke: var(--hud-active);
+  filter: drop-shadow(0 0 4px rgba(40, 184, 255, 0.6));
 }
-.ds-hud-radial__btn--active {
-  color: var(--hud-text);
-  border-color: var(--hud-active);
-  box-shadow: 0 0 12px rgba(40, 184, 255, 0.55);
+/* Нажатие — темнее и "уходит внутрь" (лёгкое уменьшение). */
+.ds-hud-radial2__sector--pressed path {
+  fill: #0d1730;
+  transform: scale(0.97);
 }
-.ds-hud-radial__btn--n {
-  top: 0;
-  left: 50%;
-  transform: translate(-50%, 0);
+/* Активный раздел — синяя заливка + яркая внутренняя обводка. */
+.ds-hud-radial2__sector--active path {
+  fill: rgba(40, 184, 255, 0.35);
+  stroke: var(--hud-active);
+  stroke-width: 2.5;
 }
-.ds-hud-radial__btn--e {
-  top: 50%;
-  right: 0;
-  transform: translate(0, -50%);
+.ds-hud-radial2__sector--active text {
+  font-weight: 700;
 }
-.ds-hud-radial__btn--s {
-  bottom: 0;
-  left: 50%;
-  transform: translate(-50%, 0);
+/* Недоступный раздел — притушен + значок замка (ни один из пяти сейчас
+   таким не является, все подключены — состояние на будущее). */
+.ds-hud-radial2__sector--locked path {
+  fill: #0e1524;
 }
-.ds-hud-radial__btn--w {
-  top: 50%;
-  left: 0;
-  transform: translate(0, -50%);
+.ds-hud-radial2__sector--locked text {
+  fill: var(--hud-text2);
 }
-.ds-hud-radial__center {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
-  background: var(--hud-active);
-  border: none;
-  color: #04101f;
-  font-size: 12px;
-  font-weight: bold;
+.ds-hud-radial2__sector--locked {
+  cursor: default;
+}
+.ds-hud-radial2__lock {
+  font-size: 9px;
+}
+
+.ds-hud-radial2__center {
   cursor: pointer;
-  box-shadow: 0 0 16px rgba(40, 184, 255, 0.5);
+}
+.ds-hud-radial2__center circle {
+  transition: filter 200ms;
+}
+.ds-hud-radial2__center:hover circle {
+  filter: url(#ds-radial-glow) brightness(1.15);
+}
+.ds-hud-radial2__center-label {
+  fill: #eaf6ff;
+  font-size: 13px;
+  font-weight: 700;
+  pointer-events: none;
+  user-select: none;
+}
+.ds-hud-radial2__spinner {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ds-hud-radial-spin 900ms linear infinite;
+}
+@keyframes ds-hud-radial-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* §9 — панель выбранного здания. Обёртка без pointer-events, чтобы
@@ -430,15 +453,21 @@ body {
   font-size: 16px;
   font-weight: bold;
 }
+/* 36x36 — минимальная область нажатия (владелец: "крестик маленький"; тот же порог, что и §15 ТЗ для сенсорных экранов, 44x44 — здесь чуть компактнее, но всё равно заметно больше прежних 28px). */
 .ds-hud-buildpanel__close {
   flex-shrink: 0;
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   background: var(--hud-bg2);
   border: 1px solid var(--hud-border);
   border-radius: 4px;
   color: var(--hud-text2);
+  font-size: 16px;
   cursor: pointer;
+}
+.ds-hud-buildpanel__close:hover {
+  background: var(--hud-border);
+  color: var(--hud-text);
 }
 /* Иконка+тип+ячейка одной строкой (владелец: "иконка теряется в
    большом пустом блоке, поставить рядом с названием и номером клетки"). */
@@ -447,10 +476,11 @@ body {
   align-items: flex-start;
   gap: 12px;
 }
+/* +20% от прежних 80px (владелец: "внутри рамки остаётся много воздуха"). */
 .ds-hud-buildpanel__image-wrap {
   flex-shrink: 0;
-  width: 80px;
-  height: 80px;
+  width: 96px;
+  height: 96px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -544,32 +574,14 @@ body {
 }
 
 @media (max-width: 1199px) {
-  /* "круговое меню заменяется компактной горизонтальной панелью" — та же разметка, просто раскладка в ряд вместо окружности. */
-  .ds-hud-radial-wrap {
-    right: 8px;
-    bottom: 66px;
-  }
-  .ds-hud-radial {
-    width: auto;
-    height: auto;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .ds-hud-radial__ring {
-    display: none;
-  }
-  .ds-hud-radial__btn {
-    position: static;
-    transform: none;
-    width: 44px;
-    height: 44px;
-  }
-  .ds-hud-radial__center {
-    position: static;
-    transform: none;
-    width: 50px;
-    height: 50px;
+  /* "круговое меню заменяется компактной горизонтальной панелью" (§11
+     ТЗ) — единый SVG-компонент второй версии не раскладывается в ряд
+     теми же средствами, что раньше (когда это были отдельные кнопки);
+     здесь — пропорциональное уменьшение вместо полной переразметки,
+     сохраняет металлический корпус/секторы, просто компактнее. */
+  .ds-hud-radial2 {
+    transform: scale(0.78);
+    transform-origin: bottom right;
   }
 }
 

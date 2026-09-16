@@ -45,8 +45,6 @@ export class MapRenderer {
    * базовые поля панели сразу по клику.
    */
   private buildRecords = new Map<number, BuildRecord>();
-  /** Спрайт постройки по `num` — нужен для подсветки выбранной ячейки (setSelectedCell), по образцу groundSprites. */
-  private buildSprites = new Map<number, Sprite>();
 
   getBuildRecord(num: number): BuildRecord | undefined {
     return this.buildRecords.get(num);
@@ -59,10 +57,23 @@ export class MapRenderer {
    * вписывал соту в ВЕСЬ канвас — верхушка центральных ворот и нижний
    * край карты оказывались ПОД непрозрачными верхней/нижней панелями
    * (сам канвас на весь экран, но не весь экран реально виден игроку).
-   * Правая панель зарезервирована ВСЕГДА (даже когда не открыта) —
-   * иначе карта менялась бы в размере при каждом открытии/закрытии
-   * панели здания, что было бы более раздражающим, чем константный
-   * отступ. Значения — из `ui/hud/hud.css` (высоты панелей).
+   *
+   * ПЕРЕСМОТРЕНО (2026-09-16, владелец: "сота стала слишком маленькой,
+   * справа/снизу много пустого места"): правая панель здания БОЛЬШЕ НЕ
+   * резервируется в этих отступах — по прямому указанию владельца
+   * ("правый край может частично заходить под область правой панели,
+   * пока панель закрыта… при открытии панели масштаб менять не нужно").
+   * Раз панель — уже непрозрачная плавающая накладка поверх канваса
+   * (не часть безопасной зоны рендера), а не часть слоя, который сам
+   * канвас обязан обходить, открытие/закрытие панели просто накладывает
+   * её поверх карты, ничего не пересчитывая (`fitToViewport()` не
+   * вызывается ни при открытии, ни при закрытии панели — только на
+   * `renderGround`/`renderBuildings`/resize/`setSafeAreaInsets`).
+   * Нижний отступ подобран под конкретное требование "нижний край соты
+   * примерно на 20px выше нижней панели" (60px высота панели + 20px
+   * зазор). Значения синхронны с `ui/hud/hud.css` вручную (как и
+   * везде в этом порте, единый источник совпадения — комментарий, не
+   * импорт).
    */
   private safeInsets = { top: 0, bottom: 0, left: 0, right: 0 };
 
@@ -72,35 +83,32 @@ export class MapRenderer {
   }
 
   private selectionGraphics: Graphics | null = null;
-  private selectedNum: number | null = null;
 
   /**
-   * Подсветка выбранной ячейки (docs/main_screen.md §4/§9 — "непонятно,
-   * какое именно здание выбрано"): голубая гекс-рамка вокруг ячейки +
-   * лёгкое осветление спрайта постройки (если есть). Вызывается из
-   * liveApp.ts реактивным эффектом на `selectedBuilding`-сигнал — этот
-   * метод сам ничего не знает о HUD/сигналах, чистая функция рендерера.
+   * Подсветка выбранной ЯЧЕЙКИ (docs/main_screen.md §4/§9). Владелец
+   * уточнил (2026-09-16): "сейчас подсвечивается только изображение
+   * здания, лучше добавить тонкую голубую рамку вокруг клетки" — рамка
+   * по факту уже рисовалась и раньше, но толстая (4px) заливка+тинт
+   * спрайта визуально сливались в одно "пятно вокруг картинки", а не
+   * читались как отдельная рамка именно ГЕКСА. Сделано тоньше (2px) и
+   * тинт спрайта убран — рамка сама по себе однозначно читается как
+   * контур ячейки, без конкурирующего эффекта на здании поверх нее.
+   * Вызывается из liveApp.ts реактивным эффектом на `selectedBuilding`-
+   * сигнал — этот метод сам ничего не знает о HUD/сигналах, чистая
+   * функция рендерера.
    */
   setSelectedCell(num: number | null): void {
-    if (this.selectedNum !== null) {
-      const prevSprite = this.buildSprites.get(this.selectedNum);
-      if (prevSprite) prevSprite.tint = 0xffffff;
-    }
     this.selectionGraphics?.destroy();
     this.selectionGraphics = null;
-    this.selectedNum = num;
     if (num === null) return;
 
     const cell = buildHexGrid()[num];
     if (!cell) return;
-    const g = new Graphics().poly(hexPolygonPoints()).stroke({ width: 4, color: 0x28b8ff, alpha: 0.95 });
+    const g = new Graphics().poly(hexPolygonPoints()).stroke({ width: 2, color: 0x28b8ff, alpha: 1 });
     g.x = cell.x;
     g.y = cell.y;
     this.worldLayer.addChild(g);
     this.selectionGraphics = g;
-
-    const sprite = this.buildSprites.get(num);
-    if (sprite) sprite.tint = 0xdcefff;
   }
 
   private constructor(app: Application) {
@@ -124,6 +132,22 @@ export class MapRenderer {
       resizeTo: parent,
       backgroundColor: 0x040d23, // тот же фон, что в ds/index.php (см. Фаза 1, живой тест)
       antialias: true,
+      // Плотность пикселей экрана (docs/main_screen.md §16, "избегать
+      // дробного масштаба... учитывать плотность пикселей") — без этого
+      // на Retina/HiDPI-экранах канвас рендерился в 1 CSS-пиксель = 1
+      // физический пиксель, и весь слой (уже отдельно смасштабированный
+      // fitToViewport()) дополнительно "размазывался" браузерным
+      // апскейлом канваса. `autoDensity` держит CSS-размер канваса
+      // прежним, реальное разрешение буфера — умноженное на
+      // devicePixelRatio (максимум 2 — выше нет смысла, только память).
+      resolution: Math.min(window.devicePixelRatio || 1, 2),
+      autoDensity: true,
+      // Округление позиций спрайтов до целого пикселя — вторая часть
+      // той же жалобы ("некоторые здания выглядят размытыми"):
+      // fitToViewport() задаёт произвольный дробный scale, из-за чего
+      // экранные координаты спрайтов почти никогда не целые — линейная
+      // фильтрация текстур размывает такие полупиксельные позиции.
+      roundPixels: true,
     });
     parent.appendChild(app.canvas);
     return new MapRenderer(app);
@@ -198,7 +222,10 @@ export class MapRenderer {
     const { top, bottom, left, right } = this.safeInsets;
     const availW = Math.max(50, this.app.screen.width - left - right);
     const availH = Math.max(50, this.app.screen.height - top - bottom);
-    const scale = Math.min((availW * 0.92) / size.width, (availH * 0.92) / size.height);
+    // 0.97, не 0.92 — небольшой отступ "для воздуха" вместо ощутимого
+    // (владелец: "увеличить примерно на 12-15%"), точный зазор снизу
+    // (20px) уже заложен прямо в safeInsets.bottom, не в этом множителе.
+    const scale = Math.min((availW * 0.97) / size.width, (availH * 0.97) / size.height);
     this.worldLayer.scale.set(scale);
     this.worldLayer.x = left + (availW - size.width * scale) / 2;
     this.worldLayer.y = top + (availH - size.height * scale) / 2;
@@ -236,11 +263,10 @@ export class MapRenderer {
    */
   async renderBuildings(records: BuildRecord[], race: Race): Promise<void> {
     this.buildLayer.removeChildren();
-    this.buildSprites.clear();
-    // Перерисовка построек не должна тихо забывать подсветку выбранной
-    // ячейки (setSelectedCell) — но сам graphics-оверлей живёт в
-    // worldLayer, не в buildLayer, переживает removeChildren() выше;
-    // просто переприменяем тинт на новый спрайт той же ячейки ниже.
+    // Подсветка выбранной ячейки (setSelectedCell) сама по себе живёт
+    // отдельным graphics-оверлеем в worldLayer, не в buildLayer —
+    // переживает removeChildren() выше без доп. кода, ничего здесь не
+    // трогает.
     // ВАЖНО (найдено 2026-09-10 живым кликом — сервер открыл getbuildinfo
     // для ячейки, которую мы считали пустой): "занятость" ячейки для
     // клика НЕ должна зависеть от того, умеем ли мы НАРИСОВАТЬ постройку
@@ -290,9 +316,7 @@ export class MapRenderer {
       const anchor = buildingAnchor(cell);
       sprite.x = anchor.x;
       sprite.y = anchor.y;
-      if (record.num === this.selectedNum) sprite.tint = 0xdcefff;
       this.buildLayer.addChild(sprite);
-      this.buildSprites.set(record.num, sprite);
 
       if (record.status === '4') {
         const badge = Sprite.from('UNACTIVE');
