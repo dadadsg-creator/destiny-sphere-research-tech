@@ -22,13 +22,14 @@ import type { BuildRecord } from './buildData';
  * автоматически совпадает с основной сеткой один-в-один, без пересчёта.
  *
  * `pick` — детерминированный (не случайный, стабилен между рендерами)
- * выбор покрытия на ячейку. Верхние три (над и по бокам — "центральная
- * сота комплекса" и "соседние соты", владелец) — смесь камня/песка/
- * нейтрального грунта ("каменное, песчаное, нейтральное покрытие",
- * дословно из ТЗ). Нижние три (под и по бокам снизу) — сплошная пустыня
- * ("продолжить поверхность пустынным покрытием"). Реальных данных этих
- * сот нет и не будет — декоративный фон, как и в оригинале (сота не
- * "висит в пустоте").
+ * выбор покрытия на ячейку. Верхние-боковые два (соседние соты) — смесь
+ * камня/песка/нейтрального грунта ("каменное, песчаное, нейтральное
+ * покрытие", дословно из ТЗ). Нижние три (под и по бокам снизу) —
+ * сплошная пустыня ("продолжить поверхность пустынным покрытием"). Сама
+ * "сота сверху" (центральная сота комплекса) рисуется ОТДЕЛЬНО, см.
+ * `ENV_CENTRAL` ниже — не через эту заливку. Реальных данных этих сот
+ * нет и не будет — декоративный фон, как и в оригинале (сота не "висит
+ * в пустоте").
  *
  * ЗАЛИВКА, НЕ ТЕКСТУРА (важно): первая попытка через `Sprite.from()` +
  * гекс-маску на ячейку (тот же приём, что в `renderGround()`) уронила
@@ -39,6 +40,8 @@ import type { BuildRecord } from './buildData';
  * Однотонная заливка того же `Graphics`, что рисует контур, устраняет
  * маски полностью (весь "цветок" соседа — один `Graphics`-объект с 217
  * залитыми+обведёнными фигурами, а не 217 масштабированных спрайтов).
+ * Единственное исключение — `ENV_CENTRAL` (один сосед, не шесть) — там
+ * настоящая текстура оправдана и безопасна, см. его докстринг.
  */
 const ENV_FILL: Record<string, number> = {
   ROCK: 0x585b62, // камень
@@ -46,13 +49,33 @@ const ENV_FILL: Record<string, number> = {
   DESERT: 0x8a7040, // песок/пустыня
 };
 const ENV_NEIGHBORS: { dx: number; dy: number; pick: (num: number) => string }[] = [
-  { dx: -24, dy: -333, pick: (num) => ['ROCK', 'SOIL', 'DESERT'][num % 3] }, // сверху — центральная сота комплекса
   { dx: -625, dy: -157, pick: (num) => ['SOIL', 'ROCK', 'DESERT'][num % 3] }, // сверху слева — соседняя сота
   { dx: 601, dy: -176, pick: (num) => ['DESERT', 'ROCK', 'SOIL'][num % 3] }, // сверху справа — соседняя сота
   { dx: 24, dy: 333, pick: () => 'DESERT' }, // снизу — пустыня
   { dx: -601, dy: 176, pick: () => 'DESERT' }, // снизу слева — пустыня
   { dx: 625, dy: 157, pick: () => 'DESERT' }, // снизу справа — пустыня
 ];
+
+/**
+ * "Сота сверху" — центральная сота комплекса (та же ячейка, что
+ * открывается кнопкой "Центр" кругового меню). Владелец прислал реальный
+ * скриншот этого вида из Flash-оригинала: почти сплошь характерная
+ * потрескавшаяся бирюзовая текстура с редкими более яркими "трещинами" —
+ * это НЕ камень/песок, а два уже существующих служебных ассета грунта,
+ * `FROG` (туман, скрывающий чужие соты комплекса) и `E_FIELD` (граница
+ * между секторами), см. `docs/client-map-and-grid.md` §6 (разбор
+ * `GB_CombCentralViewMask.class.php`+`sota.as:22`, "center_loopback —
+ * преимущественно F с редкими кластерами E/S/R"). Единственный сосед,
+ * рисуемый настоящими текстурами (не плоской заливкой, см. докстринг
+ * ENV_NEIGHBORS) — 217 доп. замаскированных спрайтов того же порядка,
+ * что и у самой главной сетки (renderGround()), это уже проверенно
+ * безопасно, в отличие от "все 6 соседей текстурами" (что и уронило
+ * WebGL при первой попытке).
+ */
+const ENV_CENTRAL = { dx: -24, dy: -333 };
+function pickCentralGround(num: number): string {
+  return num % 11 === 0 ? 'E_FIELD' : 'FROG';
+}
 
 export class MapRenderer {
   readonly app: Application;
@@ -205,16 +228,17 @@ export class MapRenderer {
     });
     parent.appendChild(app.canvas);
     const renderer = new MapRenderer(app);
-    renderer.renderEnvironment();
+    await renderer.renderEnvironment();
     return renderer;
   }
 
   /**
-   * Рисует декоративное окружение (ENV_NEIGHBORS) один раз при создании
-   * рендерера — статичный фон, не зависит от ответов сервера, поэтому не
-   * пересоздаётся на каждый `renderGround()` (в отличие от groundLayer).
+   * Рисует декоративное окружение (ENV_NEIGHBORS + ENV_CENTRAL) один раз
+   * при создании рендерера — статичный фон, не зависит от ответов
+   * сервера, поэтому не пересоздаётся на каждый `renderGround()` (в
+   * отличие от groundLayer).
    */
-  private renderEnvironment(): void {
+  private async renderEnvironment(): Promise<void> {
     const cells = buildHexGrid();
     const hexPoints = hexPolygonPoints();
 
@@ -236,6 +260,35 @@ export class MapRenderer {
       }
       this.envLayer.addChild(g);
     }
+
+    // Центральная сота комплекса ("сверху") — настоящие текстуры
+    // FROG/E_FIELD, не плоская заливка, см. докстринг ENV_CENTRAL.
+    await Assets.load([
+      { alias: 'FROG', src: '/assets/ground/FROG.png' },
+      { alias: 'E_FIELD', src: '/assets/ground/E_FIELD.png' },
+    ]);
+    const outline = new Graphics();
+    for (const cell of cells) {
+      const x = cell.x + ENV_CENTRAL.dx;
+      const y = cell.y + ENV_CENTRAL.dy;
+
+      const mask = new Graphics().poly(hexPoints).fill(0xffffff);
+      mask.x = x;
+      mask.y = y;
+      this.envLayer.addChild(mask);
+
+      const sprite = Sprite.from(pickCentralGround(cell.num));
+      sprite.x = x;
+      sprite.y = y;
+      sprite.width = 48;
+      sprite.height = 26;
+      sprite.mask = mask;
+      this.envLayer.addChild(sprite);
+
+      const absPoints = hexPoints.map((v, i) => (i % 2 === 0 ? v + x : v + y));
+      outline.poly(absPoints).stroke({ width: 1, color: 0x0b1220, alpha: 0.85 });
+    }
+    this.envLayer.addChild(outline);
   }
 
   /**
