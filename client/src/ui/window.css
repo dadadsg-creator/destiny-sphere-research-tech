@@ -565,9 +565,10 @@
 }
 
 /* world/ComplexViewWindow.tsx — полноэкранный каркас (НЕ стандартный
-   ui/Window). Третья итерация (2026-09-16, по развёрнутому UX-разбору
-   владельца): карта и список карточек — раздельные колонки
-   (.ds-complex-scene / .ds-complex-sidebar), не наложение. */
+   ui/Window). Четвёртая итерация (2026-09-16, полировка читаемости и
+   атмосферы по второму развёрнутому UX-разбору владельца) — структура
+   не менялась (карта слева / сайдбар справа / легенда / навигация
+   тремя блоками), см. докстринг файла. */
 .ds-complex-screen {
   box-sizing: border-box;
   width: 96vw;
@@ -612,26 +613,25 @@
   color: #fff;
 }
 
-/* Навигация — три явных визуальных блока (кольцо / номер+переход /
-   пред-домой-след), каждый на собственной плашке, вместо одного ряда
-   вперемешку с "случайным" разделителем. */
+/* Навигация — три явных визуальных блока, крупнее прежнего (владелец:
+   "выглядят как элементы старой веб-формы"). */
 .ds-complex-screen__nav {
   display: flex;
   align-items: stretch;
-  gap: 14px;
-  padding: 10px 22px;
+  gap: 16px;
+  padding: 12px 22px;
   border-bottom: 1px solid #1c2848;
   flex-wrap: wrap;
 }
 .ds-complex-nav__group {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 9px;
   background: #0e1a3a;
   border: 1px solid #223260;
-  border-radius: 6px;
-  padding: 6px 10px;
-  font-size: 12px;
+  border-radius: 7px;
+  padding: 8px 13px;
+  font-size: 13px;
 }
 .ds-complex-nav__label {
   color: #8fa3d6;
@@ -639,55 +639,82 @@
 }
 .ds-complex-nav__number {
   box-sizing: border-box;
-  width: 64px;
-  background: #060e22;
-  border: 1px solid #3a4d7a;
+  width: 68px;
+  background: #16264d;
+  border: 1px solid #4a5d9a;
   border-radius: 4px;
   color: #e8ecf7;
-  font-size: 13px;
-  padding: 4px 6px;
+  font-size: 14px;
+  padding: 5px 7px;
 }
 .ds-complex-nav__number:focus {
   outline: 2px solid #6f8fe0;
   outline-offset: 1px;
 }
+/* "Домой" концептуально отдельное действие от пред/след — визуальный зазор вместо одинаковых соседних кнопок. */
+.ds-complex-nav__spacer {
+  width: 10px;
+}
+.ds-popup__btn--primary {
+  background: #3a63c8;
+  border-color: #5a83e8;
+  font-weight: bold;
+}
+.ds-popup__btn--primary:hover {
+  background: #4a73d8;
+}
 
-/* Легенда — что означают цвета рамок и значки (без неё жёлтая/
-   фиолетовая рамка и ★/✦ ничем не объяснены). */
+/* Легенда — крупнее (+20%), у врат подложка-индикатор состояния (сама
+   по себе разница open/wreck-ассетов слишком тонкая на мелком масштабе). */
 .ds-complex-legend {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 4px 16px;
-  padding: 8px 22px;
-  font-size: 11px;
-  color: #b7c2e6;
+  gap: 5px 18px;
+  padding: 10px 22px;
+  font-size: 13px;
+  color: #cfd8f5;
   background: #0a1530;
   border-bottom: 1px solid #1c2848;
 }
 .ds-complex-legend__item {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   white-space: nowrap;
 }
 .ds-complex-legend__swatch {
   display: inline-block;
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
   border-radius: 3px;
 }
 .ds-complex-legend__swatch--empty {
-  border: 1px dashed #5c6a9c;
+  border: 1px dashed #8092c8;
 }
 .ds-complex-legend__sep {
   width: 1px;
-  height: 14px;
+  height: 16px;
   background: #223260;
 }
+.ds-complex-legend__gatewrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+.ds-complex-legend__gatewrap--open {
+  background: radial-gradient(circle, rgba(111, 214, 255, 0.5) 0%, rgba(111, 214, 255, 0) 75%);
+}
+.ds-complex-legend__gatewrap--closed {
+  background: rgba(140, 150, 180, 0.3);
+  border: 1px solid rgba(128, 146, 200, 0.5);
+}
 .ds-complex-legend__icon {
-  width: 14px;
-  height: 18px;
+  width: 16px;
+  height: 21px;
   object-fit: contain;
 }
 
@@ -717,25 +744,35 @@
   gap: 8px;
 }
 
+.ds-complex-hex polygon {
+  transition: filter 0.15s;
+}
 .ds-complex-hex:hover polygon {
   filter: brightness(1.2);
 }
+/* Подсветка ВЫБОРА — отдельное свечение, не пунктир (пунктир уже
+   занят под "свободно", раньше оба состояния делили белый пунктир и
+   смешивались). */
+.ds-complex-hex--active .ds-complex-hex__active-ring {
+  filter: drop-shadow(0 0 6px #4fc3ff) drop-shadow(0 0 12px #4fc3ff);
+}
 /* Разбитые врата (_WRECK, gate=0) — исходные растровые ассеты FFDec
    отличаются от целых слишком тонко на мелком масштабе, поэтому
-   состояние усилено явно: приглушение + обесцвечивание. */
+   состояние усилено явно: приглушение + обесцвечивание (плюс
+   подложка-диск в разметке самого гекса и в легенде). */
 .ds-complex-gate--closed {
-  opacity: 0.45;
-  filter: grayscale(0.6) brightness(0.7);
+  opacity: 0.8;
+  filter: grayscale(0.55) brightness(1.15);
 }
 
-/* Подпись сектора на карте — непрозрачная плашка (шумная грунтовая
-   текстура иначе съедает контраст мелкого текста). */
+/* Подпись сектора на карте — непрозрачная плашка, вынесена наружу от
+   гекса (не поверх врат/герба). */
 .ds-complex-hex__label {
   box-sizing: border-box;
   width: 100%;
   height: 100%;
-  background: rgba(6, 14, 34, 0.82);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(6, 14, 34, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 5px;
   padding: 3px 6px;
   display: flex;
@@ -760,17 +797,14 @@
   white-space: nowrap;
 }
 
-/* Карточки в боковой панели — полная информация живёт здесь, не на
-   карте, поэтому карта больше не перекрывается. */
+/* Сайдбар — единая базовая высота строки у всех 6 слотов; подробности
+   разворачиваются только у выбранного (accordion), не у всех разом. */
 .ds-complex-side-card {
   box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  gap: 10px;
   background: rgba(20, 32, 64, 0.6);
   border: 2px solid #223260;
   border-radius: 8px;
-  padding: 8px;
+  padding: 9px 10px;
   cursor: pointer;
   transition: background 0.15s, box-shadow 0.15s;
 }
@@ -778,17 +812,66 @@
   background: rgba(30, 45, 84, 0.8);
 }
 .ds-complex-side-card--active {
-  box-shadow: 0 0 0 2px #ffffff;
+  background: rgba(79, 195, 255, 0.14);
+  box-shadow: 0 0 0 2px #4fc3ff, 0 0 14px rgba(79, 195, 255, 0.45);
 }
 .ds-complex-side-card--empty {
   border-style: dashed;
-  border-color: #3a4d7a;
-  color: #5c6a9c;
+  border-color: #4a5d9a;
+  color: #8092c8;
+}
+.ds-complex-side-card__row1 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 12px;
-  justify-content: space-between;
+  min-height: 22px;
+}
+.ds-complex-side-card__owner-dot {
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.ds-complex-side-card__name {
+  font-weight: bold;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ds-complex-side-card__addr {
+  flex: 1;
+  color: #8fa3d6;
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ds-complex-side-card__free {
+  font-style: italic;
+  font-size: 12px;
+}
+.ds-complex-side-card__gatetag {
+  flex-shrink: 0;
+  font-size: 10px;
+  color: #7fd8ff;
+  white-space: nowrap;
+}
+.ds-complex-side-card__gatetag--closed {
+  color: #6a7396;
+}
+
+.ds-complex-side-card__expand {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 11px;
+  color: #cfd8f5;
 }
 .ds-complex-side-card__avatar {
-  position: relative;
   flex-shrink: 0;
   width: 52px;
   height: 52px;
@@ -802,46 +885,16 @@
   object-fit: contain;
   border-radius: 6px;
 }
-.ds-complex-side-card__alliance {
-  position: absolute;
-  right: -6px;
-  bottom: -6px;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  border: 1px solid #0b1730;
-  background: #0b1730;
-  object-fit: contain;
-}
 .ds-complex-side-card__body {
   flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 5px;
+}
+.ds-complex-side-card__combname {
+  color: #b7c2e6;
   font-size: 11px;
-}
-.ds-complex-side-card__row1 {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 6px;
-}
-.ds-complex-side-card__name {
-  font-weight: bold;
-  font-size: 14px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.ds-complex-side-card__league {
-  flex-shrink: 0;
-  color: #8fa3d6;
-  font-size: 10px;
-}
-.ds-complex-side-card__addr2 {
-  color: #8fa3d6;
-  font-size: 10px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -850,31 +903,20 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  color: #cfd8f5;
 }
 .ds-complex-side-card__premium {
   color: #ffcc33;
 }
 .ds-complex-side-card__mail {
-  flex-shrink: 0;
-  align-self: center;
+  align-self: flex-start;
   background: #33447a;
   color: #fff;
   border: none;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  font-size: 13px;
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-size: 11px;
   cursor: pointer;
 }
 .ds-complex-side-card__mail:hover {
   background: #44579a;
-}
-.ds-complex-side-card__addr {
-  font-size: 11px;
-  color: #8fa3d6;
-}
-.ds-complex-side-card__free {
-  font-size: 11px;
-  font-style: italic;
 }
