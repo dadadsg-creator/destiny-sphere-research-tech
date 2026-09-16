@@ -174,5 +174,26 @@ export async function runLiveApp(renderer: MapRenderer, login: string, pass: str
     // (docs/main_screen.md: "во время обновления вместо текста —
     // круговой индикатор"), ему нужно дождаться реального ответа.
     refresh: () => ctx.send('<load locations="3"/>'),
+    // Рейтинг/Профиль/Форум/Портал — реальные URL из `ds/address.php`
+    // (ветка "Классика" по IP сервера — тот же домен, что уже используют
+    // остальные внешние ссылки этого HUD), не команды игрового протокола.
+    // В оригинале грузятся один раз через `xmlparsers.init_interface_button`
+    // (root-тег `address`, `<links ranking=".." profile=".." forum=".."
+    // portal=".."/>`) и открываются `getURL(url, "_blank")`
+    // (`game.as:1278-1326`). "SID=SIDID" в ranking-ссылке — плейсхолдер,
+    // который в оригинале подставляет `game.getSIDIX()`; тот же самый ID
+    // подтверждён на сервере (`ds/index_queue.php:161`,
+    // `$tpl->setVariable('SIDIX', session_id())`) — то есть буквально
+    // значение PHPSESSID-куки текущей сессии, читаем его напрямую.
+    openRanking: () => window.open(`https://destinysphere.ru/ds/ranking.php?SID=${readSessionId()}`, '_blank'),
+    openProfile: () => window.open('https://destinysphere.ru/ds/index_profile.php', '_blank'),
+    openForum: () => window.open('http://forum.destinysphere.net', '_blank'),
+    openPortal: () => window.open('http://destinysphere.ru/', '_blank'),
   };
+}
+
+/** PHPSESSID текущей сессии — см. докстринг `openRanking` выше. */
+function readSessionId(): string {
+  const match = document.cookie.match(/(?:^|;\s*)PHPSESSID=([^;]+)/);
+  return match ? decodeURIComponent(match[1]) : '';
 }

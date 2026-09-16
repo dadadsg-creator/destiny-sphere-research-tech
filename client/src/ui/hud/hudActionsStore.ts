@@ -26,6 +26,19 @@ export interface HudActions {
   navigateNeutral: () => void;
   /** Перезапрос текущего состояния — тот же `<load locations="3"/>`, что и при первом входе. Promise — центр кругового меню показывает индикатор загрузки, пока запрос летит. */
   refresh: () => Promise<void>;
+  /**
+   * Внешние ссылки верхней навигации — НЕ игровой XML-протокол, а статичный
+   * `ds/address.php` (`<links ranking="…" profile="…" forum="…" portal="…"/>`,
+   * ветка "Классика" по IP сервера), который в оригинале грузится один раз
+   * через `xmlparsers.init_interface_button`/`game.init_links_button` и
+   * просто открывает `getURL(url, "_blank")`. Четыре из этих ссылок не
+   * требуют серверной команды вообще, только реальный URL — он уже известен
+   * из `ds/address.php`, выдумывать нечего.
+   */
+  openRanking: () => void;
+  openProfile: () => void;
+  openForum: () => void;
+  openPortal: () => void;
 }
 
 export const hudActions = signal<HudActions | null>(null);
