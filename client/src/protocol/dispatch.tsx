@@ -1469,13 +1469,17 @@ export function handleResponse(marks: ParsedMarks, ctx: DispatchContext): void {
  * панели, а не всплывает по центру экрана как обычное меню) — владелец
  * поправил после первой попытки (была центральная модалка): "в
  * оригинале выезжала панель с сообщениями", см. `SysMessageWindow.tsx`
- * докстринг для вёрстки этой панели.
+ * докстринг для вёрстки этой панели. `key={type}` — каждый клик по
+ * иконке пересоздаёт компонент, а не переиспользует уже смонтированный
+ * (иначе локальное состояние свёрнуто/развёрнуто сохранялось бы при
+ * переключении между типами) — открывается всегда заново свёрнутым.
  */
 export function openSysMessageLog(type: 'SYS' | 'WAR' | 'SPY', ctx: DispatchContext): void {
   const messages = type === 'WAR' ? warMessages.value : type === 'SPY' ? spyMessages.value : sysMessages.value;
   const windowName = type === 'WAR' ? 'Военные сообщения' : type === 'SPY' ? 'Шпионские сообщения' : 'Системные сообщения';
   openLogWindow(
     <SysMessageWindow
+      key={type}
       messages={messages}
       windowName={windowName}
       typeWin={type}

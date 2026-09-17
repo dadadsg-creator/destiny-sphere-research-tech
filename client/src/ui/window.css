@@ -146,7 +146,13 @@
   letter-spacing: 0.03em;
   color: #eeeeee;
 }
-.ds-syslog__close {
+.ds-syslog__titlebar-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ds-syslog__close,
+.ds-syslog__expand {
   background: #33447a;
   color: #fff;
   border: none;
@@ -154,10 +160,27 @@
   width: 24px;
   height: 24px;
   cursor: pointer;
-  font-size: 15px;
+  font-size: 13px;
   line-height: 1;
 }
-.ds-syslog__close:hover {
+.ds-syslog__close:hover,
+.ds-syslog__expand:hover {
+  background: #8888ff;
+}
+/* "Свернуть" — текстовая кнопка вместо крестика в развёрнутом виде
+   (владелец: "крестик в углу лишний, раз есть кнопка Свернуть") —
+   закрытие целиком доступно только в свёрнутом виде, здесь только
+   переключение обратно в компактный режим. */
+.ds-syslog__collapse {
+  background: #33447a;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-size: 12px;
+}
+.ds-syslog__collapse:hover {
   background: #8888ff;
 }
 .ds-syslog__actions {
@@ -173,6 +196,20 @@
   font-size: 13px;
   line-height: 1.5;
   color: #1c1c1c;
+}
+/* Свёрнутый вид — компактная ОДНА строка с последним сообщением, не
+   весь список (владелец, 2026-09-17: "Одно сообщение должно
+   отображаться в свернутом виде") — переопределяет flex-растяжение и
+   min-height общего .ds-syslog__body, должно идти ПОСЛЕ него по
+   источнику (та же специфичность одного класса, применяется правило
+   ниже по каскаду). */
+.ds-syslog__body--single {
+  flex: none;
+  min-height: 0;
+  padding: 10px 16px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 .ds-syslog__empty {
   color: #6b6b5f;
