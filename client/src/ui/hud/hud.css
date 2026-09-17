@@ -262,6 +262,9 @@ body {
 }
 .ds-hud-bottombar__icon-btn {
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 44px;
   height: 44px;
   background: var(--hud-bg2);
@@ -270,6 +273,9 @@ body {
   color: var(--hud-text);
   font-size: 18px;
   cursor: pointer;
+}
+.ds-hud-bottombar__icon-btn:hover {
+  background: var(--hud-border);
 }
 .ds-hud-bottombar__icon-btn--stub {
   color: var(--hud-text2);

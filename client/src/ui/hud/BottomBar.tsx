@@ -109,7 +109,10 @@ export function BottomBar() {
           aria-label="Системные сообщения"
           onClick={() => actions?.openSysLog('SYS')}
         >
-          ⌄
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true">
+            <path d="M5 15 L12 9 L19 15" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M5 10.5 L12 4.5 L19 10.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" opacity="0.55" />
+          </svg>
         </button>
       </div>
       <div class="ds-hud-bottombar__right">
