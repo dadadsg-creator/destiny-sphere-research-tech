@@ -84,31 +84,8 @@ export function RightBlock({
         </button>
       </div>
 
-      <div class="ds-cabinet-world">
-        <button type="button" class="ds-stepper__btn" disabled={worldIndex === 0} onClick={() => setWorldIndex((i) => Math.max(0, i - 1))}>
-          ←
-        </button>
-        <span class="ds-cabinet-world__name">
-          {world ? (
-            <>
-              {world.name} — <ResourceValue name="GOLD_CREDIT" value={world.gold} /> <ResourceValue name="SILVER_CREDIT" value={world.silver} />
-            </>
-          ) : (
-            'Нет миров'
-          )}
-        </span>
-        <button
-          type="button"
-          class="ds-stepper__btn"
-          disabled={worldIndex >= user.allowWorld.length - 1}
-          onClick={() => setWorldIndex((i) => Math.min(user.allowWorld.length - 1, i + 1))}
-        >
-          →
-        </button>
-      </div>
-
       <div class="ds-cabinet-op">
-        <span class="ds-cabinet-op__label">Обменять золото → серебро</span>
+        <span class="ds-cabinet-op__label">Обменять золото → серебро (в кабинете)</span>
         <div class="ds-cabinet-op__fields">
           <Stepper value={exchangeGold} min={0} max={currentStatus.gold} onChange={setExchangeGold} />
           <button type="button" class="ds-popup__btn" disabled={exchangeGold <= 0} onClick={() => onChangeGoldToSilver(exchangeGold)}>
@@ -117,8 +94,38 @@ export function RightBlock({
         </div>
       </div>
 
+      {/* Владелец (2026-09-18): "Перевести в мир — а в какой?? Куда пойдут
+          эти кредиты???" — листалка миров теперь ВНУТРИ этой карточки
+          (не отдельным блоком над ней), и оба заголовка/кнопки называют
+          выбранный мир по имени явно, а не абстрактным "мир". */}
       <div class="ds-cabinet-op">
-        <span class="ds-cabinet-op__label">Перевести в мир</span>
+        <span class="ds-cabinet-op__label">Между кабинетом и миром — выбор мира:</span>
+        <div class="ds-cabinet-world">
+          <button type="button" class="ds-stepper__btn" disabled={worldIndex === 0} onClick={() => setWorldIndex((i) => Math.max(0, i - 1))}>
+            ←
+          </button>
+          <span class="ds-cabinet-world__name">
+            {world ? (
+              <>
+                {world.name} — <ResourceValue name="GOLD_CREDIT" value={world.gold} /> <ResourceValue name="SILVER_CREDIT" value={world.silver} />
+              </>
+            ) : (
+              'Нет миров'
+            )}
+          </span>
+          <button
+            type="button"
+            class="ds-stepper__btn"
+            disabled={worldIndex >= user.allowWorld.length - 1}
+            onClick={() => setWorldIndex((i) => Math.min(user.allowWorld.length - 1, i + 1))}
+          >
+            →
+          </button>
+        </div>
+      </div>
+
+      <div class="ds-cabinet-op">
+        <span class="ds-cabinet-op__label">Перевести из кабинета в мир «{world?.name ?? '—'}»</span>
         <div class="ds-cabinet-op__fields">
           <span class="ds-cabinet-op__field">
             <img class="ds-resource__icon" src={resourceIconUrl('GOLD_CREDIT')} alt="Золото" /> <Stepper value={toGold} min={0} max={currentStatus.gold} onChange={setToGold} />
@@ -132,13 +139,13 @@ export function RightBlock({
             disabled={!world || (toGold <= 0 && toSilver <= 0)}
             onClick={() => world && onMoneyToWorld(world.id, toGold, toSilver)}
           >
-            Перевести в мир
+            Перевести в «{world?.name ?? '—'}»
           </button>
         </div>
       </div>
 
       <div class="ds-cabinet-op">
-        <span class="ds-cabinet-op__label">Перевести из мира</span>
+        <span class="ds-cabinet-op__label">Перевести из мира «{world?.name ?? '—'}» в кабинет</span>
         <div class="ds-cabinet-op__fields">
           <span class="ds-cabinet-op__field">
             <img class="ds-resource__icon" src={resourceIconUrl('GOLD_CREDIT')} alt="Золото" /> <Stepper value={fromGold} min={0} max={world?.gold ?? 0} onChange={setFromGold} />
@@ -152,12 +159,16 @@ export function RightBlock({
             disabled={!world || (fromGold <= 0 && fromSilver <= 0)}
             onClick={() => world && onMoneyFromWorld(world.id, fromGold, fromSilver)}
           >
-            Перевести из мира
+            Перевести из «{world?.name ?? '—'}»
           </button>
         </div>
       </div>
 
       <div class="ds-cabinet-op">
+        {/* "Подарить" — команда без параметра получателя вообще
+            (`giftMoney(gold, silver)`, `requestDataCabinet.as:34-37`,
+            `<cabinetRequest command="giftMoney" gold="" silver=""/>`) —
+            кому именно, не установлено декомпилом, не выдумываю. */}
         <span class="ds-cabinet-op__label">Подарить</span>
         <div class="ds-cabinet-op__fields">
           <span class="ds-cabinet-op__field">
