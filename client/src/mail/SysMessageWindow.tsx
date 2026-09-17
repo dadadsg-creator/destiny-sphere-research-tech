@@ -21,6 +21,13 @@
  * виде кнопка "Свернуть" вместо крестика — крестик лишний, раз есть
  * сворачивание (сам крестик остаётся только в свёрнутом виде — там это
  * единственный способ по-настоящему убрать панель).
+ *
+ * Свёрнутый вид — ОДНА строка целиком (заголовок+текст+кнопки в один
+ * flex-row), не заголовок отдельной полосой над текстом — первая версия
+ * так и делала (титлбар+тело как два визуальных яруса), владелец
+ * поправил: "на флеше было размещено в одну [строку]". Кнопка
+ * "Свернуть" в развёрнутом виде — только текст, без отдельного значка
+ * стрелки рядом (было "Свернуть ▾" — читалось как две кнопки).
  */
 import { useState } from 'preact/hooks';
 
@@ -41,20 +48,16 @@ export function SysMessageWindow({ messages, windowName, typeWin, gateOpen, onCl
   if (!expanded) {
     return (
       <div class="ds-syslog ds-syslog--collapsed">
-        <div class="ds-syslog__titlebar">
-          <span class="ds-syslog__title">{windowName}</span>
-          <div class="ds-syslog__titlebar-actions">
-            <button type="button" class="ds-syslog__expand" onClick={() => setExpanded(true)} title="Развернуть" aria-label="Развернуть">
-              ▲
-            </button>
-            <button type="button" class="ds-syslog__close" onClick={onClose} title="Закрыть" aria-label="Закрыть">
-              ×
-            </button>
-          </div>
-        </div>
-        <div class="ds-syslog__body ds-syslog__body--single">
+        <span class="ds-syslog__collapsed-label">{windowName}:</span>
+        <span class="ds-syslog__collapsed-text">
           {latest ? <span dangerouslySetInnerHTML={{ __html: latest }} /> : <span class="ds-syslog__empty">Сообщений пока нет.</span>}
-        </div>
+        </span>
+        <button type="button" class="ds-syslog__expand" onClick={() => setExpanded(true)} title="Развернуть" aria-label="Развернуть">
+          ▲
+        </button>
+        <button type="button" class="ds-syslog__close" onClick={onClose} title="Закрыть" aria-label="Закрыть">
+          ×
+        </button>
       </div>
     );
   }
@@ -64,7 +67,7 @@ export function SysMessageWindow({ messages, windowName, typeWin, gateOpen, onCl
       <div class="ds-syslog__titlebar">
         <span class="ds-syslog__title">{windowName}</span>
         <button type="button" class="ds-syslog__collapse" onClick={() => setExpanded(false)}>
-          Свернуть ▾
+          Свернуть
         </button>
       </div>
       {showSpyLogButton && (

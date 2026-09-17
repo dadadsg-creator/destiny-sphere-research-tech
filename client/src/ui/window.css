@@ -131,6 +131,32 @@
   box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.5);
   z-index: 900;
 }
+/* Свёрнутый вид — ОДНА строка целиком (не титлбар+тело двумя ярусами,
+   как в первой версии), тёмный фон под цвет статус-бара — владелец:
+   "на флеше было размещено в одну [строку]". */
+.ds-syslog--collapsed {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  padding: 0 14px;
+  background: #16264d;
+}
+.ds-syslog__collapsed-label {
+  flex-shrink: 0;
+  font-weight: bold;
+  font-size: 13px;
+  color: #eeeeee;
+}
+.ds-syslog__collapsed-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 13px;
+  color: #cfd8ee;
+}
 .ds-syslog__titlebar {
   display: flex;
   align-items: center;
@@ -145,11 +171,6 @@
   font-size: 13px;
   letter-spacing: 0.03em;
   color: #eeeeee;
-}
-.ds-syslog__titlebar-actions {
-  display: flex;
-  align-items: center;
-  gap: 6px;
 }
 .ds-syslog__close,
 .ds-syslog__expand {
@@ -197,23 +218,14 @@
   line-height: 1.5;
   color: #1c1c1c;
 }
-/* Свёрнутый вид — компактная ОДНА строка с последним сообщением, не
-   весь список (владелец, 2026-09-17: "Одно сообщение должно
-   отображаться в свернутом виде") — переопределяет flex-растяжение и
-   min-height общего .ds-syslog__body, должно идти ПОСЛЕ него по
-   источнику (та же специфичность одного класса, применяется правило
-   ниже по каскаду). */
-.ds-syslog__body--single {
-  flex: none;
-  min-height: 0;
-  padding: 10px 16px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
 .ds-syslog__empty {
   color: #6b6b5f;
   font-style: italic;
+}
+/* Пустое состояние внутри свёрнутой строки — на тёмном фоне, не на
+   кремовом теле развёрнутого вида, нужен свой, более светлый оттенок. */
+.ds-syslog--collapsed .ds-syslog__empty {
+  color: #8b96c0;
 }
 
 .ds-popup-overlay {
