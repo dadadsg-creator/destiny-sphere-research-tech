@@ -14,23 +14,17 @@
  * `logWindow`-слот (`ui/windowStore.ts`), не общий модальный
  * `currentWindow` — независимый always-on-top слой, как в оригинале.
  *
- * Два состояния (владелец, 2026-09-17, по прямому UX-описанию — в
- * `sys_mess_menu.as` этого разделения нет явно, панель либо есть целиком,
- * либо удалена): свёрнуто (по умолчанию) — одна строка, последнее
- * сообщение; развёрнуто — полный прокручиваемый список. В развёрнутом
- * виде кнопка "Свернуть" вместо крестика — крестик лишний, раз есть
- * сворачивание (сам крестик остаётся только в свёрнутом виде — там это
- * единственный способ по-настоящему убрать панель).
- *
- * Свёрнутый вид — ОДНА строка целиком (заголовок+текст+кнопки в один
- * flex-row), не заголовок отдельной полосой над текстом — первая версия
- * так и делала (титлбар+тело как два визуальных яруса), владелец
- * поправил: "на флеше было размещено в одну [строку]". Кнопка
- * "Свернуть" в развёрнутом виде — только текст, без отдельного значка
- * стрелки рядом (было "Свернуть ▾" — читалось как две кнопки).
+ * Только полный (развёрнутый) вид — свёрнутое состояние НЕ этот
+ * компонент: по скриншоту реального статус-бара (владелец, 2026-09-17)
+ * в оригинале между часами и кнопками меч/бинокль/шеврон есть одна общая
+ * строка — она уже часть самой нижней панели (`BottomBar.tsx`,
+ * `latestLogMessage` из `sysMessageStore.ts`), а не отдельный элемент
+ * поверх неё. Первая попытка ("свёрнуто" как отдельная плавающая строка
+ * над нижней панелью) добавляла лишний, второй ряд — владелец поправил:
+ * "не в три, а в две строки. А надо в одну. В оригинале — в одну".
+ * "Свернуть" здесь — просто закрыть эту панель (`onClose`), управление
+ * возвращается к постоянной строке нижней панели.
  */
-import { useState } from 'preact/hooks';
-
 export interface SysMessageWindowProps {
   messages: string[];
   windowName: string;
@@ -41,32 +35,13 @@ export interface SysMessageWindowProps {
 }
 
 export function SysMessageWindow({ messages, windowName, typeWin, gateOpen, onClose, onViewSpyLog }: SysMessageWindowProps) {
-  const [expanded, setExpanded] = useState(false);
   const showSpyLogButton = typeWin === 'SPY' && gateOpen;
-  const latest = messages.length > 0 ? messages[messages.length - 1] : null;
-
-  if (!expanded) {
-    return (
-      <div class="ds-syslog ds-syslog--collapsed">
-        <span class="ds-syslog__collapsed-label">{windowName}:</span>
-        <span class="ds-syslog__collapsed-text">
-          {latest ? <span dangerouslySetInnerHTML={{ __html: latest }} /> : <span class="ds-syslog__empty">Сообщений пока нет.</span>}
-        </span>
-        <button type="button" class="ds-syslog__expand" onClick={() => setExpanded(true)} title="Развернуть" aria-label="Развернуть">
-          ▲
-        </button>
-        <button type="button" class="ds-syslog__close" onClick={onClose} title="Закрыть" aria-label="Закрыть">
-          ×
-        </button>
-      </div>
-    );
-  }
 
   return (
     <div class="ds-syslog">
       <div class="ds-syslog__titlebar">
         <span class="ds-syslog__title">{windowName}</span>
-        <button type="button" class="ds-syslog__collapse" onClick={() => setExpanded(false)}>
+        <button type="button" class="ds-syslog__collapse" onClick={onClose}>
           Свернуть
         </button>
       </div>

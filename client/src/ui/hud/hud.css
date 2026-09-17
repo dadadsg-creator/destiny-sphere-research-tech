@@ -239,6 +239,20 @@ body {
   justify-content: center;
   gap: 10px;
 }
+/* Строка последнего сообщения лога — занимает свободное место между
+   часами и кнопками меч/бинокль/шеврон (владелец прислал скриншот
+   реального статус-бара: между часами и иконками — одна общая полоса
+   в ТОЙ ЖЕ строке нижней панели). Пустая (нет текста) — просто
+   невидимый зазор, как в оригинале, когда сообщений не было. */
+.ds-hud-bottombar__log-preview {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 12px;
+  color: var(--hud-text2);
+}
 .ds-hud-bottombar__right {
   display: flex;
   align-items: center;

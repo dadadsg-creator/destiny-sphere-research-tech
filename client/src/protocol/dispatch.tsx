@@ -1468,18 +1468,21 @@ export function handleResponse(marks: ParsedMarks, ctx: DispatchContext): void {
  * `debug.link.interface_mov.bg_status_bar`, т.е. прикреплена к нижней
  * панели, а не всплывает по центру экрана как обычное меню) — владелец
  * поправил после первой попытки (была центральная модалка): "в
- * оригинале выезжала панель с сообщениями", см. `SysMessageWindow.tsx`
- * докстринг для вёрстки этой панели. `key={type}` — каждый клик по
- * иконке пересоздаёт компонент, а не переиспользует уже смонтированный
- * (иначе локальное состояние свёрнуто/развёрнуто сохранялось бы при
- * переключении между типами) — открывается всегда заново свёрнутым.
+ * оригинале выезжала панель с сообщениями". Этот вызов — только
+ * полный/развёрнутый вид, открывается СРАЗУ по клику на кнопку (как в
+ * оригинале, `game.as: init_msg_button` → `onRelease` →
+ * `create_mess_window`, без промежуточного "свёрнутого" состояния у
+ * самой кнопки) — постоянно видимая строка последнего сообщения теперь
+ * часть самой нижней панели (`BottomBar.tsx`, `latestLogMessage`), не
+ * этого попапа: первая версия делала отдельный "свёрнутый" вариант
+ * ЭТОГО компонента, владелец поправил — "в оригинале это одна строка"
+ * (уже часть статус-бара), см. `SysMessageWindow.tsx` докстринг.
  */
 export function openSysMessageLog(type: 'SYS' | 'WAR' | 'SPY', ctx: DispatchContext): void {
   const messages = type === 'WAR' ? warMessages.value : type === 'SPY' ? spyMessages.value : sysMessages.value;
   const windowName = type === 'WAR' ? 'Военные сообщения' : type === 'SPY' ? 'Шпионские сообщения' : 'Системные сообщения';
   openLogWindow(
     <SysMessageWindow
-      key={type}
       messages={messages}
       windowName={windowName}
       typeWin={type}

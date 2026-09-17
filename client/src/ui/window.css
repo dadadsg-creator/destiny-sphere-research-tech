@@ -131,32 +131,6 @@
   box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.5);
   z-index: 900;
 }
-/* Свёрнутый вид — ОДНА строка целиком (не титлбар+тело двумя ярусами,
-   как в первой версии), тёмный фон под цвет статус-бара — владелец:
-   "на флеше было размещено в одну [строку]". */
-.ds-syslog--collapsed {
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-  height: 44px;
-  padding: 0 14px;
-  background: #16264d;
-}
-.ds-syslog__collapsed-label {
-  flex-shrink: 0;
-  font-weight: bold;
-  font-size: 13px;
-  color: #eeeeee;
-}
-.ds-syslog__collapsed-text {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  font-size: 13px;
-  color: #cfd8ee;
-}
 .ds-syslog__titlebar {
   display: flex;
   align-items: center;
@@ -172,26 +146,9 @@
   letter-spacing: 0.03em;
   color: #eeeeee;
 }
-.ds-syslog__close,
-.ds-syslog__expand {
-  background: #33447a;
-  color: #fff;
-  border: none;
-  border-radius: 3px;
-  width: 24px;
-  height: 24px;
-  cursor: pointer;
-  font-size: 13px;
-  line-height: 1;
-}
-.ds-syslog__close:hover,
-.ds-syslog__expand:hover {
-  background: #8888ff;
-}
-/* "Свернуть" — текстовая кнопка вместо крестика в развёрнутом виде
-   (владелец: "крестик в углу лишний, раз есть кнопка Свернуть") —
-   закрытие целиком доступно только в свёрнутом виде, здесь только
-   переключение обратно в компактный режим. */
+/* "Свернуть" — закрывает панель, возвращает к постоянной строке в
+   нижней панели (владелец: "крестик в углу лишний, раз есть кнопка
+   Свернуть") — текстовая кнопка вместо крестика. */
 .ds-syslog__collapse {
   background: #33447a;
   color: #fff;
@@ -221,11 +178,6 @@
 .ds-syslog__empty {
   color: #6b6b5f;
   font-style: italic;
-}
-/* Пустое состояние внутри свёрнутой строки — на тёмном фоне, не на
-   кремовом теле развёрнутого вида, нужен свой, более светлый оттенок. */
-.ds-syslog--collapsed .ds-syslog__empty {
-  color: #8b96c0;
 }
 
 .ds-popup-overlay {

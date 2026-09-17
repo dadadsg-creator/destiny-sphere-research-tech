@@ -37,11 +37,22 @@
  * "свернуть панель" — по прямому решению владельца эта функция убрана
  * совсем ("Шеврон = открыть системный лог (как в оригинале), сворачивание
  * убрать", 2026-09-17), панель больше не сворачивается.
+ *
+ * Строка последнего сообщения (между часами и меч/бинокль/шеврон) —
+ * владелец прислал скриншот реального статус-бара: там это одна общая
+ * полоса ВНУТРИ той же нижней панели, не отдельный плавающий элемент.
+ * Первая попытка ("свёрнутый вид" отдельным доп. блоком над нижней
+ * панелью) добавляла лишний ряд — поправка: "не в три [строки], а в
+ * две. А надо в одну. В оригинале — в одну". `latestLogMessage`
+ * (`mail/sysMessageStore.ts`) обновляется пассивно на каждое новое
+ * `marks.sysmsg`, без клика — сами кнопки по-прежнему открывают полный
+ * список (`actions.openSysLog`), как и раньше.
  */
 import { useEffect, useState } from 'preact/hooks';
 import { hudActions } from './hudActionsStore';
 import { serverClock, getGameTimeInGameZone } from '../../data/serverClockStore';
 import { hasNewMail } from '../../mail/mailStore';
+import { latestLogMessage } from '../../mail/sysMessageStore';
 
 function formatClock(d: Date): string {
   const hh = String(d.getUTCHours()).padStart(2, '0');
@@ -70,6 +81,9 @@ export function BottomBar() {
         </span>
       </div>
       <div class="ds-hud-bottombar__center">
+        <span class="ds-hud-bottombar__log-preview" title={latestLogMessage.value ?? undefined}>
+          {latestLogMessage.value ? <span dangerouslySetInnerHTML={{ __html: latestLogMessage.value }} /> : null}
+        </span>
         <button
           type="button"
           class="ds-hud-bottombar__icon-btn"
