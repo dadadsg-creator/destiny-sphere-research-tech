@@ -16,6 +16,7 @@ import { MainNav } from './MainNav';
 import { PopulationPanel } from './PopulationPanel';
 import { BottomBar } from './BottomBar';
 import { RadialMenu } from './RadialMenu';
+import { AccountMenu } from './AccountMenu';
 import { BuildingPanel } from './BuildingPanel';
 import { HudErrorBoundary } from './HudErrorBoundary';
 import { hudActions } from './hudActionsStore';
@@ -44,6 +45,12 @@ export function MainScreenHud() {
       <div class="ds-hud-radial-wrap">
         <HudErrorBoundary label="Круговое меню">
           <RadialMenu />
+        </HudErrorBoundary>
+      </div>
+
+      <div class="ds-hud-account-wrap">
+        <HudErrorBoundary label="Биллинг/премиум/FAQ">
+          <AccountMenu />
         </HudErrorBoundary>
       </div>
 

@@ -58,6 +58,39 @@ export interface HudActions {
    * уже готовое окно с нужным фильтром.
    */
   openSysLog: (type: 'SYS' | 'WAR' | 'SPY') => void;
+  /**
+   * Круговое меню статус-бара, левый нижний угол (владелец прислал
+   * скриншот реального клиента, 2026-09-17) — `ds/address.php`, узел
+   * `<interface>`, атрибуты `service`/`premium` (`game.as:1046-1230`,
+   * `init_interface_button`, `case "service"`/`case "premium"` — оба
+   * просто `getURL(url, "_blank")`, без параметров сверх URL из XML).
+   * `openBilling` — `service="/ds/billing.php?SID=SIDID"`, тот же приём
+   * подстановки живого PHPSESSID, что и `openRanking` выше (SIDID —
+   * серверный плейсхолдер, подставляется в реальном XML на самом
+   * сервере, здесь читаем то же значение напрямую из куки).
+   */
+  openBilling: () => void;
+  /** `premium="http://destinysphere.ru/index.php?p=premium_info_page"` — статичный URL, без параметров сессии. */
+  openPremiumInfo: () => void;
+  /**
+   * FAQ (`FUCKEN_HELP`, `game.as:2011-2020` → `help_class.as:18-35`,
+   * `getHelp("INFO_GAME_MAIN")` → `redirect("/ds/help/?name=INFO_GAME_MAIN")`)
+   * — статичный URL, без параметров сессии.
+   */
+  openFaq: () => void;
+  /**
+   * Кнопка выхода (`ctrl_player.log_out`, `game.as:2240-2249`) — НЕ обычная
+   * команда протокола: `reqvestdata.send_logout()` (`reqvestdata.as:
+   * 430-434`) шлёт `xmldata=logout` (голая строка, не XML-тег), сервер
+   * (`ds/useraction.php:120-128`) отвечает `<key valid="0" addr="index_
+   * start.php?ck=..."/>` — это ОЖИДАЕМЫЙ, не ошибочный ответ на logout
+   * (в отличие от любой другой команды, где `valid="0"` — реальный сбой
+   * сессии), после чего оригинал (`parser.as:21-36`) делает `_top`-редирект
+   * браузера на `addr`. Здесь — тот же смысл: шлём `logout`, игнорируем
+   * ожидаемую ошибку невалидной сессии, затем жёстко уводим браузер на
+   * страницу логина.
+   */
+  logout: () => void;
 }
 
 export const hudActions = signal<HudActions | null>(null);

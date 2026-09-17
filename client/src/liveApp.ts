@@ -197,6 +197,23 @@ export async function runLiveApp(renderer: MapRenderer, login: string, pass: str
     // Меч/бинокль/шеврон нижней панели — см. докстринг openSysMessageLog
     // в protocol/dispatch.tsx.
     openSysLog: (type) => openSysMessageLog(type, ctx),
+    // Круговое меню левого нижнего угла — см. докстринги в hudActionsStore.ts.
+    openBilling: () => window.open(`https://destinysphere.ru/ds/billing.php?SID=${readSessionId()}`, '_blank'),
+    openPremiumInfo: () => window.open('https://destinysphere.ru/index.php?p=premium_info_page', '_blank'),
+    openFaq: () => window.open('https://destinysphere.ru/ds/help/?name=INFO_GAME_MAIN', '_blank'),
+    logout: () => {
+      void session
+        .sendCommand('logout')
+        .catch(() => {
+          // Ожидаемо — сервер инвалидирует сессию через loadkey valid="0"
+          // (см. докстринг hudActionsStore.ts:logout), sendCommand это
+          // трактует как ошибку для ЛЮБОЙ другой команды, но здесь это
+          // сам механизм разлогинивания, не сбой.
+        })
+        .finally(() => {
+          window.location.href = 'https://destinysphere.ru/ds/index_login.php';
+        });
+    },
   };
 }
 

@@ -404,6 +404,95 @@ body {
   user-select: none;
 }
 
+/* Круговое меню статус-бара (биллинг/премиум/FAQ/выход) — левый нижний
+   угол, симметрично RadialMenu (правый нижний угол). См. докстринг
+   AccountMenu.tsx — голая структура, плоские круглые кнопки, без
+   SVG-доната (для 2 секторов после удаления SMS не оправдан). */
+.ds-hud-account-wrap {
+  position: absolute;
+  left: 0;
+  bottom: 60px;
+  pointer-events: auto;
+}
+.ds-hud-account {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px;
+}
+.ds-hud-account__power {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--hud-bg2);
+  border: 1px solid var(--hud-border);
+  color: var(--hud-text2);
+  cursor: pointer;
+}
+.ds-hud-account__power:hover {
+  color: var(--hud-error);
+  border-color: var(--hud-error);
+}
+.ds-hud-account__dial {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ds-hud-account__satellite {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: var(--hud-bg2);
+  border: 1px solid var(--hud-border);
+  color: var(--hud-text);
+  font-size: 11px;
+  line-height: 1.2;
+  cursor: pointer;
+  padding: 4px;
+}
+.ds-hud-account__satellite:hover {
+  background: var(--hud-border);
+}
+.ds-hud-account__center {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--hud-active);
+  border: 1px solid var(--hud-border);
+  color: #04101f;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+}
+.ds-hud-account__center:hover {
+  filter: brightness(1.1);
+}
+.ds-hud-account__toggles {
+  display: flex;
+  gap: 6px;
+}
+/* Загрузка военных заводов / отображение артефактов — честные заглушки,
+   не найдены в декомпиле (см. докстринг AccountMenu.tsx), ждут описания
+   от владельца. */
+.ds-hud-account__toggle {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--hud-bg2);
+  border: 1px solid var(--hud-border);
+  color: var(--hud-text2);
+  font-size: 12px;
+  cursor: default;
+  opacity: 0.6;
+}
+
 /* §9 — панель выбранного здания. Обёртка без pointer-events, чтобы
    пустая (здание не выбрано) не перехватывала клики по карте — сама
    панель включает их обратно только когда реально показана. */
