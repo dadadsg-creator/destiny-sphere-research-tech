@@ -274,10 +274,15 @@ export class MapRenderer {
       this.warFactoryOverlay.push(shape);
 
       if (e.label) {
+        // Центр гекса — НЕ cell.x/cell.y (это угол, откуда рисуется сам
+        // полигон, hexPolygonPoints() занимает [0,2h]×[0,2v] от него),
+        // а cell.x+h/cell.y+v (владелец, 2026-09-18: "числа надо писать
+        // по центру ячейки, а то непонятно что к чему относится" —
+        // числа стояли у угла, на границе с соседней ячейкой).
         const label = new Text({ text: e.label, style: { fill: 0xffffff, fontSize: 13, fontWeight: 'bold' } });
         label.anchor.set(0.5);
-        label.x = cell.x;
-        label.y = cell.y;
+        label.x = cell.x + CELL_WEIGHT_H;
+        label.y = cell.y + CELL_WEIGHT_V;
         label.eventMode = 'none';
         this.worldLayer.addChild(label);
         this.warFactoryOverlay.push(label);
@@ -332,18 +337,20 @@ export class MapRenderer {
       this.worldLayer.addChild(shape);
       this.artefactOverlay.push(shape);
 
+      // Центр гекса — cell.x+h/cell.y+v, не cell.x/cell.y (см. комментарий
+      // в setWarFactoryHighlights выше — та же правка, тот же источник).
       const label = new Text({ text: e.label, style: { fill: 0xffffff, fontSize: 12, fontWeight: 'bold' } });
       label.anchor.set(0.5);
-      label.x = cell.x;
-      label.y = cell.y;
+      label.x = cell.x + CELL_WEIGHT_H;
+      label.y = cell.y + CELL_WEIGHT_V;
       label.eventMode = 'none';
       this.worldLayer.addChild(label);
       this.artefactOverlay.push(label);
 
       if (e.expiryColor) {
         const dot = new Graphics().circle(0, 0, 5).fill({ color: EXPIRY_COLOR_HEX[e.expiryColor] });
-        dot.x = cell.x + 16;
-        dot.y = cell.y - 16;
+        dot.x = cell.x + CELL_WEIGHT_H + 14;
+        dot.y = cell.y + CELL_WEIGHT_V - 9;
         dot.eventMode = 'none';
         this.worldLayer.addChild(dot);
         this.artefactOverlay.push(dot);
