@@ -34,13 +34,19 @@
  * (`resourceIcons.ts`) читают живую локализацию из `loaddata`
  * (`<att>`/`<unit>`, зеркало `game.getLocalNames()`), тот же источник,
  * что уже используют иконки ресурсов/юнитов везде в порте.
+ *
+ * **Исправление (2026-09-18)**: категория "артефакт" (3) тоже теперь
+ * локализована — `artefactDisplayName()` (`resourceIcons.ts`) читает
+ * `LocalData.artefacts` (та же `loaddata`, оказалась уже разобрана,
+ * см. докстринг функции — предыдущая запись про "отдельную, не
+ * подключённую локализацию" была неверной).
  */
 import { useState } from 'preact/hooks';
 import { Window } from '../ui/Window';
 import { Stepper } from '../ui/Stepper';
 import type { TabDef } from '../ui/tabs';
 import { ResourceList, type ResourceCost } from '../ui/ResourceValue';
-import { RESOURCE_LETTER_TO_NAME, resourceDisplayName, unitDisplayName } from '../data/resourceIcons';
+import { RESOURCE_LETTER_TO_NAME, resourceDisplayName, unitDisplayName, artefactDisplayName } from '../data/resourceIcons';
 import { formatTurnTime } from '../data/turnTime';
 import {
   buildSellCommand,
@@ -62,10 +68,17 @@ export interface SellWindowProps {
 
 const CATEGORY_LABELS: Record<number, string> = { 1: 'Ресурсы', 2: 'Юниты', 3: 'Артефакты' };
 
-/** Категория 1 (ресурс)/2 (юнит) — libname это машинное имя, локализуем через живую loaddata (см. докстринг файла). Артефакты (3) — своя, ещё не подключённая локализация (см. docs), оставлены как есть. */
+/**
+ * Категория 1 (ресурс)/2 (юнит) — libname это машинное имя, локализуем
+ * через живую loaddata (см. докстринг файла). Категория 3 (артефакт) —
+ * `libname` для неё сервер не шлёт вовсе (см. `tradeData.ts:212`,
+ * всегда `null`), реальный идентификатор — `artId` (тот самый `id`,
+ * что в оригинале передаётся в `getLocalNamesArt`, `xmlparsers.as:2160`).
+ */
 function articleLabel(a: TradeArticle): string {
   if (a.category === 1 && a.libname) return resourceDisplayName(a.libname);
   if (a.category === 2 && a.libname) return unitDisplayName(a.libname);
+  if (a.category === 3 && a.artId) return artefactDisplayName(a.artId);
   return a.libname ?? a.id ?? '';
 }
 

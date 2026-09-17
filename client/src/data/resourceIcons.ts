@@ -85,6 +85,52 @@ export function unitDisplayName(libname: string): string {
 }
 
 /**
+ * Категория 3 (артефакты) в торговле/передаче/аукционе — своя каталожная
+ * локализация (`LocalData.artefacts`, `<artefact id="" ln="">` из
+ * `loaddata`, `UA_Load.class.php:378-444`), НЕ через `resolveLocalName()`
+ * (та проверяет только typed-карты без `artefacts`). Раньше считалось,
+ * что эта таблица "отдельная от loaddata, не разобрана" (докстринги
+ * `tradeData.ts`/`TransferWindow.tsx`/`AuctionWindow.tsx`) — по факту
+ * `<artefact>` приходит ВНУТРИ той же самой `loaddata` и уже парсится
+ * (`data/localData.ts: LocalData.artefacts`), просто резолвер об этом
+ * не знал.
+ *
+ * Живой id часто "грязный" — с суффиксом `_SALE` и/или встроенным
+ * `|timestamp`-сегментом (`game.as:450-478`, `getLocalNamesArt`) — оба
+ * вырезаются перед поиском, та же логика дословно (сплит по `_`,
+ * фильтр сегментов `=="SALE"` или содержащих `|`).
+ */
+export function cleanArtefactLibname(rawId: string): string {
+  return rawId
+    .split('_')
+    .filter((segment) => segment !== 'SALE' && !segment.includes('|'))
+    .join('_');
+}
+
+export function artefactDisplayName(rawId: string): string {
+  const ln = localData.value?.artefacts.get(cleanArtefactLibname(rawId))?.ln;
+  return ln ?? rawId;
+}
+
+/**
+ * Передача между сотами (`TransferWindow.tsx`) очищает id артефакта
+ * ИНАЧЕ — заменой `:` на `_` (`parser.artrp()`, `parser.as:7-13`,
+ * применяется только там — `xmlparsers.as:1751`, `transfer_menu_parser`),
+ * не срезкой `_SALE`/`|timestamp`, как в `cleanArtefactLibname` выше
+ * (та — для торговли/аукциона, `getLocalNamesArt`). Формат бонуса
+ * `"{имя артефакта}  {имя ресурса-бонуса}:{значение}"` — дословно
+ * `xmlparsers.as:1772-1779`, значение уже приходит decoded
+ * (`#`/`$` → `+`/`%`, см. `fixBonusHash` в `localData.ts`).
+ */
+export function transferArtefactDisplayName(rawLibname: string, bonusName?: string, bonusValue?: string): string {
+  const cleanId = rawLibname.replace(/:/g, '_');
+  const baseName = localData.value?.artefacts.get(cleanId)?.ln ?? cleanId;
+  if (!bonusName) return baseName;
+  const bonusResourceName = resourceDisplayName(bonusName);
+  return `${baseName}  ${bonusResourceName}:${bonusValue ?? ''}`;
+}
+
+/**
  * Иконка артефакта — извлечена из `client-assets/artefact.lib/sprites/
  * DefineSprite_*_<POSTFIX>/1.png`, ключ — ИМЕННО `postfix` артефакта
  * (`<artefact prefix="" scope="" postfix=""/>`), не полный libname:

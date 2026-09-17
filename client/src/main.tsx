@@ -656,6 +656,12 @@ const TEST_RESEARCH: ResearchData = {
 };
 
 // Синтетические данные для проверки AuctionWindow (?screen=auction).
+// Общий тестовый каталог одного артефакта — проверка живой локализации
+// категории 3 (артефакты) в аукционе/продаже/передаче (2026-09-18,
+// artefactDisplayName()/transferArtefactDisplayName(), resourceIcons.ts).
+const TEST_ARTEFACT_ID = 'MIGHTY_SPHERE_STASIS_ENERGY_EGG';
+const TEST_ARTEFACT_LOADDATA_XML = `<load v="1"><artefact id="${TEST_ARTEFACT_ID}" ln="Могучая сфера энергии" bn="STASIS_ENERGY" bv="#800"/></load>`;
+
 const TEST_AUCTION_LOTS: AuctionLot[] = [
   {
     id: '1',
@@ -693,6 +699,24 @@ const TEST_AUCTION_LOTS: AuctionLot[] = [
     nextPrice: 5200,
     maxPrice: null,
   },
+  {
+    id: '3',
+    endDate: '2026-09-06 18:00',
+    amount: 1,
+    getPrice: { K: '2000' },
+    currentPrice: 2000,
+    currentPriceOnce: null,
+    seller: 'Игрок3',
+    tradeBy: 'KADERIUM',
+    tradeScope: null,
+    immediate: '1',
+    libname: TEST_ARTEFACT_ID,
+    idCatOn: '3',
+    buyer: null,
+    serverDisabled: false,
+    nextPrice: 2000,
+    maxPrice: null,
+  },
 ];
 const TEST_PLAYER_RESOURCE_BY_NAME = new Map([['KADERIUM', 300]]);
 
@@ -722,7 +746,19 @@ const TEST_TRADE_MENU: TradeMenuData = {
       { category: 2, idCat: '2_9', id: '9', amount: 20, upkeep: { K: 0, N: 0, P: 0, F: 0, S: 0 }, power: {}, libname: 'TANK', ln: null, isArtefact: false },
     ],
     3: [
-      { category: 3, idCat: '3_1', id: '1', amount: 3, upkeep: { K: 0, N: 0, P: 0, F: 0, S: 0 }, power: {}, libname: null, ln: null, isArtefact: true, artId: '1', datum: '' },
+      {
+        category: 3,
+        idCat: '3_1',
+        id: '1',
+        amount: 3,
+        upkeep: { K: 0, N: 0, P: 0, F: 0, S: 0 },
+        power: {},
+        libname: null,
+        ln: null,
+        isArtefact: true,
+        artId: TEST_ARTEFACT_ID,
+        datum: '',
+      },
     ],
   },
   scopes: [
@@ -736,7 +772,16 @@ const TEST_TRANSFER: TransferMenuData = {
   articlesByCategory: {
     1: [{ category: 1, id: '2', libname: 'NANO_CRYSTAL', amount: '500' }],
     2: [{ category: 2, id: '9', libname: 'TANK', amount: '10' }],
-    3: [],
+    3: [
+      {
+        category: 3,
+        id: '1',
+        libname: TEST_ARTEFACT_ID,
+        amount: '1',
+        bonusValue: '+800',
+        bonusName: 'STASIS_ENERGY',
+      },
+    ],
   },
   targets: [
     { idComb: '5', combName: 'Вторая колония', coords: '2.1.7' },
@@ -1545,6 +1590,7 @@ async function main() {
   }
 
   if (screen === 'auction') {
+    setLocalData(parseLocalData(TEST_ARTEFACT_LOADDATA_XML));
     openWindow(
       <AuctionWindow
         lots={TEST_AUCTION_LOTS}
@@ -1558,6 +1604,7 @@ async function main() {
   }
 
   if (screen === 'sell') {
+    setLocalData(parseLocalData(TEST_ARTEFACT_LOADDATA_XML));
     openWindow(
       <SellWindow
         data={TEST_TRADE_MENU}
@@ -1570,6 +1617,7 @@ async function main() {
   }
 
   if (screen === 'transfer') {
+    setLocalData(parseLocalData(TEST_ARTEFACT_LOADDATA_XML));
     openWindow(
       <TransferWindow
         data={TEST_TRANSFER}

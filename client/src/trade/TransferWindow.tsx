@@ -8,16 +8,20 @@
  * **Исправление (2026-09-11)**: категории 1/2 показывали сырое машинное
  * имя вместо названия — исправлено через `resourceDisplayName()`/
  * `unitDisplayName()` (живая локализация из `loaddata`, не выдуманные
- * строки, см. `resourceIcons.ts`). Категория 3 (артефакты) — своя, ещё не
- * подключённая локализация (см. докстринг `transferData.ts`,
- * форматирование `parser.artrp()` не портировано), `libname` остаётся как
- * есть.
+ * строки, см. `resourceIcons.ts`).
+ *
+ * **Исправление (2026-09-18)**: категория 3 (артефакты) тоже теперь
+ * локализована — `transferArtefactDisplayName()` (`resourceIcons.ts`,
+ * очистка id через `:`→`_` + имя+бонус, дословно `xmlparsers.as:
+ * 1751-1779`) — раньше считалось отдельной неподключённой таблицей
+ * (см. `transferData.ts`), по факту та же каталожная локализация,
+ * что и везде (`LocalData.artefacts`).
  */
 import { useState } from 'preact/hooks';
 import { Window } from '../ui/Window';
 import { Stepper } from '../ui/Stepper';
 import { ResourceValue } from '../ui/ResourceValue';
-import { resourceDisplayName, unitDisplayName, unitIconUrl } from '../data/resourceIcons';
+import { resourceDisplayName, unitDisplayName, unitIconUrl, transferArtefactDisplayName } from '../data/resourceIcons';
 import type { TabDef } from '../ui/tabs';
 import { buildTransferCommand, type TransferArticle, type TransferCommand, type TransferMenuData } from './transferData';
 
@@ -35,6 +39,10 @@ const CATEGORY_LABELS: Record<number, string> = { 1: 'Ресурсы', 2: 'Юн�
 function articleLabel(a: TransferArticle, category: number): string {
   if (category === 1 && a.libname) return resourceDisplayName(a.libname);
   if (category === 2 && a.libname) return unitDisplayName(a.libname);
+  if (category === 3 && a.libname) {
+    const name = transferArtefactDisplayName(a.libname, a.bonusName, a.bonusValue);
+    return a.expiredMessage ? `${name} (${a.expiredMessage})` : name;
+  }
   return a.libname ?? a.id ?? '';
 }
 

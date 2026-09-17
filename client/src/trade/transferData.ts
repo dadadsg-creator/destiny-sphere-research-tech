@@ -10,20 +10,30 @@
  * <transferresource>
  *   <article id_category="1|2|3" id="" libname="" amount=""
  *            [bonusvalue="" bonusname="" death_message=""]/>  (категория
- *            3 = артефакт, доп. поля бонуса; в оригинале ещё применяет
- *            `parser.artrp(libname)` — отдельная функция форматирования
- *            имени, здесь НЕ портирована, libname остаётся сырым)
+ *            3 = артефакт, доп. поля бонуса)
  *   <to id_comb="" combname="" coords=""/>
  * </transferresource>
+ *
+ * Категория 3 (артефакт) — `libname` очищается через `parser.artrp()`
+ * (`:` → `_`, `xmlparsers.as:1751`) и локализуется через
+ * `transferArtefactDisplayName()` (`resourceIcons.ts`), см. докстринг
+ * той функции. `bonusValue` декодируется здесь же (`$`/`#` → `%`/`+`,
+ * первое вхождение, `xmlparsers.as:1763-1767` — дословно та же логика,
+ * не анкорная `fixBonusHash` из `localData.ts`, там другой формат поля).
  */
 import { parseXmlFragment } from '../protocol/response';
+
+/** xmlparsers.as:1763-1767 — первое вхождение "#"->"+", первое "$"->"%". */
+function fixTransferBonusValue(raw: string): string {
+  return raw.replace('#', '+').replace('$', '%');
+}
 
 export interface TransferArticle {
   category: number;
   id: string | null;
   libname: string | null;
   amount: string | null;
-  /** Только категория 3 (артефакт) — сырые поля бонуса, форматирование ($/# -> %/+) не портировано. */
+  /** Только категория 3 (артефакт) — bonusValue уже декодирован ($/# -> %/+). */
   bonusValue?: string;
   bonusName?: string;
   expiredMessage?: string;
@@ -61,7 +71,8 @@ export function parseTransferMenu(xml: string): TransferMenuData {
         amount: el.getAttribute('amount'),
       };
       if (category === 3) {
-        article.bonusValue = el.getAttribute('bonusvalue') ?? undefined;
+        const rawBonusValue = el.getAttribute('bonusvalue');
+        article.bonusValue = rawBonusValue ? fixTransferBonusValue(rawBonusValue) : undefined;
         article.bonusName = el.getAttribute('bonusname') ?? undefined;
         article.expiredMessage = el.getAttribute('death_message') ?? undefined;
       }

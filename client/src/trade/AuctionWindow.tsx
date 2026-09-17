@@ -9,17 +9,26 @@
  * (`idCatOn === '2'`) показывали сырое машинное имя (`NANO_CRYSTAL`/`TANK`)
  * вместо названия — исправлено через `resourceDisplayName()`/
  * `unitDisplayName()` (живая локализация из `loaddata`, см. `resourceIcons.ts`),
- * не выдуманные строки. Артефакты (3) — своя, ещё не подключённая
- * локализация, `libname` остаётся как есть.
+ * не выдуманные строки.
+ *
+ * **Исправление (2026-09-18)**: артефакты (3) тоже теперь локализованы —
+ * `artefactDisplayName()` (`resourceIcons.ts`, та же каталожная
+ * локализация — `LocalData.artefacts`, раньше считалась отдельной
+ * неподключённой таблицей). Сам оригинал (`xmlparsers.as: auction_menu_parser`)
+ * ни разу не резолвит `.ln` для лотов ВООБЩЕ (ни для одной категории —
+ * только сырой `libname` в протоколе аукциона) — уже существующее
+ * улучшение для категорий 1/2 читаемости ради, категория 3 теперь
+ * получает то же самое, тем же приёмом.
  */
 import { Window } from '../ui/Window';
 import type { TabDef } from '../ui/tabs';
-import { resourceDisplayName, unitDisplayName, unitIconUrl } from '../data/resourceIcons';
+import { resourceDisplayName, unitDisplayName, artefactDisplayName, unitIconUrl } from '../data/resourceIcons';
 import { computeLotDisabled, type AuctionLot } from './auctionData';
 
 function lotLabel(lot: AuctionLot): string {
   if (lot.idCatOn === '1' && lot.libname) return resourceDisplayName(lot.libname);
   if (lot.idCatOn === '2' && lot.libname) return unitDisplayName(lot.libname);
+  if (lot.idCatOn === '3' && lot.libname) return artefactDisplayName(lot.libname);
   return lot.libname ?? '';
 }
 
