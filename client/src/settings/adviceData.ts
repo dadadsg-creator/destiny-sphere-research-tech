@@ -15,9 +15,32 @@
  * логика воспроизведена дословно (первый дочерний элемент → его
  * текстовое содержимое), а не заменена на поиск по названию тега — это
  * не менее (и не более) хрупко, чем в оригинале.
+ *
+ * **Реальный баг живого сервера (найден 2026-09-18 живым дампом)**:
+ * ответ на `getNubHelp` иногда приходит БЕЗ закрывающего корневого тега
+ * `</adv>` (сервер, по всей видимости, обрывает вывод сразу после
+ * последнего `<art/>`, не дописывая закрывающий тег). AS2 `XML`-класс
+ * оригинала терпим к этому; строгий браузерный `DOMParser('text/xml')`
+ * вместо этого возвращает служебный документ-ошибку ("Unexpected end
+ * of stream: still inside the root element") — сама подсказка (`txt`)
+ * при этом заменяется текстом этой ошибки, хотя остальные поля
+ * (`title`/`total`/`number`/список `<art>`) браузер по каким-то
+ * причинам всё равно восстанавливает верно (что и маскировало баг —
+ * заголовок и список подсказок в окне выглядели правильно, ломался
+ * только сам текст). Правка на живом PHP не в рамках этого порта —
+ * `ensureClosedRoot()` ниже дописывает недостающий закрывающий тег
+ * перед парсингом, тот же класс обхода, что и у `arthint`
+ * (`artefactStatData.ts:dedupeCellType`).
  */
 import { parseXmlFragment } from '../protocol/response';
 import { loadSetting, saveSetting } from './setting';
+
+/** См. докстринг файла — обход бага сервера (недописанный закрывающий тег корня). */
+function ensureClosedRoot(xml: string, rootTag: string): string {
+  const trimmed = xml.trimEnd();
+  const closeTag = `</${rootTag}>`;
+  return trimmed.endsWith(closeTag) ? trimmed : `${trimmed}${closeTag}`;
+}
 
 export interface AdviceRelatedHint {
   id: string;
@@ -41,7 +64,7 @@ export interface AdviceHint {
 }
 
 export function parseAdviceHint(xml: string): AdviceHint {
-  const doc = parseXmlFragment(xml);
+  const doc = parseXmlFragment(ensureClosedRoot(xml, 'adv'));
   const root = doc.documentElement;
   if (!root) {
     throw new Error('Пустой ответ getNubHelp');

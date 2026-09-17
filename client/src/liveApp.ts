@@ -17,6 +17,7 @@ import { raceFromNumber } from './map/buildingTypes';
 import { buildNavigateCommand } from './world/colonyNavigateData';
 import { hudActions } from './ui/hud/hudActionsStore';
 import { selectedBuilding } from './ui/hud/selectedBuildingStore';
+import { loadAdviceHintNumber, saveAdviceHintNumber } from './settings/adviceData';
 
 export async function runLiveApp(renderer: MapRenderer, login: string, pass: string, uiid: string): Promise<void> {
   // baseUrl='' — запросы идут на текущий origin (localhost), прокси Vite
@@ -217,6 +218,16 @@ export async function runLiveApp(renderer: MapRenderer, login: string, pass: str
     // Две premium-кнопки — см. докстринги в hudActionsStore.ts.
     openWarFactories: () => void ctx.send(tag('getwarfactory', {})),
     openArtefactStat: () => void ctx.send(tag('arthint', {})),
+    // "Советник" — см. докстринг openAdvice в hudActionsStore.ts.
+    openAdvice: () => {
+      const key = `advice_${ctx.race}`;
+      let ask = loadAdviceHintNumber(key);
+      if (ask === undefined) {
+        ask = 1;
+        saveAdviceHintNumber(key, ask);
+      }
+      void ctx.send(tag('getNubHelp', { id: ask, stat: 'FULL' }));
+    },
   };
 }
 

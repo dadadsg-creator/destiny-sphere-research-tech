@@ -277,9 +277,6 @@ body {
 .ds-hud-bottombar__icon-btn:hover {
   background: var(--hud-border);
 }
-.ds-hud-bottombar__icon-btn--stub {
-  color: var(--hud-text2);
-}
 /* Есть непрочитанная почта (marks.newmessage) — зелёная подсветка, тот
    же цвет, что и мигающий значок почты оригинала (game.as:903, 0x00FF00). */
 .ds-hud-bottombar__icon-btn--new {
