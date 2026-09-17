@@ -409,6 +409,51 @@
   font-style: italic;
 }
 
+/* Легенда артефактной статистики (ArtefactStatPanel.tsx) — та же
+   докнутая-сверху конструкция, что и .ds-war-panel, см. докстринг
+   файла. */
+.ds-art-panel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 92px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 16px;
+  background: #0b1730;
+  border-bottom: 2px solid #223260;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  z-index: 900;
+  color: #e8ecf7;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+}
+.ds-art-panel__legend {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  flex-wrap: wrap;
+}
+.ds-art-panel__legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.ds-art-panel__swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.ds-art-panel__hint {
+  color: #6b7396;
+  font-size: 11px;
+  font-style: italic;
+}
+
 .ds-spying__row {
   display: flex;
   align-items: center;

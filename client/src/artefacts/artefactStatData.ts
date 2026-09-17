@@ -16,8 +16,35 @@
  * подсветки "скоро истекает" (`glowMinArt()`, xmlparsers.as не участвует,
  * чисто отрисовка) — см. `getExpiryColor()` ниже, пороги дословно из
  * `artefactstatclass.as:659-671`.
+ *
+ * **Реальный баг живого сервера (найден 2026-09-18 живым дампом)**: для
+ * ячеек с конкретным типом сервер шлёт атрибут `type` ДВАЖДЫ на одном
+ * теге — `<cell id="3" total="2" type="STASIS_ENERGY" type="COMBO">`
+ * (второе значение — тот же дефолт "COMBO", что клиент и сам подставил
+ * бы при отсутствии атрибута, `xmlparsers.as:491`, но сервер зачем-то
+ * пишет его ЯВНО рядом с настоящим типом). AS2 `XML`-класс оригинала
+ * исторически терпим к такому и просто использует последнее значение —
+ * строгий браузерный `DOMParser('text/xml')` вместо этого молча
+ * возвращает пустой результат на всём документе (не бросает исключение,
+ * просто ноль дочерних `<cell>`). Правка на живом PHP не в рамках этого
+ * порта (не трогаем `old-sphere/` без явной просьбы) — `dedupeCellType()`
+ * ниже убирает вторую копию перед парсингом, тот же класс обхода, что и
+ * другие уже задокументированные особенности протокола этой сессии.
  */
 import { parseXmlFragment } from '../protocol/response';
+
+/** См. докстринг файла — обход бага сервера (дублирующийся атрибут `type`). */
+function dedupeCellType(xml: string): string {
+  return xml.replace(/<cell([^>]*)>/g, (_whole, attrs: string) => {
+    let seenType = false;
+    const cleaned = attrs.replace(/\s+type="[^"]*"/g, (match: string) => {
+      if (seenType) return '';
+      seenType = true;
+      return match;
+    });
+    return `<cell${cleaned}>`;
+  });
+}
 
 export interface ArtInBuild {
   id: string | null;
@@ -40,7 +67,7 @@ export interface ArtefactStatCell {
 export type ArtefactStatData = Map<string, ArtefactStatCell>;
 
 export function parseArtefactStat(xml: string): ArtefactStatData {
-  const doc = parseXmlFragment(xml);
+  const doc = parseXmlFragment(dedupeCellType(xml));
   const root = doc.documentElement;
   if (!root || root.nodeName !== 'arthint') {
     throw new Error(`Ожидался корневой тег <arthint>, получено: ${root?.nodeName}`);
@@ -117,6 +144,59 @@ export function findMinRemainArt(cell: ArtefactStatCell): ArtInBuild | null {
     if (!min || remain < Number(min.remain)) min = art;
   }
   return min;
+}
+
+/**
+ * Цвет ячейки на карте по типу здания — свой оттенок на каждый
+ * ресурс, тот же смысл, что и разные спрайты `*_CELL` в оригинале
+ * (`getArtCellSprite` выше), но как заливка гекса на живой карте, а не
+ * отдельный спрайт схематичной сетки.
+ */
+export function getArtCellColor(type: string): number {
+  switch (type) {
+    case 'STASIS_ENERGY':
+      return 0x29b6c6;
+    case 'KADERIUM':
+      return 0xc9a227;
+    case 'NANO_CRYSTAL':
+      return 0x3b6fd6;
+    case 'FOOD':
+      return 0x4caf50;
+    case 'PRODIUM':
+      return 0xc07830;
+    case 'WAR':
+      return 0xef5350;
+    default:
+      return 0x8092c8;
+  }
+}
+
+/**
+ * Типы, для которых оригинал ищет "самое слабое" здание (`glowMinArt`,
+ * `artefactstatclass.as:621-629`, явная проверка именно этих 5 имён) —
+ * WAR/SOTES(COMBO) сознательно не участвуют.
+ */
+const WEAKEST_HIGHLIGHT_TYPES = new Set(['STASIS_ENERGY', 'KADERIUM', 'NANO_CRYSTAL', 'FOOD', 'PRODIUM']);
+
+/**
+ * Ячейки с "самым слабым" (наименьший бонус ОДНОГО артефакта, не суммой)
+ * зданием каждого типа — `artefactstatclass.as:590-619`, дословно та же
+ * формула (глобальный минимум по всем (ячейка,арт) парам, сгруппированный
+ * по типу здания, не по ячейке). Подсказывает, куда выгоднее всего
+ * поставить новый/более сильный артефакт.
+ */
+export function findWeakestCellsPerType(data: ArtefactStatData): Set<string> {
+  const minByType = new Map<string, { cellId: string; bonus: number }>();
+  for (const [cellId, cell] of data) {
+    if (!WEAKEST_HIGHLIGHT_TYPES.has(cell.type)) continue;
+    for (const art of cell.artInBuild) {
+      const bonus = parseFloat(art.bonus ?? '');
+      if (Number.isNaN(bonus)) continue;
+      const cur = minByType.get(cell.type);
+      if (!cur || bonus < cur.bonus) minByType.set(cell.type, { cellId, bonus });
+    }
+  }
+  return new Set([...minByType.values()].map((v) => v.cellId));
 }
 
 /** reqvestdata.as:191-196 — <getbuildmenu c="" tab="BuildingArtefact"/>. */

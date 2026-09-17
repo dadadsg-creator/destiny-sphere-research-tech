@@ -27,7 +27,7 @@
  * в отличие от большинства этой "семьи". Остальные домены пока только
  * логируются в консоль — подключение оставлено отдельным объёмом
  * работы. Премиум-статус (`TerraformWindow`/`ArcheologyWindow`/
- * `ArtefactStatWindow` — `isPremium`) — марка верхнего уровня `mode`
+ * `ArtefactStatPanel` — `isPremium`) — марка верхнего уровня `mode`
  * (см. `data/premiumData.ts`/`premiumStore.ts`), найдена и подключена
  * 2026-09-16 по итогам полного аудита панелей (CLIENT_PORTING_PLAN.md).
  */
@@ -112,7 +112,7 @@ import { buildKickCommand } from '../alliance/allianceMemberData';
 import { WarFactoryPanel } from '../army/WarFactoryPanel';
 import { QuestWindow } from '../quests/QuestWindow';
 import { LogWindow } from '../mail/LogWindow';
-import { ArtefactStatWindow } from '../artefacts/ArtefactStatWindow';
+import { ArtefactStatPanel } from '../artefacts/ArtefactStatPanel';
 import { ArtDepotWindow } from '../buildings/ArtDepotWindow';
 import { ArtefactShopWindow } from '../cabinet/ArtefactShopWindow';
 import { buildBuyArtefactsCommand } from '../cabinet/artefactShopData';
@@ -965,18 +965,24 @@ function renderLogWindow(_root: Element, xml: string, _ctx: DispatchContext): vo
 /**
  * artefactStatData.ts — открывается автономной командой `<arthint/>`
  * (reqvestdata.as:843-847, `request_art_statistic`), не через
- * getbuildmenu-семью — `onTabClick` не подключаем. Клик по ячейке в
- * таблице — ДРУГАЯ, уже подключённая команда `getbuildmenu c=""
- * tab="BuildingArtefact"` (renderBuildArtefact), не связана с текущим
- * "гнездом" вкладок этого окна.
+ * getbuildmenu-семью. Клик по зданию — ДРУГАЯ, уже подключённая команда
+ * `getbuildmenu c="" tab="BuildingArtefact"` (renderBuildArtefact).
+ *
+ * `openTopPanel`/`closeTopPanel` (не `openWindow`/`closeWindow`!) — та
+ * же правка, что и у `renderWarComplex` выше: владелец (2026-09-18)
+ * поправил модальную таблицу-список ("как понять, какие здания
+ * заправлены артефактами? никак!") — см. докстринг `ArtefactStatPanel.tsx`
+ * для полной картины (легенда сверху + подсветка на самой карте через
+ * `ctx.renderer.setArtefactHighlights`).
  */
 function renderArtefactStat(_root: Element, xml: string, ctx: DispatchContext): void {
   const data = parseArtefactStat(xml);
-  openWindow(
-    <ArtefactStatWindow
+  openTopPanel(
+    <ArtefactStatPanel
       data={data}
       isPremium={premiumStatus.value?.isPremium ?? false}
-      onClose={closeWindow}
+      renderer={ctx.renderer}
+      onClose={closeTopPanel}
       onCellClick={(cellNum) => void ctx.send(tag('getbuildmenu', { c: cellNum, tab: 'BuildingArtefact' }))}
     />,
   );

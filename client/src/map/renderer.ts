@@ -285,6 +285,72 @@ export class MapRenderer {
     }
   }
 
+  private artefactOverlay: Container[] = [];
+
+  /**
+   * Подсветка зданий с артефактными слотами прямо на РЕАЛЬНОЙ карте
+   * (docs/client-economy-social-ui.md §1.4) — владелец (2026-09-18),
+   * увидев список-таблицу вместо этого: "Как из этого всплывающего
+   * окошка понять, какие здания заправлены артефактами, а какие нет?
+   * Никак! Делай нормальный функционал подсветки." В оригинале
+   * (`artefactstatclass.as:506-585`, `CreateSota`) — своя схематичная
+   * гекс-сетка со спрайтом ячейки по типу здания (`*_CELL`) и текстовым
+   * бейджем "занято/всего"; здесь — то же на настоящей карте: цвет по
+   * типу (`getArtCellColor`), бейдж "занято/всего", более толстая белая
+   * рамка у "самого слабого" здания каждого типа (`weakest`,
+   * `glowMinArt`, см. `findWeakestCellsPerType`), маленький цветной
+   * индикатор скорого истечения артефакта в углу для премиум-аккаунтов
+   * (`expiryColor`, `glowMinArt`, только реальным премиум-аккаунтам).
+   */
+  setArtefactHighlights(
+    entries: Array<{
+      num: number;
+      color: number;
+      label: string;
+      weakest?: boolean;
+      expiryColor?: 'green' | 'yellow' | 'red' | null;
+      onClick?: () => void;
+    }> | null,
+  ): void {
+    for (const g of this.artefactOverlay) g.destroy();
+    this.artefactOverlay = [];
+    if (!entries) return;
+
+    const EXPIRY_COLOR_HEX: Record<'green' | 'yellow' | 'red', number> = { green: 0x33cc66, yellow: 0xffcc66, red: 0xff6666 };
+    const grid = buildHexGrid();
+    for (const e of entries) {
+      const cell = grid[e.num];
+      if (!cell) continue;
+      const shape = new Graphics().poly(hexPolygonPoints()).fill({ color: e.color, alpha: 0.4 }).stroke({ width: e.weakest ? 3 : 1.5, color: e.weakest ? 0xffffff : e.color, alpha: 0.95 });
+      shape.x = cell.x;
+      shape.y = cell.y;
+      if (e.onClick) {
+        shape.eventMode = 'static';
+        shape.cursor = 'pointer';
+        shape.on('pointertap', e.onClick);
+      }
+      this.worldLayer.addChild(shape);
+      this.artefactOverlay.push(shape);
+
+      const label = new Text({ text: e.label, style: { fill: 0xffffff, fontSize: 12, fontWeight: 'bold' } });
+      label.anchor.set(0.5);
+      label.x = cell.x;
+      label.y = cell.y;
+      label.eventMode = 'none';
+      this.worldLayer.addChild(label);
+      this.artefactOverlay.push(label);
+
+      if (e.expiryColor) {
+        const dot = new Graphics().circle(0, 0, 5).fill({ color: EXPIRY_COLOR_HEX[e.expiryColor] });
+        dot.x = cell.x + 16;
+        dot.y = cell.y - 16;
+        dot.eventMode = 'none';
+        this.worldLayer.addChild(dot);
+        this.artefactOverlay.push(dot);
+      }
+    }
+  }
+
   private constructor(app: Application) {
     this.app = app;
     this.worldLayer = new Container();

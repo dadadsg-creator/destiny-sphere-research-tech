@@ -43,7 +43,6 @@ import { parseLocalData } from './data/localData';
 import { setLocalData } from './data/localDataStore';
 import { parseTabsArray } from './protocol/tabsParser';
 import { ReincarnateWindow } from './world/ReincarnateWindow';
-import { ArtefactStatWindow } from './artefacts/ArtefactStatWindow';
 import { BuildArtefactWindow } from './artefacts/BuildArtefactWindow';
 import { MailWindow } from './mail/MailWindow';
 import { CreateNewMailWindow } from './mail/CreateNewMailWindow';
@@ -89,7 +88,6 @@ import type { ReligionOption } from './world/religionData';
 import type { ArcheologyData, PlayerKadFoodPool } from './world/archeologyData';
 import type { ColonizationData } from './world/colonizationData';
 import type { ReincarnateData } from './world/reincarnateData';
-import type { ArtefactStatData } from './artefacts/artefactStatData';
 import type { BuildArtefactData } from './artefacts/buildArtefactData';
 import type { MailListData } from './mail/mailData';
 import type { CreateNewMailData } from './mail/createNewMailData';
@@ -1135,19 +1133,6 @@ const TEST_SYS_MESSAGES = [
   '<font color="#ffcc66">Атака отражена в соте 1.2.4</font>',
 ];
 
-// Синтетические данные для проверки ArtefactStatWindow (?screen=artefact-stat).
-const TEST_ARTEFACT_STAT: ArtefactStatData = new Map([
-  ['1', { type: 'STASIS_ENERGY', maxSlots: 3, fullSlots: 1, artInBuild: [
-    { id: '1', bonus: '15%', idArt: '101', remain: '2600000' }, // >= 30 суток — зелёный
-  ] }],
-  ['2', { type: 'KADERIUM', maxSlots: 2, fullSlots: 1, artInBuild: [
-    { id: '2', bonus: '10%', idArt: '102', remain: '700000' }, // >= 7 суток — жёлтый
-  ] }],
-  ['3', { type: 'COMBO', maxSlots: 4, fullSlots: 1, artInBuild: [
-    { id: '3', bonus: '20%', idArt: '103', remain: '100000' }, // < 7 суток — красный
-  ] }],
-]);
-
 // Синтетические данные для проверки BuildArtefactWindow (?screen=build-artefact).
 const TEST_BUILD_ARTEFACT: BuildArtefactData = {
   countSlots: 3,
@@ -1713,19 +1698,6 @@ async function main() {
         onTabClick={(tabId) => console.log('[army-create] tab click ->', tabId)}
         onClose={() => console.log('[army-create] close')}
         onCreate={(name, units) => console.log('[army-create] create_army(', name, units, ')')}
-      />,
-    );
-    (window as any).__renderDone = true;
-    return;
-  }
-
-  if (screen === 'artefact-stat') {
-    openWindow(
-      <ArtefactStatWindow
-        data={TEST_ARTEFACT_STAT}
-        isPremium={true}
-        onClose={() => console.log('[artefact-stat] close')}
-        onCellClick={(cellNum) => console.log('[artefact-stat] getbuildmenu(', cellNum, 'tab=BuildingArtefact)')}
       />,
     );
     (window as any).__renderDone = true;
