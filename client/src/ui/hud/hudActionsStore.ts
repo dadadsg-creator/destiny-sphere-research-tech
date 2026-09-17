@@ -39,6 +39,17 @@ export interface HudActions {
   openProfile: () => void;
   openForum: () => void;
   openPortal: () => void;
+  /**
+   * "Магазин" — тоже `ds/address.php`, атрибут `CABINET` (не `openCabinet`
+   * выше — у того свой, отдельно найденный URL без `?action=login`, два
+   * разных предположения из двух разных заходов расследования). Владелец
+   * подтвердил напрямую (2026-09-16) + перепроверено вживую: порядок
+   * атрибутов в реальном ответе `address.php` (`CABINET, analizator,
+   * ranking, profile, forum, portal, GAMES`) совпадает 1:1 с порядком
+   * кнопок на экране (МАГАЗИН, АНАЛИЗ, РЕЙТИНГ, ПРОФИЛЬ, ФОРУМ, ПОРТАЛ,
+   * ИГРЫ) — "Магазин" это и есть `CABINET`.
+   */
+  openShop: () => void;
 }
 
 export const hudActions = signal<HudActions | null>(null);

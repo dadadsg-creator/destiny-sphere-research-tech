@@ -189,6 +189,11 @@ export async function runLiveApp(renderer: MapRenderer, login: string, pass: str
     openProfile: () => window.open('https://destinysphere.ru/ds/index_profile.php', '_blank'),
     openForum: () => window.open('http://forum.destinysphere.net', '_blank'),
     openPortal: () => window.open('http://destinysphere.ru/', '_blank'),
+    // "Магазин" = `<links CABINET="user_cabinet.php?action=login"/>` —
+    // подтверждено владельцем напрямую + перепроверено живым сетевым
+    // ответом `address.php` (порядок атрибутов совпадает с порядком
+    // кнопок на экране), см. докстринг `openShop` в hudActionsStore.ts.
+    openShop: () => window.open('https://destinysphere.ru/ds/user_cabinet.php?action=login', '_blank'),
   };
 }
 
