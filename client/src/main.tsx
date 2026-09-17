@@ -94,7 +94,7 @@ import type { CreateNewMailData } from './mail/createNewMailData';
 import type { LogWindowData } from './mail/logData';
 import type { QuestMenuData } from './quests/questData';
 import type { AdviceHint } from './settings/adviceData';
-import type { CabinetMainData } from './cabinet/cabinetMainData';
+import type { CabinetMainData, OperationStatisticData } from './cabinet/cabinetMainData';
 import type { SubmenuFormData } from './cabinet/submenuData';
 import type { ArtefactShopData } from './cabinet/artefactShopData';
 import type { VacationData } from './vacation/vacationData';
@@ -1055,6 +1055,16 @@ const TEST_SUBMENU: SubmenuFormData = {
   ],
 };
 
+// Синтетические данные для проверки CabinetStatisticPanel (?screen=cabinet-statistic).
+const TEST_CABINET_STATISTIC: OperationStatisticData = {
+  filters: [{ arrItems: [{ id: 'gold', ln: 'Золото' }, { id: 'silver', ln: 'Серебро' }] }],
+  operations: [
+    { date: '10.09.26', text: 'Покупка золота', concurency: '+500 GC' },
+    { date: '08.09.26', text: 'Перевод в мир Orion', concurency: '-200 GC' },
+    { date: '01.09.26', text: 'Обмен золота на серебро', concurency: '-50 GC / +500 SC' },
+  ],
+};
+
 // Синтетические данные для проверки ArtefactShopWindow (?screen=artefact-shop).
 const TEST_ARTEFACT_SHOP: ArtefactShopData = {
   filters: [
@@ -1802,11 +1812,14 @@ async function main() {
       <CabinetWindow
         data={TEST_CABINET}
         openSubmenu={null}
+        statistic={null}
         onClose={() => console.log('[cabinet] close')}
         onSelectService={(id) => console.log('[cabinet] getSubMenuCabinet(', id, ')')}
         onCloseSubmenu={() => console.log('[cabinet] closeSubMenu')}
         onSubmitSubmenu={(buttonId, values) => console.log('[cabinet] subMenuAction(', buttonId, values, ')')}
         onDismissPopup={() => console.log('[cabinet] dismiss popup')}
+        onFilterStatistic={(typeId) => console.log('[cabinet] getAllStatistic(', typeId, ')')}
+        onCloseStatistic={() => console.log('[cabinet] close statistic')}
         rightBlock={{
           buyGoldMode: 'vk',
           onBuyGold: () => console.log('[cabinet] buyGold (VK)'),
@@ -1828,11 +1841,43 @@ async function main() {
       <CabinetWindow
         data={TEST_CABINET}
         openSubmenu={TEST_SUBMENU}
+        statistic={null}
         onClose={() => console.log('[cabinet] close')}
         onSelectService={(id) => console.log('[cabinet] getSubMenuCabinet(', id, ')')}
         onCloseSubmenu={() => console.log('[cabinet] closeSubMenu')}
         onSubmitSubmenu={(buttonId, values) => console.log('[cabinet] subMenuAction(', buttonId, values, ')')}
         onDismissPopup={() => console.log('[cabinet] dismiss popup')}
+        onFilterStatistic={(typeId) => console.log('[cabinet] getAllStatistic(', typeId, ')')}
+        onCloseStatistic={() => console.log('[cabinet] close statistic')}
+        rightBlock={{
+          buyGoldMode: 'vk',
+          onBuyGold: () => console.log('[cabinet] buyGold (VK)'),
+          onOpenExternal: (url) => console.log('[cabinet] open external', url),
+          onChangeGoldToSilver: (count) => console.log('[cabinet] changeGoldTOSelver(', count, ')'),
+          onMoneyToWorld: (id, gold, silver) => console.log('[cabinet] moneyToWorld(', id, gold, silver, ')'),
+          onMoneyFromWorld: (id, gold, silver) => console.log('[cabinet] moneyFormWorld(', id, gold, silver, ')'),
+          onGiftMoney: (gold, silver) => console.log('[cabinet] giftMoney(', gold, silver, ')'),
+          onShowAllStatistic: () => console.log('[cabinet] getAllStatistic()'),
+        }}
+      />,
+    );
+    (window as any).__renderDone = true;
+    return;
+  }
+
+  if (screen === 'cabinet-statistic') {
+    openWindow(
+      <CabinetWindow
+        data={TEST_CABINET}
+        openSubmenu={null}
+        statistic={TEST_CABINET_STATISTIC}
+        onClose={() => console.log('[cabinet] close')}
+        onSelectService={(id) => console.log('[cabinet] getSubMenuCabinet(', id, ')')}
+        onCloseSubmenu={() => console.log('[cabinet] closeSubMenu')}
+        onSubmitSubmenu={(buttonId, values) => console.log('[cabinet] subMenuAction(', buttonId, values, ')')}
+        onDismissPopup={() => console.log('[cabinet] dismiss popup')}
+        onFilterStatistic={(typeId) => console.log('[cabinet] getAllStatistic(', typeId, ')')}
+        onCloseStatistic={() => console.log('[cabinet] close statistic')}
         rightBlock={{
           buyGoldMode: 'vk',
           onBuyGold: () => console.log('[cabinet] buyGold (VK)'),

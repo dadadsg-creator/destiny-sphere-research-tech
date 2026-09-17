@@ -5,24 +5,41 @@
  * IP/uid (это делает сервер, см. докстринг cabinetMainData.ts).
  */
 import { InfoPopup } from '../ui/Popup';
-import type { CabinetMainData } from './cabinetMainData';
+import type { CabinetMainData, OperationStatisticData } from './cabinetMainData';
 import type { SubmenuFormData } from './submenuData';
 import { SubmenuForm } from './SubmenuForm';
 import { RightBlock, type RightBlockProps } from './RightBlock';
+import { CabinetStatisticPanel } from './CabinetStatisticPanel';
 
 export interface CabinetWindowProps {
   data: CabinetMainData;
   /** Открытая подформа (после клика по пункту услуги), если уже запрошена с сервера. */
   openSubmenu: SubmenuFormData | null;
+  /** "Вся статистика" (см. докстринг CabinetStatisticPanel.tsx), если уже запрошена с сервера. */
+  statistic: OperationStatisticData | null;
   onClose: () => void;
   onSelectService: (id: string) => void;
   onCloseSubmenu: () => void;
   onSubmitSubmenu: (buttonId: string, values: Record<string, string>) => void;
   onDismissPopup: () => void;
+  onFilterStatistic: (typeId: string | undefined) => void;
+  onCloseStatistic: () => void;
   rightBlock: Omit<RightBlockProps, 'user' | 'currentStatus' | 'lastOperation' | 'billingUrl'>;
 }
 
-export function CabinetWindow({ data, openSubmenu, onClose, onSelectService, onCloseSubmenu, onSubmitSubmenu, onDismissPopup, rightBlock }: CabinetWindowProps) {
+export function CabinetWindow({
+  data,
+  openSubmenu,
+  statistic,
+  onClose,
+  onSelectService,
+  onCloseSubmenu,
+  onSubmitSubmenu,
+  onDismissPopup,
+  onFilterStatistic,
+  onCloseStatistic,
+  rightBlock,
+}: CabinetWindowProps) {
   return (
     <div class="ds-window">
       <div class="ds-window__titlebar">
@@ -56,6 +73,7 @@ export function CabinetWindow({ data, openSubmenu, onClose, onSelectService, onC
       </div>
 
       {openSubmenu && <SubmenuForm form={openSubmenu} onClose={onCloseSubmenu} onSubmit={onSubmitSubmenu} />}
+      {statistic && <CabinetStatisticPanel data={statistic} onFilterSelect={onFilterStatistic} onClose={onCloseStatistic} />}
       {data.popupMessage && <InfoPopup message={data.popupMessage} onClose={onDismissPopup} />}
     </div>
   );

@@ -129,7 +129,7 @@ import {
   buildGetAllStatisticCommand,
 } from '../cabinet/cabinetMainData';
 import { buildOpenSubmenuCommand } from '../cabinet/submenuData';
-import { cabinetMain, cabinetSubmenu, setCabinetMain, setCabinetSubmenu, dismissCabinetPopup } from '../cabinet/cabinetStore';
+import { cabinetMain, cabinetSubmenu, cabinetStatistic, setCabinetMain, setCabinetSubmenu, setCabinetStatistic, dismissCabinetPopup } from '../cabinet/cabinetStore';
 import { AllianceSettingsWindow } from '../alliance/AllianceSettingsWindow';
 import { ArmyCalculatorWindow } from '../army/ArmyCalculatorWindow';
 import { AlliancePeaceWindow } from '../alliance/AlliancePeaceWindow';
@@ -1086,9 +1086,13 @@ function sendCabinet(ctx: DispatchContext, cmd: { command: string } & Record<str
  * паттерну, что и почта (см. `renderMailList`/`renderMailMessage`) —
  * открытие подформы не должно терять уже показанный список услуг.
  *
- * `operationStatistic` — окна для него в Фазе 3 не строили (нет в
- * реестре доменов плана), здесь только логируется, как и прочие
- * "распознан, но без окна" случаи (см. PARSERS).
+ * `operationStatistic` (2026-09-18, ранее — только `console.log`,
+ * "окна для него в Фазе 3 не строили") — "Вся статистика"
+ * (`RightBlock.tsx: onShowAllStatistic`, уже была подключена и слала
+ * команду, не хватало только вывода ответа). В оригинале
+ * (`menuLibCode.as:88-93`, `showCabinetStatistic`) подменяет
+ * содержимое ГЛАВНОГО окна кабинета, не отдельное окно — см.
+ * докстринг `CabinetStatisticPanel.tsx`.
  */
 function renderCabinet(_root: Element, xml: string, ctx: DispatchContext): void {
   const result = parseCabinetResponse(xml);
@@ -1097,8 +1101,7 @@ function renderCabinet(_root: Element, xml: string, ctx: DispatchContext): void 
   } else if (result.action === 'submenuopen') {
     setCabinetSubmenu(result.form);
   } else {
-    console.log('[dispatch] cabinet operationStatistic разобран, окна для него в Фазе 3 нет:', result.data);
-    return;
+    setCabinetStatistic(result.data);
   }
   renderCabinetWindow(ctx);
 }
@@ -1120,6 +1123,7 @@ function renderCabinetWindow(ctx: DispatchContext): void {
     <CabinetWindow
       data={data}
       openSubmenu={cabinetSubmenu.value}
+      statistic={cabinetStatistic.value}
       onClose={closeWindow}
       onSelectService={(id) => sendCabinet(ctx, buildOpenSubmenuCommand(id))}
       onCloseSubmenu={() => {
@@ -1132,6 +1136,11 @@ function renderCabinetWindow(ctx: DispatchContext): void {
       }}
       onDismissPopup={() => {
         dismissCabinetPopup();
+        renderCabinetWindow(ctx);
+      }}
+      onFilterStatistic={(typeId) => sendCabinet(ctx, buildGetAllStatisticCommand(typeId))}
+      onCloseStatistic={() => {
+        setCabinetStatistic(null);
         renderCabinetWindow(ctx);
       }}
       rightBlock={{
