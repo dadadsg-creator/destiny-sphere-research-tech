@@ -12,19 +12,28 @@
  * разделов навигации, но текст читаем как обычная кнопка, не "похож на
  * случайно ставший полупрозрачным" (замечание владельца, 2026-09-16).
  *
- * Время — реальное системное время браузера (тикает раз в секунду), НЕ
- * игровое серверное время: марка с игровым временем сервера в этом
- * порте нигде не парсится, подставлять браузерное под видом игрового
- * было бы обманом пользователя, поэтому подписано отдельно. Слева и
- * отдельно от остальных кнопок — как в оригинале, чтобы центр панели
- * оставался под игровые действия (было — время смешано с кнопками
- * одним блоком слева, справа пусто).
+ * Время — теперь настоящее игровое серверное время (найдено 2026-09-17,
+ * живым дампом полного ответа `<load locations="3"/>`): марки `stime`
+ * (Unix-мс) + `userGMT` (часовой пояс игры, часов от UTC) присутствуют
+ * в КАЖДОМ ответе сервера — подтверждено исходником, `parser.as:165-177`
+ * (`parse_respond` → `init_clock(obj.stime)`), см.
+ * `data/serverClockStore.ts`. Тикает раз в секунду локально от
+ * синхронизированного смещения, без повторных запросов — тот же приём,
+ * что и в оригинале. Пока `stime` ни разу не приходил (соединение только
+ * устанавливается) — честно показывает "…", не подставляет системное
+ * время под видом игрового. Слева и отдельно от остальных кнопок — как
+ * в оригинале, чтобы центр панели оставался под игровые действия (было
+ * — время смешано с кнопками одним блоком слева, справа пусто).
  */
 import { useEffect, useState } from 'preact/hooks';
 import { hudActions } from './hudActionsStore';
+import { serverClock, getGameTimeInGameZone } from '../../data/serverClockStore';
 
 function formatClock(d: Date): string {
-  return d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  const hh = String(d.getUTCHours()).padStart(2, '0');
+  const mm = String(d.getUTCMinutes()).padStart(2, '0');
+  const ss = String(d.getUTCSeconds()).padStart(2, '0');
+  return `${hh}:${mm}:${ss}`;
 }
 
 export interface BottomBarProps {
@@ -34,12 +43,15 @@ export interface BottomBarProps {
 
 export function BottomBar({ collapsed, onToggleCollapsed }: BottomBarProps) {
   const actions = hudActions.value;
-  const [now, setNow] = useState(() => new Date());
+  const [, forceTick] = useState(0);
 
   useEffect(() => {
-    const id = setInterval(() => setNow(new Date()), 1000);
+    const id = setInterval(() => forceTick((n) => n + 1), 1000);
     return () => clearInterval(id);
   }, []);
+
+  const gameTime = getGameTimeInGameZone();
+  void serverClock.value; // подписка сигнала — перерисовать сразу, как только придёт первый stime
 
   return (
     <div class={`ds-hud-bottombar${collapsed ? ' ds-hud-bottombar--collapsed' : ''}`}>
@@ -55,8 +67,8 @@ export function BottomBar({ collapsed, onToggleCollapsed }: BottomBarProps) {
       {!collapsed && (
         <>
           <div class="ds-hud-bottombar__left">
-            <span class="ds-hud-bottombar__clock" title="Системное время (игровое время сервера в порте пока не читается)">
-              {formatClock(now)}
+            <span class="ds-hud-bottombar__clock" title="Игровое серверное время (stime/userGMT)">
+              {gameTime ? formatClock(gameTime) : '…'}
             </span>
           </div>
           <div class="ds-hud-bottombar__center">

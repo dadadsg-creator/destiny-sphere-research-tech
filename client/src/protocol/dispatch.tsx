@@ -44,6 +44,7 @@ import { setCombRes, combRes } from '../data/combResStore';
 import { parseSysMsg } from '../mail/logData';
 import { parsePremiumStatus } from '../data/premiumData';
 import { setPremiumStatus, premiumStatus } from '../data/premiumStore';
+import { serverClock } from '../data/serverClockStore';
 import { parseOutsideAlert } from '../data/outsideAlertData';
 import { appendSysMsgBatch } from '../mail/sysMessageStore';
 import { AdviceWindow } from '../settings/AdviceWindow';
@@ -1347,6 +1348,15 @@ const RENDERERS: Record<string, (root: Element, xml: string, ctx: DispatchContex
  * `parse_respond`.
  */
 export function handleResponse(marks: ParsedMarks, ctx: DispatchContext): void {
+  // Игровое серверное время — `stime`/`userGMT`, top-level марки в
+  // КАЖДОМ ответе (не вложенный XML), см. serverClockStore.ts.
+  if (marks.stime !== undefined) {
+    serverClock.value = {
+      offsetMs: Number(marks.stime) - Date.now(),
+      gmtHours: marks.userGMT !== undefined ? Number(marks.userGMT) : 0,
+    };
+  }
+
   if (marks.xmlerror) {
     const doc = parseXmlFragment(marks.xmlerror);
     pushPopup(<InfoPopup message={doc.documentElement?.textContent ?? marks.xmlerror} onClose={popPopup} />);
