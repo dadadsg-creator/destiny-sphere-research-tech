@@ -4,7 +4,7 @@
  * Координаты — портированы формула-в-формулу из sota.as, см. hexGrid.ts
  * и docs/client-map-and-grid.md (основной репозиторий документации).
  */
-import { Application, Container, Sprite, Assets, Graphics } from 'pixi.js';
+import { Application, Container, Sprite, Assets, Graphics, Text } from 'pixi.js';
 import { buildHexGrid, buildingAnchor, mapPixelSize, hexPolygonPoints, CELL_WEIGHT_H, CELL_WEIGHT_V } from './hexGrid';
 import { parseGroundString, GROUND_LINKAGE } from './groundTypes';
 import { BUILDING_NAMES, buildingAssetKey, buildingAssetPath, effectiveBuildingRace, type Race } from './buildingTypes';
@@ -234,6 +234,55 @@ export class MapRenderer {
     g.y = cell.y;
     this.worldLayer.addChild(g);
     this.selectionGraphics = g;
+  }
+
+  private warFactoryOverlay: Container[] = [];
+
+  /**
+   * Подсветка фабрик прямо на РЕАЛЬНОЙ карте (docs/client-combat-ui.md
+   * §5) — владелец (2026-09-18): "надо делать как на флеше... А на
+   * карте показывать загрузку заводов", не отдельным всплывающим окном.
+   * В оригинале (`warstatistic.as:227-262`, `glow_factory`/
+   * `factory_create`) это отдельная схематичная гекс-сетка поверх соты
+   * (не сама карта) — здесь используется уже готовый живой рендер, тот
+   * же практический результат (подсветка ячеек-фабрик прямо там, где
+   * они реально стоят), без дублирования геометрии сетки. Зелёный —
+   * фабрика в текущем пакете, красный — подходит по типу, но исключена
+   * или занята другим юнитом. `onClick` — сама фабрика решает, кликабельна
+   * ли она (см. `WarFactoryPanel.tsx`); ничего не передано — сброс
+   * подсветки (вызывать при закрытии панели).
+   */
+  setWarFactoryHighlights(entries: Array<{ num: number; active: boolean; label: string; onClick?: () => void }> | null): void {
+    for (const g of this.warFactoryOverlay) g.destroy();
+    this.warFactoryOverlay = [];
+    if (!entries) return;
+
+    const grid = buildHexGrid();
+    for (const e of entries) {
+      const cell = grid[e.num];
+      if (!cell) continue;
+      const color = e.active ? 0x42d77d : 0xef5350;
+      const shape = new Graphics().poly(hexPolygonPoints()).fill({ color, alpha: 0.32 }).stroke({ width: 2, color, alpha: 0.95 });
+      shape.x = cell.x;
+      shape.y = cell.y;
+      if (e.onClick) {
+        shape.eventMode = 'static';
+        shape.cursor = 'pointer';
+        shape.on('pointertap', e.onClick);
+      }
+      this.worldLayer.addChild(shape);
+      this.warFactoryOverlay.push(shape);
+
+      if (e.label) {
+        const label = new Text({ text: e.label, style: { fill: 0xffffff, fontSize: 13, fontWeight: 'bold' } });
+        label.anchor.set(0.5);
+        label.x = cell.x;
+        label.y = cell.y;
+        label.eventMode = 'none';
+        this.worldLayer.addChild(label);
+        this.warFactoryOverlay.push(label);
+      }
+    }
   }
 
   private constructor(app: Application) {

@@ -16,7 +16,6 @@ import { parseOutsideAlert } from './data/outsideAlertData';
 import { ArmyOverviewWindow } from './army/ArmyOverviewWindow';
 import { ArmyCreationWindow } from './army/ArmyCreationWindow';
 import { TrainUnitWindow } from './army/TrainUnitWindow';
-import { WarStatisticWindow } from './army/WarStatisticWindow';
 import { SpyingWindow } from './spying/SpyingWindow';
 import { ZondCreateWindow } from './spying/ZondCreateWindow';
 import { PowerShieldWindow } from './spying/PowerShieldWindow';
@@ -65,7 +64,6 @@ import { BattleWindow } from './battle/BattleWindow';
 import type { ArmyOverview } from './army/armyData';
 import type { ArmyCreationData } from './army/armyCreationData';
 import type { TrainUnitData, PlayerResourcePool } from './army/trainUnitData';
-import type { WarComplexData } from './army/warFactoryData';
 import type { SpyingData } from './spying/spyingData';
 import type { ZondCreateData } from './spying/zondCreateData';
 import type { PowerShieldData } from './spying/powerShieldData';
@@ -422,9 +420,9 @@ const TEST_LOCAL_UNITS = new Map<string, LocalUnit>([
 ]);
 
 // Скромный запас ресурсов игрока — намеренно небольшой (не 2×10⁹), чтобы
-// computeAllowMax() реально ограничивал степпер количества у TrainUnitWindow/
-// WarStatisticWindow (?screen=train-unit/?screen=war-statistic), а не всегда
-// упирался в глобальный дефолт (см. trainUnitData.ts GLOBAL_MAX_NUMBER).
+// computeAllowMax() реально ограничивал степпер количества у TrainUnitWindow
+// (?screen=train-unit), а не всегда упирался в глобальный дефолт (см.
+// trainUnitData.ts GLOBAL_MAX_NUMBER).
 const TEST_PLAYER_RESOURCE_POOL: PlayerResourcePool = {
   kaderium: 500,
   nanoCrystal: 300,
@@ -432,22 +430,6 @@ const TEST_PLAYER_RESOURCE_POOL: PlayerResourcePool = {
   food: 1000,
   prodium: 1000,
   worker: 1000,
-};
-
-// Синтетические данные для проверки WarStatisticWindow (?screen=war-statistic).
-const TEST_WAR_COMPLEX: WarComplexData = {
-  turn: '24',
-  speedup: '0',
-  units: [
-    { id: '3', unitname: 'SOLDIER', types: ['LIGHT'], upkeep: { kad: 1, nano: 0, food: 3, energy: 2, prod: 0 }, maxallow: null },
-    { id: '9', unitname: 'TANK', types: ['HEAVY'], upkeep: { kad: 4, nano: 2, food: 1, energy: 5, prod: 1 }, maxallow: null },
-  ],
-  factories: new Map([
-    ['1', { idCell: '1', type: 'LIGHT', busy: false, unit: null, count: 0, timeEnd: null }],
-    ['2', { idCell: '2', type: 'LIGHT', busy: true, unit: 'SOLDIER', count: 12, timeEnd: '2026-09-06 10:00:00' }],
-    ['3', { idCell: '3', type: 'HEAVY', busy: false, unit: null, count: 0, timeEnd: null }],
-    ['4', { idCell: '4', type: 'HEAVY', busy: true, unit: 'TANK', count: 3, timeEnd: '2026-09-06 12:00:00' }],
-  ]),
 };
 
 // Синтетические данные для проверки SpyingWindow (?screen=spying).
@@ -1716,22 +1698,6 @@ async function main() {
         data={TEST_SPY_LOG}
         onClose={() => console.log('[scanner] close')}
         onScanSelected={(ids) => console.log('[scanner] requestScan(', ids, ')')}
-      />,
-    );
-    (window as any).__renderDone = true;
-    return;
-  }
-
-  if (screen === 'war-statistic') {
-    openWindow(
-      <WarStatisticWindow
-        data={TEST_WAR_COMPLEX}
-        localUnits={TEST_LOCAL_UNITS}
-        playerResources={TEST_PLAYER_RESOURCE_POOL}
-        onClose={() => console.log('[war-statistic] close')}
-        onLoad={(cellIds, unitId, amount) =>
-          console.log('[war-statistic] load_pack_war_factory(', cellIds, unitId, amount, ')')
-        }
       />,
     );
     (window as any).__renderDone = true;

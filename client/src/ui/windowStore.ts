@@ -5,6 +5,12 @@
  *    окна-меню делят один и тот же лок `game.lock(8500)` в оригинале);
  *  - `logWindow` — независимый always-on-top слот (create_log_window,
  *    depth 120/124, свой собственный оверлей, не участвует в модальном слоте);
+ *  - `topPanel` — НЕ из оригинала напрямую: докнутая сверху экрана
+ *    полоса (владелец, 2026-09-18: "отдельный интерфейс в игре, а не
+ *    всплывающее окно" — про панель загрузки военных заводов,
+ *    `WarFactoryPanel.tsx`), тот же принцип независимого слота, что и
+ *    `logWindow` (не участвует в модальном локе), просто визуально
+ *    закреплена сверху, а не снизу;
  *  - `popupStack` — confirm/alert/buy-попапы (§6): НЕ используют
  *    `game.lock`, рисуют свой блокирующий прямоугольник и накладываются
  *    поверх чего угодно — здесь стек, а не одиночный слот, т.к. вызывающее
@@ -19,6 +25,7 @@ import type { ComponentChildren } from 'preact';
 
 export const currentWindow = signal<ComponentChildren | null>(null);
 export const logWindow = signal<ComponentChildren | null>(null);
+export const topPanel = signal<ComponentChildren | null>(null);
 export const popupStack = signal<ComponentChildren[]>([]);
 
 export function openWindow(node: ComponentChildren): void {
@@ -36,6 +43,14 @@ export function openLogWindow(node: ComponentChildren): void {
 
 export function closeLogWindow(): void {
   logWindow.value = null;
+}
+
+export function openTopPanel(node: ComponentChildren): void {
+  topPanel.value = node;
+}
+
+export function closeTopPanel(): void {
+  topPanel.value = null;
 }
 
 export function pushPopup(node: ComponentChildren): void {

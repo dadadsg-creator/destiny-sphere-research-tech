@@ -358,47 +358,55 @@
   font-size: 11px;
 }
 
-.ds-war-statistic__units {
+/* Панель массовой загрузки военных заводов (WarFactoryPanel.tsx) —
+   докнутая сверху экрана, НЕ модалка (см. докстринг файла: владелец
+   "надо делать как на флеше — отдельный интерфейс, а не всплывающее
+   окно"). Открывается через `ui/windowStore.ts:topPanel` — независимый
+   слот, не участвует в модальном `.ds-modal-overlay`. 92px — та же
+   высота верхнего стека (ResourceBar+MainNav), что и safe-area отступ
+   в liveApp.ts, панель садится сразу под ним. */
+.ds-war-panel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 92px;
   display: flex;
-  gap: 14px;
-  margin-bottom: 12px;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #0b1730;
+  border-bottom: 2px solid #223260;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  z-index: 900;
+  color: #e8ecf7;
+  font-family: Arial, sans-serif;
   font-size: 12px;
 }
-.ds-war-statistic__unit-choice {
+.ds-war-panel__row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.ds-war-panel__units {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+.ds-war-panel__unit-choice {
   display: flex;
   align-items: center;
   gap: 4px;
   cursor: pointer;
 }
-
-.ds-war-statistic__factories {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
-  margin-bottom: 12px;
+.ds-war-panel__costs-label {
+  color: #9fb2d4;
 }
-.ds-war-statistic__factory {
-  display: flex;
-  align-items: center;
-  gap: 4px;
+.ds-war-panel__hint {
+  color: #6b7396;
   font-size: 11px;
-  padding: 4px 6px;
-  border-radius: 3px;
-  background: #16264d;
-  cursor: pointer;
-}
-.ds-war-statistic__factory--busy {
-  color: #ffcc66;
-}
-.ds-war-statistic__factory--disabled {
-  opacity: 0.4;
-  cursor: default;
-}
-
-.ds-war-statistic__controls {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  font-style: italic;
 }
 
 .ds-spying__row {

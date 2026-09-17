@@ -50,7 +50,7 @@ import { appendSysMsgBatch, sysMessages, warMessages, spyMessages } from '../mai
 import { SysMessageWindow } from '../mail/SysMessageWindow';
 import { AdviceWindow } from '../settings/AdviceWindow';
 import { parseAdviceHint, buildGetNubHelpCommand } from '../settings/adviceData';
-import { openWindow, closeWindow, openLogWindow, closeLogWindow, pushPopup, popPopup } from '../ui/windowStore';
+import { openWindow, closeWindow, openLogWindow, closeLogWindow, openTopPanel, closeTopPanel, pushPopup, popPopup } from '../ui/windowStore';
 import { InfoPopup } from '../ui/Popup';
 import { selectedBuilding, type SelectedBuildingActions } from '../ui/hud/selectedBuildingStore';
 import { parseInfoBuild } from '../buildings/buildInfoData';
@@ -109,7 +109,7 @@ import { buildDeleteMessagesCommand, buildReadMessagesCommand } from '../mail/ma
 import { TrainUnitWindow } from '../army/TrainUnitWindow';
 import { ArmyCreationWindow } from '../army/ArmyCreationWindow';
 import { buildKickCommand } from '../alliance/allianceMemberData';
-import { WarStatisticWindow } from '../army/WarStatisticWindow';
+import { WarFactoryPanel } from '../army/WarFactoryPanel';
 import { QuestWindow } from '../quests/QuestWindow';
 import { LogWindow } from '../mail/LogWindow';
 import { ArtefactStatWindow } from '../artefacts/ArtefactStatWindow';
@@ -899,21 +899,29 @@ function renderSpyLog(root: Element, xml: string, ctx: DispatchContext): void {
 /**
  * warFactoryData.ts — открывается автономной командой `<getwarfactory/>`
  * (reqvestdata.as:848-852, `request_war_statistic`), НЕ через
- * getbuildmenu-семью (класса `PN_WarComplex`/аналога среди `PN_*` нет) —
- * `onTabClick` сознательно не подключаем, нет привязанной ячейки.
+ * getbuildmenu-семью (класса `PN_WarComplex`/аналога среди `PN_*` нет).
  * `onLoad` шлёт `<trainwarunit c="{cell1,cell2,...}" id="" count=""/>`
  * (reqvestdata.as:863-866, `load_pack_war_factory`) — ТА ЖЕ команда, что
  * и в TrainUnitWindow, но `c` здесь — CSV выбранных ячеек-фабрик, а не
  * `ctx.activeCell`.
+ *
+ * `openTopPanel`/`closeTopPanel` (не `openWindow`/`closeWindow`!) —
+ * владелец (2026-09-18) поправил первую версию (модалка поверх карты):
+ * "надо делать как на флеше — отдельный интерфейс в игре... а не
+ * всплывающее окно. А на карте показывать загрузку заводов." См.
+ * докстринг `WarFactoryPanel.tsx` для полной картины (докнутая сверху
+ * панель + подсветка фабрик на самой карте через
+ * `ctx.renderer.setWarFactoryHighlights`).
  */
 function renderWarComplex(_root: Element, xml: string, ctx: DispatchContext): void {
   const data = parseWarComplex(xml);
-  openWindow(
-    <WarStatisticWindow
+  openTopPanel(
+    <WarFactoryPanel
       data={data}
       localUnits={localData.value?.units ?? new Map()}
       playerResources={combResToPlayerPool(combRes.value)}
-      onClose={closeWindow}
+      renderer={ctx.renderer}
+      onClose={closeTopPanel}
       onLoad={(cellIds, unitId, amount) =>
         void ctx.send(tag('trainwarunit', { c: cellIds.join(','), id: unitId, count: amount }))
       }

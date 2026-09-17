@@ -110,3 +110,17 @@ export function parseWarComplex(xml: string): WarComplexData {
     factories,
   };
 }
+
+/**
+ * Клиентская валидация из оригинала (`warstatistic.as:227-243`,
+ * `glow_factory`) — фабрика доступна для текущего юнита, только если её
+ * `type` входит в список типов юнита, И (если занята) — только если
+ * производимый ею юнит совпадает с выбранным (можно "встать в очередь"
+ * к уже идущему производству ТОГО ЖЕ юнита, но не переключить занятую
+ * фабрику на другой).
+ */
+export function isFactorySelectable(factory: Factory, unit: FactoryUnit): boolean {
+  if (!factory.type || !unit.types.includes(factory.type)) return false;
+  if (factory.busy && factory.unit !== unit.unitname) return false;
+  return true;
+}
