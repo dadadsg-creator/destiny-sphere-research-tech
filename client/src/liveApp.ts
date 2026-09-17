@@ -10,7 +10,7 @@
  */
 import { effect } from '@preact/signals';
 import { GameSession } from './protocol/gameProtocol';
-import { handleResponse, type DispatchContext } from './protocol/dispatch';
+import { handleResponse, openSysMessageLog, type DispatchContext } from './protocol/dispatch';
 import { tag } from './protocol/xmlBuilder';
 import type { MapRenderer } from './map/renderer';
 import { raceFromNumber } from './map/buildingTypes';
@@ -194,6 +194,9 @@ export async function runLiveApp(renderer: MapRenderer, login: string, pass: str
     // ответом `address.php` (порядок атрибутов совпадает с порядком
     // кнопок на экране), см. докстринг `openShop` в hudActionsStore.ts.
     openShop: () => window.open('https://destinysphere.ru/ds/user_cabinet.php?action=login', '_blank'),
+    // Меч/бинокль/шеврон нижней панели — см. докстринг openSysMessageLog
+    // в protocol/dispatch.tsx.
+    openSysLog: (type) => openSysMessageLog(type, ctx),
   };
 }
 

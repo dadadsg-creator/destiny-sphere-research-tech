@@ -46,7 +46,8 @@ import { parsePremiumStatus } from '../data/premiumData';
 import { setPremiumStatus, premiumStatus } from '../data/premiumStore';
 import { serverClock } from '../data/serverClockStore';
 import { parseOutsideAlert } from '../data/outsideAlertData';
-import { appendSysMsgBatch } from '../mail/sysMessageStore';
+import { appendSysMsgBatch, sysMessages, warMessages, spyMessages } from '../mail/sysMessageStore';
+import { SysMessageWindow } from '../mail/SysMessageWindow';
 import { AdviceWindow } from '../settings/AdviceWindow';
 import { parseAdviceHint, buildGetNubHelpCommand } from '../settings/adviceData';
 import { openWindow, closeWindow, pushPopup, popPopup } from '../ui/windowStore';
@@ -1445,4 +1446,35 @@ export function handleResponse(marks: ParsedMarks, ctx: DispatchContext): void {
   // (см. докстринг файла) — логируем разобранные данные, чтобы это было
   // видно и проверяемо, вместо тихого игнорирования.
   console.log(`[dispatch] ${rootTag} разобран, живое окно ещё не подключено:`, parser(marks.xmldata));
+}
+
+/**
+ * Открыть накопленный лог сообщений (`sys_mess_menu.as`) — кнопка
+ * статус-бара нижней панели (владелец прислал скриншот реального
+ * клиента, 2026-09-17): меч/бинокль/шеврон-стрелка = WAR/SPY/SYS,
+ * реальные названия найдены рядом в `game.as` (`chat_but` — соседняя
+ * кнопка чата, `CHAT_WINDOW`), сама кнопка лога — по накопленным
+ * `mail/sysMessageStore.ts` спискам (marks.sysmsg копится туда на
+ * каждый ответ, см. handleResponse выше). "Просмотр лога разведки"
+ * (кнопка `call_spy`, только для SPY при открытых воротах,
+ * `sys_mess_menu.as:18-40`) шлёт РОВНО `<getSpyMenu/>`
+ * (`reqvestdata.as:110-116`) — не `getSpyLog(id)` (другая, отдельная
+ * команда с параметром id, здесь неприменима).
+ */
+export function openSysMessageLog(type: 'SYS' | 'WAR' | 'SPY', ctx: DispatchContext): void {
+  const messages = type === 'WAR' ? warMessages.value : type === 'SPY' ? spyMessages.value : sysMessages.value;
+  const windowName = type === 'WAR' ? 'Военные сообщения' : type === 'SPY' ? 'Шпионские сообщения' : 'Системные сообщения';
+  openWindow(
+    <SysMessageWindow
+      messages={messages}
+      windowName={windowName}
+      typeWin={type}
+      gateOpen={ctx.gateOpen}
+      onClose={closeWindow}
+      onViewSpyLog={() => {
+        closeWindow();
+        void ctx.send(tag('getSpyMenu', {}));
+      }}
+    />,
+  );
 }

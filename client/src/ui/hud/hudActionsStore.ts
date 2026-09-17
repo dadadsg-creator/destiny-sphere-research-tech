@@ -50,6 +50,14 @@ export interface HudActions {
    * ИГРЫ) — "Магазин" это и есть `CABINET`.
    */
   openShop: () => void;
+  /**
+   * Лог сообщений (`sys_mess_menu.as`) — кнопки нижней панели (владелец
+   * прислал скриншот реального клиента, 2026-09-17): меч/бинокль/шеврон
+   * = WAR/SPY/SYS. Данные уже копятся локально (`mail/sysMessageStore.ts`
+   * на каждую марку `sysmsg`) — команда серверу не нужна, только открыть
+   * уже готовое окно с нужным фильтром.
+   */
+  openSysLog: (type: 'SYS' | 'WAR' | 'SPY') => void;
 }
 
 export const hudActions = signal<HudActions | null>(null);

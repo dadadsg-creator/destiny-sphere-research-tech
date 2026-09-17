@@ -11,7 +11,6 @@
  * заменила модальное открытие BuildInfoWindow для живой сессии (модалка
  * осталась для `?screen=build-info`).
  */
-import { useState } from 'preact/hooks';
 import { ResourceBar } from './ResourceBar';
 import { MainNav } from './MainNav';
 import { PopulationPanel } from './PopulationPanel';
@@ -23,7 +22,6 @@ import { hudActions } from './hudActionsStore';
 
 export function MainScreenHud() {
   const actions = hudActions.value;
-  const [bottomCollapsed, setBottomCollapsed] = useState(false);
   if (!actions) return null;
 
   return (
@@ -57,7 +55,7 @@ export function MainScreenHud() {
 
       <div class="ds-hud-bottom">
         <HudErrorBoundary label="Нижняя панель">
-          <BottomBar collapsed={bottomCollapsed} onToggleCollapsed={() => setBottomCollapsed((c) => !c)} />
+          <BottomBar />
         </HudErrorBoundary>
       </div>
     </div>
