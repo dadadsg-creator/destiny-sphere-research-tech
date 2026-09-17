@@ -1092,3 +1092,130 @@
 .ds-complex-side-card__mail:hover {
   background: #44579a;
 }
+
+/* Личный кабинет (CabinetWindow.tsx/RightBlock.tsx) — первая версия была
+   совсем без стилей (владелец, 2026-09-18: "уродский список"/"налипшие
+   друг на друга кнопки без стиля"). Список услуг — свои классы, не
+   переиспользован `.ds-army-row` (тот целится в `tbody tr`, на `<li>`
+   не срабатывал вовсе — был мёртвым классом здесь). */
+.ds-cabinet {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+.ds-cabinet-services {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  min-width: 190px;
+  flex-shrink: 0;
+}
+.ds-cabinet-services__head {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #7c8bb5;
+  font-weight: 700;
+  margin: 14px 0 5px;
+}
+.ds-cabinet-services__head:first-child {
+  margin-top: 0;
+}
+.ds-cabinet-services__spliter {
+  border: none;
+  border-top: 1px solid #23325c;
+  margin: 8px 0;
+}
+.ds-cabinet-services__item {
+  padding: 6px 9px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #cfd8ee;
+  font-size: 12px;
+}
+.ds-cabinet-services__item:hover {
+  background: #16264d;
+  color: #fff;
+}
+.ds-cabinet-right {
+  flex: 1;
+  min-width: 0;
+}
+.ds-cabinet-right-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ds-cabinet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #23325c;
+}
+.ds-cabinet-header__name {
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+.ds-cabinet-header__balances {
+  display: flex;
+  gap: 14px;
+}
+.ds-cabinet-world {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #0e1a38;
+  border: 1px solid #3a4d7a;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 12px;
+}
+.ds-cabinet-world__name {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+}
+.ds-cabinet-op {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #0e1a38;
+  border: 1px solid #23325c;
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+.ds-cabinet-op__label {
+  font-size: 12px;
+  color: #9fb2d4;
+  font-weight: 600;
+}
+.ds-cabinet-op__fields {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.ds-cabinet-op__field {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ds-cabinet-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 10px;
+  border-top: 1px solid #23325c;
+  font-size: 12px;
+  color: #cfd8ee;
+}
+.ds-cabinet-footer__last {
+  flex: 1;
+  min-width: 0;
+}

@@ -3,6 +3,13 @@
  * docs/client-economy-social-ui.md §5.3-5.4. Список услуг (HEAD/SPLITER/
  * SUB) рисуется как пришло с сервера — клиент НЕ фильтрует пункты по
  * IP/uid (это делает сервер, см. докстринг cabinetMainData.ts).
+ *
+ * Вёрстка (2026-09-18) — первая версия была совсем не стилизована (голый
+ * `<ul>` без класса, кнопки без единого `class`) — владелец: "что за
+ * уродский список? что за налипшие друг на друга кнопки без стиля?".
+ * Список услуг — свои классы `.ds-cabinet-services*` (не переиспользован
+ * `.ds-army-row` — та таблично-строчная подсветка целится в `tbody tr`,
+ * на `<li>` не срабатывала вовсе, была мёртвым классом здесь).
  */
 import { InfoPopup } from '../ui/Popup';
 import type { CabinetMainData, OperationStatisticData } from './cabinetMainData';
@@ -48,20 +55,20 @@ export function CabinetWindow({
           ×
         </button>
       </div>
-      <div class="ds-window__content" style={{ display: 'flex', gap: '16px' }}>
-        <ul style={{ flex: 1 }}>
+      <div class="ds-window__content ds-cabinet">
+        <ul class="ds-cabinet-services">
           {data.serviceList.map((item, i) => {
-            if (item.type === 'HEAD') return <li key={i} style={{ fontWeight: 'bold', marginTop: '8px' }}>{item.name}</li>;
-            if (item.type === 'SPLITER') return <li key={i}><hr /></li>;
+            if (item.type === 'HEAD') return <li key={i} class="ds-cabinet-services__head">{item.name}</li>;
+            if (item.type === 'SPLITER') return <li key={i}><hr class="ds-cabinet-services__spliter" /></li>;
             return (
-              <li key={i} class="ds-army-row" onClick={() => onSelectService(item.id)}>
+              <li key={i} class="ds-cabinet-services__item" onClick={() => onSelectService(item.id)}>
                 {item.name}
               </li>
             );
           })}
         </ul>
 
-        <div style={{ flex: 1 }}>
+        <div class="ds-cabinet-right">
           <RightBlock
             user={data.user}
             currentStatus={data.currentStatus}

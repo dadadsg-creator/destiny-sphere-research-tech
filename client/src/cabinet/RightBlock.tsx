@@ -8,9 +8,18 @@
  * балансом ВЫБРАННОГО мира (`reinitAmountDependsOfWorld`), степперы
  * обмена/перевода-в-мир/подарка — балансом кабинета
  * (`this.currentStatus.gold/silver`).
+ *
+ * Вёрстка (2026-09-18) — первая версия была полностью без стилей (ни
+ * одного `class`, кнопки/степперы просто подряд в потоке текста) —
+ * владелец: "налипшие друг на друга кнопки без стиля". Каждая операция
+ * теперь отдельная карточка (`.ds-cabinet-op`), золото/серебро — через
+ * уже существующий `ResourceValue` (те же иконки, что и везде в игре,
+ * не текст "Золото: N").
  */
 import { useState } from 'preact/hooks';
 import { Stepper } from '../ui/Stepper';
+import { ResourceValue } from '../ui/ResourceValue';
+import { resourceIconUrl } from '../data/resourceIcons';
 import type { CabinetMainData } from './cabinetMainData';
 
 export interface RightBlockProps {
@@ -61,49 +70,116 @@ export function RightBlock({
   };
 
   return (
-    <div class="ds-window__content">
-      <div>
-        {user.name} — Золото: {currentStatus.gold}, Серебро: {currentStatus.silver}
+    <div class="ds-cabinet-right-inner">
+      <div class="ds-cabinet-header">
+        <div>
+          <div class="ds-cabinet-header__name">{user.name}</div>
+          <div class="ds-cabinet-header__balances">
+            <ResourceValue name="GOLD_CREDIT" value={currentStatus.gold} />
+            <ResourceValue name="SILVER_CREDIT" value={currentStatus.silver} />
+          </div>
+        </div>
+        <button type="button" class="ds-popup__btn ds-popup__btn--primary" onClick={handleBuyGold}>
+          Купить золото
+        </button>
       </div>
-      <button onClick={handleBuyGold}>Купить золото</button>
 
-      <div>
-        <button disabled={worldIndex === 0} onClick={() => setWorldIndex((i) => Math.max(0, i - 1))}>
+      <div class="ds-cabinet-world">
+        <button type="button" class="ds-stepper__btn" disabled={worldIndex === 0} onClick={() => setWorldIndex((i) => Math.max(0, i - 1))}>
           ←
         </button>
-        {world ? `${world.name}: золото ${world.gold}, серебро ${world.silver}` : 'Нет миров'}
-        <button disabled={worldIndex >= user.allowWorld.length - 1} onClick={() => setWorldIndex((i) => Math.min(user.allowWorld.length - 1, i + 1))}>
+        <span class="ds-cabinet-world__name">
+          {world ? (
+            <>
+              {world.name} — <ResourceValue name="GOLD_CREDIT" value={world.gold} /> <ResourceValue name="SILVER_CREDIT" value={world.silver} />
+            </>
+          ) : (
+            'Нет миров'
+          )}
+        </span>
+        <button
+          type="button"
+          class="ds-stepper__btn"
+          disabled={worldIndex >= user.allowWorld.length - 1}
+          onClick={() => setWorldIndex((i) => Math.min(user.allowWorld.length - 1, i + 1))}
+        >
           →
         </button>
       </div>
 
-      <div>
-        Обменять золото → серебро: <Stepper value={exchangeGold} min={0} max={currentStatus.gold} onChange={setExchangeGold} />
-        <button onClick={() => exchangeGold > 0 && onChangeGoldToSilver(exchangeGold)}>Обменять</button>
+      <div class="ds-cabinet-op">
+        <span class="ds-cabinet-op__label">Обменять золото → серебро</span>
+        <div class="ds-cabinet-op__fields">
+          <Stepper value={exchangeGold} min={0} max={currentStatus.gold} onChange={setExchangeGold} />
+          <button type="button" class="ds-popup__btn" disabled={exchangeGold <= 0} onClick={() => onChangeGoldToSilver(exchangeGold)}>
+            Обменять
+          </button>
+        </div>
       </div>
 
-      <div>
-        Перевести в мир: золото <Stepper value={toGold} min={0} max={currentStatus.gold} onChange={setToGold} />
-        серебро <Stepper value={toSilver} min={0} max={currentStatus.silver} onChange={setToSilver} />
-        <button onClick={() => (toGold > 0 || toSilver > 0) && world && onMoneyToWorld(world.id, toGold, toSilver)}>Перевести в мир</button>
+      <div class="ds-cabinet-op">
+        <span class="ds-cabinet-op__label">Перевести в мир</span>
+        <div class="ds-cabinet-op__fields">
+          <span class="ds-cabinet-op__field">
+            <img class="ds-resource__icon" src={resourceIconUrl('GOLD_CREDIT')} alt="Золото" /> <Stepper value={toGold} min={0} max={currentStatus.gold} onChange={setToGold} />
+          </span>
+          <span class="ds-cabinet-op__field">
+            <img class="ds-resource__icon" src={resourceIconUrl('SILVER_CREDIT')} alt="Серебро" /> <Stepper value={toSilver} min={0} max={currentStatus.silver} onChange={setToSilver} />
+          </span>
+          <button
+            type="button"
+            class="ds-popup__btn"
+            disabled={!world || (toGold <= 0 && toSilver <= 0)}
+            onClick={() => world && onMoneyToWorld(world.id, toGold, toSilver)}
+          >
+            Перевести в мир
+          </button>
+        </div>
       </div>
 
-      <div>
-        Перевести из мира: золото <Stepper value={fromGold} min={0} max={world?.gold ?? 0} onChange={setFromGold} />
-        серебро <Stepper value={fromSilver} min={0} max={world?.silver ?? 0} onChange={setFromSilver} />
-        <button onClick={() => (fromGold > 0 || fromSilver > 0) && world && onMoneyFromWorld(world.id, fromGold, fromSilver)}>Перевести из мира</button>
+      <div class="ds-cabinet-op">
+        <span class="ds-cabinet-op__label">Перевести из мира</span>
+        <div class="ds-cabinet-op__fields">
+          <span class="ds-cabinet-op__field">
+            <img class="ds-resource__icon" src={resourceIconUrl('GOLD_CREDIT')} alt="Золото" /> <Stepper value={fromGold} min={0} max={world?.gold ?? 0} onChange={setFromGold} />
+          </span>
+          <span class="ds-cabinet-op__field">
+            <img class="ds-resource__icon" src={resourceIconUrl('SILVER_CREDIT')} alt="Серебро" /> <Stepper value={fromSilver} min={0} max={world?.silver ?? 0} onChange={setFromSilver} />
+          </span>
+          <button
+            type="button"
+            class="ds-popup__btn"
+            disabled={!world || (fromGold <= 0 && fromSilver <= 0)}
+            onClick={() => world && onMoneyFromWorld(world.id, fromGold, fromSilver)}
+          >
+            Перевести из мира
+          </button>
+        </div>
       </div>
 
-      <div>
-        Подарить: золото <Stepper value={giftGold} min={0} max={currentStatus.gold} onChange={setGiftGold} />
-        серебро <Stepper value={giftSilver} min={0} max={currentStatus.silver} onChange={setGiftSilver} />
-        <button onClick={() => (giftGold > 0 || giftSilver > 0) && onGiftMoney(giftGold, giftSilver)}>Подарить</button>
+      <div class="ds-cabinet-op">
+        <span class="ds-cabinet-op__label">Подарить</span>
+        <div class="ds-cabinet-op__fields">
+          <span class="ds-cabinet-op__field">
+            <img class="ds-resource__icon" src={resourceIconUrl('GOLD_CREDIT')} alt="Золото" /> <Stepper value={giftGold} min={0} max={currentStatus.gold} onChange={setGiftGold} />
+          </span>
+          <span class="ds-cabinet-op__field">
+            <img class="ds-resource__icon" src={resourceIconUrl('SILVER_CREDIT')} alt="Серебро" /> <Stepper value={giftSilver} min={0} max={currentStatus.silver} onChange={setGiftSilver} />
+          </span>
+          <button type="button" class="ds-popup__btn" disabled={giftGold <= 0 && giftSilver <= 0} onClick={() => onGiftMoney(giftGold, giftSilver)}>
+            Подарить
+          </button>
+        </div>
       </div>
 
-      {lastOperation && (
-        <div dangerouslySetInnerHTML={{ __html: `<b>${lastOperation.date}</b> ${lastOperation.text}` }} />
-      )}
-      <button onClick={onShowAllStatistic}>Вся статистика</button>
+      <div class="ds-cabinet-footer">
+        {lastOperation && (
+          <span class="ds-cabinet-footer__last" dangerouslySetInnerHTML={{ __html: `<b>${lastOperation.date}</b> ${lastOperation.text}` }} />
+        )}
+        <button type="button" class="ds-popup__btn" onClick={onShowAllStatistic}>
+          Вся статистика
+        </button>
+      </div>
     </div>
   );
 }
