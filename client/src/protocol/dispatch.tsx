@@ -50,7 +50,7 @@ import { appendSysMsgBatch, sysMessages, warMessages, spyMessages } from '../mai
 import { SysMessageWindow } from '../mail/SysMessageWindow';
 import { AdviceWindow } from '../settings/AdviceWindow';
 import { parseAdviceHint, buildGetNubHelpCommand } from '../settings/adviceData';
-import { openWindow, closeWindow, pushPopup, popPopup } from '../ui/windowStore';
+import { openWindow, closeWindow, openLogWindow, closeLogWindow, pushPopup, popPopup } from '../ui/windowStore';
 import { InfoPopup } from '../ui/Popup';
 import { selectedBuilding, type SelectedBuildingActions } from '../ui/hud/selectedBuildingStore';
 import { parseInfoBuild } from '../buildings/buildInfoData';
@@ -1460,19 +1460,29 @@ export function handleResponse(marks: ParsedMarks, ctx: DispatchContext): void {
  * `sys_mess_menu.as:18-40`) шлёт РОВНО `<getSpyMenu/>`
  * (`reqvestdata.as:110-116`) — не `getSpyLog(id)` (другая, отдельная
  * команда с параметром id, здесь неприменима).
+ *
+ * `openLogWindow`/`closeLogWindow` (не `openWindow`/`closeWindow`!) —
+ * в оригинале это отдельный независимый слот (`create_log_window`),
+ * НЕ участвующий в общем модальном локе окон
+ * (`sys_mess_menu.as:100-101`: панель позиционируется прямо от
+ * `debug.link.interface_mov.bg_status_bar`, т.е. прикреплена к нижней
+ * панели, а не всплывает по центру экрана как обычное меню) — владелец
+ * поправил после первой попытки (была центральная модалка): "в
+ * оригинале выезжала панель с сообщениями", см. `SysMessageWindow.tsx`
+ * докстринг для вёрстки этой панели.
  */
 export function openSysMessageLog(type: 'SYS' | 'WAR' | 'SPY', ctx: DispatchContext): void {
   const messages = type === 'WAR' ? warMessages.value : type === 'SPY' ? spyMessages.value : sysMessages.value;
   const windowName = type === 'WAR' ? 'Военные сообщения' : type === 'SPY' ? 'Шпионские сообщения' : 'Системные сообщения';
-  openWindow(
+  openLogWindow(
     <SysMessageWindow
       messages={messages}
       windowName={windowName}
       typeWin={type}
       gateOpen={ctx.gateOpen}
-      onClose={closeWindow}
+      onClose={closeLogWindow}
       onViewSpyLog={() => {
-        closeWindow();
+        closeLogWindow();
         void ctx.send(tag('getSpyMenu', {}));
       }}
     />,
