@@ -24,10 +24,20 @@
  * время под видом игрового. Слева и отдельно от остальных кнопок — как
  * в оригинале, чтобы центр панели оставался под игровые действия (было
  * — время смешано с кнопками одним блоком слева, справа пусто).
+ *
+ * Значок почты (2026-09-17) — тоже настоящая марка (`newmessage`, см.
+ * `mail/mailStore.ts`), но НЕ счётчик: сервер шлёт только "есть/нет"
+ * непрочитанные, конкретное число никогда не присылается (`game.as:
+ * 893-918`). docs/main_screen.md §10 описывает цифровой бейдж "до
+ * 99/99+" — эта часть ТЗ не подтверждается протоколом; сделан честный
+ * boolean-индикатор (подсветка значка), как в оригинале, без придуманной
+ * цифры. "🔔" (уведомления) — отдельная, не запрошенная в этом заходе
+ * заглушка, не трогалась.
  */
 import { useEffect, useState } from 'preact/hooks';
 import { hudActions } from './hudActionsStore';
 import { serverClock, getGameTimeInGameZone } from '../../data/serverClockStore';
+import { hasNewMail } from '../../mail/mailStore';
 
 function formatClock(d: Date): string {
   const hh = String(d.getUTCHours()).padStart(2, '0');
@@ -83,7 +93,12 @@ export function BottomBar({ collapsed, onToggleCollapsed }: BottomBarProps) {
             </button>
           </div>
           <div class="ds-hud-bottombar__right">
-            <button type="button" class="ds-hud-bottombar__icon-btn" title="Почта" onClick={actions?.openMail}>
+            <button
+              type="button"
+              class={`ds-hud-bottombar__icon-btn${hasNewMail.value ? ' ds-hud-bottombar__icon-btn--new' : ''}`}
+              title={hasNewMail.value ? 'Почта — есть непрочитанные' : 'Почта'}
+              onClick={actions?.openMail}
+            >
               ✉
             </button>
             <button type="button" class="ds-hud-bottombar__icon-btn ds-hud-bottombar__icon-btn--stub" title="Уведомления — счётчик непрочитанных пока не подключён">

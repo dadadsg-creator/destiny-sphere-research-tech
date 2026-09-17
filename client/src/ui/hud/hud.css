@@ -300,6 +300,13 @@ body {
 .ds-hud-bottombar__icon-btn--stub {
   color: var(--hud-text2);
 }
+/* Есть непрочитанная почта (marks.newmessage) — зелёная подсветка, тот
+   же цвет, что и мигающий значок почты оригинала (game.as:903, 0x00FF00). */
+.ds-hud-bottombar__icon-btn--new {
+  border-color: var(--hud-ok);
+  color: var(--hud-ok);
+  box-shadow: 0 0 6px rgba(66, 215, 125, 0.6);
+}
 
 /* §11 — круговое меню. Третий заход (2026-09-16): владелец попросил
    голую структуру без градиентов/металлических рамок/теней — "графика

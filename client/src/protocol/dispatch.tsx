@@ -103,7 +103,7 @@ import { AllianceMemberWindow } from '../alliance/AllianceMemberWindow';
 import { AllianceManagementWindow } from '../alliance/AllianceManagementWindow';
 import { CreateNewMailWindow } from '../mail/CreateNewMailWindow';
 import { MailWindow } from '../mail/MailWindow';
-import { mailListState, mailOpenBody, setMailList, setMailOpenBody } from '../mail/mailStore';
+import { mailListState, mailOpenBody, setMailList, setMailOpenBody, hasNewMail } from '../mail/mailStore';
 import { buildDeleteMessagesCommand, buildReadMessagesCommand } from '../mail/mailData';
 import { TrainUnitWindow } from '../army/TrainUnitWindow';
 import { ArmyCreationWindow } from '../army/ArmyCreationWindow';
@@ -1356,6 +1356,14 @@ export function handleResponse(marks: ParsedMarks, ctx: DispatchContext): void {
       gmtHours: marks.userGMT !== undefined ? Number(marks.userGMT) : 0,
     };
   }
+
+  // "Есть новая почта" — top-level марка `newmessage`, см. mail/mailStore.ts.
+  // Отражаем присутствие/отсутствие марки в КАЖДОМ ответе как есть — это
+  // живой статус "есть непрочитанные сейчас", не "было хоть раз с начала
+  // сессии" (оригинал, `game.as:893-918`, сбрасывает индикатор только по
+  // клику самого игрока; порт проще и живее — как только сервер перестал
+  // присылать эту марку, значит непрочитанных больше нет).
+  hasNewMail.value = marks.newmessage !== undefined;
 
   if (marks.xmlerror) {
     const doc = parseXmlFragment(marks.xmlerror);
