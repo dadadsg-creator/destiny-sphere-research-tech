@@ -475,9 +475,9 @@ body {
   display: flex;
   gap: 6px;
 }
-/* Загрузка военных заводов / отображение артефактов — честные заглушки,
-   не найдены в декомпиле (см. докстринг AccountMenu.tsx), ждут описания
-   от владельца. */
+/* Загрузка военных заводов / отображение артефактов — реально
+   подключены (см. докстринг hudActionsStore.ts), открывают уже
+   существующие WarStatisticWindow/ArtefactStatWindow. */
 .ds-hud-account__toggle {
   width: 30px;
   height: 30px;
@@ -487,10 +487,11 @@ body {
   border-radius: 50%;
   background: var(--hud-bg2);
   border: 1px solid var(--hud-border);
-  color: var(--hud-text2);
-  font-size: 12px;
-  cursor: default;
-  opacity: 0.6;
+  color: var(--hud-text);
+  cursor: pointer;
+}
+.ds-hud-account__toggle:hover {
+  background: var(--hud-border);
 }
 
 /* §9 — панель выбранного здания. Обёртка без pointer-events, чтобы

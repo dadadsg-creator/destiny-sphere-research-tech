@@ -91,6 +91,40 @@ export interface HudActions {
    * страницу логина.
    */
   logout: () => void;
+  /**
+   * Две "premium"-кнопки кругового меню — владелец прислал скриншот
+   * реального клиента с гексагональной картой заводов/артефактов
+   * (2026-09-17). Первый заход ошибочно решил, что источника нет вообще
+   * (`sota.as`/`game.as` — правда без единого упоминания "warfactory"/
+   * "artefact" в смысле карты) — по факту ОБЕ команды нашлись отдельно от
+   * этих двух файлов, и обе уже ПОЛНОСТЬЮ портированы ещё в более ранней
+   * фазе (парсер + окно + обработчики), просто без точки входа —
+   * абсолютно та же ситуация, что и с логом сообщений нижней панели
+   * раньше в этом заходе.
+   *
+   * `openWarFactories` — `<getwarfactory/>` (`reqvestdata.as:848-852`,
+   * `request_war_statistic`) → `warcomplex` → уже существующие
+   * `warFactoryData.ts`/`WarStatisticWindow.tsx` (`dispatch.tsx:
+   * renderWarComplex`, зарегистрирован в реестре, но раньше НИЧЕГО не
+   * вызывало эту команду). В оригинале (`warstatistic.as`) это не список
+   * чекбоксов, а гексагональная карта-оверлей поверх соты
+   * (`factory_create()`) — порт сознательно выбрал список (та же логика
+   * выбора/цены/времени, см. докстринг `WarStatisticWindow.tsx`), карта-
+   * оверлей не переносилась отдельно.
+   */
+  openWarFactories: () => void;
+  /**
+   * `openArtefactStat` — `<arthint/>` (`reqvestdata.as:843-847`,
+   * `request_art_statistic`) → `arthint` → уже существующие
+   * `artefactStatData.ts`/`ArtefactStatWindow.tsx` (`dispatch.tsx:
+   * renderArtefactStat`, тоже зарегистрирован, тоже без точки входа до
+   * сих пор). Как и с заводами — в оригинале (`artefactstatclass.as`)
+   * это гекс-карта-оверлей соты с подсветкой "самой слабой" постройки
+   * каждого типа и (для реальных премиум-аккаунтов) цветовым индикатором
+   * скорого истечения артефакта; клик по ячейке открывает уже
+   * подключённое окно attach/detach (`renderBuildArtefact`).
+   */
+  openArtefactStat: () => void;
 }
 
 export const hudActions = signal<HudActions | null>(null);

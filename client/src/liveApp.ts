@@ -214,6 +214,9 @@ export async function runLiveApp(renderer: MapRenderer, login: string, pass: str
           window.location.href = 'https://destinysphere.ru/ds/index_login.php';
         });
     },
+    // Две premium-кнопки — см. докстринги в hudActionsStore.ts.
+    openWarFactories: () => void ctx.send(tag('getwarfactory', {})),
+    openArtefactStat: () => void ctx.send(tag('arthint', {})),
   };
 }
 
