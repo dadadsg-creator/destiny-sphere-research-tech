@@ -995,20 +995,26 @@ function renderArtefactStat(_root: Element, xml: string, ctx: DispatchContext): 
  * reqvestdata.as:868-871), но обе команды окна — БЕЗ `c`:
  * `<dropartefact id="{csv}"/>` (reqvestdata.as:828-834, `delArtFromDepot`)
  * и `<artefactactivate id=""/>` (reqvestdata.as:947-950, `artActivate`).
- * Фильтр по типу/размеру/scope (`data.filter`) не отрисован в
- * `ArtDepotWindow` (пробел Фазы 3) — `artdepotsort()` сюда сознательно не
- * подключён.
+ * Фильтр по типу/размеру/scope (`data.filter`) теперь подключён
+ * (2026-09-18, `onSort`) — `artdepotsort()` шлёт ТУ ЖЕ команду
+ * `getbuildmenu`, что и открытие окна, просто с `sorttype`/`sortsize`/
+ * `sortscope` — используем `ctx.activeCell`, тот же паттерн, что и у
+ * остальных вкладок `getbuildmenu`-семьи (`sendTabClick`).
  */
 function renderArtDepot(root: Element, xml: string, ctx: DispatchContext): void {
   const data = parseArtDepot(xml);
   openWindow(
     <ArtDepotWindow
       entries={data.entries}
+      filter={data.filter}
       tabs={parseTabsArray(root)}
       onTabClick={(tabId) => sendTabClick(ctx, tabId)}
       onClose={closeWindow}
       onDeleteSelected={(ids) => void ctx.send(tag('dropartefact', { id: ids.join(',') }))}
       onActivate={(id) => void ctx.send(tag('artefactactivate', { id }))}
+      onSort={(type, size, scope) =>
+        void ctx.send(tag('getbuildmenu', { c: ctx.activeCell, tab: 'ArcheologyArtefact', sorttype: type, sortsize: size, sortscope: scope }))
+      }
     />,
   );
 }

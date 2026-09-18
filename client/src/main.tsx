@@ -70,7 +70,7 @@ import type { ProtectShieldData } from './spying/protectShieldData';
 import type { SpyLogData } from './spying/scannerData';
 import type { BuildMenuEntry, PlayerResourcePoolFull } from './buildings/buildMenuData';
 import type { BuildInfoData } from './buildings/buildInfoData';
-import type { ArtDepotEntry } from './buildings/artDepotData';
+import type { ArtDepotEntry, ArtDepotFilter } from './buildings/artDepotData';
 import type { ResearchData } from './science/researchData';
 import type { AuctionLot } from './trade/auctionData';
 import type { TradeMenuData } from './trade/tradeData';
@@ -633,6 +633,22 @@ const TEST_ART_DEPOT: ArtDepotEntry[] = [
     link: { id: '2', text: 'Активировать', hintText: 'Разовый подарок' },
   },
 ];
+const TEST_ART_DEPOT_FILTER: ArtDepotFilter = {
+  ordersType: [
+    { id: 'ALL', ln: 'Все типы', cur: true },
+    { id: 'ARTEFACT', ln: 'Артефакты', cur: false },
+  ],
+  ordersScope: [
+    { id: 'ALL', ln: 'Любая область', cur: true },
+    { id: 'TECH', ln: 'Технические', cur: false },
+    { id: 'BONUS', ln: 'Бонусные', cur: false },
+  ],
+  ordersSize: [
+    { id: 'ALL', ln: 'Любой размер', cur: true },
+    { id: 'SMALL', ln: 'Малый', cur: false },
+    { id: 'GIANT', ln: 'Гигантский', cur: false },
+  ],
+};
 
 // Синтетические данные для проверки ResearchWindow (?screen=research).
 const TEST_RESEARCH: ResearchData = {
@@ -1687,9 +1703,11 @@ async function main() {
     openWindow(
       <ArtDepotWindow
         entries={TEST_ART_DEPOT}
+        filter={TEST_ART_DEPOT_FILTER}
         onClose={() => console.log('[art-depot] close')}
         onDeleteSelected={(ids) => console.log('[art-depot] delArtFromDepot(', ids, ')')}
         onActivate={(id) => console.log('[art-depot] artActivate(', id, ')')}
+        onSort={(type, size, scope) => console.log('[art-depot] artdepotsort(', type, size, scope, ')')}
       />,
     );
     (window as any).__renderDone = true;
