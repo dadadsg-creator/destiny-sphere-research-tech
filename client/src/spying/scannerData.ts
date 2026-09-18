@@ -17,6 +17,22 @@
  * `obj.data` в клиентском коде проверяется на undefined, но нигде не
  * присваивается из XML — похоже на мёртвый остаток более ранней версии,
  * сюда не перенесено.
+ *
+ * **Фильтр (2026-09-18)** — данные (`SpyLogFilter`) парсились уже давно,
+ * форма не была отрисована. Команда — `reqvestdata.filterScanner()`
+ * (`scannermenuclass.as:227-251`, `reqvestdata.as:73-83`):
+ * `<getbuildmenu {c} tab="PN_SpyLogs" [name=""] colony="id1,id2,..."
+ * types="id1,id2,..." datefrom="" dateto=""/>` — `tab` здесь буквально
+ * `"PN_SpyLogs"` С префиксом (не через общий `stripTabPrefix()`
+ * механизм переключения вкладок — это отдельная, специально
+ * закодированная команда фильтра); `name` уходит только если длина ≥3
+ * символа (`namestr.length >= 3`, строка 76). `colony`/`types` — csv
+ * отмеченных id (AS2 `.toString()` на массиве = join(",")).
+ * `datefrom`/`dateto` — секунды (`дни*86400+часы*3600+мин*60+сек`,
+ * строки 248-249) в диапазоне `filter.time.min..max`; **точная
+ * семантика этого диапазона не установлена** (не определено, что именно
+ * измеряет ось времени — абсолютный момент или сдвиг "назад от сейчас"),
+ * `from` в оригинале по умолчанию 0, `to` — `filter.time.cur`.
  */
 import { parseXmlFragment } from '../protocol/response';
 
@@ -123,4 +139,24 @@ export function parseSpyLog(xml: string): SpyLogData {
     entries,
     filter,
   };
+}
+
+/** reqvestdata.as:73-83 (filterScanner) — атрибуты `<getbuildmenu tab="PN_SpyLogs" .../>`, без самого тега (см. dispatch.tsx). */
+export interface ScannerFilterCommand {
+  name: string;
+  colonyIds: string[];
+  typeIds: string[];
+  dateFrom: number;
+  dateTo: number;
+}
+
+export function buildScannerFilterCommand(cmd: ScannerFilterCommand): Record<string, string | number> {
+  const attrs: Record<string, string | number> = {
+    colony: cmd.colonyIds.join(','),
+    types: cmd.typeIds.join(','),
+    datefrom: cmd.dateFrom,
+    dateto: cmd.dateTo,
+  };
+  if (cmd.name.length >= 3) attrs.name = cmd.name;
+  return attrs;
 }

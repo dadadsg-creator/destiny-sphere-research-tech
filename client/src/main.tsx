@@ -513,10 +513,16 @@ const TEST_SPY_LOG: SpyLogData = {
   ],
   filter: {
     maxAllowZond: '10',
-    typesMove: [],
-    colonys: [],
+    typesMove: [
+      { id: 'Razvedko', name: 'Разведка', active: true },
+      { id: 'FullLog', name: 'Полное сканирование', active: true },
+    ],
+    colonys: [
+      { id: '1', name: 'Наша сота', addr: '1.2.3', active: true },
+      { id: '2', name: 'Вторая колония', addr: '2.1.7', active: false },
+    ],
     defName: null,
-    time: { cur: null, min: null, max: null },
+    time: { cur: '86400', min: '0', max: '604800' },
   },
 };
 
@@ -1883,6 +1889,7 @@ async function main() {
         data={TEST_SPY_LOG}
         onClose={() => console.log('[scanner] close')}
         onScanSelected={(ids) => console.log('[scanner] requestScan(', ids, ')')}
+        onApplyFilter={(cmd) => console.log('[scanner] filterScanner(', cmd, ')')}
       />,
     );
     (window as any).__renderDone = true;

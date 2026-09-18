@@ -172,7 +172,7 @@ import { parseResearch, combResToNanoFoodPool } from '../science/researchData';
 import { parsePowerShield } from '../spying/powerShieldData';
 import { parseProtectShield } from '../spying/protectShieldData';
 import { combResCurrent } from '../data/combResData';
-import { parseSpyLog } from '../spying/scannerData';
+import { parseSpyLog, buildScannerFilterCommand } from '../spying/scannerData';
 import { parseSpying } from '../spying/spyingData';
 import { parseZondCreate } from '../spying/zondCreateData';
 import { parseAuction } from '../trade/auctionData';
@@ -890,6 +890,7 @@ function renderZondCreate(root: Element, xml: string, ctx: DispatchContext): voi
  */
 function renderSpyLog(root: Element, xml: string, ctx: DispatchContext): void {
   const data = parseSpyLog(xml);
+  const cellNum = ctx.activeCell;
   openWindow(
     <ScannerWindow
       data={data}
@@ -897,6 +898,9 @@ function renderSpyLog(root: Element, xml: string, ctx: DispatchContext): void {
       onTabClick={(tabId) => sendTabClick(ctx, tabId)}
       onClose={closeWindow}
       onScanSelected={(ids) => void ctx.send(tag('scaninriver', { id: ids.join(',') }))}
+      onApplyFilter={(cmd) =>
+        cellNum !== undefined && void ctx.send(tag('getbuildmenu', { c: cellNum, tab: 'PN_SpyLogs', ...buildScannerFilterCommand(cmd) }))
+      }
     />,
   );
 }
