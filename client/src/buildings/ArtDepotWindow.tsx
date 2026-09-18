@@ -1,7 +1,11 @@
 /**
- * Окно «Депо артефактов» — art_depot_menu.as, см.
+ * Окно «Хранилище» (артефактов) — art_depot_menu.as, см.
  * docs/client-economy-social-ui.md §1.5. Данные — artDepotData.ts
- * (parseArtDepot).
+ * (parseArtDepot). Название окна — прямая поправка владельца
+ * (2026-09-18: "не 'Депо', а 'Хранилище' должно быть") — реального
+ * `ln` для заголовка в декомпиле не нашлось (заголовок в оригинале не
+ * заведён отдельной строкой, `art_depot_menu.as` не выводит его через
+ * `getLocalNames`), название заменено по прямому указанию.
  *
  * Артефакты с `link` — активируемые одноразовые предметы (кнопка шлёт
  * `artActivate(id)`), а не пассивные бонусы — отдельная находка доклада.
@@ -16,10 +20,18 @@
  * sortsize="" sortscope=""/>` — та же `getbuildmenu`-команда, что и
  * открытие самого окна, просто с 3 доп. атрибутами; сервер в ответ
  * присылает НОВЫЙ отфильтрованный список тем же марком.
+ *
+ * **Исправление (2026-09-18)**: имя артефакта и имя бонуса показывались
+ * сырыми машинными именами (владелец: "плейсхолдеры вместо названий") —
+ * `artefactDisplayName()`/`resourceDisplayName()` (`resourceIcons.ts`,
+ * та же живая локализация, что уже подключена в торговле/передаче/
+ * аукционе), не выдуманные строки. Выпадающие списки фильтра тоже были
+ * совсем без стилей ("кнопки без стилей") — свои классы `.ds-art-depot__*`.
  */
 import { useState } from 'preact/hooks';
 import { Window } from '../ui/Window';
 import type { TabDef } from '../ui/tabs';
+import { artefactDisplayName, resourceDisplayName } from '../data/resourceIcons';
 import type { ArtDepotEntry, ArtDepotFilter, ArtDepotFilterOption } from './artDepotData';
 
 export interface ArtDepotWindowProps {
@@ -40,9 +52,9 @@ function currentOptionId(options: ArtDepotFilterOption[]): string {
 function FilterSelect({ label, options, value, onChange }: { label: string; options: ArtDepotFilterOption[]; value: string; onChange: (id: string) => void }) {
   if (options.length === 0) return null;
   return (
-    <label class="ds-spying__choice">
-      {label}:{' '}
-      <select value={value} onChange={(e) => onChange((e.target as HTMLSelectElement).value)}>
+    <label class="ds-art-depot__filter">
+      <span class="ds-art-depot__filter-label">{label}</span>
+      <select class="ds-art-depot__select" value={value} onChange={(e) => onChange((e.target as HTMLSelectElement).value)}>
         {options.map((o) => (
           <option key={o.id} value={o.id ?? ''}>
             {o.ln ?? o.id}
@@ -76,9 +88,9 @@ export function ArtDepotWindow({ entries, filter, tabs, onTabClick, onClose, onD
   const hasFilters = filter.ordersType.length > 0 || filter.ordersScope.length > 0 || filter.ordersSize.length > 0;
 
   return (
-    <Window title="Депо артефактов" tabs={tabs} onTabClick={onTabClick} onClose={onClose}>
+    <Window title="Хранилище" tabs={tabs} onTabClick={onTabClick} onClose={onClose}>
       {hasFilters && (
-        <div class="ds-spying__row">
+        <div class="ds-art-depot__filters">
           <FilterSelect label="Тип" options={filter.ordersType} value={sortType} onChange={(v) => applySort(v, sortSize, sortScope)} />
           <FilterSelect label="Область" options={filter.ordersScope} value={sortScope} onChange={(v) => applySort(sortType, sortSize, v)} />
           <FilterSelect label="Размер" options={filter.ordersSize} value={sortSize} onChange={(v) => applySort(sortType, v, sortScope)} />
@@ -102,10 +114,10 @@ export function ArtDepotWindow({ entries, filter, tabs, onTabClick, onClose, onD
                 )}
               </td>
               <td>
-                {entry.libName}
+                {artefactDisplayName(entry.libName)}
                 {entry.expired && <span class="ds-protect-shield__cost--unaffordable"> ({entry.expired})</span>}
               </td>
-              <td>{entry.bonuses.map((b) => `${b.name}:${b.value}`).join(', ') || '—'}</td>
+              <td>{entry.bonuses.map((b) => `${b.name ? resourceDisplayName(b.name) : '?'}:${b.value}`).join(', ') || '—'}</td>
               <td>
                 {entry.link && entry.id && (
                   <button type="button" class="ds-popup__btn" onClick={() => onActivate(entry.id!)}>

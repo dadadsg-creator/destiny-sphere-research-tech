@@ -1700,6 +1700,11 @@ async function main() {
   }
 
   if (screen === 'art-depot') {
+    setLocalData(
+      parseLocalData(
+        '<load v="1"><artefact id="ARTEFACT_TECH_CATALYZATION" ln="Катализатор производства"/><artefact id="ARTEFACT_BONUS_GIFT" ln="Дар изобилия"/><att id="PRODUCTION_SPEED" ln="скорость производства"/></load>',
+      ),
+    );
     openWindow(
       <ArtDepotWindow
         entries={TEST_ART_DEPOT}
