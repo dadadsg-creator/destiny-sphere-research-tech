@@ -74,6 +74,50 @@
   font-size: 12px;
 }
 
+/* Тот же класс бага, что и с font-size выше, только для form-элементов:
+   ЛЮБОЙ `<select>`/`<input type="date"|text|number|password">` без
+   собственного явного класса рендерился чистым браузерным дефолтом
+   (белый фон, чёрный текст) — резало глаз на тёмной теме. Найдено
+   2026-09-18 после того, как это было точечно исправлено в 4 местах
+   SellWindow.tsx ("убогие интерфейсы" — справедливое замечание
+   владельца на BattleOverviewWindow, где та же болезнь, просто до неё
+   ещё не дошли руки) — вместо очередной точечной правки одного окна,
+   один общий дефолт на уровне `.ds-window` для ВСЕХ окон сразу, чтобы
+   пробел не всплывал заново в каждом непросмотренном экране. Точечные
+   классы (`.ds-art-depot__select`/`.ds-stepper__input`/`.ds-text-input`)
+   остаются — они конкретнее (выше специфичность/размер), этот блок —
+   только страховочный дефолт для того, что ничем не переопределено. */
+.ds-window select,
+.ds-window input[type='date'],
+.ds-window input[type='text'],
+.ds-window input[type='number'],
+.ds-window input[type='password'] {
+  background: #0e1a38;
+  color: #e8ecf7;
+  border: 1px solid #3a4d7a;
+  border-radius: 3px;
+  padding: 3px 6px;
+  font-size: 12px;
+  font-family: inherit;
+}
+
+/* Обёртка-карточка общего вида — тот же визуальный язык, что и
+   `.ds-auction-filter__panel`, но под нейтральным именем для
+   переиспользования в любом окне (первое применение —
+   BattleOverviewWindow.tsx, где панель фильтров раньше была голым
+   рядом инпутов без всякой рамки). */
+.ds-panel {
+  padding: 10px;
+  background: #0e1a38;
+  border: 1px solid #3a4d7a;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  align-items: flex-end;
+}
+
 .ds-tabbar {
   display: flex;
   gap: 2px;

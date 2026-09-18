@@ -117,47 +117,65 @@ function FilterBar({ filters, onApply }: { filters: BattleFilters; onApply: (v: 
   const toIndex = (iso: string) => Math.min(total, Math.max(1, total - daysAgoFromISODate(iso)));
 
   return (
-    <div class="ds-spying__row" style={{ flexWrap: 'wrap' }}>
-      <input
-        type="date"
-        min={oldestIso}
-        max={todayIso}
-        value={dateStart}
-        onInput={(e) => setDateStart((e.target as HTMLInputElement).value)}
-      />
-      <input
-        type="date"
-        min={oldestIso}
-        max={todayIso}
-        value={dateEnd}
-        onInput={(e) => setDateEnd((e.target as HTMLInputElement).value)}
-      />
-      <select value={opp} onChange={(e) => setOpp((e.target as HTMLSelectElement).value)}>
-        <option value="ALL">Все противники</option>
-        {filters.opponents.map((o) => (
-          <option key={o} value={o}>
-            {o}
-          </option>
-        ))}
-      </select>
-      <select value={sot} onChange={(e) => setSot((e.target as HTMLSelectElement).value)}>
-        <option value="ALL">Все соты</option>
-        {filters.sotes.map((s) => (
-          <option key={s} value={s}>
-            {s}
-          </option>
-        ))}
-      </select>
-      <select value={stat} onChange={(e) => setStat((e.target as HTMLSelectElement).value)}>
-        <option value="ALL">Любой тип</option>
-        <option value="A">Атака</option>
-        <option value="D">Оборона</option>
-      </select>
-      <select value={winner} onChange={(e) => setWinner((e.target as HTMLSelectElement).value)}>
-        <option value="ALL">Любой исход</option>
-        <option value="1">Я победил</option>
-        <option value="0">Я проиграл</option>
-      </select>
+    <div class="ds-panel">
+      <label class="ds-auction-filter__field">
+        <span>С</span>
+        <input
+          type="date"
+          min={oldestIso}
+          max={todayIso}
+          value={dateStart}
+          onInput={(e) => setDateStart((e.target as HTMLInputElement).value)}
+        />
+      </label>
+      <label class="ds-auction-filter__field">
+        <span>По</span>
+        <input
+          type="date"
+          min={oldestIso}
+          max={todayIso}
+          value={dateEnd}
+          onInput={(e) => setDateEnd((e.target as HTMLInputElement).value)}
+        />
+      </label>
+      <label class="ds-auction-filter__field">
+        <span>Противник</span>
+        <select value={opp} onChange={(e) => setOpp((e.target as HTMLSelectElement).value)}>
+          <option value="ALL">Все противники</option>
+          {filters.opponents.map((o) => (
+            <option key={o} value={o}>
+              {o}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label class="ds-auction-filter__field">
+        <span>Сота</span>
+        <select value={sot} onChange={(e) => setSot((e.target as HTMLSelectElement).value)}>
+          <option value="ALL">Все соты</option>
+          {filters.sotes.map((s) => (
+            <option key={s} value={s}>
+              {s}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label class="ds-auction-filter__field">
+        <span>Тип</span>
+        <select value={stat} onChange={(e) => setStat((e.target as HTMLSelectElement).value)}>
+          <option value="ALL">Любой тип</option>
+          <option value="A">Атака</option>
+          <option value="D">Оборона</option>
+        </select>
+      </label>
+      <label class="ds-auction-filter__field">
+        <span>Исход</span>
+        <select value={winner} onChange={(e) => setWinner((e.target as HTMLSelectElement).value)}>
+          <option value="ALL">Любой исход</option>
+          <option value="1">Я победил</option>
+          <option value="0">Я проиграл</option>
+        </select>
+      </label>
       <button
         type="button"
         class="ds-popup__btn"
@@ -220,11 +238,11 @@ export function BattleOverviewWindow({
   return (
     <Window title="Обзор боёв" tabs={tabs} onTabClick={onTabClick} onClose={onClose}>
       <div class="ds-spying__row">
+        <span class="ds-spying__label">Награда за неравный бой:</span>
         <button
           type="button"
           class="ds-popup__btn"
           disabled={!canClaim}
-          title="Награда за неравный бой"
           onClick={() => {
             onClaimReward();
             setClaimed(true);
