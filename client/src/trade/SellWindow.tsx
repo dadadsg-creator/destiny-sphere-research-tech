@@ -201,7 +201,7 @@ function TradeCalculatorPanel({
 
       <div class="ds-spying__row">
         <span class="ds-spying__label">Юнит:</span>
-        <select value={itemId} onChange={(e) => setItemId((e.target as HTMLSelectElement).value)}>
+        <select class="ds-art-depot__select" value={itemId} onChange={(e) => setItemId((e.target as HTMLSelectElement).value)}>
           {items.map((a) => (
             <option key={a.id} value={a.id ?? ''}>
               {a.libname ? unitDisplayName(a.libname) : a.id}
@@ -357,7 +357,7 @@ export function SellWindow({ data, localUnits, isPremium, playerRace, tabs, onTa
         <>
           <div class="ds-spying__row">
             <span class="ds-spying__label">Товар:</span>
-            <select value={articleId} onChange={(e) => setArticleId((e.target as HTMLSelectElement).value)}>
+            <select class="ds-art-depot__select" value={articleId} onChange={(e) => setArticleId((e.target as HTMLSelectElement).value)}>
               {articles.map((a) => (
                 <option key={a.id} value={a.id ?? ''}>
                   {articleLabel(a)} (есть: {a.amount})
@@ -368,7 +368,7 @@ export function SellWindow({ data, localUnits, isPremium, playerRace, tabs, onTa
 
           <div class="ds-spying__row">
             <span class="ds-spying__label">Взамен:</span>
-            <select value={tradeByIndex} onChange={(e) => setTradeByIndex(Number((e.target as HTMLSelectElement).value))}>
+            <select class="ds-art-depot__select" value={tradeByIndex} onChange={(e) => setTradeByIndex(Number((e.target as HTMLSelectElement).value))}>
               {(data.matrix?.reses ?? []).map((res, i) => (
                 <option key={i} value={i} disabled={!data.matrix?.data[tradesRowIndex]?.[i]?.allow}>
                   {resourceColumnLabel(res.name)}
@@ -422,7 +422,7 @@ export function SellWindow({ data, localUnits, isPremium, playerRace, tabs, onTa
 
           <div class="ds-spying__row">
             <span class="ds-spying__label">Локация:</span>
-            <select value={scope ?? ''} onChange={(e) => setScope((e.target as HTMLSelectElement).value)}>
+            <select class="ds-art-depot__select" value={scope ?? ''} onChange={(e) => setScope((e.target as HTMLSelectElement).value)}>
               {data.scopes.map((s) => (
                 <option key={s.id} value={s.id ?? ''}>
                   {s.ln}
