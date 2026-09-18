@@ -127,8 +127,38 @@ interface FilterTreeGroupProps {
   emptyHint?: string;
 }
 
+/**
+ * Плоский список ресурсов (RESOURCES-категория, "чем платить") — владелец
+ * (2026-09-18): "нафига так место неоптимально тратить [вертикально]... не
+ * галочками, а просто кликать по ресурсу". Горизонтальный ряд "фишек" с
+ * картинкой, без чекбокса — сам клик по фишке переключает `stat`,
+ * подсвеченная/яркая = выбрана, тусклая = нет. Применяется ТОЛЬКО когда
+ * ВСЕ узлы группы — листья с иконкой (ресурсы); дерево юнитов/артефактов
+ * (с вложенностью) и текстовые общие фильтры (без иконок) остаются
+ * обычным вертикальным списком ниже.
+ */
+function FilterChipRow({ nodes, onToggle }: { nodes: FilterTreeNode[]; onToggle: (target: FilterTreeNode, stat: boolean) => void }) {
+  return (
+    <div class="ds-auction-filter__chips">
+      {nodes.map((n) => (
+        <button
+          key={n.id}
+          type="button"
+          class={`ds-auction-filter__chip${n.stat ? ' ds-auction-filter__chip--selected' : ''}`}
+          title={n.name ?? n.id}
+          onClick={() => onToggle(n, !n.stat)}
+        >
+          <NodeIcon icon={n.icon} />
+          <span>{n.name ?? n.id}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function FilterTreeGroup({ title, nodes, onChange, emptyHint }: FilterTreeGroupProps) {
   const allChecked = nodes.length > 0 && nodes.every(allLeavesChecked);
+  const isChipRow = nodes.length > 0 && nodes.every((n) => (!n.children || n.children.length === 0) && n.icon);
 
   function toggleAll(stat: boolean) {
     onChange(nodes.map((n) => cascadeStat(n, stat)));
@@ -149,13 +179,17 @@ function FilterTreeGroup({ title, nodes, onChange, emptyHint }: FilterTreeGroupP
             <input type="checkbox" checked={allChecked} onChange={(e) => toggleAll((e.target as HTMLInputElement).checked)} />
             <span>Выбрать всё</span>
           </label>
-          <div class="ds-auction-filter__scroll">
-            <ul class="ds-auction-filter__tree">
-              {nodes.map((n) => (
-                <FilterTreeNodeView key={n.id} node={n} onToggle={toggle} />
-              ))}
-            </ul>
-          </div>
+          {isChipRow ? (
+            <FilterChipRow nodes={nodes} onToggle={toggle} />
+          ) : (
+            <div class="ds-auction-filter__scroll">
+              <ul class="ds-auction-filter__tree">
+                {nodes.map((n) => (
+                  <FilterTreeNodeView key={n.id} node={n} onToggle={toggle} />
+                ))}
+              </ul>
+            </div>
+          )}
         </>
       )}
     </div>

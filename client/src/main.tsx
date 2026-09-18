@@ -1690,7 +1690,9 @@ async function main() {
       parseLocalData(
         `<load v="1"><artefact id="${TEST_ARTEFACT_ID}" ln="Могучая сфера энергии" bn="STASIS_ENERGY" bv="#800"/>` +
           TEST_AUCTION_UNITS_XML +
-          `<interface id="race_1" ln="Люди"/><interface id="race_2" ln="Дроиды"/><interface id="race_3" ln="Кочевники"/>` +
+          // Реальные названия рас (не выдуманные) — docs/mechanics-races-world-ranking.md
+          // §1.1: ringnumber 1/2/3 = VORANIA/LIENSU/PSOLAO = Воранеры/Лиенсу/Псолао.
+          `<interface id="race_1" ln="Воранеры"/><interface id="race_2" ln="Лиенсу"/><interface id="race_3" ln="Псолао"/>` +
           `<interface id="level_1" ln="1 уровень"/><interface id="level_2" ln="2 уровень"/><interface id="level_3" ln="3 уровень"/>` +
           `<att id="SORT_CHOOSE" ln="выбрать сортировку"/>` +
           TEST_AUCTION_ARTEFACT_FILTERS_XML +

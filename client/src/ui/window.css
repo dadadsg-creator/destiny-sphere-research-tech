@@ -1420,6 +1420,40 @@
   padding-right: 4px;
 }
 
+/* Плоский список ресурсов — горизонтальные "фишки" вместо вертикального
+   списка с чекбоксами (владелец, 2026-09-18: "не галочками, а просто
+   кликать по ресурсу", "нафига место неоптимально тратить"). */
+.ds-auction-filter__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.ds-auction-filter__chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #16264d;
+  border: 1px solid #3a4d7a;
+  border-radius: 16px;
+  padding: 4px 10px 4px 6px;
+  color: #cfd8ee;
+  font-size: 12px;
+  cursor: pointer;
+  opacity: 0.45;
+  filter: grayscale(70%);
+  transition: opacity 0.12s, filter 0.12s, border-color 0.12s;
+}
+.ds-auction-filter__chip:hover {
+  opacity: 0.75;
+}
+.ds-auction-filter__chip--selected {
+  opacity: 1;
+  filter: none;
+  border-color: #7fb8ff;
+  background: #1f3766;
+  color: #fff;
+}
+
 /* Графика узла дерева (см. FilterTreeIcon, auctionData.ts) — владелец:
    "это игра и нужна графика", список из голого текста недостаточен. */
 .ds-auction-filter__icon {
