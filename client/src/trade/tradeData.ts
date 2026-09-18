@@ -329,6 +329,95 @@ export interface SellCommand {
   anonymous?: 0 | 1;
 }
 
+/**
+ * Курсы обмена + наценка для калькулятора (4-я вкладка, только премиум) —
+ * поля ввода СОВЕРШЕННО клиентские (`trade_nds`/`ikad`/`inano`/`istat`/
+ * `ifood`/`iprod`, `trade_menu_class.as:347-358`), сервер их не присылает
+ * никогда. **Стартовые значения** (0% наценки, курс 1:1) — не найдены в
+ * декомпиле (вероятно захардкожены прямо в текстовых полях FLA-символа
+ * `trade_calc`, недоступного в этом архиве отдельно от кода) — нейтральный
+ * плейсхолдер, сразу редактируемый игроком, не выдаём за подтверждённый факт.
+ */
+export interface TradeCalculatorRates {
+  markupPercent: number;
+  kaderium: number;
+  nanoCrystal: number;
+  stasisEnergy: number;
+  food: number;
+  prodium: number;
+}
+
+export interface TradeCalculatorAmounts {
+  kaderium: number;
+  nanoCrystal: number;
+  stasisEnergy: number;
+  food: number;
+  prodium: number;
+}
+
+export interface TradeCalculatorResult {
+  /** Без наценки — прямое содержание ресурсов в N экземплярах юнита. */
+  raw: TradeCalculatorAmounts;
+  /** С наценкой (`nds`). */
+  withMarkup: TradeCalculatorAmounts;
+  /** Итоговая стоимость, выраженная в продиуме (базовая единица расчёта — `trade_menu_class.as:519`, `SUM1`). */
+  totalInProdium: number;
+  totalAsKaderium: number;
+  totalAsNanoCrystal: number;
+  totalAsStasisEnergy: number;
+  totalAsFood: number;
+}
+
+/**
+ * `trade_menu_class.as:478-525` (`drawcalc()`→`reinit_data()`) — чисто
+ * клиентский расчёт "сколько ресурсов нужно на N экземпляров юнита" с
+ * наценкой и конвертацией через курсы обмена (единая точка отсчёта —
+ * продиум). `unitAttrs` — `LocalUnit.attrs` (буквенные коды содержания
+ * юнита K/N/S/F/P из `loaddata`) — ТЕ ЖЕ значения, что оригинал читает
+ * через `game.getLocalNames(libname).K/N/...`; живые `power`/`upkeep`
+ * полей категорий 5/6/7 (расовые списки юнитов) в оригинале ПУСТЫ
+ * (разбор закомментирован, см. докстринг файла выше) — расчёт
+ * сознательно НЕ использует их, это не оверсайт порта, а точное
+ * повторение того, откуда оригинал реально берёт числа.
+ */
+export function computeTradeCalculator(
+  unitAttrs: Record<string, string>,
+  quantity: number,
+  rates: TradeCalculatorRates,
+): TradeCalculatorResult {
+  const per = (letter: string) => (Number(unitAttrs[letter]) || 0) * quantity;
+  const raw: TradeCalculatorAmounts = {
+    kaderium: per('K'),
+    nanoCrystal: per('N'),
+    stasisEnergy: per('S'),
+    food: per('F'),
+    prodium: per('P'),
+  };
+  const markupMul = 1 + rates.markupPercent / 100;
+  const withMarkup: TradeCalculatorAmounts = {
+    kaderium: raw.kaderium * markupMul,
+    nanoCrystal: raw.nanoCrystal * markupMul,
+    stasisEnergy: raw.stasisEnergy * markupMul,
+    food: raw.food * markupMul,
+    prodium: raw.prodium * markupMul,
+  };
+  const totalInProdium =
+    withMarkup.prodium / rates.prodium +
+    withMarkup.nanoCrystal / rates.nanoCrystal +
+    withMarkup.kaderium / rates.kaderium +
+    withMarkup.stasisEnergy / rates.stasisEnergy +
+    withMarkup.food / rates.food;
+  return {
+    raw,
+    withMarkup,
+    totalInProdium,
+    totalAsKaderium: totalInProdium * rates.kaderium,
+    totalAsNanoCrystal: totalInProdium * rates.nanoCrystal,
+    totalAsStasisEnergy: totalInProdium * rates.stasisEnergy,
+    totalAsFood: totalInProdium * rates.food,
+  };
+}
+
 export function buildSellCommand(params: SellParams): SellCommand {
   return {
     idTradescope: params.scope,

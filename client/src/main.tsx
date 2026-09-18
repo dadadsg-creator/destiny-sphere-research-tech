@@ -855,12 +855,24 @@ const TEST_TRADE_MENU: TradeMenuData = {
         datum: '',
       },
     ],
+    // Калькулятор (4-я вкладка, только премиум) — расовые списки юнитов,
+    // см. докстринг tradeData.ts (5=Воранеры, 6=Лиенсу, 7=Псолао).
+    // upkeep/power у этих категорий в оригинале пустые — расчёт читает
+    // содержание юнита из loaddata (см. TEST_TRADE_CALC_UNITS_XML ниже).
+    5: [{ category: 5, idCat: '5_100', id: '100', amount: 0, upkeep: { K: 0, N: 0, P: 0, F: 0, S: 0 }, power: {}, libname: 'CALC_SOLDIER', ln: null, isArtefact: false }],
+    6: [{ category: 6, idCat: '6_101', id: '101', amount: 0, upkeep: { K: 0, N: 0, P: 0, F: 0, S: 0 }, power: {}, libname: 'CALC_WORKER', ln: null, isArtefact: false }],
+    7: [{ category: 7, idCat: '7_102', id: '102', amount: 0, upkeep: { K: 0, N: 0, P: 0, F: 0, S: 0 }, power: {}, libname: 'CALC_SCOUT', ln: null, isArtefact: false }],
   },
   scopes: [
     { id: '1', ln: 'Комплекс' },
     { id: '2', ln: 'Кольцо' },
   ],
 };
+
+const TEST_TRADE_CALC_UNITS_XML =
+  '<unit id="CALC_SOLDIER" ln="Солдат" level="1" race="1" K="2" N="1" S="0.5" F="3" P="1.5"/>' +
+  '<unit id="CALC_WORKER" ln="Рабочий" level="1" race="2" K="1" N="0.5" S="0.2" F="2" P="0.5"/>' +
+  '<unit id="CALC_SCOUT" ln="Разведчик" level="1" race="3" K="3" N="2" S="1" F="1" P="2"/>';
 
 // Синтетические данные для проверки TransferWindow (?screen=transfer).
 const TEST_TRANSFER: TransferMenuData = {
@@ -1716,11 +1728,20 @@ async function main() {
     return;
   }
 
-  if (screen === 'sell') {
-    setLocalData(parseLocalData(TEST_ARTEFACT_LOADDATA_XML));
+  if (screen === 'sell' || screen === 'sell-nopremium') {
+    setLocalData(
+      parseLocalData(
+        `<load v="1"><artefact id="${TEST_ARTEFACT_ID}" ln="Могучая сфера энергии" bn="STASIS_ENERGY" bv="#800"/>` +
+          TEST_TRADE_CALC_UNITS_XML +
+          `</load>`,
+      ),
+    );
     openWindow(
       <SellWindow
         data={TEST_TRADE_MENU}
+        localUnits={localData.value?.units ?? new Map()}
+        isPremium={screen === 'sell'}
+        playerRace="tech"
         onClose={() => console.log('[sell] close')}
         onSell={(cmd) => console.log('[sell] sell(', cmd, ')')}
       />,

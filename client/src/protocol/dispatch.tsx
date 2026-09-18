@@ -392,6 +392,9 @@ function renderSell(root: Element, xml: string, ctx: DispatchContext): void {
   openWindow(
     <SellWindow
       data={data}
+      localUnits={localData.value?.units ?? new Map()}
+      isPremium={premiumStatus.value?.isPremium ?? false}
+      playerRace={ctx.race}
       tabs={parseTabsArray(root)}
       onTabClick={(tabId) => sendTabClick(ctx, tabId)}
       onClose={closeWindow}
