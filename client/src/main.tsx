@@ -737,9 +737,13 @@ const TEST_AUCTION_LOTS: AuctionLot[] = [
 const TEST_PLAYER_RESOURCE_BY_NAME = new Map([['KADERIUM', 300]]);
 
 // Дерево фильтров аукциона (2026-09-18, см. докстринг auctionData.ts) —
-// категория RESOURCES приходит готовой с сервера, UNITS строится из
-// localData.units (race/level), ARTEFACTS сознательно пуста (не
-// портирован формат art_filter_table).
+// категория RESOURCES приходит готовой с сервера (все 5 основных
+// ресурсов, не 2 — владелец справедливо указал, что урезанный тестовый
+// набор не показывает реальную картину), UNITS строится из
+// localData.units (race/level, набор из нескольких рас/уровней —
+// проверка, что дерево держит форму на количестве, близком к реальному
+// каталогу юнитов), ARTEFACTS — из тестовых `<artscope>/<artsize>/
+// <artbonus>` в loaddata-сиде ниже (формат найден и портирован 2026-09-18).
 const TEST_AUCTION_DATA: AuctionData = {
   curPage: '1',
   maxPages: '3',
@@ -753,6 +757,10 @@ const TEST_AUCTION_DATA: AuctionData = {
   ],
   sortBuy: [
     { id: 'KADERIUM', ln: 'Кадериум', cur: true },
+    { id: 'NANO_CRYSTAL', ln: 'Нано-кристаллы', cur: true },
+    { id: 'STASIS_ENERGY', ln: 'Энергия', cur: true },
+    { id: 'FOOD', ln: 'Еда', cur: true },
+    { id: 'PRODIUM', ln: 'Продиум', cur: true },
     { id: 'SILVER_CREDIT', ln: 'Серебро', cur: false },
   ],
   categories: [
@@ -763,6 +771,9 @@ const TEST_AUCTION_DATA: AuctionData = {
       items: [
         { id: 'KADERIUM', ln: 'Кадериум', cur: true },
         { id: 'NANO_CRYSTAL', ln: 'Нано-кристаллы', cur: true },
+        { id: 'STASIS_ENERGY', ln: 'Энергия', cur: true },
+        { id: 'FOOD', ln: 'Еда', cur: true },
+        { id: 'PRODIUM', ln: 'Продиум', cur: true },
       ],
     },
     { id: 'UNITS', ln: 'Юниты', cur: false, items: [] },
@@ -779,6 +790,30 @@ const TEST_AUCTION_DATA: AuctionData = {
   ],
   activeSort: [{ id: 'PRICE', ln: 'Цена' }],
 };
+
+// Реалистичный набор юнитов для проверки дерева "что купить" (категория
+// UNITS) на количестве, близком к реальному каталогу — 3 расы × 2-3
+// уровня, не 2 юнита, как раньше.
+const TEST_AUCTION_UNITS_XML = [
+  { id: 'SOLDIER', ln: 'Солдат', race: '1', level: '1' },
+  { id: 'GRENADIER', ln: 'Гренадёр', race: '1', level: '2' },
+  { id: 'TANK', ln: 'Танк', race: '1', level: '2' },
+  { id: 'HEAVY_TANK', ln: 'Тяжёлый танк', race: '1', level: '3' },
+  { id: 'SCOUT_2', ln: 'Разведчик', race: '2', level: '1' },
+  { id: 'STRIKER_2', ln: 'Штурмовик', race: '2', level: '2' },
+  { id: 'DESTROYER_2', ln: 'Разрушитель', race: '2', level: '3' },
+  { id: 'WARRIOR_3', ln: 'Воин', race: '3', level: '1' },
+  { id: 'BERSERK_3', ln: 'Берсерк', race: '3', level: '2' },
+]
+  .map((u) => `<unit id="${u.id}" ln="${u.ln}" level="${u.level}" race="${u.race}"/>`)
+  .join('');
+
+// Тестовый artscope/artsize/artbonus (формат — см. localData.ts,
+// найден и портирован 2026-09-18: "name|id|sizeIds(,)|bonusIds(,);...").
+const TEST_AUCTION_ARTEFACT_FILTERS_XML =
+  '<artscope>Сфера|SPHERE|SIZE_S,SIZE_M|STASIS_ENERGY,PRODUCTION_SPEED;Здание|BUILDING|SIZE_S|FOOD</artscope>' +
+  '<artsize>Малый|SIZE_S;Средний|SIZE_M</artsize>' +
+  '<artbonus>Энергия|STASIS_ENERGY;Скорость производства|PRODUCTION_SPEED;Еда|FOOD</artbonus>';
 
 // Синтетические данные для проверки SellWindow (?screen=sell).
 const TEST_TRADE_MENU: TradeMenuData = {
@@ -1654,15 +1689,21 @@ async function main() {
     setLocalData(
       parseLocalData(
         `<load v="1"><artefact id="${TEST_ARTEFACT_ID}" ln="Могучая сфера энергии" bn="STASIS_ENERGY" bv="#800"/>` +
-          `<unit id="TANK" ln="Танк" level="2" race="1"/><unit id="SOLDIER" ln="Солдат" level="1" race="1"/>` +
-          `<interface id="race_1" ln="Люди"/><interface id="level_1" ln="1 уровень"/><interface id="level_2" ln="2 уровень"/>` +
-          `<att id="SORT_CHOOSE" ln="выбрать сортировку"/></load>`,
+          TEST_AUCTION_UNITS_XML +
+          `<interface id="race_1" ln="Люди"/><interface id="race_2" ln="Дроиды"/><interface id="race_3" ln="Кочевники"/>` +
+          `<interface id="level_1" ln="1 уровень"/><interface id="level_2" ln="2 уровень"/><interface id="level_3" ln="3 уровень"/>` +
+          `<att id="SORT_CHOOSE" ln="выбрать сортировку"/>` +
+          TEST_AUCTION_ARTEFACT_FILTERS_XML +
+          `</load>`,
       ),
     );
     openWindow(
       <AuctionWindow
         data={TEST_AUCTION_DATA}
         localUnits={localData.value?.units ?? new Map()}
+        localArtefactScopes={localData.value?.artefactScopes ?? new Map()}
+        localArtefactSizes={localData.value?.artefactSizes ?? new Map()}
+        localArtefactBonuses={localData.value?.artefactBonuses ?? new Map()}
         playerResourceByName={TEST_PLAYER_RESOURCE_BY_NAME}
         onClose={() => console.log('[auction] close')}
         onBuy={(lotId, price) => console.log('[auction] buy_lot(', lotId, price, ')')}

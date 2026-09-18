@@ -1065,6 +1065,9 @@ function renderAuction(root: Element, xml: string, ctx: DispatchContext): void {
     <AuctionWindow
       data={data}
       localUnits={localData.value?.units ?? new Map()}
+      localArtefactScopes={localData.value?.artefactScopes ?? new Map()}
+      localArtefactSizes={localData.value?.artefactSizes ?? new Map()}
+      localArtefactBonuses={localData.value?.artefactBonuses ?? new Map()}
       playerResourceByName={playerResourceByName}
       tabs={parseTabsArray(root)}
       onTabClick={(tabId) => sendTabClick(ctx, tabId)}

@@ -58,6 +58,11 @@ export function resourceIconUrl(name: string): string {
   return `/assets/resources/${name}.png`;
 }
 
+/** Есть ли у машинного имени готовая иконка ресурса (см. RESOURCE_NAME_RU) — чтобы не рисовать иконку для произвольных атрибутов (ATTACK/DEFENCE и т.п.), похожих на id ресурса лишь по формату. */
+export function hasResourceIcon(name: string): boolean {
+  return name in RESOURCE_NAME_RU;
+}
+
 /**
  * Иконка боевого юнита — `public/assets/units/<unitname>.png`, уже
  * извлечена в более ранней фазе из `war_units.lib.swf` (`game.getLibrary(
@@ -110,6 +115,30 @@ export function cleanArtefactLibname(rawId: string): string {
 export function artefactDisplayName(rawId: string): string {
   const ln = localData.value?.artefacts.get(cleanArtefactLibname(rawId))?.ln;
   return ln ?? rawId;
+}
+
+/**
+ * Разбор составного `libname` лота аукциона (`prefix_scope_postfix`,
+ * см. `buildArtefactData.ts` — там это три ОТДЕЛЬНЫХ XML-атрибута, но
+ * в `<au libname="">` аукциона сервер шлёт их уже склеенными в одну
+ * строку через `_`, см. `xmlparsers.as:1854` — обратного разбора в
+ * оригинале НЕТ, отдельные `prefix`/`scope` для лотов аукциона клиент
+ * никогда не показывал). **Предположение** (не подтверждено отдельным
+ * источником для АУКЦИОНА конкретно, только по общему соглашению об
+ * именах, подтверждённому доменом buildingartefact): первый токен —
+ * `prefix` (размер/редкость), второй, ЕСЛИ он входит в известный набор
+ * `KNOWN_ARTEFACT_SCOPES`, — `scope`, остаток — `postfix` (сам postfix
+ * может содержать `_`, например `STASIS_ENERGY_EGG`). Если второй токен
+ * не распознан как scope — не гадаем дальше, отдаём `prefix=scope=null`
+ * (просто базовая иконка по очищенному id, без цвета/рамки).
+ */
+export function splitArtefactLibname(rawId: string): { prefix: string | null; scope: string | null; postfix: string } {
+  const clean = cleanArtefactLibname(rawId);
+  const parts = clean.split('_');
+  if (parts.length >= 3 && KNOWN_ARTEFACT_SCOPES.has(parts[1])) {
+    return { prefix: parts[0], scope: parts[1], postfix: parts.slice(2).join('_') };
+  }
+  return { prefix: null, scope: null, postfix: clean };
 }
 
 /**
@@ -199,7 +228,7 @@ export function artefactSizeColor(prefix: string | null): string | null {
  * позже) — для них, как и для неизвестных scope, рамка не рисуется
  * (`null`), а не подставляется случайная форма.
  */
-const KNOWN_ARTEFACT_SCOPES = new Set([
+export const KNOWN_ARTEFACT_SCOPES = new Set([
   'BUILDING',
   'COMB',
   'COMBCOMPLEX',

@@ -96,6 +96,22 @@ function fixBonusHash(raw: string | null): string {
   return raw.replace(/^#/, '+').replace(/\$$/, '%');
 }
 
+/**
+ * Каталог "область артефакта" для дерева фильтров аукциона
+ * (`<artscope>`, `UA_Load.class.php:195-208` + клиентский разбор
+ * `parser.as:715-737`, `art_filter_arr.artscope`). В ОТЛИЧИЕ от всех
+ * остальных узлов `loaddata`, это НЕ атрибуты — весь список одним
+ * текстовым узлом: `"name|id|sizes|bonuses;name|id|sizes|bonuses;..."`,
+ * где `sizes`/`bonuses` — сами через запятую списки id из
+ * `artefactSizes`/`artefactBonuses` ниже (могут быть пустыми).
+ */
+export interface LocalArtefactScope {
+  id: string;
+  name: string | null;
+  sizeIds: string[];
+  bonusIds: string[];
+}
+
 export interface LocalData {
   version: string | null;
   buildings: Map<number, LocalBuilding>;
@@ -107,8 +123,48 @@ export interface LocalData {
   messageScopes: Map<string, LocalSimpleEntry>;
   rings: Map<string, LocalSimpleEntry & { ringNumber: string | null }>;
   artefacts: Map<string, LocalArtefact>;
+  /** `<artscope>`/`<artsize>`/`<artbonus>` — только для дерева фильтров аукциона (категория ARTEFACTS), см. LocalArtefactScope. */
+  artefactScopes: Map<string, LocalArtefactScope>;
+  artefactSizes: Map<string, LocalSimpleEntry>;
+  artefactBonuses: Map<string, LocalSimpleEntry>;
   /** "OK", если сервер подтвердил целостность передачи (dataintegrity). */
   dataIntegrityOk: boolean;
+}
+
+/** `"name|id|extra..."` — общий вид одной записи `artscope`/`artsize`/`artbonus`. */
+function parsePipeName(entry: string): { name: string | null; id: string; rest: string[] } {
+  const [name, id, ...rest] = entry.split('|');
+  return { name: name || null, id: id ?? '', rest };
+}
+
+/** `<artsize>`/`<artbonus>` — `"name|id;name|id;..."`. */
+function parseSimplePipeList(text: string): LocalSimpleEntry[] {
+  if (!text) return [];
+  return text
+    .split(';')
+    .filter((entry) => entry.length > 0)
+    .map((entry) => {
+      const { name, id } = parsePipeName(entry);
+      return { id, ln: name };
+    });
+}
+
+/** `<artscope>` — `"name|id|sizeIds(,)|bonusIds(,);..."`, см. LocalArtefactScope. */
+function parseArtScopeList(text: string): LocalArtefactScope[] {
+  if (!text) return [];
+  return text
+    .split(';')
+    .filter((entry) => entry.length > 0)
+    .map((entry) => {
+      const { name, id, rest } = parsePipeName(entry);
+      const [sizes, bonuses] = rest;
+      return {
+        id,
+        name,
+        sizeIds: sizes ? sizes.split(',').filter((s) => s.length > 0) : [],
+        bonusIds: bonuses ? bonuses.split(',').filter((b) => b.length > 0) : [],
+      };
+    });
 }
 
 const KNOWN_UNIT_FIELDS = new Set([
@@ -143,6 +199,9 @@ export function parseLocalData(xml: string): LocalData {
     messageScopes: new Map(),
     rings: new Map(),
     artefacts: new Map(),
+    artefactScopes: new Map(),
+    artefactSizes: new Map(),
+    artefactBonuses: new Map(),
     dataIntegrityOk: false,
   };
 
@@ -239,9 +298,18 @@ export function parseLocalData(xml: string): LocalData {
         });
         break;
       }
-      // 'comb', 'artscope', 'artsize', 'artbonus' — не разобраны в этой
-      // версии (не нужны для текущих экранов); формат см.
-      // UA_Load.class.php:36-55,152-251, при необходимости добавить.
+      case 'artscope':
+        for (const s of parseArtScopeList(el.textContent ?? '')) result.artefactScopes.set(s.id, s);
+        break;
+      case 'artsize':
+        for (const s of parseSimplePipeList(el.textContent ?? '')) result.artefactSizes.set(s.id, s);
+        break;
+      case 'artbonus':
+        for (const s of parseSimplePipeList(el.textContent ?? '')) result.artefactBonuses.set(s.id, s);
+        break;
+      // 'comb' — не разобран в этой версии (не нужен для текущих
+      // экранов); формат см. UA_Load.class.php:36-55, при необходимости
+      // добавить.
       default:
         break;
     }

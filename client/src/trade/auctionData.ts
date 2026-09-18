@@ -37,14 +37,13 @@
  *   заполняется из `loaddata`-узлов `<artscope>/<artsize>/<artbonus>`
  *   (`UA_Load.class.php:195-249`) в БЕСПРЕЦЕДЕНТНОМ для остального
  *   `loaddata` формате — не атрибуты, а весь список ОДНОЙ строкой текста
- *   (`urlencode(implode(';', ...))`, поля через `|`), парсер которой в
- *   AS2 (`setting().loadSetting("art_filter_table", ...)`) в этой сессии
- *   не найден/не прослежен. **Сознательно не портировано** — для
- *   категории ARTEFACTS дерево остаётся пустым (см. `buildCategoryTree()`);
- *   это НЕ поломка, а тот же исход, что и в оригинале при пустом кэше:
- *   `sendFilter()` блокирует отправку целиком, если серилизация ЛЮБОГО из
- *   трёх деревьев дала пустую строку (`valid_key`, строки 980-984) — porting
- *   это же поведение, не молчаливая деградация.
+ *   (`urlencode(implode(';', ...))`, поля через `|`). Клиентский разбор
+ *   найден и портирован (2026-09-18, `parser.as:713-766`,
+ *   `art_filter_arr`) — `<artscope>` = `"name|id|sizeIds(,)|bonusIds(,);..."`,
+ *   `<artsize>`/`<artbonus>` = `"name|id;..."` (см. `LocalData.
+ *   artefactScopes/artefactSizes/artefactBonuses`, `localData.ts`). Дерево
+ *   строит `buildArtefactCategoryTree()` — scope → {SIZE→sizes,
+ *   BONUS→bonuses}, 1:1 с `auctionmenuclass.as:598-663`.
  *
  * Формат отправки — `ArrToStr`: узел с непустыми детьми сериализуется как
  * `id[дети,через,запятую]`; лист без детей — как голый `id`, ТОЛЬКО если
@@ -52,7 +51,8 @@
  * вообще. См. `serializeFilterTree()`.
  */
 import { parseXmlFragment } from '../protocol/response';
-import type { LocalUnit } from '../data/localData';
+import type { LocalUnit, LocalArtefactScope, LocalSimpleEntry } from '../data/localData';
+import { resourceIconUrl, hasResourceIcon, unitIconUrl, artefactScopeMaskUrl, artefactSizeColor } from '../data/resourceIcons';
 
 export type AuctionPriceMap = Partial<Record<'K' | 'N' | 'S' | 'F' | 'P' | 'T', string>>;
 
@@ -121,6 +121,12 @@ export interface AuctionActiveSort {
   ln: string | null;
 }
 
+/** Графика узла дерева фильтра — см. докстринг файла, "нужна графика, это игра". */
+export type FilterTreeIcon =
+  | { kind: 'img'; url: string }
+  | { kind: 'swatch'; color: string }
+  | { kind: 'scope'; maskUrl: string | null };
+
 /**
  * Узел дерева фильтра — общий формат для ТРЁХ независимых деревьев
  * (категория товара/`arrayTestTree`, общий чек-лист/`allfilters`,
@@ -133,6 +139,7 @@ export interface FilterTreeNode {
   name: string | null;
   stat: boolean;
   children?: FilterTreeNode[];
+  icon?: FilterTreeIcon;
 }
 
 export interface AuctionData {
@@ -294,9 +301,16 @@ export function flagsToFilterTree(flags: AuctionFilterFlag[]): FilterTreeNode[] 
   return flags.filter((f) => f.id !== null).map((f) => ({ id: f.id as string, name: f.name, stat: f.stat }));
 }
 
-/** Плоский список `arrayBuyFrom` (`sortBuy`/`allow_buy_res`, поля `ln`/`cur`, а не `name`/`stat`) как дерево. */
+/** Плоский список `arrayBuyFrom` (`sortBuy`/`allow_buy_res`, поля `ln`/`cur`, а не `name`/`stat`) как дерево — это всегда ресурсы, есть иконка. */
 export function sortOptionsToFilterTree(options: AuctionSortOption[]): FilterTreeNode[] {
-  return options.filter((o) => o.id !== null).map((o) => ({ id: o.id as string, name: o.ln, stat: o.cur }));
+  return options
+    .filter((o) => o.id !== null)
+    .map((o) => ({
+      id: o.id as string,
+      name: o.ln,
+      stat: o.cur,
+      icon: hasResourceIcon(o.id as string) ? { kind: 'img' as const, url: resourceIconUrl(o.id as string) } : undefined,
+    }));
 }
 
 /**
@@ -319,7 +333,7 @@ export function buildUnitCategoryTree(
     if (!byRace.has(race)) byRace.set(race, new Map());
     const byLevel = byRace.get(race)!;
     if (!byLevel.has(level)) byLevel.set(level, []);
-    byLevel.get(level)!.push({ id: unit.id, name: unit.ln, stat: true });
+    byLevel.get(level)!.push({ id: unit.id, name: unit.ln, stat: true, icon: { kind: 'img', url: unitIconUrl(unit.id) } });
   }
 
   const tree: FilterTreeNode[] = [];
@@ -336,20 +350,88 @@ export function buildUnitCategoryTree(
 }
 
 /**
+ * Дерево категории ARTEFACTS — scope→{SIZE→sizes, BONUS→bonuses},
+ * буквальный порт `auctionmenuclass.as:598-663` (см. докстринг файла про
+ * найденный формат `<artscope>/<artsize>/<artbonus>`). Ветка scope не
+ * создаётся вовсе без детей вообще НЕ получает `children` (как и в
+ * оригинале — `obj.childArr` там просто не создаётся), а не пустой
+ * массив — иначе `serializeFilterTree()` принял бы её за пустую ветку и
+ * никогда не сериализовал (см. её же комментарий про `children.length>0`).
+ * Графика: SIZE — цветной кружок (`artefactSizeColor`, тот же словарь,
+ * что раскрашивает scope-рамку у обычных артефактов); BONUS — иконка
+ * ресурса, только если бонус реально совпадает с известным ресурсом
+ * (`hasResourceIcon`) — большинство атрибутов-бонусов (ATTACK и т.п.)
+ * иконки не имеют, не выдумываем.
+ */
+export function buildArtefactCategoryTree(
+  scopes: Map<string, LocalArtefactScope>,
+  sizes: Map<string, LocalSimpleEntry>,
+  bonuses: Map<string, LocalSimpleEntry>,
+  resolveGroupName: (id: string) => string | null,
+): FilterTreeNode[] {
+  const tree: FilterTreeNode[] = [];
+  for (const scope of scopes.values()) {
+    const children: FilterTreeNode[] = [];
+
+    const sizeLeaves = scope.sizeIds
+      .map((sid) => sizes.get(sid))
+      .filter((s): s is LocalSimpleEntry => !!s)
+      .map((s) => {
+        const color = artefactSizeColor(s.id);
+        return { id: s.id, name: s.ln, stat: true, icon: color ? ({ kind: 'swatch', color } as const) : undefined };
+      });
+    if (sizeLeaves.length > 0) {
+      children.push({ id: 'SIZE', name: resolveGroupName('SIZE') ?? 'Размер', stat: true, children: sizeLeaves });
+    }
+
+    const bonusLeaves = scope.bonusIds
+      .map((bid) => bonuses.get(bid))
+      .filter((b): b is LocalSimpleEntry => !!b)
+      .map((b) => ({
+        id: b.id,
+        name: b.ln,
+        stat: true,
+        icon: hasResourceIcon(b.id) ? ({ kind: 'img', url: resourceIconUrl(b.id) } as const) : undefined,
+      }));
+    if (bonusLeaves.length > 0) {
+      children.push({ id: 'BONUS', name: resolveGroupName('BONUS') ?? 'Бонус', stat: true, children: bonusLeaves });
+    }
+
+    tree.push({
+      id: scope.id,
+      name: scope.name,
+      stat: true,
+      ...(children.length > 0 ? { children } : {}),
+      icon: { kind: 'scope', maskUrl: artefactScopeMaskUrl(scope.id) },
+    });
+  }
+  return tree;
+}
+
+/**
  * Дерево категории "что купить" по текущей вкладке (`category.id`) —
- * см. докстринг файла про три схемы. ARTEFACTS сознательно даёт пустое
- * дерево (не портировано, см. докстринг файла) — не баг, тот же исход,
- * что и в оригинале при пустом кэше `art_filter_table`.
+ * см. докстринг файла про три схемы.
  */
 export function buildCategoryTree(
   category: AuctionCategoryOption | undefined,
   units: Map<string, LocalUnit>,
+  artefactScopes: Map<string, LocalArtefactScope>,
+  artefactSizes: Map<string, LocalSimpleEntry>,
+  artefactBonuses: Map<string, LocalSimpleEntry>,
   resolveGroupName: (id: string) => string | null,
 ): FilterTreeNode[] {
   if (!category) return [];
   if (category.id === 'UNITS') return buildUnitCategoryTree(units, resolveGroupName);
+  if (category.id === 'ARTEFACTS') return buildArtefactCategoryTree(artefactScopes, artefactSizes, artefactBonuses, resolveGroupName);
   if (category.id === 'RESOURCES') {
-    return category.items.filter((i) => i.id !== null).map((i) => ({ id: i.id as string, name: i.ln, stat: true }));
+    return category.items
+      .filter((i) => i.id !== null)
+      .map((i) => ({
+        id: i.id as string,
+        name: i.ln,
+        stat: true,
+        icon: hasResourceIcon(i.id as string) ? ({ kind: 'img', url: resourceIconUrl(i.id as string) } as const) : undefined,
+      }));
   }
   return [];
 }

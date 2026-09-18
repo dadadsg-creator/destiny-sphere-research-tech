@@ -25,15 +25,34 @@
  * покадровой MovieClip-анимации оригинала (`window.as:5407+`,
  * `createTree`/`createListQWER`) — сама протокольная семантика (что
  * именно попадает в `select=`/`filter=`/`buy_by=`) сохранена буквально.
- * Категория ARTEFACTS сознательно даёт пустое дерево (не портирован
- * беспрецедентный текстовый формат `art_filter_table`, см. докстринг
- * auctionData.ts) — кнопка "Применить" в этом случае неактивна, как и
- * в оригинале при пустом дереве (`sendFilter()`'s `valid_key`).
+ *
+ * **Правка после живого показа владельцу (2026-09-18)**: три находки —
+ * (1) кнопка раскрытия ветки рисовалась символами `▾`/`▸`, которые в
+ * тестовом окружении показывались как обычный дефис (нет глифа в
+ * используемом шрифте) — заменена на CSS-треугольник (`border`-приём,
+ * не зависит от шрифта); (2) список юнитов/ресурсов был совсем без
+ * графики ("это игра, нужна графика") — добавлены иконки
+ * (`FilterTreeIcon`, см. `auctionData.ts`) для ресурсов/юнитов/размеров
+ * артефактов/бонусов-ресурсов везде в дереве, ветка дерева
+ * ограничена по высоте со скроллом (не разрастается на десятки юнитов);
+ * (3) категория ARTEFACTS была сознательно пустой — найден и портирован
+ * формат `art_filter_table` (`auctionData.ts:buildArtefactCategoryTree`),
+ * дерево теперь полноценное (scope→размер/бонус).
  */
 import { useMemo, useState } from 'preact/hooks';
 import { Window } from '../ui/Window';
 import type { TabDef } from '../ui/tabs';
-import { resourceDisplayName, unitDisplayName, artefactDisplayName, unitIconUrl } from '../data/resourceIcons';
+import {
+  resourceDisplayName,
+  unitDisplayName,
+  artefactDisplayName,
+  unitIconUrl,
+  resourceIconUrl,
+  artefactIconUrl,
+  artefactScopeMaskUrl,
+  artefactSizeColor,
+  splitArtefactLibname,
+} from '../data/resourceIcons';
 import { localData } from '../data/localDataStore';
 import { resolveLocalName } from '../data/localNameResolver';
 import {
@@ -48,13 +67,36 @@ import {
   type AuctionSortOption,
   type FilterTreeNode,
 } from './auctionData';
-import type { LocalUnit } from '../data/localData';
+import type { LocalUnit, LocalArtefactScope, LocalSimpleEntry } from '../data/localData';
 
 function lotLabel(lot: AuctionLot): string {
   if (lot.idCatOn === '1' && lot.libname) return resourceDisplayName(lot.libname);
   if (lot.idCatOn === '2' && lot.libname) return unitDisplayName(lot.libname);
   if (lot.idCatOn === '3' && lot.libname) return artefactDisplayName(lot.libname);
   return lot.libname ?? '';
+}
+
+/** Картинка лота — ресурс/юнит уже были, артефакт (3) добавлен по прямому запросу владельца ("нужна графика"), разбор prefix/scope/postfix — см. splitArtefactLibname(). */
+function LotIcon({ lot }: { lot: AuctionLot }) {
+  if (!lot.libname) return null;
+  if (lot.idCatOn === '1') return <img class="ds-unit-icon" src={resourceIconUrl(lot.libname)} alt="" />;
+  if (lot.idCatOn === '2') return <img class="ds-unit-icon" src={unitIconUrl(lot.libname)} alt="" />;
+  if (lot.idCatOn === '3') {
+    const { prefix, scope, postfix } = splitArtefactLibname(lot.libname);
+    const maskUrl = artefactScopeMaskUrl(scope);
+    return (
+      <span class="ds-artefact-row__icon-wrap">
+        {maskUrl && (
+          <span
+            class="ds-artefact-row__scope"
+            style={{ '--scope-mask': `url(${maskUrl})`, '--size-color': artefactSizeColor(prefix) ?? undefined }}
+          />
+        )}
+        <img class="ds-artefact-row__icon" src={artefactIconUrl(postfix)} alt="" />
+      </span>
+    );
+  }
+  return null;
 }
 
 function optionLabel(opt: AuctionSortOption): string {
@@ -107,15 +149,28 @@ function FilterTreeGroup({ title, nodes, onChange, emptyHint }: FilterTreeGroupP
             <input type="checkbox" checked={allChecked} onChange={(e) => toggleAll((e.target as HTMLInputElement).checked)} />
             <span>Выбрать всё</span>
           </label>
-          <ul class="ds-auction-filter__tree">
-            {nodes.map((n) => (
-              <FilterTreeNodeView key={n.id} node={n} onToggle={toggle} />
-            ))}
-          </ul>
+          <div class="ds-auction-filter__scroll">
+            <ul class="ds-auction-filter__tree">
+              {nodes.map((n) => (
+                <FilterTreeNodeView key={n.id} node={n} onToggle={toggle} />
+              ))}
+            </ul>
+          </div>
         </>
       )}
     </div>
   );
+}
+
+/** Графика узла — см. FilterTreeIcon в auctionData.ts. */
+function NodeIcon({ icon }: { icon: FilterTreeNode['icon'] }) {
+  if (!icon) return null;
+  if (icon.kind === 'img') return <img class="ds-auction-filter__icon" src={icon.url} alt="" />;
+  if (icon.kind === 'swatch') return <span class="ds-auction-filter__swatch" style={{ background: icon.color }} />;
+  if (icon.kind === 'scope' && icon.maskUrl) {
+    return <span class="ds-auction-filter__scope-icon" style={{ '--scope-mask': `url(${icon.maskUrl})` }} />;
+  }
+  return null;
 }
 
 function FilterTreeNodeView({ node, onToggle }: { node: FilterTreeNode; onToggle: (target: FilterTreeNode, stat: boolean) => void }) {
@@ -129,16 +184,16 @@ function FilterTreeNodeView({ node, onToggle }: { node: FilterTreeNode; onToggle
         {hasChildren && (
           <button
             type="button"
-            class="ds-auction-filter__expand"
+            aria-label={expanded ? 'Свернуть' : 'Развернуть'}
+            class={`ds-auction-filter__expand${expanded ? ' ds-auction-filter__expand--open' : ''}`}
             onClick={(e) => {
               e.preventDefault();
               setExpanded(!expanded);
             }}
-          >
-            {expanded ? '▾' : '▸'}
-          </button>
+          />
         )}
         <input type="checkbox" checked={checked} onChange={(e) => onToggle(node, (e.target as HTMLInputElement).checked)} />
+        <NodeIcon icon={node.icon} />
         <span>{node.name ?? node.id}</span>
       </label>
       {hasChildren && expanded && (
@@ -160,6 +215,9 @@ const SORT_DIRECTIONS: { id: 'UP' | 'DOWN'; label: string }[] = [
 export interface AuctionWindowProps {
   data: AuctionData;
   localUnits: Map<string, LocalUnit>;
+  localArtefactScopes: Map<string, LocalArtefactScope>;
+  localArtefactSizes: Map<string, LocalSimpleEntry>;
+  localArtefactBonuses: Map<string, LocalSimpleEntry>;
   /** Текущий запас игрока по ресурсу lot.tradeBy (для клиентской проверки, см. computeLotDisabled). */
   playerResourceByName: Map<string, number>;
   tabs?: TabDef[];
@@ -169,7 +227,19 @@ export interface AuctionWindowProps {
   onApplyFilter: (cmd: AuctionFilterCommand) => void;
 }
 
-export function AuctionWindow({ data, localUnits, playerResourceByName, tabs, onTabClick, onClose, onBuy, onApplyFilter }: AuctionWindowProps) {
+export function AuctionWindow({
+  data,
+  localUnits,
+  localArtefactScopes,
+  localArtefactSizes,
+  localArtefactBonuses,
+  playerResourceByName,
+  tabs,
+  onTabClick,
+  onClose,
+  onBuy,
+  onApplyFilter,
+}: AuctionWindowProps) {
   const { lots, categories, generalFilters, sortPlace, sortBuy, sortFieldOptions, activeSort } = data;
 
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -178,9 +248,16 @@ export function AuctionWindow({ data, localUnits, playerResourceByName, tabs, on
     () => categories.find((c) => c.cur)?.id ?? categories[0]?.id ?? '',
   );
   const resolveGroupName = (id: string) => resolveLocalName(localData.value, id);
-  const [categoryTree, setCategoryTree] = useState<FilterTreeNode[]>(() =>
-    buildCategoryTree(categories.find((c) => c.id === selectedCategoryId), localUnits, resolveGroupName),
-  );
+  const buildTreeForCategory = (categoryId: string) =>
+    buildCategoryTree(
+      categories.find((c) => c.id === categoryId),
+      localUnits,
+      localArtefactScopes,
+      localArtefactSizes,
+      localArtefactBonuses,
+      resolveGroupName,
+    );
+  const [categoryTree, setCategoryTree] = useState<FilterTreeNode[]>(() => buildTreeForCategory(selectedCategoryId));
   const [generalTree, setGeneralTree] = useState<FilterTreeNode[]>(() => flagsToFilterTree(generalFilters));
   const [buyFromTree, setBuyFromTree] = useState<FilterTreeNode[]>(() => sortOptionsToFilterTree(sortBuy));
 
@@ -198,7 +275,7 @@ export function AuctionWindow({ data, localUnits, playerResourceByName, tabs, on
 
   function selectCategory(id: string) {
     setSelectedCategoryId(id);
-    setCategoryTree(buildCategoryTree(categories.find((c) => c.id === id), localUnits, resolveGroupName));
+    setCategoryTree(buildTreeForCategory(id));
   }
 
   const selectStr = serializeFilterTree(categoryTree);
@@ -342,7 +419,7 @@ export function AuctionWindow({ data, localUnits, playerResourceByName, tabs, on
             return (
               <tr key={lot.id}>
                 <td class="ds-artefact-row">
-                  {lot.idCatOn === '2' && lot.libname && <img class="ds-unit-icon" src={unitIconUrl(lot.libname)} alt="" />}
+                  <LotIcon lot={lot} />
                   <span>{lotLabel(lot)}</span>
                 </td>
                 <td>{lot.amount}</td>
