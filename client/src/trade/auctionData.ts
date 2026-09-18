@@ -9,19 +9,50 @@
  *       immediate="0|1" libname="" resupkeep="" id_cat_on="1|2|3"
  *       death_message="" customer="" disable="0|1" nextprice=""
  *       maxprice=""/>
- *   <sort_place sortname="" lname="" cur="0|1"/>   (сортировка "где")
- *   <sort_buy sortname="" lname="" cur="0|1"/>     (сортировка "чем платить")
- *   ...
+ *   <sort_place sortname="" lname="" cur="0|1"/>   (сортировка "где" — выпадающий scope_combo)
+ *   <sort_buy sortname="" lname="" cur="0|1"/>     (сортировка "чем платить" — arrayBuyFrom)
+ *   <sort_type sortname="" lname="" cur="0|1">     (категория товара — она же вкладка "что купить")
+ *     <sort_name sortname="" lname="" cur="0|1"/>  (только когда категория готова целиком с сервера — живьём RESOURCES)
+ *   </sort_type>
+ *   <listf>(любые дети с id/name/stat="0|1")</listf>          (общий чек-лист фильтров, pages.allfilters)
+ *   <sortl><listallow>(дети id/name)</listallow><sortf>(дети id/name)</sortf></sortl>  (варианты сортировки / активные 3 слота)
  * </auction>
  *
- * НЕ портированы в этой версии (см. §1.2 — дерево фильтров по трём
- * разным схемам в зависимости от категории товара, сериализуется в
- * клиентский, не XML-протокол формат `ArrToStr` только при ОТПРАВКЕ):
- * `listf`, `sort_type`/вложенные `sort_name`, `sortl`/`listallow`/`sortf`
- * — сам список лотов и покупка полностью рабочие без них, форма фильтра
- * — отдельная задача.
+ * **Дерево фильтров аукциона (2026-09-18)** — портировано по
+ * `auctionmenuclass.as` (`complete_filters()` строки 261-693,
+ * `sendFilter()` строки 927-985, рекурсивный сериализатор `ArrToStr`) +
+ * `xmlparsers.as:1803-1983` + `reqvestdata.as:646-661`
+ * (`applyFiltersAuction`, точный формат `<setfilterauction/>`).
+ *
+ * Ключевая находка: `filters.arrayTestTree` (дерево "что купить") строится
+ * по ТРЁМ разным схемам в зависимости от текущей вкладки категории
+ * (`sort_type[i].id`, она же `typebuy` в команде):
+ * - `RESOURCES` — сервер присылает готовый список прямо в этом же ответе
+ *   (`sort_type`/вложенные `sort_name` → `AuctionCategoryOption.items`).
+ * - `UNITS` — оригинал берёт из клиентского кэша `setting().loadSetting(
+ *   "unit_table", ...)`, сгруппированного по race→level. В порте тот же
+ *   результат строится из уже распарсенного `loaddata` (`LocalData.units`,
+ *   у каждого юнита уже есть `race`/`level`) — см. `buildUnitCategoryTree()`.
+ * - `ARTEFACTS` — оригинал берёт из кэша `art_filter_table`, который сам
+ *   заполняется из `loaddata`-узлов `<artscope>/<artsize>/<artbonus>`
+ *   (`UA_Load.class.php:195-249`) в БЕСПРЕЦЕДЕНТНОМ для остального
+ *   `loaddata` формате — не атрибуты, а весь список ОДНОЙ строкой текста
+ *   (`urlencode(implode(';', ...))`, поля через `|`), парсер которой в
+ *   AS2 (`setting().loadSetting("art_filter_table", ...)`) в этой сессии
+ *   не найден/не прослежен. **Сознательно не портировано** — для
+ *   категории ARTEFACTS дерево остаётся пустым (см. `buildCategoryTree()`);
+ *   это НЕ поломка, а тот же исход, что и в оригинале при пустом кэше:
+ *   `sendFilter()` блокирует отправку целиком, если серилизация ЛЮБОГО из
+ *   трёх деревьев дала пустую строку (`valid_key`, строки 980-984) — porting
+ *   это же поведение, не молчаливая деградация.
+ *
+ * Формат отправки — `ArrToStr`: узел с непустыми детьми сериализуется как
+ * `id[дети,через,запятую]`; лист без детей — как голый `id`, ТОЛЬКО если
+ * `stat===true`; пустая ветка/лист без `stat` — не попадает в строку
+ * вообще. См. `serializeFilterTree()`.
  */
 import { parseXmlFragment } from '../protocol/response';
+import type { LocalUnit } from '../data/localData';
 
 export type AuctionPriceMap = Partial<Record<'K' | 'N' | 'S' | 'F' | 'P' | 'T', string>>;
 
@@ -62,6 +93,48 @@ export interface AuctionSortOption {
   cur: boolean;
 }
 
+/** Категория товара ("что купить") — она же вкладка над деревом фильтров, `sort_type`+вложенные `sort_name`. */
+export interface AuctionCategoryOption {
+  id: string;
+  ln: string | null;
+  cur: boolean;
+  /** Готовый список от сервера — заполнен только когда категория позволяет прислать его целиком (живьём — RESOURCES). */
+  items: AuctionSortOption[];
+}
+
+/** Позиция общего чек-листа фильтров (`<listf>`, `pages.allfilters`) — смысл конкретных id/name определяется только живыми данными сервера. */
+export interface AuctionFilterFlag {
+  id: string | null;
+  name: string | null;
+  stat: boolean;
+}
+
+/** Вариант поля сортировки (`<sortl><listallow>`, `filters_other.allowFieldForSort`) — первый элемент всегда id="X" (плейсхолдер "выбрать", см. SORT_CHOOSE). */
+export interface AuctionSortFieldOption {
+  id: string;
+  ln: string | null;
+}
+
+/** Изначально активный слот сортировки (`<sortl><sortf>`, `filters_other.CurrentSort`) — направление в оригинале не приходит с сервером, всегда "DOWN" по умолчанию. */
+export interface AuctionActiveSort {
+  id: string;
+  ln: string | null;
+}
+
+/**
+ * Узел дерева фильтра — общий формат для ТРЁХ независимых деревьев
+ * (категория товара/`arrayTestTree`, общий чек-лист/`allfilters`,
+ * "чем платить"/`arrayBuyFrom`). Лист — без `children`; ветка — с
+ * непустым `children` (тогда собственный `stat` листа не участвует в
+ * сериализации, см. `serializeFilterTree()`).
+ */
+export interface FilterTreeNode {
+  id: string;
+  name: string | null;
+  stat: boolean;
+  children?: FilterTreeNode[];
+}
+
 export interface AuctionData {
   curPage: string | null;
   maxPages: string | null;
@@ -71,6 +144,10 @@ export interface AuctionData {
   lots: AuctionLot[];
   sortPlace: AuctionSortOption[];
   sortBuy: AuctionSortOption[];
+  categories: AuctionCategoryOption[];
+  generalFilters: AuctionFilterFlag[];
+  sortFieldOptions: AuctionSortFieldOption[];
+  activeSort: AuctionActiveSort[];
 }
 
 function parsePriceMap(raw: string | null): AuctionPriceMap {
@@ -129,6 +206,52 @@ export function parseAuction(xml: string): AuctionData {
     });
   }
 
+  const categories: AuctionCategoryOption[] = [];
+  const generalFilters: AuctionFilterFlag[] = [];
+  const sortFieldOptions: AuctionSortFieldOption[] = [];
+  const activeSort: AuctionActiveSort[] = [];
+
+  for (const el of Array.from(root.children)) {
+    if (el.nodeName === 'sort_type') {
+      const items: AuctionSortOption[] = Array.from(el.children)
+        .filter((c) => c.nodeName === 'sort_name')
+        .map((c) => ({
+          id: c.getAttribute('sortname'),
+          ln: c.getAttribute('lname'),
+          cur: c.getAttribute('cur') === '1',
+        }));
+      categories.push({
+        id: el.getAttribute('sortname') ?? '',
+        ln: el.getAttribute('lname'),
+        cur: el.getAttribute('cur') === '1',
+        items,
+      });
+    } else if (el.nodeName === 'listf') {
+      // xmlparsers.as:1883-1889 не проверяет имя тега детей — берём все.
+      for (const c of Array.from(el.children)) {
+        generalFilters.push({
+          id: c.getAttribute('id'),
+          name: c.getAttribute('name'),
+          stat: Number(c.getAttribute('stat')) > 0,
+        });
+      }
+    } else if (el.nodeName === 'sortl') {
+      for (const c of Array.from(el.children)) {
+        if (c.nodeName === 'listallow') {
+          // xmlparsers.as:1959-1961 — первый элемент всегда плейсхолдер "X"/SORT_CHOOSE.
+          sortFieldOptions.push({ id: 'X', ln: null });
+          for (const g of Array.from(c.children)) {
+            sortFieldOptions.push({ id: g.getAttribute('id') ?? '', ln: g.getAttribute('name') });
+          }
+        } else if (c.nodeName === 'sortf') {
+          for (const g of Array.from(c.children)) {
+            activeSort.push({ id: g.getAttribute('id') ?? '', ln: g.getAttribute('name') });
+          }
+        }
+      }
+    }
+  }
+
   return {
     curPage: root.getAttribute('curpage'),
     maxPages: root.getAttribute('pages'),
@@ -138,7 +261,116 @@ export function parseAuction(xml: string): AuctionData {
     lots,
     sortPlace: parseSortOptions(root, 'sort_place'),
     sortBuy: parseSortOptions(root, 'sort_buy'),
+    categories,
+    generalFilters,
+    sortFieldOptions,
+    activeSort,
   };
+}
+
+/**
+ * `ArrToStr` (`auctionmenuclass.as:938-967`) — узел с непустыми `children`
+ * сериализуется как `id[дети]` (только если дети дали непустую строку),
+ * лист — как голый `id`, только если `stat===true`. Соседи — через
+ * запятую. Пустое дерево/все `stat=false` → "" (это и есть сигнал
+ * "ничего не выбрано на этой оси", `sendFilter()` в оригинале тогда
+ * вовсе не отправляет команду — см. `hasSelection` в AuctionWindow.tsx).
+ */
+export function serializeFilterTree(nodes: FilterTreeNode[]): string {
+  const parts: string[] = [];
+  for (const node of nodes) {
+    if (node.children && node.children.length > 0) {
+      const childStr = serializeFilterTree(node.children);
+      if (childStr.length > 0) parts.push(`${node.id}[${childStr}]`);
+    } else if (node.stat) {
+      parts.push(node.id);
+    }
+  }
+  return parts.join(',');
+}
+
+/** Плоский список `allfilters` как дерево без вложенности — для общего `FilterTreeSelect`. */
+export function flagsToFilterTree(flags: AuctionFilterFlag[]): FilterTreeNode[] {
+  return flags.filter((f) => f.id !== null).map((f) => ({ id: f.id as string, name: f.name, stat: f.stat }));
+}
+
+/** Плоский список `arrayBuyFrom` (`sortBuy`/`allow_buy_res`, поля `ln`/`cur`, а не `name`/`stat`) как дерево. */
+export function sortOptionsToFilterTree(options: AuctionSortOption[]): FilterTreeNode[] {
+  return options.filter((o) => o.id !== null).map((o) => ({ id: o.id as string, name: o.ln, stat: o.cur }));
+}
+
+/**
+ * Дерево категории UNITS — race→level→юнит (`auctionmenuclass.as:569-597`,
+ * `unitdata[i].race/level/id/name` из клиентского кэша `unit_table`). В
+ * порте та же группировка строится прямо из `LocalData.units` (те же
+ * поля `race`/`level` уже распарсены из `loaddata`, отдельный кэш не
+ * нужен). `resolveGroupName` — резолвер `race_{race}`/`level_{level}` в
+ * `game.getLocalNames()`-эквиваленте (`resolveLocalName`), с читаемым
+ * фолбэком, если такой строки в живых данных не нашлось.
+ */
+export function buildUnitCategoryTree(
+  units: Map<string, LocalUnit>,
+  resolveGroupName: (id: string) => string | null,
+): FilterTreeNode[] {
+  const byRace = new Map<string, Map<string, FilterTreeNode[]>>();
+  for (const unit of units.values()) {
+    const race = unit.race ?? '';
+    const level = unit.level ?? '';
+    if (!byRace.has(race)) byRace.set(race, new Map());
+    const byLevel = byRace.get(race)!;
+    if (!byLevel.has(level)) byLevel.set(level, []);
+    byLevel.get(level)!.push({ id: unit.id, name: unit.ln, stat: true });
+  }
+
+  const tree: FilterTreeNode[] = [];
+  for (const [race, byLevel] of byRace) {
+    const levelNodes: FilterTreeNode[] = [];
+    for (const [level, leaves] of byLevel) {
+      const levelKey = `level_${level}`;
+      levelNodes.push({ id: levelKey, name: resolveGroupName(levelKey) ?? `${level} уровень`, stat: true, children: leaves });
+    }
+    const raceKey = `race_${race}`;
+    tree.push({ id: raceKey, name: resolveGroupName(raceKey) ?? `Раса ${race}`, stat: true, children: levelNodes });
+  }
+  return tree;
+}
+
+/**
+ * Дерево категории "что купить" по текущей вкладке (`category.id`) —
+ * см. докстринг файла про три схемы. ARTEFACTS сознательно даёт пустое
+ * дерево (не портировано, см. докстринг файла) — не баг, тот же исход,
+ * что и в оригинале при пустом кэше `art_filter_table`.
+ */
+export function buildCategoryTree(
+  category: AuctionCategoryOption | undefined,
+  units: Map<string, LocalUnit>,
+  resolveGroupName: (id: string) => string | null,
+): FilterTreeNode[] {
+  if (!category) return [];
+  if (category.id === 'UNITS') return buildUnitCategoryTree(units, resolveGroupName);
+  if (category.id === 'RESOURCES') {
+    return category.items.filter((i) => i.id !== null).map((i) => ({ id: i.id as string, name: i.ln, stat: true }));
+  }
+  return [];
+}
+
+export interface AuctionFilterCommand {
+  /** typebuy — id текущей вкладки категории (sort_type[i].id). */
+  category: string;
+  page: number;
+  pageSize: number;
+  /** select — сериализация дерева категории (arrayTestTree). */
+  select: string;
+  /** filter — сериализация общего чек-листа (pages.allfilters). */
+  filter: string;
+  /** buy_by — сериализация списка "чем платить" (arrayBuyFrom), несмотря на имя параметра "sortarr" в оригинале. */
+  buyBy: string;
+  /** sort_place — id выбранного scope (allow_scope_array/sortPlace). */
+  scope: string;
+  /** "{id1}|{dir1},{id2}|{dir2},{id3}|{dir3}" — reqvestdata.as:653. */
+  sort: string;
+  /** Отправляется только если длина > 3 (reqvestdata.as:655). */
+  trader: string;
 }
 
 /**

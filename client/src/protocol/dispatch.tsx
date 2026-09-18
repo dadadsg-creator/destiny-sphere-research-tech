@@ -73,6 +73,7 @@ import {
   changeAlliancePasswordXml,
   getAlliancePeaceXml,
   getInfoAboutPeaceXml,
+  setFilterAuctionXml,
 } from './xmlBuilder';
 import { parseTabsArray, stripTabPrefix } from './tabsParser';
 import { BuildArtefactWindow } from '../artefacts/BuildArtefactWindow';
@@ -1062,12 +1063,14 @@ function renderAuction(root: Element, xml: string, ctx: DispatchContext): void {
   );
   openWindow(
     <AuctionWindow
-      lots={data.lots}
+      data={data}
+      localUnits={localData.value?.units ?? new Map()}
       playerResourceByName={playerResourceByName}
       tabs={parseTabsArray(root)}
       onTabClick={(tabId) => sendTabClick(ctx, tabId)}
       onClose={closeWindow}
       onBuy={(lotId, price) => void ctx.send(tag('buy', { id_trade: lotId, newprice: price, anonym: 0 }))}
+      onApplyFilter={(cmd) => void ctx.send(setFilterAuctionXml(cmd))}
     />,
   );
 }

@@ -40,7 +40,7 @@ import type { ComplexViewData } from './world/complexViewData';
 import { EconomicalOverviewWindow } from './world/EconomicalOverviewWindow';
 import { parseEconomicalOverview } from './world/economicalOverviewData';
 import { parseLocalData } from './data/localData';
-import { setLocalData } from './data/localDataStore';
+import { setLocalData, localData } from './data/localDataStore';
 import { parseTabsArray } from './protocol/tabsParser';
 import { ReincarnateWindow } from './world/ReincarnateWindow';
 import { BuildArtefactWindow } from './artefacts/BuildArtefactWindow';
@@ -72,7 +72,7 @@ import type { BuildMenuEntry, PlayerResourcePoolFull } from './buildings/buildMe
 import type { BuildInfoData } from './buildings/buildInfoData';
 import type { ArtDepotEntry, ArtDepotFilter } from './buildings/artDepotData';
 import type { ResearchData } from './science/researchData';
-import type { AuctionLot } from './trade/auctionData';
+import type { AuctionLot, AuctionData } from './trade/auctionData';
 import type { TradeMenuData } from './trade/tradeData';
 import type { TransferMenuData } from './trade/transferData';
 import type { AllianceManagementData } from './alliance/allianceData';
@@ -735,6 +735,50 @@ const TEST_AUCTION_LOTS: AuctionLot[] = [
   },
 ];
 const TEST_PLAYER_RESOURCE_BY_NAME = new Map([['KADERIUM', 300]]);
+
+// Дерево фильтров аукциона (2026-09-18, см. докстринг auctionData.ts) —
+// категория RESOURCES приходит готовой с сервера, UNITS строится из
+// localData.units (race/level), ARTEFACTS сознательно пуста (не
+// портирован формат art_filter_table).
+const TEST_AUCTION_DATA: AuctionData = {
+  curPage: '1',
+  maxPages: '3',
+  onPage: '20',
+  order: null,
+  trader: '',
+  lots: TEST_AUCTION_LOTS,
+  sortPlace: [
+    { id: 'SCOPE_COMB', ln: 'Эта сота', cur: true },
+    { id: 'SCOPE_COMBCOMPLEX', ln: 'Весь комплекс', cur: false },
+  ],
+  sortBuy: [
+    { id: 'KADERIUM', ln: 'Кадериум', cur: true },
+    { id: 'SILVER_CREDIT', ln: 'Серебро', cur: false },
+  ],
+  categories: [
+    {
+      id: 'RESOURCES',
+      ln: 'Ресурсы',
+      cur: true,
+      items: [
+        { id: 'KADERIUM', ln: 'Кадериум', cur: true },
+        { id: 'NANO_CRYSTAL', ln: 'Нано-кристаллы', cur: true },
+      ],
+    },
+    { id: 'UNITS', ln: 'Юниты', cur: false, items: [] },
+    { id: 'ARTEFACTS', ln: 'Артефакты', cur: false, items: [] },
+  ],
+  generalFilters: [
+    { id: 'IMMEDIATE_ONLY', name: 'Только мгновенная покупка', stat: true },
+    { id: 'MY_LOTS', name: 'Мои лоты', stat: true },
+  ],
+  sortFieldOptions: [
+    { id: 'X', ln: null },
+    { id: 'PRICE', ln: 'Цена' },
+    { id: 'END_DATE', ln: 'Дата конца' },
+  ],
+  activeSort: [{ id: 'PRICE', ln: 'Цена' }],
+};
 
 // Синтетические данные для проверки SellWindow (?screen=sell).
 const TEST_TRADE_MENU: TradeMenuData = {
@@ -1607,13 +1651,22 @@ async function main() {
   }
 
   if (screen === 'auction') {
-    setLocalData(parseLocalData(TEST_ARTEFACT_LOADDATA_XML));
+    setLocalData(
+      parseLocalData(
+        `<load v="1"><artefact id="${TEST_ARTEFACT_ID}" ln="Могучая сфера энергии" bn="STASIS_ENERGY" bv="#800"/>` +
+          `<unit id="TANK" ln="Танк" level="2" race="1"/><unit id="SOLDIER" ln="Солдат" level="1" race="1"/>` +
+          `<interface id="race_1" ln="Люди"/><interface id="level_1" ln="1 уровень"/><interface id="level_2" ln="2 уровень"/>` +
+          `<att id="SORT_CHOOSE" ln="выбрать сортировку"/></load>`,
+      ),
+    );
     openWindow(
       <AuctionWindow
-        lots={TEST_AUCTION_LOTS}
+        data={TEST_AUCTION_DATA}
+        localUnits={localData.value?.units ?? new Map()}
         playerResourceByName={TEST_PLAYER_RESOURCE_BY_NAME}
         onClose={() => console.log('[auction] close')}
         onBuy={(lotId, price) => console.log('[auction] buy_lot(', lotId, price, ')')}
+        onApplyFilter={(cmd) => console.log('[auction] setfilterauction(', cmd, ')')}
       />,
     );
     (window as any).__renderDone = true;

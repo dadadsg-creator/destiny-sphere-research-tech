@@ -15,6 +15,7 @@ import type { GetPPeaceCommand } from '../alliance/privatePeaceData';
 import type { SendColonyModuleCommand } from '../world/colonizationData';
 import type { CreateAllianceCommand, JoinAllianceCommand } from '../alliance/allianceData';
 import type { AlliancePeaceCommand } from '../alliance/alliancePeaceData';
+import type { AuctionFilterCommand } from '../trade/auctionData';
 import { encodeMailMessage } from '../mail/mailData';
 
 export function tag(name: string, attrs: Record<string, string | number | boolean | undefined>): string {
@@ -218,6 +219,26 @@ export function sendZondXml(cmd: {
     attrs.time = cmd.time;
   }
   return tag('sendzond', attrs);
+}
+
+/**
+ * `reqvestdata.as:646-661` (`applyFiltersAuction`) — параметры вызова
+ * называются иначе, чем итоговые атрибуты (подтверждено построчно):
+ * `sortarr` (аргумент) сериализуется в `buy_by=""`, `arrselect` → `select`,
+ * `arrfilter` → `filter`. `trader` — только если длина > 3 (строка 655).
+ */
+export function setFilterAuctionXml(cmd: AuctionFilterCommand): string {
+  return tag('setfilterauction', {
+    page: cmd.page,
+    page_size: cmd.pageSize,
+    typebuy: cmd.category,
+    select: cmd.select,
+    sort_place: cmd.scope,
+    buy_by: cmd.buyBy,
+    filter: cmd.filter,
+    sort: cmd.sort,
+    trader: cmd.trader.length > 3 ? cmd.trader : undefined,
+  });
 }
 
 /** reqvestdata.as:592-597 (changeAlliancePass) — <changepassword><![CDATA[текст]]></changepassword>, без атрибутов. */
