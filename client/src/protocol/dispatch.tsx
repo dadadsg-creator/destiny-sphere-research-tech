@@ -647,6 +647,7 @@ function renderArmyOverview(root: Element, xml: string, ctx: DispatchContext): v
   openWindow(
     <ArmyOverviewWindow
       overview={data}
+      isPremium={premiumStatus.value?.isPremium ?? false}
       tabs={parseTabsArray(root)}
       onTabClick={(tabId) => sendTabClick(ctx, tabId)}
       onClose={closeWindow}

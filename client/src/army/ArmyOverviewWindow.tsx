@@ -7,11 +7,14 @@
  * 0 — стоит на соте, 1 — летит, можно вернуть, 2 — летит домой, ничего не
  * доступно, 3 — "домашка" (для UI неотличима от 0, см. §1 находка 4).
  *
- * Роспуск всех армий (DISMISS_ALL, только премиум в оригинале — здесь
- * кнопка показана всегда, проверка премиума не реализована в этой
- * версии) — reqvestdata.dismissArmies() без параметров означает "распустить
- * ВСЕ армии", отдельного частичного роспуска в протоколе нет (см.
- * client-combat-ui.md §1, находка про DISMISS_ALL).
+ * Роспуск всех армий (DISMISS_ALL) — `reqvestdata.dismissArmies()` без
+ * параметров означает "распустить ВСЕ армии", отдельного частичного
+ * роспуска в протоколе нет (см. client-combat-ui.md §1, находка про
+ * DISMISS_ALL). Только премиум в оригинале
+ * (`army_overview_class.as:292-312`: `if(game.getPremium())` вешает
+ * `onRelease`, иначе кнопка остаётся видимой, но при 50% альфе и без
+ * обработчика вообще) — здесь та же схема, `isPremium` (2026-09-18,
+ * раньше проверка не была реализована совсем).
  *
  * **Дополнение (2026-09-11)** — панель действий по конкретной армии
  * (`army_overview_class.as:670-892`, `mov.radio_action`/`go_action`)
@@ -27,7 +30,6 @@
  *    всё это и раскопалось, `setTurnTime`/`formatTurnTime`).
  * НЕ реализовано (сознательно, отдельная задача по масштабу):
  *  - `calc_action`/`calctravel` — калькулятор ETA перелёта без отправки;
- *  - передача юнитов между армиями (`allowTransfer`/`trasfer_unit`);
  *  - сортировка юнитов в детальном списке;
  *  - `useArtefacts`/переименование армии — подтверждено полнотекстовым
  *    поиском, что этих двух фич в этой конкретной ревизии AS2-клиента
@@ -66,6 +68,8 @@ const INACTION_LABEL: Record<number, string> = {
 
 export interface ArmyOverviewWindowProps {
   overview: ArmyOverview;
+  /** "Распустить все армии" — только премиум в оригинале, см. докстринг файла. */
+  isPremium: boolean;
   tabs?: TabDef[];
   onTabClick?: (tabId: string) => void;
   onClose: () => void;
@@ -228,6 +232,7 @@ function ArmyActionPanel({
 
 export function ArmyOverviewWindow({
   overview,
+  isPremium,
   tabs,
   onTabClick,
   onClose,
@@ -305,7 +310,13 @@ export function ArmyOverviewWindow({
           ))}
         </tbody>
       </table>
-      <button type="button" class="ds-popup__btn" onClick={confirmDismissAll}>
+      <button
+        type="button"
+        class="ds-popup__btn"
+        disabled={!isPremium}
+        title={isPremium ? undefined : 'Доступно только премиум-аккаунтам'}
+        onClick={confirmDismissAll}
+      >
         Распустить все армии
       </button>
     </Window>

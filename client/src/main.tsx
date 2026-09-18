@@ -1298,10 +1298,11 @@ async function main() {
     uiRoot,
   );
 
-  if (screen === 'army') {
+  if (screen === 'army' || screen === 'army-nopremium') {
     openWindow(
       <ArmyOverviewWindow
         overview={TEST_ARMY_OVERVIEW}
+        isPremium={screen === 'army'}
         tabs={TEST_TABS}
         onTabClick={(tabId) => console.log('[army] tab click ->', tabId)}
         onClose={() => console.log('[army] close')}
