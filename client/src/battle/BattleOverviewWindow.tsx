@@ -24,6 +24,17 @@
  *  - "Написать письмо" (`opponentName`) — переиспользует уже
  *    подключённый `renderCreateMessage`.
  *
+ * **Награда за неравный бой (2026-09-18)** — `BUT_TROFEI`/`getRewards()`
+ * (`battleoverviewclass.as:468-487`): кнопка видна ВСЕГДА, но активна
+ * только при `filtersData.reward=="1"` (в порте — `data.filters.reward`,
+ * парсится уже давно, см. `battleOverviewData.ts:87`, просто не была
+ * подключена к UI/команде). `<getRewards/>` — без атрибутов, не привязана к
+ * конкретному бою (это общий по аккаунту флаг "есть неполученная
+ * награда", не за один бой). После клика оригинал НЕ перезапрашивает
+ * состояние — просто гасит кнопку локально (`this._alpha=50; delete
+ * this.onRelease`) до следующего открытия окна; порт воспроизводит это
+ * тем же способом (локальный `claimed` стейт, не повторный `<load>`).
+ *
  * НЕ реализовано: текстовый отчёт о завершённом бою (`getReportBattle`,
  * REPORT_BUT) — ответ сервера на `report="1"` НЕ является XML
  * (`UA_GetBattleInfo::outReport()` кладёт в марку `xmldata` сырую
@@ -56,6 +67,7 @@ export interface BattleOverviewWindowProps {
   onViewBattle: (idBattle: number) => void;
   onSurrender: (idBattle: number) => void;
   onWriteToOpponent: (nick: string) => void;
+  onClaimReward: () => void;
 }
 
 const BATTLE_TYPE_LABEL: Record<string, string> = { A: 'Атака', D: 'Оборона', E: 'Защита коалиции' };
@@ -191,9 +203,36 @@ function BattleRow({ battle, ra, onView, onSurrender, onWrite }: { battle: Battl
   );
 }
 
-export function BattleOverviewWindow({ data, tabs, onTabClick, onClose, onApplyFilter, onViewBattle, onSurrender, onWriteToOpponent }: BattleOverviewWindowProps) {
+export function BattleOverviewWindow({
+  data,
+  tabs,
+  onTabClick,
+  onClose,
+  onApplyFilter,
+  onViewBattle,
+  onSurrender,
+  onWriteToOpponent,
+  onClaimReward,
+}: BattleOverviewWindowProps) {
+  const [claimed, setClaimed] = useState(false);
+  const canClaim = data.filters.reward === '1' && !claimed;
+
   return (
     <Window title="Обзор боёв" tabs={tabs} onTabClick={onTabClick} onClose={onClose}>
+      <div class="ds-spying__row">
+        <button
+          type="button"
+          class="ds-popup__btn"
+          disabled={!canClaim}
+          title="Награда за неравный бой"
+          onClick={() => {
+            onClaimReward();
+            setClaimed(true);
+          }}
+        >
+          Забрать награду
+        </button>
+      </div>
       <FilterBar filters={data.filters} onApply={onApplyFilter} />
       <table>
         <thead>

@@ -1320,6 +1320,7 @@ function renderBattleOverview(root: Element, xml: string, ctx: DispatchContext):
       onViewBattle={(id) => void ctx.send(tag('getBattleInfo', { id_battle: id }))}
       onSurrender={(id) => void ctx.send(tag('retreat', { id_battle: id }))}
       onWriteToOpponent={(nick) => void ctx.send(tag('getbuildmenu', { tab: 'CreateMessage', type: 'new', name: nick }))}
+      onClaimReward={() => void ctx.send(tag('getRewards', {}))}
     />,
   );
 }

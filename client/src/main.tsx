@@ -1007,7 +1007,7 @@ const TEST_BATTLE_OVERVIEW: BattleOverview = {
   ],
   filters: {
     status: 'ALL', winner: 'ALL', opponents: ['Враг1', 'Враг2'], sotes: ['2.1.2'],
-    allowdays: [{ ln: '1 SEPTEMBER' }, { ln: '9 SEPTEMBER' }], startday: '1', endday: '9', reward: '0', ra: '1',
+    allowdays: [{ ln: '1 SEPTEMBER' }, { ln: '9 SEPTEMBER' }], startday: '1', endday: '9', reward: '1', ra: '1',
   },
 };
 
@@ -1677,6 +1677,7 @@ async function main() {
         onViewBattle={(id) => console.log('[battle-overview] getShowBattle(', id, ')')}
         onSurrender={(id) => console.log('[battle-overview] SurrenderSampleBattle(', id, ')')}
         onWriteToOpponent={(nick) => console.log('[battle-overview] createnewmail(new, undefined,', nick, ')')}
+        onClaimReward={() => console.log('[battle-overview] getRewards()')}
       />,
     );
     (window as any).__renderDone = true;
