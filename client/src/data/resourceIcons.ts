@@ -76,6 +76,19 @@ export function unitIconUrl(unitname: string): string {
 }
 
 /**
+ * Логотип расы — те же извлечённые ассеты, что уже использует
+ * `ComplexViewWindow.tsx` (`RACE_LOGO`, ключ там — числовой id_race
+ * "1"/"2"/"3"), здесь тот же путь, но с ключом по уже существующему
+ * типу `Race` ('tech'/'bio'/'psi', `map/buildingTypes.ts`) — для
+ * калькулятора биржи (`SellWindow.tsx`), где раса хранится в этом виде.
+ */
+export function raceLogoUrl(race: 'tech' | 'bio' | 'psi'): string {
+  if (race === 'tech') return '/assets/complex/VORAN_LOGO_DEF.png';
+  if (race === 'psi') return '/assets/complex/PSOLAO_LOGO_DEF.png';
+  return '/assets/complex/LIENSU_LOGO_DEF.png';
+}
+
+/**
  * Название юнита — живая локализация из `loaddata` (`<unit id="" ln="">`,
  * `localData.units`, уже правильно капитализировано в исходных данных —
  * "Солдат"/"Танк" и т.п., без доп. обработки). Уже применяется через явный

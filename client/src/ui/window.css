@@ -1454,6 +1454,84 @@
   color: #fff;
 }
 
+/* Общая кнопка "одиночного выбора" (замена голых <input type="radio">)
+   — переиспользуется где угодно (категория/раса в SellWindow.tsx и
+   т.п.), владелец: "вместо радиобаттонов кнопочки красивые нужны". */
+.ds-choice-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #16264d;
+  color: #cfd8ee;
+  border: 1px solid #3a4d7a;
+  border-radius: 16px;
+  padding: 5px 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.ds-choice-btn:hover {
+  border-color: #557ac0;
+}
+.ds-choice-btn--active {
+  background: #2a4a8a;
+  color: #fff;
+  border-color: #7fb8ff;
+}
+.ds-choice-btn__icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+/* Калькулятор биржи (SellWindow.tsx) — курсы обмена сеткой вместо
+   слипшегося ряда, итоги ресурсов — карточками с крупными "пилюлями"
+   вместо мелкого инлайн-текста (владелец: "полная каша", "выровнять
+   иконки"). */
+.ds-trade-calc__rates {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(140px, 1fr));
+  gap: 10px 16px;
+  margin-bottom: 10px;
+}
+.ds-trade-calc__rates .ds-auction-filter__field {
+  justify-content: space-between;
+}
+.ds-trade-calc__result {
+  background: #0e1a38;
+  border: 1px solid #3a4d7a;
+  border-radius: 4px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+}
+.ds-trade-calc__result-title {
+  color: #9fb2d4;
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+.ds-trade-calc__pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.ds-trade-calc__pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #16264d;
+  border: 1px solid #3a4d7a;
+  border-radius: 14px;
+  padding: 4px 10px;
+  font-size: 13px;
+  color: #e8ecf7;
+  font-variant-numeric: tabular-nums;
+}
+.ds-trade-calc__pill img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+
 /* Графика узла дерева (см. FilterTreeIcon, auctionData.ts) — владелец:
    "это игра и нужна графика", список из голого текста недостаточен. */
 .ds-auction-filter__icon {

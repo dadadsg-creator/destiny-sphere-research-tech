@@ -54,7 +54,14 @@ import { Window } from '../ui/Window';
 import { Stepper } from '../ui/Stepper';
 import type { TabDef } from '../ui/tabs';
 import { ResourceList, type ResourceCost } from '../ui/ResourceValue';
-import { RESOURCE_LETTER_TO_NAME, resourceDisplayName, unitDisplayName, artefactDisplayName } from '../data/resourceIcons';
+import {
+  RESOURCE_LETTER_TO_NAME,
+  resourceDisplayName,
+  resourceIconUrl,
+  unitDisplayName,
+  artefactDisplayName,
+  raceLogoUrl,
+} from '../data/resourceIcons';
 import { localData } from '../data/localDataStore';
 import { resolveLocalName } from '../data/localNameResolver';
 import { formatTurnTime } from '../data/turnTime';
@@ -99,6 +106,28 @@ function raceLabel(race: Race): string {
 /** `truncFloat()` (`trade_menu_class.as:438-457`) — 2 знака после запятой. */
 function round2(value: number): number {
   return Math.round(value * 100) / 100;
+}
+
+/** Карточка "название — ряд пилюль ресурс+число" (владелец: "полная каша", "выровнять иконки"). */
+function ResultCard({ title, values }: { title: string; values: { name: string; value: number }[] }) {
+  const nonZero = values.filter((v) => v.value > 0);
+  return (
+    <div class="ds-trade-calc__result">
+      <div class="ds-trade-calc__result-title">{title}</div>
+      <div class="ds-trade-calc__pills">
+        {nonZero.length === 0 ? (
+          <span class="ds-resource-list__empty">—</span>
+        ) : (
+          nonZero.map((v) => (
+            <span key={v.name} class="ds-trade-calc__pill">
+              <img src={resourceIconUrl(v.name)} alt="" />
+              <span>{v.value}</span>
+            </span>
+          ))
+        )}
+      </div>
+    </div>
+  );
 }
 
 /**
@@ -158,10 +187,15 @@ function TradeCalculatorPanel({
       <div class="ds-spying__row">
         <span class="ds-spying__label">Раса:</span>
         {CALC_RACE_ORDER.map((r) => (
-          <label key={r} class="ds-spying__choice">
-            <input type="radio" name="calc-race" checked={race === r} onChange={() => selectRace(r)} />
+          <button
+            key={r}
+            type="button"
+            class={`ds-choice-btn${race === r ? ' ds-choice-btn--active' : ''}`}
+            onClick={() => selectRace(r)}
+          >
+            <img class="ds-choice-btn__icon" src={raceLogoUrl(r)} alt="" />
             {raceLabel(r)}
-          </label>
+          </button>
         ))}
       </div>
 
@@ -181,7 +215,7 @@ function TradeCalculatorPanel({
         <Stepper value={quantity} min={1} onChange={setQuantity} />
       </div>
 
-      <div class="ds-auction-filter__row-line">
+      <div class="ds-trade-calc__rates">
         {rateField('Наценка, %', 'markupPercent', 0)}
         {rateField('Курс кадериума', 'kaderium')}
         {rateField('Курс нано-кристаллов', 'nanoCrystal')}
@@ -190,44 +224,38 @@ function TradeCalculatorPanel({
         {rateField('Курс продиума', 'prodium')}
       </div>
 
-      <div class="ds-spying__row">
-        <span class="ds-spying__label">Нужно ресурсов (без наценки):</span>
-        <ResourceList
-          costs={[
-            { name: 'KADERIUM', value: round2(result.raw.kaderium) },
-            { name: 'NANO_CRYSTAL', value: round2(result.raw.nanoCrystal) },
-            { name: 'STASIS_ENERGY', value: round2(result.raw.stasisEnergy) },
-            { name: 'FOOD', value: round2(result.raw.food) },
-            { name: 'PRODIUM', value: round2(result.raw.prodium) },
-          ]}
-        />
-      </div>
+      <ResultCard
+        title="Нужно ресурсов (без наценки)"
+        values={[
+          { name: 'KADERIUM', value: round2(result.raw.kaderium) },
+          { name: 'NANO_CRYSTAL', value: round2(result.raw.nanoCrystal) },
+          { name: 'STASIS_ENERGY', value: round2(result.raw.stasisEnergy) },
+          { name: 'FOOD', value: round2(result.raw.food) },
+          { name: 'PRODIUM', value: round2(result.raw.prodium) },
+        ]}
+      />
 
-      <div class="ds-spying__row">
-        <span class="ds-spying__label">С наценкой:</span>
-        <ResourceList
-          costs={[
-            { name: 'KADERIUM', value: round2(result.withMarkup.kaderium) },
-            { name: 'NANO_CRYSTAL', value: round2(result.withMarkup.nanoCrystal) },
-            { name: 'STASIS_ENERGY', value: round2(result.withMarkup.stasisEnergy) },
-            { name: 'FOOD', value: round2(result.withMarkup.food) },
-            { name: 'PRODIUM', value: round2(result.withMarkup.prodium) },
-          ]}
-        />
-      </div>
+      <ResultCard
+        title="С наценкой"
+        values={[
+          { name: 'KADERIUM', value: round2(result.withMarkup.kaderium) },
+          { name: 'NANO_CRYSTAL', value: round2(result.withMarkup.nanoCrystal) },
+          { name: 'STASIS_ENERGY', value: round2(result.withMarkup.stasisEnergy) },
+          { name: 'FOOD', value: round2(result.withMarkup.food) },
+          { name: 'PRODIUM', value: round2(result.withMarkup.prodium) },
+        ]}
+      />
 
-      <div class="ds-spying__row">
-        <span class="ds-spying__label">Итоговая стоимость (в одном ресурсе):</span>
-        <ResourceList
-          costs={[
-            { name: 'PRODIUM', value: round2(result.totalInProdium) },
-            { name: 'KADERIUM', value: round2(result.totalAsKaderium) },
-            { name: 'NANO_CRYSTAL', value: round2(result.totalAsNanoCrystal) },
-            { name: 'STASIS_ENERGY', value: round2(result.totalAsStasisEnergy) },
-            { name: 'FOOD', value: round2(result.totalAsFood) },
-          ]}
-        />
-      </div>
+      <ResultCard
+        title="Итоговая стоимость (в одном ресурсе)"
+        values={[
+          { name: 'PRODIUM', value: round2(result.totalInProdium) },
+          { name: 'KADERIUM', value: round2(result.totalAsKaderium) },
+          { name: 'NANO_CRYSTAL', value: round2(result.totalAsNanoCrystal) },
+          { name: 'STASIS_ENERGY', value: round2(result.totalAsStasisEnergy) },
+          { name: 'FOOD', value: round2(result.totalAsFood) },
+        ]}
+      />
     </>
   );
 }
@@ -309,18 +337,17 @@ export function SellWindow({ data, localUnits, isPremium, playerRace, tabs, onTa
       <div class="ds-spying__row">
         <span class="ds-spying__label">Категория:</span>
         {(isPremium ? [1, 2, 3, 4] : [1, 2, 3]).map((cat) => (
-          <label key={cat} class="ds-spying__choice">
-            <input
-              type="radio"
-              name="sell-category"
-              checked={category === cat}
-              onChange={() => {
-                setCategory(cat);
-                setArticleId(data.articlesByCategory[cat]?.[0]?.id ?? '');
-              }}
-            />
+          <button
+            key={cat}
+            type="button"
+            class={`ds-choice-btn${category === cat ? ' ds-choice-btn--active' : ''}`}
+            onClick={() => {
+              setCategory(cat);
+              setArticleId(data.articlesByCategory[cat]?.[0]?.id ?? '');
+            }}
+          >
             {CATEGORY_LABELS[cat]}
-          </label>
+          </button>
         ))}
       </div>
 
