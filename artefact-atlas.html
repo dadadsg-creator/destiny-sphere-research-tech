@@ -239,7 +239,7 @@
 
   const state = { kind: 'all', q: '' };
 
-  const DISPLAY_TARGET = 96;
+  const DISPLAY_TARGET = 128;
   function displaySize(natW, natH, target) {
     target = target || DISPLAY_TARGET;
     if (!natW || !natH) return { w: target, h: target };
@@ -282,7 +282,7 @@
     const size = displaySize(item.w, item.h, DISPLAY_TARGET);
     const file = item.file;
     const redraw = REDRAW_DATA[file];
-    const svgWrapped = `<span style="display:inline-block;width:${size.w}px;height:${size.h}px;overflow:hidden">${item.svg.replace('<svg ', `<svg width="${size.w}" height="${size.h}" `)}</span>`;
+    const svgWrapped = `<span style="display:inline-block;width:${size.w}px;height:${size.h}px;overflow:hidden">${item.svg.replace('<svg ', `<svg width="${size.w}" height="${size.h}" viewBox="0 0 ${item.w} ${item.h}" `)}</span>`;
     const redrawImg = redraw ? `<img src="${redraw}" alt="${item.postfix} redraw" loading="lazy">` : '';
     const thumbHtml = redraw
       ? `<div class="asset-compare"><div class="asset-pane">${svgWrapped}<span class="asset-label">original</span></div><div class="asset-pane">${redrawImg}<span class="asset-label">redraw</span></div></div>`
@@ -340,7 +340,7 @@
   const scopeGrid = document.getElementById('scope-grid');
   scopeGrid.innerHTML = scopesData.map((s) => {
     const size = displaySize(s.w, s.h, 64);
-    const svgWrapped = s.svg.replace('<svg ', `<svg width="${size.w}" height="${size.h}" `);
+    const svgWrapped = s.svg.replace('<svg ', `<svg width="${size.w}" height="${size.h}" viewBox="0 0 ${s.w} ${s.h}" `);
     const file = s.file;
     return `
       <div class="scope-card">
