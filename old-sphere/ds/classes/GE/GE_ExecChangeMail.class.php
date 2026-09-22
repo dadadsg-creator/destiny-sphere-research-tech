@@ -75,7 +75,32 @@ class GE_ExecChangeMail
             $title = $lang['CHANGE_MAIL'];
         }
                     
-        mail($email, $title, $body, $headers);
+        // Subject header needs its own RFC 2047 encoded-word wrapping;
+        // raw windows-1251 bytes in a header are undefined behavior and
+        // most mail clients garble them (unlike the body, whose charset
+        // is declared via the Content-Type header above). windows-1251 as
+        // the encoded-word charset tag isn't reliably recognized by mail
+        // clients, so convert to UTF-8 first, matching mail_utf8() in
+        // reg_wizard.php.
+        $utf8Subject = iconv('windows-1251', 'utf-8', $title);
+        $encodedSubject = '=?UTF-8?B?' . base64_encode($utf8Subject) . '?=';
+
+        $rawMessage = "To: {$email}\n"
+            . "Subject: {$encodedSubject}\n"
+            . $headers . "\n"
+            . $body;
+
+        // sendmail_path in php.ini on this host is broken (just "-t -i", no
+        // binary path) and it's a PHP_INI_SYSTEM directive, so it can't be
+        // fixed with ini_set()/.htaccess. mail() can therefore never spawn
+        // the MTA. Work around it by invoking the real sendmail binary
+        // (symlinked to exim4) directly, bypassing mail() entirely.
+        $pipe = popen('/usr/sbin/sendmail -t -i', 'w');
+        if ($pipe)
+        {
+            fwrite($pipe, $rawMessage);
+            pclose($pipe);
+        }
     }
 }
 
