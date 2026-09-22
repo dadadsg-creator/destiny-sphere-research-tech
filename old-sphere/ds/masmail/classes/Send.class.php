@@ -122,7 +122,10 @@ class Send
         $email = $messageRecipient['email'];                
         
         assert(key_exists('subject', $messageData));
-        $subject = '=?windows-1251?B?'.base64_encode(stripslashes ($messageData['subject'])).'?=';
+        // windows-1251 as the encoded-word charset tag isn't reliably
+        // recognized by mail clients (some show the raw base64 string
+        // instead of decoding it), so convert to UTF-8 first.
+        $subject = '=?UTF-8?B?'.base64_encode(iconv('windows-1251', 'utf-8', stripslashes($messageData['subject']))).'?=';
         
         assert(key_exists('body', $messageData));
         $message = stripslashes ($messageData['body']); 
@@ -136,9 +139,25 @@ class Send
         $unsubscribeURL = constant('GAME_HOST')."/ds/MassMailUnsubscribe.php?p=".md5($email);
         $message = str_replace ("%unsubscribelink%", $unsubscribeURL, $message);            
 
-        $res = (boolean)mail($email, $subject, $message, $headers);
-        //$this->remote_mail($email, $subject, $message, $headers);
-        //$res = true;
+        $rawMessage = "To: {$email}\n"
+            . "Subject: {$subject}\n"
+            . $headers . "\n"
+            . "\n"
+            . $message;
+
+        // sendmail_path in php.ini on this host is broken (just "-t -i", no
+        // binary path) and it's a PHP_INI_SYSTEM directive, so it can't be
+        // fixed with ini_set()/.htaccess. mail() can therefore never spawn
+        // the MTA. Work around it by invoking the real sendmail binary
+        // (symlinked to exim4) directly, bypassing mail() entirely.
+        $res = false;
+        $pipe = popen('/usr/sbin/sendmail -t -i', 'w');
+        if ($pipe)
+        {
+            fwrite($pipe, $rawMessage);
+            $exitCode = pclose($pipe);
+            $res = ($exitCode === 0);
+        }
 
         if($res)
         {

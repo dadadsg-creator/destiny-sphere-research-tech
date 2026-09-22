@@ -124,9 +124,24 @@ class UC_ExecDonation
      	$header = 'MIME-Version: 1.0' . "\n" . 'Content-type: text/plain; charset=UTF-8'
     	. "\n" . "From: Destiny Sphere <noreply@destinysphere.com>\n";
      
+		// sendmail_path in php.ini on this host is broken (just "-t -i", no
+		// binary path) and it's a PHP_INI_SYSTEM directive, so it can't be
+		// fixed with ini_set()/.htaccess. mail() can therefore never spawn
+		// the MTA. Work around it by invoking the real sendmail binary
+		// (symlinked to exim4) directly, bypassing mail() entirely.
 		foreach(self::$mailList as $k => $mail)
 		{
-			mail($mail, $mailSubj, $mailBody, $header);
+			$rawMessage = "To: {$mail}\n"
+				. "Subject: {$mailSubj}\n"
+				. $header . "\n"
+				. $mailBody;
+
+			$pipe = popen('/usr/sbin/sendmail -t -i', 'w');
+			if ($pipe)
+			{
+				fwrite($pipe, $rawMessage);
+				pclose($pipe);
+			}
 		}
 	}
 	
