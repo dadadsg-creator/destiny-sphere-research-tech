@@ -61,6 +61,7 @@ if(!$strOut || ($_REQUEST['nfs'] == 79)){
     ob_end_clean();
     $strOut = str_replace("{TITLE_END}", @$GLOBALS['TITLE_END'], $strOut);
     $strOut = str_replace('</head>', '<script>window.RufflePlayer = window.RufflePlayer || {}; window.RufflePlayer.config = { autoplay: "on", unmuteOverlay: "hidden" };</script><script src="https://unpkg.com/@ruffle-rs/ruffle"></script></head>', $strOut);
+    $strOut = str_replace('http://destinysphere.ru/banners/', '/banners/', $strOut);
     $pageCache->set($strOut);
     echo "<!--REAL PAGE!-->";
 }else{
