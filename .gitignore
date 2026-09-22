@@ -1,11 +1,14 @@
 # Secrets - never commit
 /token.txt
 /REDACTED_CREDENTIALS.txt
+/ftpaccess.txt
+/.ftp-backups/
 /schema.sql
 /dblog.txt
 /db-query-plan.md
 /db-exports/
 /.claude/settings.local.json
+/.codex/settings.local.json
 
 # OS/editor cruft
 Thumbs.db

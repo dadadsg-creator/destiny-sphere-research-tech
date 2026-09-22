@@ -259,11 +259,33 @@ class SU_RemaindPassword
         $mailBody = $tpl->fetch('new_password_mail.tpl');
 
         # Common Headers
-        $headers .= "From: Destiny Sphere <noreply@destinysphere.ru>\r\n".
+        $headers = "From: Destiny Sphere <noreply@destinysphere.ru>\r\n".
         "Return-Path: noreply@destinysphere.ru\r\n".
         "Content-Type: text/html; charset=".constant("DEFAULT_CHARSET");
-            
-        if(!mail(self::$user->getEmail(), $lang['MAIL_SUBJECT'], $mailBody, $headers))
+
+        // sendmail_path in php.ini on this host is broken (just "-t -i", no
+        // binary path) and it's a PHP_INI_SYSTEM directive, so it can't be
+        // fixed with ini_set()/.htaccess. mail() can therefore never spawn
+        // the MTA. Work around it by invoking the real sendmail binary
+        // (symlinked to exim4) directly, bypassing mail() entirely.
+        $to = self::$user->getEmail();
+        $subject = $lang['MAIL_SUBJECT'];
+        $rawMessage = "To: {$to}\r\n"
+            . "Subject: {$subject}\r\n"
+            . $headers . "\r\n"
+            . "\r\n"
+            . $mailBody;
+
+        $pipe = popen('/usr/sbin/sendmail -t -i', 'w');
+        $mailResult = false;
+        if ($pipe)
+        {
+            fwrite($pipe, $rawMessage);
+            $exitCode = pclose($pipe);
+            $mailResult = ($exitCode === 0);
+        }
+
+        if(!$mailResult)
         {
             self::$error = 'MAIL_PROBLEMS';
             return false;
