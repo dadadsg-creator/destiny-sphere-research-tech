@@ -79,6 +79,23 @@ if(!$strOut || ($_REQUEST['nfs'] == 79)){
         $menuChunk = preg_replace("~$rowOpen$guard" . 'index\.php\?p=icq_helper"' . "$guard$sep~s", '', $menuChunk);
         $strOut = substr($strOut, 0, $menuStart) . $menuChunk . substr($strOut, $menuEnd);
     }
+    $skyStart = strpos($strOut, '<!-- banner skytower begin-->');
+    $skyEnd = strpos($strOut, '<!-- banner skytower end-->');
+    if ($skyStart !== false && $skyEnd !== false) {
+        $skyEnd += strlen('<!-- banner skytower end-->');
+        $strOut = substr($strOut, 0, $skyStart) . substr($strOut, $skyEnd);
+    }
+    $newsEndPos = strpos($strOut, '<!-- news window end -->');
+    $detiPos = ($newsEndPos !== false) ? strpos($strOut, 'deti-life.ru', $newsEndPos) : false;
+    if ($newsEndPos !== false && $detiPos !== false) {
+        $region = substr($strOut, $newsEndPos, $detiPos - $newsEndPos);
+        $tdPos = strpos($region, '<td width=187 valign=top>');
+        $lastTrPos = strrpos($region, '</tr>');
+        if ($tdPos !== false && $lastTrPos !== false && $lastTrPos > $tdPos) {
+            $newRegion = substr($region, 0, $tdPos) . substr($region, $lastTrPos);
+            $strOut = substr($strOut, 0, $newsEndPos) . $newRegion . substr($strOut, $detiPos);
+        }
+    }
     $pageCache->set($strOut);
     echo "<!--REAL PAGE!-->";
 }else{
