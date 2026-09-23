@@ -96,6 +96,19 @@ if(!$strOut || ($_REQUEST['nfs'] == 79)){
             $strOut = substr($strOut, 0, $newsEndPos) . $newRegion . substr($strOut, $detiPos);
         }
     }
+    $menuAnchors = [
+        'chat\.destinysphere\.ru/irc\.cgi',
+        'planeta\.rambler\.ru/community/ds/',
+        'p=support_user_pages',
+        'beauty\.destinysphere\.ru/\'',
+        'vozvrat\.destinysphere\.ru',
+        'p=deal_page',
+        'p=game_statistics',
+        'p=ds_job',
+    ];
+    foreach ($menuAnchors as $menuAnchor) {
+        $strOut = preg_replace("~^.*$menuAnchor.*\r?\n~m", '', $strOut);
+    }
     $pageCache->set($strOut);
     echo "<!--REAL PAGE!-->";
 }else{
