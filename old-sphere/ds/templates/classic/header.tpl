@@ -38,11 +38,7 @@
                                             <td align=center valign="top">
                                                 <img height=34 src="img/cabinet/graph/del_but01.gif" border=0></td>
                                             <td width="110" height="22" align=center valign="middle" class="menu_txt">
-                                                <div style="width:110px; height:100%; cursor: hand;" onclick="openURL('http://destinysphere.net/ds/ranking_new.php');" valign=middle><span style="position: relative; top: 9px;">–≈…“»Õ√</span></div></td>
-                                            <td align=center valign="top">
-                                                <img height=34 src="img/cabinet/graph/del_but01.gif" border=0></td>
-                                            <td width="110" height="22" align=center valign="middle" class="menu_txt">
-                                                <div style="width:110px; height:100%; cursor: hand;" onclick="openURL('http://sms.destinysphere.ru/');" valign=middle><span style="position: relative; top: 9px;">DS-Mobile</span></div></td>
+                                                <div style="width:110px; height:100%; cursor: hand;" onclick="openURL('http://destinysphere.ru/ds/ranking_new.php');" valign=middle><span style="position: relative; top: 9px;">–≈…“»Õ√</span></div></td>
                                             <td align=center valign="top">
                                                 <img height=34 src="img/cabinet/graph/del_but01.gif" border=0></td>
                                             <td width="110" height="22" align=center valign="middle" class="menu_txt">

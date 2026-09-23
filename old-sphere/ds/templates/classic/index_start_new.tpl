@@ -858,13 +858,6 @@ function checkAnswer(checked_value)
                                                                                 </td>
                                                                             </tr>
                                                                             {/if}       
-                                                                            <tr>
-                                                                                <td width="30%" align="middle" valign="middle">
-                                                                                    <form action="sms.php" target="_blank" method="POST">
-                                                                                    <input type="submit" value="{$lang.SMS}" class="submit_yes">
-                                                                                    </form> 
-                                                                                </td>
-                                                                            </tr>
                                                                         </table> 
                                                                         <!-- END SERVISE BLOCK -->
                                                                     </td>
