@@ -347,7 +347,7 @@
 {/literal}
 //-->
 </script>
-<div style="padding:4px 8px;"><label style="display:block;font-size:10px;font-weight:bold;color:#2D2F60;margin-bottom:2px;">{$lang.EXCHANGE}: {$lang.GOLD_CREDITS}</label><input onkeyup="checkLimit();" type="text" size="5" maxlength="8" name="gc" style="width:100%;box-sizing:border-box;"></div><div style="padding:6px 8px 8px;"><input type="submit" value="{$lang.SUBMIT_02}" class=submit01 style="width:100%;height:24px;"></div>
+<div style="padding:4px 8px;"><label style="display:block;font-size:10px;font-weight:bold;color:#2D2F60;margin-bottom:2px;">{$lang.EXCHANGE}: {$lang.GOLD_CREDITS}</label><input onkeyup="checkLimit();" type="text" size="5" maxlength="8" name="gc" style="width:100%;box-sizing:border-box;"></div><div style="padding:6px 8px 8px;text-align:center;"><input type="submit" value="{$lang.SUBMIT_02}" class=submit01></div>
 </form>
 </div></td></tr>
                                                                 
@@ -415,7 +415,7 @@
 {else}
 <form action="" method="POST" name="transferToForm">
 <input type="hidden" name="action" value="transfer_to_instance_confirm">
-<div style="padding:4px 8px;"><label style="display:block;font-size:10px;font-weight:bold;color:#2D2F60;margin-bottom:2px;">{$lang.GOLD_CREDITS}:</label><input type="text" size="8" maxlength="8" name="gc" value="" style="width:100%;box-sizing:border-box;"></div><div style="padding:4px 8px;"><label style="display:block;font-size:10px;font-weight:bold;color:#2D2F60;margin-bottom:2px;">{$lang.SILVER_CREDITS}:</label><input type="text" size="8" maxlength="8" name="sc" value="" style="width:100%;box-sizing:border-box;"></div><div style="padding:4px 8px;"><label style="display:block;font-size:10px;font-weight:bold;color:#2D2F60;margin-bottom:2px;">{$lang.TO_WORLD}:</label><select name="world" style="width:100%;box-sizing:border-box;">{foreach from=$PARAMS.USER_INSTANCE item=DATA key=WORLD}<option value="{$DATA.instance}">{$WORLD}{/foreach}</select></div><div style="padding:6px 8px 8px;"><input type="submit" value="{$lang.SUBMIT_01}" class=submit01 style="width:100%;height:24px;"></div>
+<div style="padding:4px 8px;"><label style="display:block;font-size:10px;font-weight:bold;color:#2D2F60;margin-bottom:2px;">{$lang.GOLD_CREDITS}:</label><input type="text" size="8" maxlength="8" name="gc" value="" style="width:100%;box-sizing:border-box;"></div><div style="padding:4px 8px;"><label style="display:block;font-size:10px;font-weight:bold;color:#2D2F60;margin-bottom:2px;">{$lang.SILVER_CREDITS}:</label><input type="text" size="8" maxlength="8" name="sc" value="" style="width:100%;box-sizing:border-box;"></div><div style="padding:4px 8px;"><label style="display:block;font-size:10px;font-weight:bold;color:#2D2F60;margin-bottom:2px;">{$lang.TO_WORLD}:</label><select name="world" style="width:100%;box-sizing:border-box;">{foreach from=$PARAMS.USER_INSTANCE item=DATA key=WORLD}<option value="{$DATA.instance}">{$WORLD}{/foreach}</select></div><div style="padding:6px 8px 8px;text-align:center;"><input type="submit" value="{$lang.SUBMIT_01}" class=submit01></div>
 </form>
 {/if}
 </div></td></tr>
@@ -429,7 +429,7 @@
 {else}
 <form action="" method="POST" name="transferFromForm">
 <input type="hidden" name="action" value="transfer_to_user_confirm">
-<div style="padding:4px 8px;"><label style="display:block;font-size:10px;font-weight:bold;color:#2D2F60;margin-bottom:2px;">{$lang.GOLD_CREDITS}:</label><input type="text" size="8" maxlength="8" name="gc" value="" style="width:100%;box-sizing:border-box;"></div><div style="padding:4px 8px;"><label style="display:block;font-size:10px;font-weight:bold;color:#2D2F60;margin-bottom:2px;">{$lang.SILVER_CREDITS}:</label><input type="text" size="8" maxlength="8" name="sc" value="" style="width:100%;box-sizing:border-box;"></div><div style="padding:4px 8px;"><label style="display:block;font-size:10px;font-weight:bold;color:#2D2F60;margin-bottom:2px;">{$lang.FROM_WORLD}:</label><select name="world" style="width:100%;box-sizing:border-box;">{foreach from=$PARAMS.USER_INSTANCE item=DATA key=WORLD}<option value="{$DATA.instance}">{$WORLD}{/foreach}</select></div><div style="padding:6px 8px 8px;"><input type="submit" value="{$lang.SUBMIT_01}" class=submit01 style="width:100%;height:24px;"></div>
+<div style="padding:4px 8px;"><label style="display:block;font-size:10px;font-weight:bold;color:#2D2F60;margin-bottom:2px;">{$lang.GOLD_CREDITS}:</label><input type="text" size="8" maxlength="8" name="gc" value="" style="width:100%;box-sizing:border-box;"></div><div style="padding:4px 8px;"><label style="display:block;font-size:10px;font-weight:bold;color:#2D2F60;margin-bottom:2px;">{$lang.SILVER_CREDITS}:</label><input type="text" size="8" maxlength="8" name="sc" value="" style="width:100%;box-sizing:border-box;"></div><div style="padding:4px 8px;"><label style="display:block;font-size:10px;font-weight:bold;color:#2D2F60;margin-bottom:2px;">{$lang.FROM_WORLD}:</label><select name="world" style="width:100%;box-sizing:border-box;">{foreach from=$PARAMS.USER_INSTANCE item=DATA key=WORLD}<option value="{$DATA.instance}">{$WORLD}{/foreach}</select></div><div style="padding:6px 8px 8px;text-align:center;"><input type="submit" value="{$lang.SUBMIT_01}" class=submit01></div>
 </form>
 {/if}
 </div></td></tr>
