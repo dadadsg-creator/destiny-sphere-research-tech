@@ -1,12 +1,5 @@
 <!-- {literal} START COUNTER-->
 
-<!-- begin of Top100 code -->
-<script id="top100Counter" type="text/javascript" src="http://counter.rambler.ru/top100.jcn?1341440"></script>
-<noscript>
-<img src="http://counter.rambler.ru/top100.cnt?1341440" alt="" width="1" height="1" border="0"/>
-</noscript>
-<!-- end of Top100 code-->
-
 <!-- Google Analytics  -->
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
