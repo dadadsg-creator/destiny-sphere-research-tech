@@ -324,76 +324,42 @@
                                                     <!--BEGIN LEFT FRAME-->
                                                         <td valign=top style="padding-left:2px; padding-right:2px;">
                                                             <table width=100% cellpadding=0 cellspacing=0 border=0>
-                                                                <tr>
-                                                                    <td><img src="../img/v4/borders/05/t_l.gif" border=0></td>
-                                                                    <td height=13 align=left background="../img/v4/borders/05/t.gif"><img src="../img/v4/borders/05/t_l_l.jpg" border=0></td>
-                                                                    <td><img src="../img/v4/borders/05/t_r.gif" border=0></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td valign=top background="../img/v4/borders/05/l.gif"><img src="../img/v4/borders/05/l_t.jpg" border=0></td>
-                                                                    <td width=100% class=bg04 style="padding:2px;">
-                                                                        <table width=100% cellpadding=0 cellspacing=1 border=0>
-                                                                            <tr>
-                                                                                <td>
-                                                                                    <table width=100% cellpadding=0 cellspacing=0 border=0>
-                                                                                        <tr>
-                                                                                            <td><img src="../img/v4/graph/p01.gif" border=0></td>
-                                                                                            <td width=100% align=left class=header_txt><span style="padding-left:5px; position: relative; top: -3px;">{$lang.EXCHANGE_TITLE}</span></td>
-                                                                                        </tr>
-                                                                                    </table>
-                                                                                </td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <td height=1 class=delimetr01></td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <form action="" method="POST" name="exhangeForm">
-                                                                                <input type="hidden" name="action" value="exchange_confirm">
-                                                                                <td>
-                                                                                    <script language="javascript">
-                                                                                    <!--
-                                                                                        var maxCredits = {$PARAMS.USER.GC};
-                                                                                    {literal}
-                                                                                        function checkLimit()
-                                                                                        {
-                                                                                            if(document.forms('exhangeForm').gc.value > maxCredits)
-                                                                                            {
-                                                                                                document.forms('exhangeForm').gc.value = maxCredits;
-                                                                                            }
-                                                                                        } 
-                                                                                        
-                                                                                        function openURL(url)
-                                                                                        {
-                                                                                            window.open(url, '_stat_', 'status=0, toolbar=0, menubar=0, resizable=1, scrollbars=1, height=500, width=430');
-                                                                                        }
-                                                                                    {/literal}
-                                                                                    //-->
-                                                                                    </script>
-                                                                                    <table width=100% cellpadding=0 cellspacing=0 border=0>
-                                                                                        <tr>
-                                                                                            <td align=left>
-                                                                                                {$lang.EXCHANGE}:
-                                                                                            </td>
-                                                                                            <td align=right><input type="submit" value="{$lang.SUBMIT_02}" class=submit01></td>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                <input onkeyup="checkLimit();" type="text" size="5" maxlength="8" name="gc" style="width:100px; text-align: center;"><br>
-                                                                                                {$lang.GOLD_CREDITS}
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                    </table>
-                                                                                </td>
-                                                                                </form>
-                                                                            </tr>
-                                                                        </table>
-                                                                    </td>
-                                                                    <td valign=bottom background="../img/v4/borders/05/r.gif"><img src="../img/v4/borders/05/r_b.jpg" border=0></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td><img src="../img/v4/borders/05/b_l.gif" border=0></td>
-                                                                    <td height=13 align=right background="../img/v4/borders/05/b.gif"><img src="../img/v4/borders/05/b_r_r.jpg" border=0></td>
-                                                                    <td><img src="../img/v4/borders/05/b_r.gif" border=0></td>
-                                                                </tr>
+                                                                <tr><td colspan=3><div class="dsw">
+                                                                <script type="text/javascript">
+                                                                {literal}
+                                                                function openURL(url)
+                                                                {
+                                                                    window.open(url, '_stat_', 'status=0, toolbar=0, menubar=0, resizable=1, scrollbars=1, height=500, width=430');
+                                                                }
+                                                                function dsExSetMax()
+                                                                {
+                                                                    document.getElementById('dsExGC').value = dsExMaxGC;
+                                                                }
+                                                                function dsExClamp()
+                                                                {
+                                                                    var el = document.getElementById('dsExGC');
+                                                                    var v = parseInt(el.value, 10);
+                                                                    if (isNaN(v) || v < 0) v = 0;
+                                                                    if (v > dsExMaxGC) v = dsExMaxGC;
+                                                                    el.value = v;
+                                                                }
+                                                                {/literal}
+                                                                var dsExMaxGC = {$PARAMS.USER.GC|default:0};
+                                                                </script>
+                                                                <h4>{$lang.EXCHANGE_TITLE}</h4>
+                                                                <form action="" method="POST" name="exhangeForm">
+                                                                <input type="hidden" name="action" value="exchange_confirm">
+                                                                <div class="dsw-amount-row">
+                                                                <div class="dsw-field">
+                                                                <label>{$lang.GOLD_CREDITS}</label>
+                                                                <input type="number" name="gc" id="dsExGC" min="0" step="1" value="" oninput="dsExClamp()">
+                                                                <div class="dsw-avail">Доступно <span id="dsExAvail">{$PARAMS.USER.GC|default:0}</span></div>
+                                                                </div>
+                                                                <button type="button" class="dsw-max" onclick="dsExSetMax()">Всё</button>
+                                                                </div>
+                                                                <button type="submit" class="dsw-submit">Обменять</button>
+                                                                </form>
+                                                                </div></td></tr>
                                                                 
                                                                 <!--2-->
                                                                 {if $show_enter_cred_form}
