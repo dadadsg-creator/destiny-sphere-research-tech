@@ -154,31 +154,35 @@ if(!$strOut || ($_REQUEST['nfs'] == 79)){
         }
     }
     $menuBoxStart = strpos($strOut, '<!-- DS_UNLIM button end -->');
-    $menuBoxEnd = strpos($strOut, '<!-- premium button begin -->');
-    if ($menuBoxStart !== false && $menuBoxEnd !== false) {
+    $premiumStart = strpos($strOut, '<!-- premium button begin -->');
+    $premiumEnd = strpos($strOut, '<!-- premium button end -->');
+    if ($menuBoxStart !== false && $premiumStart !== false && $premiumEnd !== false) {
         $menuBoxStart += strlen('<!-- DS_UNLIM button end -->');
-        $boxChunk = substr($strOut, $menuBoxStart, $menuBoxEnd - $menuBoxStart);
+        $premiumEnd += strlen('<!-- premium button end -->');
+        $boxChunk = substr($strOut, $menuBoxStart, $premiumStart - $menuBoxStart);
+        $premiumHtml = substr($strOut, $premiumStart, $premiumEnd - $premiumStart);
         $forumLabel = '';
-        if (preg_match('~href="http://forum\.destinysphere\.ru/" class=menu_txt_left target=_blank>(.*?)</a>~s', $boxChunk, $m)) {
+        if (preg_match('~href="http://forum\.destinysphere\.ru/"[^>]*>(.*?)</a>~s', $boxChunk, $m)) {
             $forumLabel = $m[1];
         }
         $rankingLabel = '';
-        if (preg_match('~href="http://destinysphere\.ru/ds/ranking_new\.php" class=menu_txt_left target=_blank>(.*?)</a>~s', $boxChunk, $m)) {
+        if (preg_match('~href="http://destinysphere\.ru/ds/ranking_new\.php"[^>]*>(.*?)</a>~s', $boxChunk, $m)) {
             $rankingLabel = $m[1];
         }
         $billingLabel = '';
-        if (preg_match('~href="https://billing\.destinysphere\.ru" class=menu_txt_left target=_blank>(.*?)</a>~s', $boxChunk, $m)) {
+        if (preg_match('~href="https://billing\.destinysphere\.ru"[^>]*>(.*?)</a>~s', $boxChunk, $m)) {
             $billingLabel = $m[1];
         }
         if ($forumLabel !== '' && $rankingLabel !== '' && $billingLabel !== '') {
             $linkStyle = 'display:block;padding:7px 10px;border-bottom:1px solid rgba(255,255,255,0.18);';
             $lastLinkStyle = 'display:block;padding:7px 10px;';
-            $newBox = '<tr><td colspan=3><div style="background:linear-gradient(180deg,#4B6498 0%,#2B3C6F 55%,#1A2340 100%);border:1px solid #7A8AAC;border-radius:6px;box-shadow:0 1px 2px rgba(0,0,0,0.2);overflow:hidden;">'
+            $newBox = $premiumHtml
+                . '<tr><td colspan=3><div style="background:linear-gradient(180deg,#4B6498 0%,#2B3C6F 55%,#1A2340 100%);border:1px solid #7A8AAC;border-radius:6px;box-shadow:0 1px 2px rgba(0,0,0,0.2);overflow:hidden;">'
                 . '<a href="http://forum.destinysphere.ru/" target=_blank class=menu_txt_left style="' . $linkStyle . '">' . $forumLabel . '</a>'
                 . '<a href="http://destinysphere.ru/ds/ranking_new.php" target=_blank class=menu_txt_left style="' . $linkStyle . '">' . $rankingLabel . '</a>'
                 . '<a href="https://billing.destinysphere.ru" target=_blank class=menu_txt_left style="' . $lastLinkStyle . '">' . $billingLabel . '</a>'
                 . '</div></td></tr>';
-            $strOut = substr($strOut, 0, $menuBoxStart) . $newBox . substr($strOut, $menuBoxEnd);
+            $strOut = substr($strOut, 0, $menuBoxStart) . $newBox . substr($strOut, $premiumEnd);
         }
     }
     $pageCache->set($strOut);
