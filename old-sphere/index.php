@@ -118,6 +118,7 @@ if(!$strOut || ($_REQUEST['nfs'] == 79)){
         $welcomeChunk = preg_replace('~(<span class=wnd_gen_txt><span class="wnd_gen_txt_large">).*?(</span>\r?\n<div align="right">)~s', '$1' . '<strong>Стратегическая онлайн-игра Destiny Sphere Classic</strong> работает с 2003 года — легенда российского онлайна в жанре MMOG (Massively Multiplayer Online Game). Тысячи игроков одновременно развивают свои базы в фантастическом мире четырёх колец, вращающихся вокруг солнца, выбирая одну из трёх рас — технологичных Воранеров, генетиков Лиенсу или мистиков-археологов Псолао. Игра идёт в реальном времени круглосуточно и без остановки — прямо в браузере, без скачивания и установки какого-либо клиента.<br />
 <br />
 За эти годы к нам присоединилось более 1,3 млн игроков!<br />' . '$2', $welcomeChunk, 1);
+    $welcomeChunk = preg_replace('~(</span>\r?\n<div align="right">)~', '<br /><div align="center"><img src="img/screens/05.jpg" width="220" height="165" border="0" style="margin:4px;" alt=""><img src="img/screens/07.jpg" width="220" height="165" border="0" style="margin:4px;" alt=""><img src="img/screens/09.jpg" width="220" height="165" border="0" style="margin:4px;" alt=""></div>' . '$1', $welcomeChunk, 1);
         $strOut = substr($strOut, 0, $welcomeStart) . $welcomeChunk . substr($strOut, $welcomeEnd);
     }
     $pageCache->set($strOut);
