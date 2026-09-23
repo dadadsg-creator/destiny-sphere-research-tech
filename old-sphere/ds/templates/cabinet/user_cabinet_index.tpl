@@ -117,7 +117,7 @@
                                                                             <tr>
                                                                                 <td width=100% align=center style="padding:1px;">
                                                                                     <a href="user_cabinet.php?action=payment_services">
-                                                                                    <img src="../img/cabinet/icons/payment_services.jpg" border="0" height="194" width="274"><br>
+                                                                                    <img src="../img/cabinet/icons/shop.png" border="0" height="194" width="274"><br>
                                                                                     <span style="font-size:14px; color:#5d4e86;">{$lang.GO_TO_PAYMENT_SERVICE}</span>
                                                                                     </a>
                                                                                 </td>
