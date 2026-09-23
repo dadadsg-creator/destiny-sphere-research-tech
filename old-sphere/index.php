@@ -153,6 +153,34 @@ if(!$strOut || ($_REQUEST['nfs'] == 79)){
             $strOut = substr($strOut, 0, $blStart) . $newBlock . substr($strOut, $blEnd);
         }
     }
+    $menuBoxStart = strpos($strOut, '<!-- DS_UNLIM button end -->');
+    $menuBoxEnd = strpos($strOut, '<!-- premium button begin -->');
+    if ($menuBoxStart !== false && $menuBoxEnd !== false) {
+        $menuBoxStart += strlen('<!-- DS_UNLIM button end -->');
+        $boxChunk = substr($strOut, $menuBoxStart, $menuBoxEnd - $menuBoxStart);
+        $forumLabel = '';
+        if (preg_match('~href="http://forum\.destinysphere\.ru/" class=menu_txt_left target=_blank>(.*?)</a>~s', $boxChunk, $m)) {
+            $forumLabel = $m[1];
+        }
+        $rankingLabel = '';
+        if (preg_match('~href="http://destinysphere\.ru/ds/ranking_new\.php" class=menu_txt_left target=_blank>(.*?)</a>~s', $boxChunk, $m)) {
+            $rankingLabel = $m[1];
+        }
+        $billingLabel = '';
+        if (preg_match('~href="https://billing\.destinysphere\.ru" class=menu_txt_left target=_blank>(.*?)</a>~s', $boxChunk, $m)) {
+            $billingLabel = $m[1];
+        }
+        if ($forumLabel !== '' && $rankingLabel !== '' && $billingLabel !== '') {
+            $linkStyle = 'display:block;padding:7px 10px;border-bottom:1px solid #3D4F8A;';
+            $lastLinkStyle = 'display:block;padding:7px 10px;';
+            $newBox = '<tr><td colspan=3><div style="background:#2A3B6F;border-radius:6px;box-shadow:0 1px 3px rgba(0,0,0,0.25);overflow:hidden;">'
+                . '<a href="http://forum.destinysphere.ru/" target=_blank class=menu_txt_left style="' . $linkStyle . '">' . $forumLabel . '</a>'
+                . '<a href="http://destinysphere.ru/ds/ranking_new.php" target=_blank class=menu_txt_left style="' . $linkStyle . '">' . $rankingLabel . '</a>'
+                . '<a href="https://billing.destinysphere.ru" target=_blank class=menu_txt_left style="' . $lastLinkStyle . '">' . $billingLabel . '</a>'
+                . '</div></td></tr>';
+            $strOut = substr($strOut, 0, $menuBoxStart) . $newBox . substr($strOut, $menuBoxEnd);
+        }
+    }
     $pageCache->set($strOut);
     echo "<!--REAL PAGE!-->";
 }else{
