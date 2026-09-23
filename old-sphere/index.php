@@ -171,9 +171,9 @@ if(!$strOut || ($_REQUEST['nfs'] == 79)){
             $billingLabel = $m[1];
         }
         if ($forumLabel !== '' && $rankingLabel !== '' && $billingLabel !== '') {
-            $linkStyle = 'display:block;padding:7px 10px;border-bottom:1px solid #3D4F8A;';
+            $linkStyle = 'display:block;padding:7px 10px;border-bottom:1px solid rgba(255,255,255,0.18);';
             $lastLinkStyle = 'display:block;padding:7px 10px;';
-            $newBox = '<tr><td colspan=3><div style="background:#2A3B6F;border-radius:6px;box-shadow:0 1px 3px rgba(0,0,0,0.25);overflow:hidden;">'
+            $newBox = '<tr><td colspan=3><div style="background:linear-gradient(180deg,#4B6498 0%,#2B3C6F 55%,#1A2340 100%);border:1px solid #7A8AAC;border-radius:6px;box-shadow:0 1px 2px rgba(0,0,0,0.2);overflow:hidden;">'
                 . '<a href="http://forum.destinysphere.ru/" target=_blank class=menu_txt_left style="' . $linkStyle . '">' . $forumLabel . '</a>'
                 . '<a href="http://destinysphere.ru/ds/ranking_new.php" target=_blank class=menu_txt_left style="' . $linkStyle . '">' . $rankingLabel . '</a>'
                 . '<a href="https://billing.destinysphere.ru" target=_blank class=menu_txt_left style="' . $lastLinkStyle . '">' . $billingLabel . '</a>'
