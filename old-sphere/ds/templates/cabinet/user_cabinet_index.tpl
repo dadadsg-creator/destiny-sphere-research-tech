@@ -318,46 +318,6 @@
                                                                 </tr>
                                                                 {/if}
                                                                 <!--END OF LAST OPERATIONS-->
-                                                                <!--REFERRAL INFO -->
-                                                                <tr>
-                                                                    <td><img src="../img/v4/borders/04/t_l.gif" border=0></td>
-                                                                    <td height=11 align=right background="../img/v4/borders/04/t.gif"><img src="../img/v4/borders/04/t_r_r.jpg" border=0></td>
-                                                                    <td><img src="../img/v4/borders/04/t_r.gif" border=0></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td background="../img/v4/borders/04/l.gif"></td>
-                                                                    <td width=100% class=bg04 style="padding:2px;">
-                                                                        <table width=100% height=100% border=0 cellpadding=0 cellspacing=2>
-                                                                            <tr>
-                                                                                <td width=100%>
-                                                                                    <table width=100% cellpadding=0 cellspacing=0 border=0>
-                                                                                        <tr>
-                                                                                            <td><img src="../img/v4/graph/p01.gif" border=0></td>
-                                                                                            <td width=100% align=left class=header_txt><span style="padding-left:5px; position: relative; top: -3px;">{$lang.YOUR_REFLINK}</span></td>
-                                                                                        </tr>
-                                                                                    </table>
-                                                                                </td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <td class=delimetr01></td>
-                                                                            </tr>
-                                      <tr>
-                                      <td>
-                                      {$lang.REFLINK_ANONS}
-{$smarty.const.GAME_HOST}/ds/reg_wizard.php?ur={$uid}<br>
-{$lang.REFLINK_MOREINFO} <a href="http://ds-game.ru/?p=invite_friends">{$lang.REFLINK_REFTEXT}</a>.
-                                      </td>
-                                      </tr>
-                                      </table>
-                                                                    </td>
-                                                                    <td background="../img/v4/borders/04/r.gif"></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td><img src="../img/v4/borders/04/b_l.gif" border=0></td>
-                                                                    <td height=12 align=right background="../img/v4/borders/04/b.gif"><img src="../img/v4/borders/04/b_r_r.jpg" border=0></td>
-                                                                    <td><img src="../img/v4/borders/04/b_r.gif" border=0></td>
-                                                                </tr>
-                                                                
                                                         </table>
                                                     </td>
                                                     <!--END RIGHT FRAME-->
@@ -666,71 +626,6 @@
                                                                     <td valign=bottom background="../img/v4/borders/05/r.gif"><img src="../img/v4/borders/05/r_b.jpg" border=0></td>
                                                                 </tr>
                                             
-                                                                <tr>
-                                                                    <td><img src="../img/v4/borders/05/b_l.gif" border=0></td>
-                                                                    <td height=13 align=right background="../img/v4/borders/05/b.gif"><img src="../img/v4/borders/05/b_r_r.jpg" border=0></td>
-                                                                    <td><img src="../img/v4/borders/05/b_r.gif" border=0></td>
-                                                                </tr>
-                                                                
-                                                                <!-- 4 --> 
-                                                                
-                                                                <tr>
-                                                                    <td><img src="../img/v4/borders/05/t_l.gif" border=0></td>
-                                                                    <td height=13 align=left background="../img/v4/borders/05/t.gif"><img src="../img/v4/borders/05/t_l_l.jpg" border=0></td>
-                                                                    <td><img src="../img/v4/borders/05/t_r.gif" border=0></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td valign=top background="../img/v4/borders/05/l.gif"><img src="../img/v4/borders/05/l_t.jpg" border=0></td>
-                                                                    <td width=100% class=bg04 style="padding:2px;">
-                                                                        <table width=100% cellpadding=0 cellspacing=1 border=0>
-                                                                            <tr>
-                                                                                <td>
-                                                                                    <table width=100% cellpadding=0 cellspacing=0 border=0>
-                                                                                        <tr>
-                                                                                            <td><img src="../img/v4/graph/p01.gif" border=0></td>
-                                                                                            <td width=100% align=left class=header_txt><span style="padding-left:5px; position: relative; top: -3px;">{$lang.DONATE_TITLE}</span></td>
-                                                                                        </tr>
-                                                                                    </table>
-                                                                                </td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <td height=1 class=delimetr01></td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <form action="" method="POST" name="transferToForm">
-                                                                                <input type="hidden" name="action" value="donate_confirm">
-                                                                                <td>
-                                                                                    <table width=100% cellpadding=0 cellspacing=0 border=0>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                {$lang.GOLD_CREDITS}:
-                                                                                            </td>
-                                                                                            <td rowspan=3 align=right valign=top><input type="submit" value="{$lang.SUBMIT_01}" class=submit01></td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td align=left>
-                                                                                                <input type="text" size="8" maxlength="8" name="gc" value="" style="width:100px; text-align: center;">
-                                                                                            </td>
-                                                                                            </tr>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                {$lang.SILVER_CREDITS}:
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td align=left>
-                                                                                                <input type="text" size="8" maxlength="8" name="sc" value="" style="width:100px; text-align: center;">
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                    </table>
-                                                                                </td>
-                                                                                </form>
-                                                                            </tr>
-                                                                        </table>
-                                                                    </td>
-                                                                    <td valign=bottom background="../img/v4/borders/05/r.gif"><img src="../img/v4/borders/05/r_b.jpg" border=0></td>
-                                                                </tr>
-                                                                
                                                                 <tr>
                                                                     <td><img src="../img/v4/borders/05/b_l.gif" border=0></td>
                                                                     <td height=13 align=right background="../img/v4/borders/05/b.gif"><img src="../img/v4/borders/05/b_r_r.jpg" border=0></td>
