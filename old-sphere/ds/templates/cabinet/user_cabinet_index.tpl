@@ -324,76 +324,32 @@
                                                     <!--BEGIN LEFT FRAME-->
                                                         <td valign=top style="padding-left:2px; padding-right:2px;">
                                                             <table width=100% cellpadding=0 cellspacing=0 border=0>
-                                                                <tr>
-                                                                    <td><img src="../img/v4/borders/05/t_l.gif" border=0></td>
-                                                                    <td height=13 align=left background="../img/v4/borders/05/t.gif"><img src="../img/v4/borders/05/t_l_l.jpg" border=0></td>
-                                                                    <td><img src="../img/v4/borders/05/t_r.gif" border=0></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td valign=top background="../img/v4/borders/05/l.gif"><img src="../img/v4/borders/05/l_t.jpg" border=0></td>
-                                                                    <td width=100% class=bg04 style="padding:2px;">
-                                                                        <table width=100% cellpadding=0 cellspacing=1 border=0>
-                                                                            <tr>
-                                                                                <td>
-                                                                                    <table width=100% cellpadding=0 cellspacing=0 border=0>
-                                                                                        <tr>
-                                                                                            <td><img src="../img/v4/graph/p01.gif" border=0></td>
-                                                                                            <td width=100% align=left class=header_txt><span style="padding-left:5px; position: relative; top: -3px;">{$lang.EXCHANGE_TITLE}</span></td>
-                                                                                        </tr>
-                                                                                    </table>
-                                                                                </td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <td height=1 class=delimetr01></td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <form action="" method="POST" name="exhangeForm">
-                                                                                <input type="hidden" name="action" value="exchange_confirm">
-                                                                                <td>
-                                                                                    <script language="javascript">
-                                                                                    <!--
-                                                                                        var maxCredits = {$PARAMS.USER.GC};
-                                                                                    {literal}
-                                                                                        function checkLimit()
-                                                                                        {
-                                                                                            if(document.forms('exhangeForm').gc.value > maxCredits)
-                                                                                            {
-                                                                                                document.forms('exhangeForm').gc.value = maxCredits;
-                                                                                            }
-                                                                                        } 
-                                                                                        
-                                                                                        function openURL(url)
-                                                                                        {
-                                                                                            window.open(url, '_stat_', 'status=0, toolbar=0, menubar=0, resizable=1, scrollbars=1, height=500, width=430');
-                                                                                        }
-                                                                                    {/literal}
-                                                                                    //-->
-                                                                                    </script>
-                                                                                    <table width=100% cellpadding=0 cellspacing=0 border=0>
-                                                                                        <tr>
-                                                                                            <td align=left>
-                                                                                                {$lang.EXCHANGE}:
-                                                                                            </td>
-                                                                                            <td align=right><input type="submit" value="{$lang.SUBMIT_02}" class=submit01></td>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                <input onkeyup="checkLimit();" type="text" size="5" maxlength="8" name="gc" style="width:100px; text-align: center;"><br>
-                                                                                                {$lang.GOLD_CREDITS}
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                    </table>
-                                                                                </td>
-                                                                                </form>
-                                                                            </tr>
-                                                                        </table>
-                                                                    </td>
-                                                                    <td valign=bottom background="../img/v4/borders/05/r.gif"><img src="../img/v4/borders/05/r_b.jpg" border=0></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td><img src="../img/v4/borders/05/b_l.gif" border=0></td>
-                                                                    <td height=13 align=right background="../img/v4/borders/05/b.gif"><img src="../img/v4/borders/05/b_r_r.jpg" border=0></td>
-                                                                    <td><img src="../img/v4/borders/05/b_r.gif" border=0></td>
-                                                                </tr>
+<tr><td colspan=3><div style="background:#EBEDF1;border:1px solid #A9B7D6;border-radius:6px;box-shadow:0 1px 2px rgba(0,0,0,0.12);overflow:hidden;margin-bottom:6px;">
+<table width=100% cellpadding=0 cellspacing=0 border=0><tr><td><img src="../img/v4/graph/p01.gif" border=0></td><td width=100% align=left class=header_txt><span style="padding-left:5px; position: relative; top: -3px;">{$lang.EXCHANGE_TITLE}</span></td></tr></table><div style="height:1px;background-color:#C7CEDA;margin:3px 0;"></div>
+<form action="" method="POST" name="exhangeForm">
+<input type="hidden" name="action" value="exchange_confirm">
+<script language="javascript">
+<!--
+    var maxCredits = {$PARAMS.USER.GC};
+{literal}
+    function checkLimit()
+    {
+        if(document.forms('exhangeForm').gc.value > maxCredits)
+        {
+            document.forms('exhangeForm').gc.value = maxCredits;
+        }
+    }
+
+    function openURL(url)
+    {
+        window.open(url, '_stat_', 'status=0, toolbar=0, menubar=0, resizable=1, scrollbars=1, height=500, width=430');
+    }
+{/literal}
+//-->
+</script>
+<div style="padding:4px 8px;"><label style="display:block;font-size:10px;font-weight:bold;color:#2D2F60;margin-bottom:2px;">{$lang.EXCHANGE}: {$lang.GOLD_CREDITS}</label><input onkeyup="checkLimit();" type="text" size="5" maxlength="8" name="gc" style="width:100%;box-sizing:border-box;"></div><div style="padding:6px 8px 8px;"><input type="submit" value="{$lang.SUBMIT_02}" class=submit01 style="width:100%;height:24px;"></div>
+</form>
+</div></td></tr>
                                                                 
                                                                 <!--2-->
                                                                 {if $show_enter_cred_form}
@@ -452,185 +408,31 @@
                                                                 </tr>
                                 <!--End of ENTER_MONEY2-->
                                 {/if}
-                                                                <tr>
-                                                                    <td><img src="../img/v4/borders/05/t_l.gif" border=0></td>
-                                                                    <td height=13 align=left background="../img/v4/borders/05/t.gif"><img src="../img/v4/borders/05/t_l_l.jpg" border=0></td>
-                                                                    <td><img src="../img/v4/borders/05/t_r.gif" border=0></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td valign=top background="../img/v4/borders/05/l.gif"><img src="../img/v4/borders/05/l_t.jpg" border=0></td>
-                                                                    <td width=100% class=bg04 style="padding:2px;">
-                                                                        <table width=100% cellpadding=0 cellspacing=1 border=0>
-                                                                            <tr>
-                                                                                <td>
-                                                                                    <table width=100% cellpadding=0 cellspacing=0 border=0>
-                                                                                        <tr>
-                                                                                            <td><img src="../img/v4/graph/p01.gif" border=0></td>
-                                                                                            <td width=100% align=left class=header_txt><span style="padding-left:5px; position: relative; top: -3px;">{$lang.TRANSFER_TITLE_TO}</span></td>
-                                                                                        </tr>
-                                                                                    </table>
-                                                                                </td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <td height=1 class=delimetr01></td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                            {if count($PARAMS.USER_INSTANCE) == 0}
-                                                                            <td>
-                                                                                    <table width=100% cellpadding=0 cellspacing=0 border=0>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                ” вас нет доступных миров дл€ перевода
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                    </table>
-                                                                            </td>
-                                                                            {else}
-                                                                                <form action="" method="POST" name="transferToForm">
-                                                                                <input type="hidden" name="action" value="transfer_to_instance_confirm">
-                                                                                <td>
-                                                                                    <table width=100% cellpadding=0 cellspacing=0 border=0>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                {$lang.GOLD_CREDITS}:
-                                                                                            </td>
-                                                                                            <td rowspan=3 align=right valign=top><input type="submit" value="{$lang.SUBMIT_01}" class=submit01></td>
-                                                                                        
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td align=left>
-                                                                                                <input type="text" size="8" maxlength="8" name="gc" value="" style="width:100px; text-align: center;">
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                {$lang.SILVER_CREDITS}:
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td align=left>
-                                                                                                <input type="text" size="8" maxlength="8" name="sc" value="" style="width:100px; text-align: center;">
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                {$lang.TO_WORLD}:
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td align=left>
-                                                                                                <select name="world">
-                                                                                                    {foreach from=$PARAMS.USER_INSTANCE item=DATA key=WORLD}
-                                                                                                        <option value="{$DATA.instance}">{$WORLD}
-                                                                                                    {/foreach}
-                                                                                                </select>
-                                                                                            </td>
-                                                                                        </tr> 
-                                                                                    </table>
-                                                                                </td>
-                                                                                </form>
-                                                                            {/if}
-                                                                            </tr>
-                                                                        </table>
-                                                                    </td>
-                                                                    <td valign=bottom background="../img/v4/borders/05/r.gif"><img src="../img/v4/borders/05/r_b.jpg" border=0></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td><img src="../img/v4/borders/05/b_l.gif" border=0></td>
-                                                                    <td height=13 align=right background="../img/v4/borders/05/b.gif"><img src="../img/v4/borders/05/b_r_r.jpg" border=0></td>
-                                                                    <td><img src="../img/v4/borders/05/b_r.gif" border=0></td>
-                                                                </tr>
+<tr><td colspan=3><div style="background:#EBEDF1;border:1px solid #A9B7D6;border-radius:6px;box-shadow:0 1px 2px rgba(0,0,0,0.12);overflow:hidden;margin-bottom:6px;">
+<table width=100% cellpadding=0 cellspacing=0 border=0><tr><td><img src="../img/v4/graph/p01.gif" border=0></td><td width=100% align=left class=header_txt><span style="padding-left:5px; position: relative; top: -3px;">{$lang.TRANSFER_TITLE_TO}</span></td></tr></table><div style="height:1px;background-color:#C7CEDA;margin:3px 0;"></div>
+{if count($PARAMS.USER_INSTANCE) == 0}
+<div style="padding:4px 8px;">” вас нет доступных миров дл€ перевода</div>
+{else}
+<form action="" method="POST" name="transferToForm">
+<input type="hidden" name="action" value="transfer_to_instance_confirm">
+<div style="padding:4px 8px;"><label style="display:block;font-size:10px;font-weight:bold;color:#2D2F60;margin-bottom:2px;">{$lang.GOLD_CREDITS}:</label><input type="text" size="8" maxlength="8" name="gc" value="" style="width:100%;box-sizing:border-box;"></div><div style="padding:4px 8px;"><label style="display:block;font-size:10px;font-weight:bold;color:#2D2F60;margin-bottom:2px;">{$lang.SILVER_CREDITS}:</label><input type="text" size="8" maxlength="8" name="sc" value="" style="width:100%;box-sizing:border-box;"></div><div style="padding:4px 8px;"><label style="display:block;font-size:10px;font-weight:bold;color:#2D2F60;margin-bottom:2px;">{$lang.TO_WORLD}:</label><select name="world" style="width:100%;box-sizing:border-box;">{foreach from=$PARAMS.USER_INSTANCE item=DATA key=WORLD}<option value="{$DATA.instance}">{$WORLD}{/foreach}</select></div><div style="padding:6px 8px 8px;"><input type="submit" value="{$lang.SUBMIT_01}" class=submit01 style="width:100%;height:24px;"></div>
+</form>
+{/if}
+</div></td></tr>
 
                                                                 <!--3-->
                                                                 
-                                                                <tr>
-                                                                    <td><img src="../img/v4/borders/05/t_l.gif" border=0></td>
-                                                                    <td height=13 align=left background="../img/v4/borders/05/t.gif"><img src="../img/v4/borders/05/t_l_l.jpg" border=0></td>
-                                                                    <td><img src="../img/v4/borders/05/t_r.gif" border=0></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td valign=top background="../img/v4/borders/05/l.gif"><img src="../img/v4/borders/05/l_t.jpg" border=0></td>
-                                                                    <td width=100% class=bg04 style="padding:2px;">
-                                                                        <table width=100% cellpadding=0 cellspacing=1 border=0>
-                                                                            <tr>
-                                                                                <td>
-                                                                                    <table width=100% cellpadding=0 cellspacing=0 border=0>
-                                                                                        <tr>
-                                                                                            <td><img src="../img/v4/graph/p01.gif" border=0></td>
-                                                                                            <td width=100% align=left class=header_txt><span style="padding-left:5px; position: relative; top: -3px;">{$lang.TRANSFER_TITLE_FROM}</span></td>
-                                                                                        </tr>
-                                                                                    </table>
-                                                                                </td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <td height=1 class=delimetr01></td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                            {if count($PARAMS.USER_INSTANCE) == 0}
-                                                                            <td>
-                                                                                    <table width=100% cellpadding=0 cellspacing=0 border=0>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                ” вас нет доступных миров дл€ перевода
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                    </table>
-                                                                            </td>
-                                                                            {else}
-                                                                                <form action="" method="POST" name="transferFromForm">
-                                                                                <input type="hidden" name="action" value="transfer_to_user_confirm">
-                                                                                <td>
-                                                                                    <table width=100% cellpadding=0 cellspacing=0 border=0>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                {$lang.GOLD_CREDITS}:
-                                                                                            </td>
-                                                                                            <td rowspan=3 align=right valign=top><input type="submit" value="{$lang.SUBMIT_01}" class=submit01></td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td align=left>
-                                                                                                <input type="text" size="8" maxlength="8" name="gc" value="" style="width:100px; text-align: center;">
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                {$lang.SILVER_CREDITS}:
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td align=left>
-                                                                                                <input type="text" size="8" maxlength="8" name="sc" value="" style="width:100px; text-align: center;">
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                {$lang.FROM_WORLD}:
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td align=left>
-                                                                                                <select name="world">
-                                                                                                    {foreach from=$PARAMS.USER_INSTANCE item=DATA key=WORLD}
-                                                                                                        <option value="{$DATA.instance}">{$WORLD}
-                                                                                                    {/foreach}
-                                                                                                </select>
-                                                                                            </td> 
-                                                                                        </tr>
-                                                                                    </table>
-                                                                                </td>
-                                                                                </form>
-                                                                            {/if}
-                                                                            </tr>
-                                                                        </table>
-                                                                    </td>
-                                                                    <td valign=bottom background="../img/v4/borders/05/r.gif"><img src="../img/v4/borders/05/r_b.jpg" border=0></td>
-                                                                </tr>
-                                            
-                                                                <tr>
-                                                                    <td><img src="../img/v4/borders/05/b_l.gif" border=0></td>
-                                                                    <td height=13 align=right background="../img/v4/borders/05/b.gif"><img src="../img/v4/borders/05/b_r_r.jpg" border=0></td>
-                                                                    <td><img src="../img/v4/borders/05/b_r.gif" border=0></td>
-                                                                </tr>
+<tr><td colspan=3><div style="background:#EBEDF1;border:1px solid #A9B7D6;border-radius:6px;box-shadow:0 1px 2px rgba(0,0,0,0.12);overflow:hidden;margin-bottom:6px;">
+<table width=100% cellpadding=0 cellspacing=0 border=0><tr><td><img src="../img/v4/graph/p01.gif" border=0></td><td width=100% align=left class=header_txt><span style="padding-left:5px; position: relative; top: -3px;">{$lang.TRANSFER_TITLE_FROM}</span></td></tr></table><div style="height:1px;background-color:#C7CEDA;margin:3px 0;"></div>
+{if count($PARAMS.USER_INSTANCE) == 0}
+<div style="padding:4px 8px;">” вас нет доступных миров дл€ перевода</div>
+{else}
+<form action="" method="POST" name="transferFromForm">
+<input type="hidden" name="action" value="transfer_to_user_confirm">
+<div style="padding:4px 8px;"><label style="display:block;font-size:10px;font-weight:bold;color:#2D2F60;margin-bottom:2px;">{$lang.GOLD_CREDITS}:</label><input type="text" size="8" maxlength="8" name="gc" value="" style="width:100%;box-sizing:border-box;"></div><div style="padding:4px 8px;"><label style="display:block;font-size:10px;font-weight:bold;color:#2D2F60;margin-bottom:2px;">{$lang.SILVER_CREDITS}:</label><input type="text" size="8" maxlength="8" name="sc" value="" style="width:100%;box-sizing:border-box;"></div><div style="padding:4px 8px;"><label style="display:block;font-size:10px;font-weight:bold;color:#2D2F60;margin-bottom:2px;">{$lang.FROM_WORLD}:</label><select name="world" style="width:100%;box-sizing:border-box;">{foreach from=$PARAMS.USER_INSTANCE item=DATA key=WORLD}<option value="{$DATA.instance}">{$WORLD}{/foreach}</select></div><div style="padding:6px 8px 8px;"><input type="submit" value="{$lang.SUBMIT_01}" class=submit01 style="width:100%;height:24px;"></div>
+</form>
+{/if}
+</div></td></tr>
                                                             </table>
                                                         </td>
                                                         <!--END LEFT FRAME-->
