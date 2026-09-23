@@ -4,33 +4,25 @@
     <meta http-equiv="Content-Style-Type" content="text/css">
     <title>{$lang.TITLE}</title>
     <link rel="stylesheet" href="cabinetstyle.css" type="text/css">
+    <style>
+        body{margin:0;background:#EBEDF1;font-family:Tahoma,Verdana,Arial,sans-serif;}
+        .uc-confirm-wrap{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;}
+        .uc-confirm-box{background:#ffffff;border:1px solid #A9B7D6;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.15);padding:20px 24px;max-width:420px;width:100%;text-align:center;font-size:12px;color:#2D2F60;line-height:1.5;box-sizing:border-box;}
+        .uc-confirm-box table{margin:0 auto;}
+        .uc-confirm-box .submit_yes,.uc-confirm-box .submit_no,.uc-confirm-box .submit01{width:auto;min-width:110px;height:30px;padding:0 18px;background-image:none;border:0;border-radius:5px;font-family:Tahoma,Verdana,Arial,sans-serif;font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:.4px;color:#fff;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,0.25);}
+        .uc-confirm-box .submit_yes{background:linear-gradient(180deg,#1c9a1e 0%,#0e6b10 100%);}
+        .uc-confirm-box .submit_yes:hover{background:linear-gradient(180deg,#22b024 0%,#126b13 100%);}
+        .uc-confirm-box .submit_no{background:linear-gradient(180deg,#d92e2e 0%,#970000 100%);}
+        .uc-confirm-box .submit_no:hover{background:linear-gradient(180deg,#e24444 0%,#af0d0d 100%);}
+        .uc-confirm-box .submit01{background:#2D447E;}
+        .uc-confirm-box input[type=text],.uc-confirm-box input[type=password]{height:24px;padding:2px 8px;border-radius:4px;border:1px solid #A1AFC6;font-size:12px;box-sizing:border-box;}
+        .uc-confirm-copy{margin-top:10px;color:#8892A6;font-size:10px;}
+    </style>
 </head>
 
 <body>
-<table width=100% height=100% border=0 cellpadding=0 cellspacing=0>
-    <tr>
-        <td align=center>
-            <table border=0 cellpadding=0 cellspacing=0>
-                <tr>
-                    <td valign=top>
-                        <table border=0 cellpadding=0 cellspacing=0>
-                            <tr>
-                                <td>
-                                    <table width=100% height=100% border=0 cellpadding=0 cellspacing=0>
-                                        <tr>
-                                            <td><img src="img/cabinet/border/03/t_l.gif" border=0></td>
-                                            <td width=100% background="img/cabinet/border/03/t.gif"></td>
-                                            <td><img src="img/cabinet/border/03/t_r.gif" border=0></td>
-                                        </tr>
-                                    </table>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <table width=100% height=100% border=0 cellpadding=0 cellspacing=0>
-                                        <tr>
-                                            <td background="img/cabinet/border/03/l.gif"></td>
-                                            <td bgcolor="#ffffff" style="padding:6px;">
+<div class="uc-confirm-wrap">
+    <div class="uc-confirm-box">
 <!-- BODY-->
 {if $CONFIRM == 'EXCHANGE'}
     {if isset($PARAMS.valid)}
@@ -256,35 +248,8 @@
     {/if}
 {/if}
 <!-- /BODY-->
-
-                                            </td>
-                                            <td background="img/cabinet/border/03/r.gif"></td>
-                                        </tr>
-                                    </table>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <table width=100% height=100% border=0 cellpadding=0 cellspacing=0>
-                                        <tr>
-                                            <td><img src="img/cabinet/border/03/b_l.gif" border=0></td>
-                                            <td width=100% background="img/cabinet/border/03/b.gif"></td>
-                                            <td><img src="img/cabinet/border/03/b_r.gif" border=0></td>
-                                        </tr>
-                                    </table>
-                                </td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-            </table>
-            
-        </td>
-    </tr>
-    <tr>
-        <td align=center class=copyrights>
-            {$lang.COPYRIGHT}</td>
-    </tr>
-</table>
+    </div>
+    <div class="uc-confirm-copy">{$lang.COPYRIGHT}</div>
+</div>
 </body>
 </html>
