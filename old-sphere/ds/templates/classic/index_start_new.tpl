@@ -11,6 +11,54 @@
     
     <title>{$lang.TITLE}</title>
     <script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
+    <style>
+        .ss-header {
+            font-size: 13px;
+            letter-spacing: 0.4px;
+            padding: 6px 4px 10px 4px;
+        }
+        .ss-panel td {
+            padding: 6px;
+        }
+        .ss-panel input[type="text"],
+        .ss-panel select {
+            height: 24px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            border: 1px solid #A1AFC6;
+            font-size: 12px;
+        }
+        .ss-panel input[type="text"]:focus,
+        .ss-panel select:focus {
+            border-color: #2D447E;
+            outline: none;
+            box-shadow: 0 0 4px rgba(45,68,126,0.35);
+        }
+        .ss-panel .submit_yes {
+            width: auto;
+            min-width: 150px;
+            height: 34px;
+            background-image: none;
+            background: linear-gradient(180deg, #1c9a1e 0%, #0e6b10 100%);
+            color: #ffffff;
+            border-radius: 5px;
+            font-size: 12px;
+            letter-spacing: 0.4px;
+            cursor: pointer;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.25);
+            transition: background 0.15s ease, box-shadow 0.15s ease;
+        }
+        .ss-panel .submit_yes:hover {
+            background: linear-gradient(180deg, #22b024 0%, #126b13 100%);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .ss-panel input[type="radio"] {
+            transform: scale(1.25);
+            vertical-align: middle;
+            margin-right: 5px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
 <script language="javascript">
@@ -159,7 +207,7 @@ function checkAnswer(checked_value)
                                                                                 <td>
                                                                                     <img src="img/cabinet/graph/a_01.gif" border=0>
                                                                                 </td>
-                                                                                <td width=100% align=left class=header_txt>
+                                                                                <td width=100% align=left class="header_txt ss-header">
                                                                                     {$lang.TEXT1}
                                                                                 </td>
                                                                             </tr>
@@ -176,8 +224,8 @@ function checkAnswer(checked_value)
                                                                             </tr>
                                                                             <tr>
                                                                                 <td background="img/cabinet/border/03/l.gif"></td>
-                                                                                <td width=100% align="justify" valign=top bgcolor="#ffffff" style="padding: 5px;">
-                                                                                    <table width=100% height=100% border=0 cellpadding=0 cellspacing=3>
+                                                                                <td width=100% align="justify" valign=top bgcolor="#ffffff" style="padding: 16px;">
+                                                                                    <table width=100% height=100% border=0 cellpadding=0 cellspacing=3 class="ss-panel">
                                                                                         <form action="index_start.php" method="post" name="start" onSubmit="if((document.start.uiid.value == -1)) return false;">
                                                                                         <tr>
                                                                                             <input type="hidden" name="ck" value="{$CLIENT_KEY}">
@@ -239,7 +287,7 @@ function checkAnswer(checked_value)
                                                                             <tr>
                                                                                 <td>
                                                                                     <img src="img/cabinet/graph/a_01.gif" border=0></td>
-                                                                                <td width=100% align=left class=header_txt>
+                                                                                <td width=100% align=left class="header_txt ss-header">
                                                                                     <a href="" onClick="return ShowWorldReg()">{$lang.REGISTRATION}</a>
                                                                                 </td>
                                                                             </tr>
@@ -249,7 +297,7 @@ function checkAnswer(checked_value)
                                                                 <tr>
                                                                      <td valign=top style="padding:5px;" colspan=3>
                                                                       <div id="world_reg" style='display:{if !$WORLDS_TO_ENTER}block{else}none{/if}'>
-                                                                            <table width=100% height=100% border=0 cellpadding=0 cellspacing=3  bgcolor='#ffffff'>
+                                                                            <table width=100% height=100% border=0 cellpadding=0 cellspacing=3 bgcolor='#ffffff' class="ss-panel" style="padding:16px;">
                                                                                 <form action='index_start.php' method='post'>
                                                                                 <tr>
                                                                                     <input type="hidden" name="ck" value="{$CLIENT_KEY}">
