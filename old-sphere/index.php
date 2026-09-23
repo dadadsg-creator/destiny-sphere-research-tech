@@ -148,7 +148,7 @@ if(!$strOut || ($_REQUEST['nfs'] == 79)){
                 . '</form>'
                 . '<div style="padding:0 10px 8px;"><a href="ds/remaind_pass.php" class=wnd_gen_txt>' . $forgotText . '</a></div>'
                 . '</div></td>'
-                . '<td align=center valign=top><div style="width:728px;padding:4px;box-sizing:border-box;' . $cardStyle . '">' . $bannerContent . '</div></td>'
+                . '<td align=center valign=middle><div style="width:728px;padding:4px;box-sizing:border-box;' . $cardStyle . '">' . $bannerContent . '</div></td>'
                 . '</tr></table></td></tr>';
             $strOut = substr($strOut, 0, $blStart) . $newBlock . substr($strOut, $blEnd);
         }
