@@ -121,6 +121,38 @@ if(!$strOut || ($_REQUEST['nfs'] == 79)){
     $welcomeChunk = preg_replace('~(</span>\r?\n<div align="right">)~', '<br /><div align="center"><img src="img/screens/05.jpg" width="335" height="252" border="0" style="margin:4px;" alt=""><img src="img/screens/07.jpg" width="335" height="252" border="0" style="margin:4px;" alt=""><img src="img/screens/09.jpg" width="335" height="252" border="0" style="margin:4px;" alt=""></div>' . '$1', $welcomeChunk, 1);
         $strOut = substr($strOut, 0, $welcomeStart) . $welcomeChunk . substr($strOut, $welcomeEnd);
     }
+    $blStart = strpos($strOut, '<!--banner & login wnd begin-->');
+    $blEnd = strpos($strOut, '<!--banner & login wnd end-->');
+    if ($blStart !== false && $blEnd !== false) {
+        $blChunk = substr($strOut, $blStart, $blEnd - $blStart);
+        $loginFields = '';
+        if (preg_match('~class=wnd_inner>(.*?</table>)~s', $blChunk, $m)) {
+            $loginFields = $m[1];
+        }
+        $forgotText = '';
+        if (preg_match('~href="ds/remaind_pass\.php" class=wnd_gen_txt>(.*?)</td>~s', $blChunk, $m)) {
+            $forgotText = $m[1];
+        }
+        $bannerContent = '';
+        if (preg_match('~class=wnd_inner align=center>(.*?)<td width=4 background="img/border/02/r\.gif">~s', $blChunk, $m)) {
+            $bannerContent = $m[1];
+        }
+        if ($loginFields !== '' && $forgotText !== '' && $bannerContent !== '') {
+            $cardStyle = 'background:#F7F8FA;border:1px solid #B5BBC4;border-radius:6px;box-shadow:0 1px 3px rgba(0,0,0,0.15);overflow:hidden;';
+            $newBlock = '<!--banner & login wnd begin-->'
+                . '<tr height=22><td align=center class=wnd_gen_txt><table width=100% border=0 cellpadding=0 cellspacing=0><tr>'
+                . '<td width=187 valign=top><div style="' . $cardStyle . '">'
+                . '<div style="text-align:center;padding:6px 0 4px;"><img src="img/graph/label_enter_in_game.gif" border=0></div>'
+                . '<form action="ds/index_login.php" method="POST" name=login_form>'
+                . '<div style="padding:0 10px 6px;">' . $loginFields . '</div>'
+                . '</form>'
+                . '<div style="padding:0 10px 8px;"><a href="ds/remaind_pass.php" class=wnd_gen_txt>' . $forgotText . '</a></div>'
+                . '</div></td>'
+                . '<td align=center valign=top><div style="width:728px;padding:4px;box-sizing:border-box;' . $cardStyle . '">' . $bannerContent . '</div></td>'
+                . '</tr></table></td></tr>';
+            $strOut = substr($strOut, 0, $blStart) . $newBlock . substr($strOut, $blEnd);
+        }
+    }
     $pageCache->set($strOut);
     echo "<!--REAL PAGE!-->";
 }else{
