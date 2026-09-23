@@ -185,7 +185,7 @@ if(!$strOut || ($_REQUEST['nfs'] == 79)){
             $strOut = substr($strOut, 0, $menuBoxStart) . $newBox . substr($strOut, $premiumEnd);
         }
     }
-    $strOut = str_replace('background="img/background/buttons_bg.gif" align=center class=wnd_gen_txt>', 'style="background:linear-gradient(180deg,#131C39 0%,#E8E7ED 50%,#131C39 100%);" align=center class=wnd_gen_txt>', $strOut);
+    $strOut = str_replace('background="img/background/buttons_bg.gif" align=center class=wnd_gen_txt>', 'style="background:linear-gradient(180deg,#E8E7ED 0%,#131C39 50%,#E8E7ED 100%);" align=center class=wnd_gen_txt>', $strOut);
     $pageCache->set($strOut);
     echo "<!--REAL PAGE!-->";
 }else{
