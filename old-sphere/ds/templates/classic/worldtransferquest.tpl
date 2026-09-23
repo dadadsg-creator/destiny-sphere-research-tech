@@ -25,6 +25,7 @@
     // -->
     </script>
     {/literal}
+    <script>window.RufflePlayer = window.RufflePlayer || {}; window.RufflePlayer.config = { autoplay: "on", unmuteOverlay: "hidden" };</script>
     <script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
 </head>
 <body>
