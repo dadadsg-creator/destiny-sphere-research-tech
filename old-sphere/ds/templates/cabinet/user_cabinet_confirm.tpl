@@ -5,6 +5,7 @@
     <title>{$lang.TITLE}</title>
     <link rel="stylesheet" href="cabinetstyle.css" type="text/css">
     <style>
+    {literal}
         body{margin:0;background:#EBEDF1;font-family:Tahoma,Verdana,Arial,sans-serif;}
         .uc-confirm-wrap{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;}
         .uc-confirm-box{background:#ffffff;border:1px solid #A9B7D6;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.15);padding:20px 24px;max-width:420px;width:100%;text-align:center;font-size:12px;color:#2D2F60;line-height:1.5;box-sizing:border-box;}
@@ -17,6 +18,7 @@
         .uc-confirm-box .submit01{background:#2D447E;}
         .uc-confirm-box input[type=text],.uc-confirm-box input[type=password]{height:24px;padding:2px 8px;border-radius:4px;border:1px solid #A1AFC6;font-size:12px;box-sizing:border-box;}
         .uc-confirm-copy{margin-top:10px;color:#8892A6;font-size:10px;}
+    {/literal}
     </style>
 </head>
 
