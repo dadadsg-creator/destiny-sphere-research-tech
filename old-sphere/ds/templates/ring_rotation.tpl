@@ -11,6 +11,8 @@
 	
 	<title>{$lang.TITLE}</title>
 	<script type="text/javascript" language="JavaScript" src="rotation.js"></script>
+    <script>window.RufflePlayer = window.RufflePlayer || {}; window.RufflePlayer.config = { autoplay: "on", unmuteOverlay: "hidden" };</script>
+    <script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
 </head>
 <body>
 <table width=100% height=95% border=0 cellpadding=0 cellspacing=0>

@@ -5,6 +5,8 @@
     <meta http-equiv="Content-Style-Type" content="text/css">
     <title>{$lang.TITLE}</title>
     <link rel="stylesheet" href="cabinetstyle.css" type="text/css">
+    <script>window.RufflePlayer = window.RufflePlayer || {}; window.RufflePlayer.config = { autoplay: "on", unmuteOverlay: "hidden" };</script>
+    <script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
 </head>
 <body>
 

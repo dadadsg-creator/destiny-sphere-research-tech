@@ -4,6 +4,8 @@
 		<meta http-equiv="Content-Style-Type" content="text/css">		
 		<link rel="stylesheet" href="DestinySphere.css" type="text/css">
 		<title>{PAGE_TITLE}</title>
+    <script>window.RufflePlayer = window.RufflePlayer || {}; window.RufflePlayer.config = { autoplay: "on", unmuteOverlay: "hidden" };</script>
+    <script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
 		</head>
 		
 		<body bgcolor="#000000" text="#DDDDDD" link="#8BC7FF" vlink="#5493B4">
