@@ -27,7 +27,7 @@ class UC_ControlPaymentServices implements UC_ControlInterface
             // Выводим список платных услуг
             foreach ($services as $serviceName => $serviceOptions)
             {
-                if ($serviceName == 'PS_BUY_TRAINING_COMPLETION') {
+                if ($serviceName == 'PS_BUY_TRAINING_COMPLETION' || $serviceName == 'PS_BUY_ANALIZATOR') {
                     continue;
                 }
                 $activeservices[$serviceOptions['section']][] = $serviceName;
