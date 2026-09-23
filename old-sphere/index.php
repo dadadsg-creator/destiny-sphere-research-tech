@@ -110,6 +110,16 @@ if(!$strOut || ($_REQUEST['nfs'] == 79)){
         $strOut = preg_replace("~^.*$menuAnchor.*\r?\n~m", '', $strOut);
     }
     $strOut = preg_replace('~ranking_new\.php" class=menu_txt_left target=_blank><font color="#FF3366">.*?</font>~s', 'ranking_new.php" class=menu_txt_left target=_blank>Рейтинг', $strOut);
+    $welcomeStart = strpos($strOut, '<!-- welcome window begin -->');
+    $welcomeEnd = strpos($strOut, '<!-- welcome window end -->');
+    if ($welcomeStart !== false && $welcomeEnd !== false) {
+        $welcomeChunk = substr($strOut, $welcomeStart, $welcomeEnd - $welcomeStart);
+        $welcomeChunk = preg_replace('~(<img src="img/elements/cap_div\.gif" border=0>).*?(</td>)~s', '$1' . 'Добро пожаловать в Destiny Sphere — первую российскую онлайн-стратегию' . '$2', $welcomeChunk, 1);
+        $welcomeChunk = preg_replace('~(<span class=wnd_gen_txt><span class="wnd_gen_txt_large">).*?(</span>\r?\n<div align="right">)~s', '$1' . '<strong>Стратегическая онлайн-игра Destiny Sphere Classic</strong> работает с 2003 года — легенда российского онлайна в жанре MMOG (Massively Multiplayer Online Game). Тысячи игроков одновременно развивают свои базы в фантастическом мире четырёх колец, вращающихся вокруг солнца, выбирая одну из трёх рас — технологичных Воранеров, генетиков Лиенсу или мистиков-археологов Псолао. Игра идёт в реальном времени круглосуточно и без остановки — прямо в браузере, без скачивания и установки какого-либо клиента.<br />
+<br />
+За эти годы к нам присоединилось более 1,3 млн игроков!<br />' . '$2', $welcomeChunk, 1);
+        $strOut = substr($strOut, 0, $welcomeStart) . $welcomeChunk . substr($strOut, $welcomeEnd);
+    }
     $pageCache->set($strOut);
     echo "<!--REAL PAGE!-->";
 }else{
