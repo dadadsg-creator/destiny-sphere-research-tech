@@ -186,6 +186,10 @@ if(!$strOut || ($_REQUEST['nfs'] == 79)){
         }
     }
     $strOut = str_replace('background="img/background/buttons_bg.gif" align=center class=wnd_gen_txt>', 'style="background:linear-gradient(180deg,#E8E7ED 0%,#131C39 50%,#E8E7ED 100%);" align=center class=wnd_gen_txt>', $strOut);
+    $strOut = str_replace('http://game17.destinysphere.ru/http://game7.destinysphere.ru/http://game3.destinysphere.ru/http://game5.destinysphere.ru//img/elements/icon_minipost.gif', 'img/elements/icon_minipost.gif', $strOut);
+    $strOut = str_replace('<script src="http://images.rambler.ru/patch_script.js"></script>', '', $strOut);
+    $strOut = preg_replace('~<!-- begin of Top100 code -->.*?<!-- end of Top100 code-->~s', '', $strOut);
+    $strOut = preg_replace('~<!-- Rating@Mail.ru counter -->.*?<!-- //Rating@Mail.ru counter -->~s', '', $strOut);
     $pageCache->set($strOut);
     echo "<!--REAL PAGE!-->";
 }else{
