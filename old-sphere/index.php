@@ -109,6 +109,7 @@ if(!$strOut || ($_REQUEST['nfs'] == 79)){
     foreach ($menuAnchors as $menuAnchor) {
         $strOut = preg_replace("~^.*$menuAnchor.*\r?\n~m", '', $strOut);
     }
+    $strOut = preg_replace('~ranking_new\.php" class=menu_txt_left target=_blank><font color="#FF3366">.*?</font>~s', 'ranking_new.php" class=menu_txt_left target=_blank>Рейтинг', $strOut);
     $pageCache->set($strOut);
     echo "<!--REAL PAGE!-->";
 }else{
