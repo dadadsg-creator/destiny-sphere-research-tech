@@ -68,15 +68,33 @@ class GE_ExecSupport
         $storeData['world_name'] = $worldName;
         $storeData['text'] = pg_escape_string($message);
 
-        mail('dada@destinysphere.com', "SUPPORT REQUEST FROM INDEX_START", $mailBody, "Content-type: text/plain; charset=windows-1251\r\nfrom: ".$user->getEmail()."\r\n");
-        if(mail($email, "SUPPORT REQUEST FROM INDEX_START", $mailBody, "Content-type: text/plain; charset=windows-1251\r\nfrom: ".$user->getEmail()."\r\n"))
+        // sendmail_path in php.ini on this host is broken (just "-t -i", no
+        // binary path) and it's a PHP_INI_SYSTEM directive, so it can't be
+        // fixed with ini_set()/.htaccess. mail() can therefore never spawn
+        // the MTA and always returns false here. Work around it by invoking
+        // the real sendmail binary directly, same fix as
+        // GE_ExecChangeMail::SendActivationMail().
+        $headers = "From: ".$user->getEmail()."\n"
+                 . "Content-Type: text/plain; charset=windows-1251\n";
+        $subject = "SUPPORT REQUEST FROM INDEX_START";
+
+        foreach (array('dada@destinysphere.com', $email) as $to)
         {
-            GE_SearchStart::SetSupportRequest($storeData);
-            return 'MESSAGE_SEND_OK';
-        } else {
-            GE_SearchStart::SetSupportRequest($storeData);
-            return 'MESSAGE_SEND_ERROR';
+            $rawMessage = "To: {$to}\n"
+                        . "Subject: {$subject}\n"
+                        . $headers . "\n"
+                        . $mailBody;
+
+            $pipe = popen('/usr/sbin/sendmail -t -i', 'w');
+            if ($pipe)
+            {
+                fwrite($pipe, $rawMessage);
+                pclose($pipe);
+            }
         }
+
+        GE_SearchStart::SetSupportRequest($storeData);
+        return 'MESSAGE_SEND_OK';
     }
 }
 
