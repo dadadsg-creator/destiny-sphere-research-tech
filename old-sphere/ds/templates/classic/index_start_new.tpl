@@ -266,7 +266,7 @@ function checkAnswer(checked_value)
                                                                                                     {else}
                                                                                                     <div class="ds-world-card" onclick="dsSelectWorldCard('dsEntryWorldGrid','dsEntryUiid','{$ID}',this)" style="width:200px;box-sizing:border-box;text-align:center;cursor:pointer;border:2px solid {if $ID == $dsEntryDefaultUiid}#2E86DE{else}transparent{/if};border-radius:8px;padding:4px;">
                                                                                                         <img src="../img/world-icons/{if $WORLD == 'Сфера Стрельца'}sphere-sagittarius-card.png{elseif $WORLD == 'Терра Нова'}terra-nova-card.png{elseif $WORLD == 'Сфера Кентавра'}sphere-centaurus-card.png{elseif $WORLD == 'Сфера Парусов'}sphere-sails-card.png{elseif $WORLD == 'Сфера Сириуса'}sphere-sirius-card.png{elseif $WORLD == 'Сфера Волка'}sphere-wolf-card.png{elseif $WORLD == 'Сфера Гончих Псов'}sphere-hunting-dogs-card.png{elseif $WORLD == 'Сфера Водолея-Льва'}sphere-aquarius-leo-card.png{elseif $WORLD == 'Сфера Эридана'}sphere-eridanus-card.png{elseif $WORLD == 'Сфера Ориона'}sphere-orion-card.png{elseif $WORLD == 'Сфера Ориона-Ворона-Феникса'}sphere-orion-raven-phoenix-card.png{elseif $WORLD == 'Сфера Змееносца'}sphere-ophiuchus-card.png{elseif $WORLD == 'Черная дыра' || $WORLD == 'Чёрная дыра'}black-hole-closed-card.png{else}sphere-ophiuchus-card.png{/if}" width="200" height="267" style="display:block;width:100%;height:auto;border-radius:6px;" alt="">
-                                                                                                        <div style="font-size:12px;color:#ffffff;margin-top:4px;">{$WORLD}</div>
+                                                                                                        <div style="font-size:12px;color:#333333;margin-top:4px;">{$WORLD}</div>
                                                                                                     </div>
                                                                                                     {/if}
                                                                                                 {/foreach}
@@ -294,9 +294,8 @@ function checkAnswer(checked_value)
                                                                                             <td colspan=2 class=delimetr01></td>
                                                                                         </tr>
                                                                                         <tr>
-                                                                                            <td></td>
-                                                                                            <td>
-                                                                                                <input {if !$HAS_WORLD_TO_ENTER}disabled type="button"{else}type="submit"{/if} style="font-weight:bold;font-size:11pt" value="{$lang.SUBMIT}" class="submit_yes"/>
+                                                                                            <td colspan=2 align=center>
+                                                                                                <input {if !$HAS_WORLD_TO_ENTER}disabled type="button"{else}type="submit"{/if} style="font-weight:bold;font-size:14pt;min-width:220px;height:46px;padding:0 24px;" value="{$lang.SUBMIT}" class="submit_yes"/>
                                                                                             </td>
                                                                                         </tr>
                                                                                         </form>
