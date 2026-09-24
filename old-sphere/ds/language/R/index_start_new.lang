@@ -90,6 +90,18 @@ $lang['PREMIUM'] = 'Премиум-аккаунт &mdash; Платные услуги';
 $lang['VALID_TILL'] = 'Премиум-аккаунт действителен еще ';
 $lang['DAYS'] = ' дней';
 $lang['HOURS'] = ' часов';
+$lang['DAY_FORMS'] = array('день', 'дня', 'дней');
+$lang['HOUR_FORMS'] = array('час', 'часа', 'часов');
+$lang['LESS_THAN_HOUR'] = 'Меньше часа';
+$lang['PREMIUM_LEFT_LABEL'] = 'Осталось';
+
+$lang['PREMIUM_STATUS_ON'] = 'Активен';
+$lang['PREMIUM_STATUS_OFF'] = 'Не подключён';
+$lang['PREMIUM_EXTEND'] = 'Продлить премиум';
+$lang['PREMIUM_ACTIVATE'] = 'Подключить премиум';
+
+$lang['GOLD_CREDITS'] = 'Золотые кредиты';
+$lang['GOLD_CREDITS_BUY'] = 'Купить золотые кредиты';
 
 $lang['SUPPORT_MESSAGE'] = 'Сообщение';
 $lang['SUPPORT_CAPTION'] = 'Служба поддержки';

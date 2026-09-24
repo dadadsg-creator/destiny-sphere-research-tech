@@ -775,210 +775,64 @@ function checkAnswer(checked_value)
                                                                     
                                                                                         
                                                         <!--RIGHT BLOCK -->
-                                                        <td valign=top> 
-                                                            <table width=100% border=0 cellpadding=0 cellspacing=0>
-                                                                <tr>
-                                                                    <td colspan=3>
-                                                                        <table width=100% height=100% border=0 cellpadding=0 cellspacing=0>
-                                                                            <tr>
-                                                                                <td>
-                                                                                    <img src="img/cabinet/graph/a_01.gif" border=0></td>
-                                                                                <td width=100% align=left class=header_txt>
-                                                                                    {$lang.ACCOUNT}
-                                                                                </td>
-                                                                            </tr>
-                                                                        </table>
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td><img src="img/cabinet/border/03/t_l.gif" border=0></td>
-                                                                    <td background="img/cabinet/border/03/t.gif"></td>
-                                                                    <td><img src="img/cabinet/border/03/t_r.gif" border=0></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td background="img/cabinet/border/03/l.gif"></td>
-                                                                    <td width=100% valign=top bgcolor="#ffffff">
-                                                                        <form action="index_login.php" method="post">
-                                                                        <input type="hidden" name="ck" value="{$CLIENT_KEY}">
-                                                                        <table width=100% border=0 cellpadding=0 cellspacing=2>
-                                                                            <tr>
-                                                                                <td align="right" width="45%">
-                                                                                    <b>{$lang.NAME}:</b>
-                                                                                </td>
-                                                                                <td width="55%">
-                                                                                    <span style="font-size:11px;">{$LOGIN}</span>
-                                                                                </td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <td align="right">
-                                                                                    <b>{$lang.EMAIL}:</b>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <span style="font-size:11px;">{$EMAIL}</span>
-                                                                                </td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <td height=100% align=center valign=top colspan=2>
-                                                                                    <input type="submit" class="submit_no" value="{$lang.LOGOUT}">
-                                                                                    <input type="hidden" name="logout" value="1">
-                                                                                </td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <td colspan=2 align='center'>
-                                                                                    <a href="{$REFLINK}" target="_blank">{$lang.REFLINK_TEXT}</a><br>
-                                                                                    (<a href="{$lang.ABOUT_REF_LINK}" target="_blank">{$lang.REFLINK_INFO}</a>)
-                                                                                </td>
-                                                                            </tr>
-                                                                        </table>
-                                                                        </form>
-                                                                    </td>
-                                                                    <td background="img/cabinet/border/03/r.gif"></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td><img src="img/cabinet/border/03/b_l.gif" border=0></td>
-                                                                    <td background="img/cabinet/border/03/b.gif"></td>
-                                                                    <td><img src="img/cabinet/border/03/b_r.gif" border=0></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td colspan=3>
-                                                                        <table width=100% height=100% border=0 cellpadding=0 cellspacing=0>
-                                                                            <tr>
-                                                                                <td>
-                                                                                    <img src="img/cabinet/graph/a_01.gif" border=0></td>
-                                                                                <td width=100% align=left class=header_txt>
-                                                                                    {$lang.PREMIUM}
-                                                                                </td>
-                                                                            </tr>
-                                                                        </table>
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td><img src="img/cabinet/border/03/t_l.gif" border=0></td>
-                                                                    <td background="img/cabinet/border/03/t.gif"></td>
-                                                                    <td><img src="img/cabinet/border/03/t_r.gif" border=0></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td background="img/cabinet/border/03/l.gif"></td>
-                                                                    <td width=100% valign=top bgcolor="#ffffff">
-                                                                        <!--SERVISE BLOCK-->
-                                                                        <table>                       
-                                                                            <form action="user_cabinet.php" method="post" target="_self">
-                                                                            <input type="hidden" name="action" value="login">
-                                                                            <tr>
-                                                                                <td align="center"  bgcolor="#ffffff">
-                                                                                    <input type="submit" value="{$lang.CABINET_SUBMIT}" class="submit02">
-                                                                                </td>
-                                                                            </tr>
-                                                                            </form>
-            
-                                                                            <tr>
-                                                                                <td height=3 colspan=2 class=delimetr01>
-                                                                                </td>
-                                                                            </tr>
-                                                                
-                                                                            {if isset($PREMIUM_DAYS)}
-                                                                            <tr>
-                                                                                <td colspan=2 align=center><span style="font-size:12px;">{$lang.VALID_TILL}<span style="color: {if $PREMIUM_DAYS.day < 2}Red{else}Black{/if};"><b>{$PREMIUM_DAYS.day}</b></span>{$lang.DAYS} <b>{$PREMIUM_DAYS.hour}</b> {$lang.HOURS}</span></td>
-                                                                            </tr>
-                                                                            {else}
-                                                                            <tr>
-                                                                                <td colspan=2 align=center>
-                                                                                <!--
-                                                                                <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0" width="468" height="60" id="468x60" align="middle">
-                                                                                    <param name="allowScriptAccess" value="sameDomain" />
-                                                                                    <param name="movie" value="images/468x60.swf" />
-                                                                                    <param name="quality" value="high" />
-                                                                                    <param name="bgcolor" value="#ffffff" />
-                                                                                    <embed src="images/468x60.swf" quality="high" bgcolor="#ffffff" width="468" height="60" name="468x60" align="middle" allowScriptAccess="sameDomain" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" />
-                                                                                </object>
-                                                                                -->
-                                                                                </td>
-                                                                            </tr>
-                                                                            {/if}
-                                                                
-                                                                            {if isset($PREMIUM_PRESENT) && $PREMIUM_PRESENT}
-                                                                            <tr>
-                                                                                <td height=3 colspan=2 class=delimetr01>
-                                                                                </td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <td colspan=2 align="center">
-                                                                                    <a href="{$lang.PREMIUM_PRESENT_HREF}?ck={$CLIENT_KEY}&add_premium_present=1"><b>{$lang.PREMIUM_PRESENT_TEXT}</b></a><br><br>
-                                                                                </td>
-                                                                            </tr>
-                                                                            {/if}       
-                                                                        </table> 
-                                                                        <!-- END SERVISE BLOCK -->
-                                                                    </td>
-                                                                    <td background="img/cabinet/border/03/r.gif"></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td><img src="img/cabinet/border/03/b_l.gif" border=0></td>
-                                                                    <td background="img/cabinet/border/03/b.gif"></td>
-                                                                    <td><img src="img/cabinet/border/03/b_r.gif" border=0></td>
-                                                                </tr>
+                                                        <td valign=top>
+                                                        <div class="dsp">
+                                                        <style>{literal}
+.dsp{background:#1E2A4A;border:1px solid #3A4A7A;border-radius:8px;padding:12px;font-family:Tahoma,Verdana,Arial,sans-serif;}
+.dsp-section{padding-bottom:10px;margin-bottom:10px;border-bottom:1px solid #3A4A7A;text-align:left;}
+.dsp-section:last-child{border-bottom:0;margin-bottom:0;padding-bottom:0;}
+.dsp-kicker{color:#93A2C7;font-size:9px;font-weight:bold;text-transform:uppercase;letter-spacing:.5px;margin:0 0 4px;}
+.dsp-title{display:flex;align-items:center;gap:6px;color:#fff;font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:.5px;margin:0 0 8px;}
+.dsp-icon{width:18px;height:18px;flex-shrink:0;border:0;}
+.dsp-name{color:#fff;font-size:14px;font-weight:bold;word-break:break-word;overflow-wrap:anywhere;}
+.dsp-email{color:#93A2C7;font-size:10px;margin-top:2px;word-break:break-all;overflow-wrap:anywhere;}
+.dsp-logoutform{margin:8px 0 0;padding:0;}
+.dsp-logout{display:inline-block;color:#93A2C7;font-size:10px;text-decoration:underline;background:none;border:0;padding:0;cursor:pointer;font-family:Tahoma,Verdana,Arial,sans-serif;}
+.dsp-logout:hover{color:#fff;}
+.dsp-status{font-size:10px;font-weight:bold;margin-bottom:6px;}
+.dsp-status-on{color:#4CD964;}
+.dsp-status-off{color:#93A2C7;}
+.dsp-left-label{color:#93A2C7;font-size:9px;margin-bottom:2px;}
+.dsp-valid{color:#fff;font-size:13px;font-weight:bold;margin-bottom:10px;}
+.dsp-btn{display:block;width:100%;box-sizing:border-box;text-align:center;padding:9px 6px;border-radius:6px;background:linear-gradient(180deg,#1c9a1e 0%,#0e6b10 100%);color:#fff;font-size:10px;font-weight:bold;text-decoration:none;text-transform:uppercase;line-height:1.3;}
+.dsp-btn:hover{background:linear-gradient(180deg,#22b024 0%,#126b13 100%);color:#fff;text-decoration:none;}
+.dsp-gift{display:block;width:100%;box-sizing:border-box;text-align:center;padding:7px 6px;border-radius:6px;background:transparent;border:1px solid #C9A227;color:#E5C158;font-size:10px;font-weight:bold;text-decoration:none;margin-top:8px;line-height:1.3;}
+.dsp-gift:hover{background:rgba(201,162,39,0.12);color:#F3D77A;text-decoration:none;}
+{/literal}</style>
 
-                                                               <tr>
-                                                                 <td></td>
-                                                                 <td align="center">
-                                                                   <br><img src="img/goldbar.gif"><br>
-                                                                   Быстрая покупка золотых кредитов.<br>
-                                                                   Пополни прямо сейчас!<br>
-                                                                   <form method="post" action="/ds/billing.php?mode=gold">
-                                                                   Количество: <input name="quantity" value="15" style="width:80px"><br><br>
-                                                                   <input type="submit" value="Получить" class="submit01">
-                                                                   </form>
-                                                                 </td>
-                                                                 <td></td>
-                                                               </tr>
-                                                                {if !isset($PREMIUM_DAYS)}
-                                                                <tr>
-                                                                    <td><img src="img/cabinet/border/03/t_l.gif" border=0></td>
-                                                                    <td background="img/cabinet/border/03/t.gif"></td>
-                                                                    <td><img src="img/cabinet/border/03/t_r.gif" border=0></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td background="img/cabinet/border/03/l.gif"></td>
-                                                                    <td width="100%" valign="top" align="center" bgcolor="#ffffff" style="padding: 4px">
-<div id="yandex_ad"></div>
-<script type="text/javascript">
-(function(w, d, n, s, t) {
-w[n] = w[n] || [];
-w[n].push(function() {
-Ya.Direct.insertInto(124333, "yandex_ad", {
-ad_format: "direct",
-font_size: 1,
-type: "vertical",
-limit: 2,
-title_font_size: 3,
-site_bg_color: "FFFFFF",
-header_bg_color: "FEEAC7",
-title_color: "0000CC",
-url_color: "006600",
-text_color: "000000",
-hover_color: "0066FF",
-favicon: true,
-no_sitelinks: false
-});
-});
-t = d.documentElement.firstChild;
-s = d.createElement("script");
-s.type = "text/javascript";
-s.src = "http://an.yandex.ru/system/context.js";
-s.setAttribute("async", "true");
-t.insertBefore(s, t.firstChild);
-})(window, document, "yandex_context_callbacks");
-</script>                                    
-                                                                    </td>
-                                                                    <td background="img/cabinet/border/03/r.gif"></td>
-                                                                </tr>
-                                                                {/if}
-                                                                <tr>
-                                                                    <td><img src="img/cabinet/border/03/b_l.gif" border=0></td>
-                                                                    <td background="img/cabinet/border/03/b.gif"></td>
-                                                                    <td><img src="img/cabinet/border/03/b_r.gif" border=0></td>
-                                                                </tr>                                                       
-                                                            </table>
+                                                        <div class="dsp-section">
+                                                            <div class="dsp-kicker">{$lang.ACCOUNT}</div>
+                                                            <div class="dsp-name">{$LOGIN}</div>
+                                                            <div class="dsp-email">{$EMAIL}</div>
+                                                            <form action="index_login.php" method="post" class="dsp-logoutform">
+                                                                <input type="hidden" name="ck" value="{$CLIENT_KEY}">
+                                                                <input type="hidden" name="logout" value="1">
+                                                                <button type="submit" class="dsp-logout">{$lang.LOGOUT}</button>
+                                                            </form>
+                                                        </div>
+
+                                                        <div class="dsp-section">
+                                                            <div class="dsp-title"><img src="img/cabinet/icons/premium50x50.png" class="dsp-icon" alt="">{$lang.PREMIUM}</div>
+                                                            {if isset($PREMIUM_DAYS)}
+                                                            <div class="dsp-status dsp-status-on">{$lang.PREMIUM_STATUS_ON}</div>
+                                                            <div class="dsp-left-label">{$lang.PREMIUM_LEFT_LABEL}</div>
+                                                            <div class="dsp-valid">{$PREMIUM_LEFT_TEXT}</div>
+                                                            <a class="dsp-btn" href="user_cabinet.php?action=payment_services">{$lang.PREMIUM_EXTEND}</a>
+                                                            {else}
+                                                            <div class="dsp-status dsp-status-off">{$lang.PREMIUM_STATUS_OFF}</div>
+                                                            <a class="dsp-btn" href="user_cabinet.php?action=payment_services">{$lang.PREMIUM_ACTIVATE}</a>
+                                                            {/if}
+                                                            {if isset($PREMIUM_PRESENT) && $PREMIUM_PRESENT}
+                                                            <a class="dsp-gift" href="{$lang.PREMIUM_PRESENT_HREF}?ck={$CLIENT_KEY}&add_premium_present=1" onclick="if(this.getAttribute('data-busy'))return false;this.setAttribute('data-busy','1');this.style.pointerEvents='none';this.style.opacity='.6';">{$lang.PREMIUM_PRESENT_TEXT}</a>
+                                                            {/if}
+                                                        </div>
+
+                                                        <div class="dsp-section">
+                                                            <div class="dsp-title"><img src="img/cabinet/icons/gold-50x50.png" class="dsp-icon" alt="">{$lang.GOLD_CREDITS}</div>
+                                                            <a class="dsp-btn" href="/ds/billing.php?mode=gold">{$lang.GOLD_CREDITS_BUY}</a>
+                                                        </div>
+
+                                                        </div>
                                                         </td>
                                                         <!--END RIGHT BLOCK -->
                                                         

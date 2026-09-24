@@ -89,6 +89,7 @@ class GE_OutStartWorldsList
         include_once $_SERVER['DOCUMENT_ROOT']."/ds/language/".$startGameData->GetLanguage()."/index_start_new.lang";
         assert(is_array($lang));        
         $tpl->assign('lang', $lang);
+        $tpl->assign('PREMIUM_LEFT_TEXT', self::_formatPremiumLeft($startGameData->GetPremiumDays(), $lang));
         unset($lang);
 
         /*
@@ -103,6 +104,66 @@ class GE_OutStartWorldsList
         */
         $out = $tpl->fetch('index_start_new.tpl');
         return $out;
+    }
+
+    private static function _formatPremiumLeft($days, $lang)
+    {
+        if (!is_array($days))
+        {
+            return '';
+        }
+
+        $day = (int)$days['day'];
+        $hour = (int)$days['hour'];
+
+        if ($day <= 0 && $hour <= 0)
+        {
+            return $lang['LESS_THAN_HOUR'];
+        }
+
+        $out = '';
+        if ($day > 0)
+        {
+            $out .= $day.' '.self::_declineNumber($day, $lang['DAY_FORMS']);
+        }
+        if ($hour > 0)
+        {
+            if ($out !== '')
+            {
+                $out .= ' ';
+            }
+            $out .= $hour.' '.self::_declineNumber($hour, $lang['HOUR_FORMS']);
+        }
+
+        return $out;
+    }
+
+    private static function _declineNumber($n, $forms)
+    {
+        $n = abs((int)$n);
+
+        if (count($forms) < 3)
+        {
+            return $forms[$n == 1 ? 0 : 1];
+        }
+
+        $mod100 = $n % 100;
+        $mod10 = $n % 10;
+
+        if ($mod100 >= 11 && $mod100 <= 14)
+        {
+            return $forms[2];
+        }
+        if ($mod10 == 1)
+        {
+            return $forms[0];
+        }
+        if ($mod10 >= 2 && $mod10 <= 4)
+        {
+            return $forms[1];
+        }
+
+        return $forms[2];
     }
 }
 

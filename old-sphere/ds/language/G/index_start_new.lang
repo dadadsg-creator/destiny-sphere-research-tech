@@ -52,6 +52,18 @@ $lang['PREMIUM'] = 'Premium Account';
 $lang['VALID_TILL'] = 'Account laeuft in '; 
 $lang['DAYS'] = ' Tage'; 
 $lang['HOURS'] = ' Stunden';
+$lang['DAY_FORMS'] = array('Tag', 'Tage');
+$lang['HOUR_FORMS'] = array('Stunde', 'Stunden');
+$lang['LESS_THAN_HOUR'] = 'Weniger als eine Stunde';
+$lang['PREMIUM_LEFT_LABEL'] = 'Verbleibend';
+
+$lang['PREMIUM_STATUS_ON'] = 'Aktiv';
+$lang['PREMIUM_STATUS_OFF'] = 'Nicht aktiv';
+$lang['PREMIUM_EXTEND'] = 'Premium verlaengern';
+$lang['PREMIUM_ACTIVATE'] = 'Premium aktivieren';
+
+$lang['GOLD_CREDITS'] = 'Goldkredite';
+$lang['GOLD_CREDITS_BUY'] = 'Goldkredite kaufen';
  
 $lang['SUPPORT_MESSAGE'] = 'Nachricht';
 $lang['SUPPORT_CAPTION'] = 'SUPPORT';
