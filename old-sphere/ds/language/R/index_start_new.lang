@@ -128,6 +128,8 @@ if (!GE_LogicGetPremiumPresent::CheckIfPresentForDRIsReceived($_SESSION['uid']))
 }
 
 $lang['PREMIUM_PRESENT_TEXT'] = 'Получить в подарок '.$countOfDays.$days.' премиума!';
+$lang['PREMIUM_PRESENT_LABEL'] = 'Получить '.$countOfDays.$days.' в подарок';
+$lang['PREMIUM_SHORT'] = 'Премиум';
 
 $lang['PREMIUM_REGISTRATION_HREF'] = 'https://account.destinysphere.net/ru/';
 $lang['PREMIUM_REGISTRATION'] = 'Зарегистрироваться!';

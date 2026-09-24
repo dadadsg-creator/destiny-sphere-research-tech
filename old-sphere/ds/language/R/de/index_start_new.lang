@@ -90,6 +90,8 @@ $lang['RECOMENDED_FOR_NUBIE_FOOTNOTE'] = 'Рекомендуется для новых игроков';
 $lang['COMB_NAME_HINT'] = 'Сота - это игровое поле. Придумайте любое название. Разрешается использование цифр, символа подчеркивания и букв латинского алфавита.';
 
 $lang['PREMIUM_PRESENT_TEXT'] = 'Получить в подарок '.constant('PREMIUM_PRESENT_DAYS').' дня премиума!';
+$lang['PREMIUM_PRESENT_LABEL'] = 'Получить '.constant('PREMIUM_PRESENT_DAYS').' дня в подарок';
+$lang['PREMIUM_SHORT'] = 'Премиум';
 
 $lang['SMS'] = 'SMS-сервис';
 

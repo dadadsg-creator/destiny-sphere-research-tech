@@ -197,7 +197,7 @@ function checkAnswer(checked_value)
                                                 <table width=100% height=100% border=0 cellpadding=0 cellspacing=0>
                                                     <tr>
                                                         <!--LEFT BLOCK -->
-                                                        <td valign=top width=80%>
+                                                        <td valign=top>
                                                             <table width=100% height=100% border=0 cellpadding=0 cellspacing=0>
                                                                 <!-- START WORLD LIST -->
                                                                 {if $WORLDS_TO_ENTER && !$BAN && !$MAIL_ACTIVATION_REQUIRE && $BLOCKS.WORLD_ENTER == 1}
@@ -775,39 +775,39 @@ function checkAnswer(checked_value)
                                                                     
                                                                                         
                                                         <!--RIGHT BLOCK -->
-                                                        <td valign=top>
-                                                        <div style="background-color:#1E2A4A;border:1px solid #3A4A7A;border-radius:8px;padding:12px;font-family:Tahoma,Verdana,Arial,sans-serif;">
+                                                        <td valign=top width=260>
+                                                        <div style="width:260px;box-sizing:border-box;background-color:#1E2A4A;border:1px solid #3A4A7A;border-radius:8px;padding:16px;font-family:Arial,Helvetica,sans-serif;">
 
-                                                        <div style="padding-bottom:10px;margin-bottom:10px;border-bottom:1px solid #3A4A7A;text-align:left;">
-                                                            <div style="color:#93A2C7;font-size:9px;font-weight:bold;text-transform:uppercase;letter-spacing:.5px;margin:0 0 4px;">{$lang.ACCOUNT}</div>
-                                                            <div style="color:#ffffff;font-size:14px;font-weight:bold;word-break:break-word;">{$LOGIN}</div>
-                                                            <div style="color:#93A2C7;font-size:10px;margin-top:2px;word-break:break-all;">{$EMAIL}</div>
-                                                            <form action="index_login.php" method="post" style="margin:8px 0 0;padding:0;">
+                                                        <div style="padding-bottom:16px;margin-bottom:16px;border-bottom:1px solid #3A4A7A;text-align:left;">
+                                                            <div style="color:#93A2C7;font-size:12px;font-weight:bold;text-transform:uppercase;letter-spacing:.5px;margin:0 0 8px;">{$lang.ACCOUNT}</div>
+                                                            <div style="color:#ffffff;font-size:20px;font-weight:bold;word-break:break-word;margin:0 0 4px;">{$LOGIN}</div>
+                                                            <div style="color:#93A2C7;font-size:12px;margin:0 0 8px;word-break:break-all;">{$EMAIL}</div>
+                                                            <form action="index_login.php" method="post" style="margin:0;padding:0;">
                                                                 <input type="hidden" name="ck" value="{$CLIENT_KEY}">
                                                                 <input type="hidden" name="logout" value="1">
-                                                                <button type="submit" style="color:#93A2C7;font-size:10px;text-decoration:underline;background:transparent;border:0;padding:0;cursor:pointer;font-family:Tahoma,Verdana,Arial,sans-serif;">{$lang.LOGOUT}</button>
+                                                                <button type="submit" style="color:#93A2C7;font-size:12px;text-decoration:underline;background:transparent;border:0;padding:0;cursor:pointer;font-family:Arial,Helvetica,sans-serif;">{$lang.LOGOUT}</button>
                                                             </form>
                                                         </div>
 
-                                                        <div style="padding-bottom:10px;margin-bottom:10px;border-bottom:1px solid #3A4A7A;text-align:left;">
-                                                            <div style="color:#ffffff;font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:.5px;margin:0 0 8px;text-align:left;"><img src="img/cabinet/icons/premium50x50.png" width="18" height="18" border="0" align="absmiddle" style="margin-right:6px;" alt="">{$lang.PREMIUM}</div>
+                                                        <div style="padding-bottom:16px;margin-bottom:16px;border-bottom:1px solid #3A4A7A;text-align:left;">
+                                                            <div style="color:#ffffff;font-size:15px;font-weight:bold;margin:0 0 12px;text-align:left;"><img src="../img/cabinet/icons/premium50x50.png" width="20" height="20" border="0" align="absmiddle" style="margin-right:8px;" alt="">{$lang.PREMIUM_SHORT}</div>
                                                             {if isset($PREMIUM_DAYS)}
-                                                            <div style="color:#4CD964;font-size:10px;font-weight:bold;margin-bottom:6px;">{$lang.PREMIUM_STATUS_ON}</div>
-                                                            <div style="color:#93A2C7;font-size:9px;margin-bottom:2px;">{$lang.PREMIUM_LEFT_LABEL}</div>
-                                                            <div style="color:#ffffff;font-size:13px;font-weight:bold;margin-bottom:10px;">{$PREMIUM_LEFT_TEXT}</div>
-                                                            <a href="user_cabinet.php?action=payment_services" style="display:block;width:100%;box-sizing:border-box;text-align:center;padding:9px 6px;border-radius:6px;background-color:#0e6b10;background-image:linear-gradient(180deg,#1c9a1e 0%,#0e6b10 100%);color:#ffffff;font-size:10px;font-weight:bold;text-decoration:none;text-transform:uppercase;line-height:1.3;">{$lang.PREMIUM_EXTEND}</a>
+                                                            <div style="color:#4CD964;font-size:14px;font-weight:bold;margin:0 0 8px;">{$lang.PREMIUM_STATUS_ON}</div>
+                                                            <div style="color:#93A2C7;font-size:12px;margin:0 0 2px;">{$lang.PREMIUM_LEFT_LABEL}</div>
+                                                            <div style="color:#ffffff;font-size:20px;font-weight:bold;margin:0 0 12px;">{$PREMIUM_LEFT_TEXT}</div>
+                                                            <a href="user_cabinet.php?action=payment_services" onmouseover="this.style.backgroundImage='linear-gradient(180deg,#22b024 0%,#126b13 100%)';this.style.color='#EAFFEA';" onmouseout="this.style.backgroundImage='linear-gradient(180deg,#1c9a1e 0%,#0e6b10 100%)';this.style.color='#ffffff';" style="display:block;width:100%;box-sizing:border-box;text-align:center;padding:14px 12px;min-height:44px;border-radius:6px;background-color:#0e6b10;background-image:linear-gradient(180deg,#1c9a1e 0%,#0e6b10 100%);color:#ffffff;font-size:14px;font-weight:bold;text-decoration:none;line-height:1.2;">{$lang.PREMIUM_EXTEND}</a>
                                                             {else}
-                                                            <div style="color:#93A2C7;font-size:10px;font-weight:bold;margin-bottom:6px;">{$lang.PREMIUM_STATUS_OFF}</div>
-                                                            <a href="user_cabinet.php?action=payment_services" style="display:block;width:100%;box-sizing:border-box;text-align:center;padding:9px 6px;border-radius:6px;background-color:#0e6b10;background-image:linear-gradient(180deg,#1c9a1e 0%,#0e6b10 100%);color:#ffffff;font-size:10px;font-weight:bold;text-decoration:none;text-transform:uppercase;line-height:1.3;">{$lang.PREMIUM_ACTIVATE}</a>
+                                                            <div style="color:#93A2C7;font-size:14px;font-weight:bold;margin:0 0 8px;">{$lang.PREMIUM_STATUS_OFF}</div>
+                                                            <a href="user_cabinet.php?action=payment_services" onmouseover="this.style.backgroundImage='linear-gradient(180deg,#22b024 0%,#126b13 100%)';this.style.color='#EAFFEA';" onmouseout="this.style.backgroundImage='linear-gradient(180deg,#1c9a1e 0%,#0e6b10 100%)';this.style.color='#ffffff';" style="display:block;width:100%;box-sizing:border-box;text-align:center;padding:14px 12px;min-height:44px;border-radius:6px;background-color:#0e6b10;background-image:linear-gradient(180deg,#1c9a1e 0%,#0e6b10 100%);color:#ffffff;font-size:14px;font-weight:bold;text-decoration:none;line-height:1.2;">{$lang.PREMIUM_ACTIVATE}</a>
                                                             {/if}
                                                             {if isset($PREMIUM_PRESENT) && $PREMIUM_PRESENT}
-                                                            <a href="{$lang.PREMIUM_PRESENT_HREF}?ck={$CLIENT_KEY}&add_premium_present=1" onclick="if(this.getAttribute('data-busy'))return false;this.setAttribute('data-busy','1');this.style.pointerEvents='none';this.style.opacity='.6';" style="display:block;width:100%;box-sizing:border-box;text-align:center;padding:7px 6px;border-radius:6px;background-color:transparent;border:1px solid #C9A227;color:#E5C158;font-size:10px;font-weight:bold;text-decoration:none;margin-top:8px;line-height:1.3;">{$lang.PREMIUM_PRESENT_TEXT}</a>
+                                                            <a href="{$lang.PREMIUM_PRESENT_HREF}?ck={$CLIENT_KEY}&add_premium_present=1" onclick="if(this.getAttribute('data-busy'))return false;this.setAttribute('data-busy','1');this.style.pointerEvents='none';this.style.opacity='.6';" onmouseover="this.style.backgroundColor='rgba(201,162,39,0.15)';this.style.color='#FFF6D9';" onmouseout="this.style.backgroundColor='transparent';this.style.color='#ffffff';" style="display:block;width:100%;box-sizing:border-box;text-align:center;padding:14px 12px;min-height:44px;border-radius:6px;background-color:transparent;border:1px solid #C9A227;color:#ffffff;font-size:14px;font-weight:bold;text-decoration:none;margin-top:12px;line-height:1.2;">{$lang.PREMIUM_PRESENT_LABEL}</a>
                                                             {/if}
                                                         </div>
 
                                                         <div style="text-align:left;">
-                                                            <div style="color:#ffffff;font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:.5px;margin:0 0 8px;text-align:left;"><img src="img/cabinet/icons/gold-50x50.png" width="18" height="18" border="0" align="absmiddle" style="margin-right:6px;" alt="">{$lang.GOLD_CREDITS}</div>
-                                                            <a href="/ds/billing.php?mode=gold" style="display:block;width:100%;box-sizing:border-box;text-align:center;padding:9px 6px;border-radius:6px;background-color:#0e6b10;background-image:linear-gradient(180deg,#1c9a1e 0%,#0e6b10 100%);color:#ffffff;font-size:10px;font-weight:bold;text-decoration:none;text-transform:uppercase;line-height:1.3;">{$lang.GOLD_CREDITS_BUY}</a>
+                                                            <div style="color:#ffffff;font-size:15px;font-weight:bold;margin:0 0 12px;text-align:left;"><img src="../img/cabinet/icons/gold-50x50.png" width="20" height="20" border="0" align="absmiddle" style="margin-right:8px;" alt="">{$lang.GOLD_CREDITS}</div>
+                                                            <a href="/ds/billing.php?mode=gold" onmouseover="this.style.backgroundImage='linear-gradient(180deg,#22b024 0%,#126b13 100%)';this.style.color='#EAFFEA';" onmouseout="this.style.backgroundImage='linear-gradient(180deg,#1c9a1e 0%,#0e6b10 100%)';this.style.color='#ffffff';" style="display:block;width:100%;box-sizing:border-box;text-align:center;padding:14px 12px;min-height:44px;border-radius:6px;background-color:#0e6b10;background-image:linear-gradient(180deg,#1c9a1e 0%,#0e6b10 100%);color:#ffffff;font-size:14px;font-weight:bold;text-decoration:none;line-height:1.2;">{$lang.GOLD_CREDITS_BUY}</a>
                                                         </div>
 
                                                         </div>

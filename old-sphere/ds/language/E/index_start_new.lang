@@ -92,6 +92,8 @@ if((constant('PREMIUM_PRESENT_DAYS') % 10) == 1)
 }
 
 $lang['PREMIUM_PRESENT_TEXT'] = 'Get as present '.constant('PREMIUM_PRESENT_DAYS').$days.' of premium-access!';
+$lang['PREMIUM_PRESENT_LABEL'] = 'Get '.constant('PREMIUM_PRESENT_DAYS').$days.' as a gift';
+$lang['PREMIUM_SHORT'] = 'Premium';
 
 $lang['PREMIUM_REGISTRATION_HREF'] = 'https://billing.destinysphere.ru';
 $lang['PREMIUM_REGISTRATION'] = 'Register!';
