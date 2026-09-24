@@ -181,7 +181,8 @@ if(!$strOut || ($_REQUEST['nfs'] == 79)){
             $newBox = $premiumHtml
                 . '<tr><td colspan=3><div style="background:linear-gradient(180deg,#4B6498 0%,#2B3C6F 55%,#1A2340 100%);border:1px solid #7A8AAC;border-radius:6px;box-shadow:0 1px 2px rgba(0,0,0,0.2);overflow:hidden;">'
                 . '<a href="http://forum.destinysphere.ru/" target=_blank class=menu_txt_left style="' . $linkStyle . '">' . $forumLabel . '</a>'
-                . '<a href="http://destinysphere.ru/ds/ranking_new.php" target=_blank class=menu_txt_left style="' . $linkStyle . '">' . $rankingLabel . '</a>'
+                . '<a href="https://destinysphere.ru/ds/ranking.php" target=_blank class=menu_txt_left style="' . $linkStyle . '">Рейтинг</a>'
+                . '<a href="https://destinysphere.ru/ds/ranking_new.php" target=_blank class=menu_txt_left style="' . $linkStyle . '">Новый рейтинг</a>'
                 . '<a href="https://billing.destinysphere.ru" target=_blank class=menu_txt_left style="' . $lastLinkStyle . '">' . $billingLabel . '</a>'
                 . '</div></td></tr>';
             $strOut = substr($strOut, 0, $menuBoxStart) . $newBox . substr($strOut, $premiumEnd);
