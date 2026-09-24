@@ -92,6 +92,7 @@ $lang['COMB_NAME_HINT'] = 'Сота - это игровое поле. Придумайте любое название. Р
 $lang['PREMIUM_PRESENT_TEXT'] = 'Получить в подарок '.constant('PREMIUM_PRESENT_DAYS').' дня премиума!';
 $lang['PREMIUM_PRESENT_LABEL'] = 'Получить '.constant('PREMIUM_PRESENT_DAYS').' дня в подарок';
 $lang['PREMIUM_SHORT'] = 'Премиум';
+$lang['CABINET_LINK'] = 'Магазин';
 
 $lang['SMS'] = 'SMS-сервис';
 

@@ -74,6 +74,7 @@ $lang['PREMIUM_PRESENT'] = 'Geschenk!';
 $lang['PREMIUM_PRESENT_TEXT'] = '5 Premiumtage geschenkt bekommen!';
 $lang['PREMIUM_PRESENT_LABEL'] = '5 Tage geschenkt';
 $lang['PREMIUM_SHORT'] = 'Premium';
+$lang['CABINET_LINK'] = 'Shop';
  
 $lang['PREMIUM_REGISTRATION_HREF'] = 'https://billing.gamigogames.de/';
 $lang['PREMIUM_REGISTRATION'] = 'Registrierung'; 
