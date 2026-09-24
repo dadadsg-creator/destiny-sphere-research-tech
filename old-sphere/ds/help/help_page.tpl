@@ -3,6 +3,11 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
 		<title>DestinySphere - Unlimited :: Помощь - <?php echo $helpTitle;?></title>
 		<link rel="stylesheet" href="../cabinetstyle.css" type="text/css">
+		<script>window.RufflePlayer = window.RufflePlayer || {}; window.RufflePlayer.config = { autoplay: "on", unmuteOverlay: "hidden" };</script>
+		<script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
+		<style>
+			.help_content, .help_content font { font-family: Tahoma, Verdana, Arial, sans-serif !important; }
+		</style>
 	</head>
 	<body>
 		
@@ -66,14 +71,6 @@ function openURL (url, target) {
 											<td align=center valign="top">
 												<img height=34 src="../img/cabinet/graph/del_but01.gif" border=0></td>
 											<td width="110" height="22" align=center valign="middle" class="menu_txt">
-												<div class=menu onclick="openURL('http://news.destinysphere.ru/');" valign=middle><span style="position: relative; top: 9px;">ГАЗЕТА</span></div></td>
-											<td align=center valign="top">
-												<img height=34 src="../img/cabinet/graph/del_but01.gif" border=0></td>
-											<td width="110" height="22" align=center valign="middle" class="menu_txt">
-												<div class=menu onclick="openURL('http://sms.destinysphere.ru/');" valign=middle><span style="position: relative; top: 9px;">DS-Mobile</span></div></td>
-											<td align=center valign="top">
-												<img height=34 src="../img/cabinet/graph/del_but01.gif" border=0></td>
-											<td width="110" height="22" align=center valign="middle" class="menu_txt">
 												<div class=menu onclick="openURL('https://billing.destinysphere.ru/');" valign=middle><span style="position: relative; top: 9px;">БИЛЛИНГ</span></div></td>
 											<td align=center valign="top">
 												<img height=34 src="../img/cabinet/graph/del_but01.gif" border=0></td>
@@ -125,7 +122,7 @@ function openURL (url, target) {
 										</tr>
 										<tr>
 											<td background="../img/cabinet/border/03/l.gif"></td>
-											<td width=100% align=left bgcolor="#ffffff" style="padding:5px;">
+											<td width=100% align=left bgcolor="#ffffff" style="padding:5px;" class="help_content">
 												 <?php echo $helpContent;?>
 											</td>
 											<td background="../img/cabinet/border/03/r.gif"></td>
