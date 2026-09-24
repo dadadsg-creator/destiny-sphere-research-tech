@@ -193,6 +193,18 @@ if(!$strOut || ($_REQUEST['nfs'] == 79)){
     $strOut = str_replace('<script src="http://images.rambler.ru/patch_script.js"></script>', '', $strOut);
     $strOut = preg_replace('~<!-- begin of Top100 code -->.*?<!-- end of Top100 code-->~s', '', $strOut);
     $strOut = preg_replace('~<!-- Rating@Mail.ru counter -->.*?<!-- //Rating@Mail.ru counter -->~s', '', $strOut);
+    // убираем юр./факт. адрес со страницы ?p=about
+    $strOut = str_replace(
+        'Юр. адрес: 197341, Фермское шоссе, 36-7-118.<br/>
+            г. Санкт-Петербург<br/>
+            Россия<br/>
+            Факт. адрес: 197101, ул. Мира, 16, оф. 20.<br/>
+            г. Санкт-Петербург<br/>
+            Россия<br/>
+',
+        '',
+        $strOut
+    );
     $pageCache->set($strOut);
     echo "<!--REAL PAGE!-->";
 }else{
