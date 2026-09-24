@@ -73,7 +73,7 @@ $lang['PERIOD'] = 'временная';
 $lang['PERIOD_TIME'] = 'Если временная, то с какой и по какую дату ';
 $lang['SAME_IP_START_DATE'] = 'Если временная, то с какой даты ';
 $lang['SAME_IP_END_DATE'] = ' и по какую дату ';
-$lang['READ_RULES_IP'] = 'C <a href="http://forum.destinysphere.ru/forum/viewtopic.php?p=266458#266458" class="wnd_header_txt_small" target="_blank">правилами игры</a> с одного компьютера ознакомлены * ';
+$lang['READ_RULES_IP'] = 'C <a href="https://forum.destinysphere.ru/forum/viewtopic.php?p=266458#266458" class="wnd_header_txt_small" target="_blank">правилами игры</a> с одного компьютера ознакомлены * ';
 $lang['USER_LIST'] = 'Список всех аккаунтов играющих с одного компьютера<br>
  с указанием игрового мира/миров и адресов сот * ';
 

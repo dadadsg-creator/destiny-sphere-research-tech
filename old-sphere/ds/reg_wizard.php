@@ -785,7 +785,7 @@ function showStep($step, $errorMsg)
     }
 
     if (constant('BILLING_PARTNER_ID')==4)
-    $forumlink = 'http://forum.destinysphere.ru';
+    $forumlink = 'https://forum.destinysphere.ru';
     else if (constant('BILLING_PARTNER_ID')==6)
       $forumlink = 'http://forum.ds-game.ru';
     else if (constant('BILLING_PARTNER_ID')==9)

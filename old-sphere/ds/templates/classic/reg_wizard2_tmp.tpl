@@ -134,7 +134,7 @@ table.layout td.layout_center{
                     <table class="top_menu">
                         <tr>
                             <td class="btn_1"><a href="/"  target="_blank" title="Портал"></a></td>
-                            <td class="btn_2"  target="_blank"><a href="http://forum.destinysphere.ru/main.php" title="Форум"  target="_blank"></a></td>
+                            <td class="btn_2"  target="_blank"><a href="https://forum.destinysphere.ru/main.php" title="Форум"  target="_blank"></a></td>
                             <td class="btn_3"  target="_blank" title="Импрессум"><a href="?step=_impressum"></a></td>
                         </tr>
                     </table>

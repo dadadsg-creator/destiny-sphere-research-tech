@@ -90,7 +90,7 @@ function openURL (url, target) {
                                             <td align=center valign="top">
                                                 <img height=34 src="img/cabinet/graph/del_but01.gif" border=0></td>
                                             <td width="110" height="22" align=center valign="middle" class="menu_txt">
-                                                <div style="width:110px; height:100%; cursor: hand;" onclick="openURL('http://forum.destinysphere.ru/forum/index.php');" valign=middle><span style="position: relative; top: 9px;">ФОРУМ</span></div></td>
+                                                <div style="width:110px; height:100%; cursor: hand;" onclick="openURL('https://forum.destinysphere.ru/forum/index.php');" valign=middle><span style="position: relative; top: 9px;">ФОРУМ</span></div></td>
                                             <td align=center valign="top">
                                                 <img height=34 src="img/cabinet/graph/del_but01.gif" border=0></td>
                                             <td width="110" height="22" align=center valign="middle" class="menu_txt">
@@ -470,7 +470,7 @@ function openURL (url, target) {
             Порядок получения бесплатного билета. Для получения билета Вам надо подойти к павильону 57 – на первую кассу. Мы вышлем Вам специальный код – в ПМ, в «зеленую кнопку». Для получения билета вам надо назвать свой ник и проверочный код.<br>
             <br>
             Списки призеров Classic версии<br>
-            <a href="http://forum.destinysphere.ru/forum/viewtopic.php?p=3579427#3579427">http://forum.destinysphere.ru/forum/viewtopic.php?p=3579427#3579427</a><br>
+            <a href="https://forum.destinysphere.ru/forum/viewtopic.php?p=3579427#3579427">https://forum.destinysphere.ru/forum/viewtopic.php?p=3579427#3579427</a><br>
             <br>
             Списки призеров Unlimited версии<br>
             <a href="http://forum.ds-game.ru/viewtopic.php?f=2&t=3078">http://forum.ds-game.ru/viewtopic.php?f=2&t=3078</a><br>

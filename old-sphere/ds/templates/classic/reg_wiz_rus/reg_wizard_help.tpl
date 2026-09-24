@@ -142,7 +142,7 @@ table.world_list td.list div.list{
 
 <p style="text-align:justify;">
 <a name="questions" style="text-decoration:none"><b style="color:yellow">У меня есть еще вопросы!</b></a><br>
-Если у Вас есть какие-то вопросы по игре, Вы можете найти ответы на них в нашем <a href="http://forum.destinysphere.ru/viewtopic.php?p=859417" style="color:yellow" target="_blank">FAQ</a> или обратиться за помощью в специальном <a href="http://forum.destinysphere.ru/viewforum.php?f=3" style="color:yellow" target="_blank">форуме для новичков</a>.
+Если у Вас есть какие-то вопросы по игре, Вы можете найти ответы на них в нашем <a href="https://forum.destinysphere.ru/viewtopic.php?p=859417" style="color:yellow" target="_blank">FAQ</a> или обратиться за помощью в специальном <a href="https://forum.destinysphere.ru/viewforum.php?f=3" style="color:yellow" target="_blank">форуме для новичков</a>.
 </p>
 </div>
               </td>
@@ -170,7 +170,7 @@ table.world_list td.list div.list{
                     <table class="top_menu">
                         <tr>
                             <td class="btn_1"><a href="/"  target="_blank" title="Портал"></a></td>
-                            <td class="btn_2"  target="_blank"><a href="http://forum.destinysphere.ru/main.php" title="Форум"  target="_blank"></a></td>
+                            <td class="btn_2"  target="_blank"><a href="https://forum.destinysphere.ru/main.php" title="Форум"  target="_blank"></a></td>
                             <td class="btn_3"  target="_blank" title="Импрессум"><a href="?step=_impressum"></a></td>
                         </tr>
 

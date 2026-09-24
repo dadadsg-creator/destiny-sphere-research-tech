@@ -147,7 +147,7 @@ table.world_list td.list div.list{
 
 <p style="text-align:justify;">
 <a name="questions" style="text-decoration:none"><b style="color:yellow">У меня есть еще вопросы!</b></a><br>
-Если у Вас есть какие-то вопросы по игре, Вы можете найти ответы на них в нашем <a href="http://forum.destinysphere.ru/viewtopic.php?p=859417" style="color:yellow" target="_blank">FAQ</a> или обратиться за помощью в специальном <a href="http://forum.destinysphere.ru/viewforum.php?f=3" style="color:yellow" target="_blank">форуме для новичков</a>.
+Если у Вас есть какие-то вопросы по игре, Вы можете найти ответы на них в нашем <a href="https://forum.destinysphere.ru/viewtopic.php?p=859417" style="color:yellow" target="_blank">FAQ</a> или обратиться за помощью в специальном <a href="https://forum.destinysphere.ru/viewforum.php?f=3" style="color:yellow" target="_blank">форуме для новичков</a>.
 </p>
 </div>
               </td>

@@ -12,7 +12,7 @@ $lang['EMAIL'] = 'e-mail: *';
 $lang['PASSWORD'] = 'Password (8 signs minimum): *';
 $lang['CONFIRM_PASSWORD'] = 'Repeat password: *';
 $lang['LANGUAGE'] = 'Language:';
-$lang['LICENSE_AGREEMENT'] = 'I agree with <a href="http://forum.destinysphere.ru/forum/agb.php" target="_blank">the conditions</a> of the Destiny Sphere game.';
+$lang['LICENSE_AGREEMENT'] = 'I agree with <a href="https://forum.destinysphere.ru/forum/agb.php" target="_blank">the conditions</a> of the Destiny Sphere game.';
 $lang['TEXT1'] = '<br>
 		<span class="gensmall">
 		<b>

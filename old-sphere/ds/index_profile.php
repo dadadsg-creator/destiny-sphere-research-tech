@@ -334,7 +334,7 @@ class Profile
 		$forum_link = '';
 		if(strcmp($_SERVER['HTTP_HOST'],'ds.rambler.ru') === 0)
 		{
-			$forum_link = 'http://forum.destinysphere.ru/forum/profile.php?mode=editprofile';
+			$forum_link = 'https://forum.destinysphere.ru/forum/profile.php?mode=editprofile';
 		}
 		elseif(strcmp($_SERVER['HTTP_HOST'],'dsgame.rambler.ru') === 0)
 		{

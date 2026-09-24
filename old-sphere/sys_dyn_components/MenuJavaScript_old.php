@@ -3,9 +3,9 @@
 function mmLoadMenus() {
   if (window.mm_menu_news) return;
    window.mm_menu_news = new Menu("root",110,18,"",11,"#EEEEEE","#ffffff","#243254","#505F84","left","middle",1,0,500,-5,7,true,true,true,0,true,true);
-   mm_menu_news.addMenuItem("Последние новости","window.open('http://forum.destinysphere.ru/forum/portal.php', '_blank');");
-   mm_menu_news.addMenuItem("Онлайн-газета","window.open('http://forum.destinysphere.ru/forum/news.php','_blank');");
-   mm_menu_news.addMenuItem("Опросы","window.open('http://forum.destinysphere.ru/forum/viewforum.php?f=12','_blank');");
+   mm_menu_news.addMenuItem("Последние новости","window.open('https://forum.destinysphere.ru/forum/portal.php', '_blank');");
+   mm_menu_news.addMenuItem("Онлайн-газета","window.open('https://forum.destinysphere.ru/forum/news.php','_blank');");
+   mm_menu_news.addMenuItem("Опросы","window.open('https://forum.destinysphere.ru/forum/viewforum.php?f=12','_blank');");
    mm_menu_news.hideOnMouseOut=true;
    mm_menu_news.bgColor='#243254';
    mm_menu_news.menuBorder=1;
@@ -89,9 +89,9 @@ function mmLoadMenus() {
 
    window.mm_menu_faq = new Menu("FAQ",160,18,"",11,"#EEEEEE","#ffffff","#243254","#505F84","left","middle",1,0,500,-5,7,true,true,true,0,true,true);
   	mm_menu_faq.addMenuItem("Официальный FAQ","location='support.php?gamefaq'");
-   mm_menu_faq.addMenuItem("FAQ от Сенаторов Ориона","window.open('http://forum.destinysphere.ru/forum/viewforum.php?f=243','_blank');");
-  	mm_menu_faq.addMenuItem("FAQ от Альянса Psi Corp","window.open('http://forum.destinysphere.ru/forum/viewtopic.php?t=4921','_blank');");
-  	mm_menu_faq.addMenuItem("FAQ от TANKER","window.open('http://forum.destinysphere.ru/forum/viewtopic.php?t=55985','_blank');");
+   mm_menu_faq.addMenuItem("FAQ от Сенаторов Ориона","window.open('https://forum.destinysphere.ru/forum/viewforum.php?f=243','_blank');");
+  	mm_menu_faq.addMenuItem("FAQ от Альянса Psi Corp","window.open('https://forum.destinysphere.ru/forum/viewtopic.php?t=4921','_blank');");
+  	mm_menu_faq.addMenuItem("FAQ от TANKER","window.open('https://forum.destinysphere.ru/forum/viewtopic.php?t=55985','_blank');");
    mm_menu_faq.hideOnMouseOut=true;
    mm_menu_faq.bgColor='#243254';
    mm_menu_faq.menuBorder=1;
@@ -101,12 +101,12 @@ function mmLoadMenus() {
    window.mm_menu_support = new Menu("root",160,18,"",11,"#EEEEEE","#ffffff","#243254","#505F84","left","middle",1,0,500,-5,7,true,true,true,0,true,true);
   	mm_menu_support.addMenuItem("Краткое описание игры","location='support.php?game_info'");
    mm_menu_support.addMenuItem("Помощь новичкам","location='support.php?beginer'");
-  	mm_menu_support.addMenuItem("Развитие науки","window.open('http://forum.destinysphere.ru/forum/techtree5.html','_blank');");
+  	mm_menu_support.addMenuItem("Развитие науки","window.open('https://forum.destinysphere.ru/forum/techtree5.html','_blank');");
   	mm_menu_support.addMenuItem(mm_menu_faq);
   	mm_menu_support.addMenuItem(mm_menu_build, "window.open('http://www.destinysphere.ru/ds/buildings.php?race=1','_blank');");
   	mm_menu_support.addMenuItem("Обзор Войск","location='support.php?units_info'");
-  	mm_menu_support.addMenuItem("Поиск","window.open('http://forum.destinysphere.ru/forum/search.php','_blank');");
-  	mm_menu_support.addMenuItem("Спроси экспертов","window.open('http://forum.destinysphere.ru/forum/posting.php?mode=newtopic&f=3','_blank')");
+  	mm_menu_support.addMenuItem("Поиск","window.open('https://forum.destinysphere.ru/forum/search.php','_blank');");
+  	mm_menu_support.addMenuItem("Спроси экспертов","window.open('https://forum.destinysphere.ru/forum/posting.php?mode=newtopic&f=3','_blank')");
   	mm_menu_support.addMenuItem("Страницы игроков","location='support.php?user_pages'");
   	mm_menu_support.addMenuItem("Контакт","location='support.php?contact'");
    mm_menu_support.hideOnMouseOut=true;
@@ -116,12 +116,12 @@ function mmLoadMenus() {
    mm_menu_support.menuBorderBgColor='#040D23';
 
    window.mm_menu_other = new Menu("root",120,18,"",11,"#EEEEEE","#ffffff","#243254","#505F84","left","middle",1,0,500,-5,7,true,true,true,0,true,true);
-   mm_menu_other.addMenuItem("Форум","window.open('http://forum.destinysphere.ru/forum/index.php','_blank');");
+   mm_menu_other.addMenuItem("Форум","window.open('https://forum.destinysphere.ru/forum/index.php','_blank');");
   	mm_menu_other.addMenuItem("Рейтинг","window.open('http://www.destinysphere.ru/ds/ranking.php','_blank');");
-  	mm_menu_other.addMenuItem("Профиль","window.open('http://forum.destinysphere.ru/forum/profile.php?mode=editprofile','_blank');");
+  	mm_menu_other.addMenuItem("Профиль","window.open('https://forum.destinysphere.ru/forum/profile.php?mode=editprofile','_blank');");
   	mm_menu_other.addMenuItem("Чат в форуме","window.open('http://portal.destinysphere.ru/forum/chatbox_mod/chatbox.php','_blank');");
   	mm_menu_other.addMenuItem("IRC-чат","window.open('http://www.destinysphere.ru/ds/irc/irc.php?u=','_blank');");
-  	mm_menu_other.addMenuItem("Об оплате Премиума","window.open('http://forum.destinysphere.ru/forum/premiumhelp.php','_blank');");
+  	mm_menu_other.addMenuItem("Об оплате Премиума","window.open('https://forum.destinysphere.ru/forum/premiumhelp.php','_blank');");
   	mm_menu_other.addMenuItem("Платные услуги","location='other.php?service_form'");
   	mm_menu_other.addMenuItem("Фэн-аксессуары","location='other.php?fan'");
   	mm_menu_other.addMenuItem("Веб-магазин","location='other.php?web_shop'");

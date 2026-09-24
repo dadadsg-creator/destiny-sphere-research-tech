@@ -69,7 +69,7 @@ function openURL (url, target) {
                                             <td align=center valign="top">
                                                 <img height=34 src="img/cabinet/graph/del_but01.gif" border=0></td>
                                             <td width="110" height="22" align=center valign="middle" class="menu_txt">
-                                                <div class=menu onclick="openURL('http://forum.destinysphere.ru/');" valign=middle><span style="position: relative; top: 9px;">‘Œ–”Ã</span></div>
+                                                <div class=menu onclick="openURL('https://forum.destinysphere.ru/');" valign=middle><span style="position: relative; top: 9px;">‘Œ–”Ã</span></div>
                                                 <!--div class=menu onclick="openURL('http://http://forum.ds-game.ru/');" valign=middle><span style="position: relative; top: 9px;">‘Œ–”Ã</span></div-->
                                             </td>
                                             <td align=center valign="top">

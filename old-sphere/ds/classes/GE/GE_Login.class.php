@@ -448,7 +448,7 @@ class GE_Login
             $tpl->assign("forum_link", "http://forum.ds-game.ru/viewforum.php?f=78");
         }
         else {
-            $tpl->assign("forum_link", "http://forum.destinysphere.ru");
+            $tpl->assign("forum_link", "https://forum.destinysphere.ru");
         }
 
         if($str != "")

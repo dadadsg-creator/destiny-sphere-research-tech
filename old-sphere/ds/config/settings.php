@@ -318,7 +318,7 @@ else if ($uid==200 || $uid==33 && ($_SERVER['SERVER_ADDR'] == '94.242.35.153' ||
     define ('SPONSORPAY_ID',  '284'); //ID игры в Sponsorpay
     define ('FREETOPAY_ID',  '28'); //ID игры в Freetopay
     define ('TEMPLATES_PATH', '/home/www/ds/templates/classic/');
-    define ( "URL_FORUM_REGISTRATION_GATE", "http://forum.destinysphere.ru/reg_gate.php"); //Путь гейту форума для регистрации
+    define ( "URL_FORUM_REGISTRATION_GATE", "https://forum.destinysphere.ru/reg_gate.php"); //Путь гейту форума для регистрации
     define ( "CAN_ENTER_WITHOUT_ACTIVATION", 10); // Cколько дней можно заходить без активации мыла
 }
 
