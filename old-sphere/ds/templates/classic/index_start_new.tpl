@@ -120,6 +120,20 @@ function ShowWorldReg()
     }
     return false;
 }
+
+function dsSelectWorldCard(gridId, inputId, worldKey, el)
+{
+    document.getElementById(inputId).value = worldKey;
+    var cards = document.getElementById(gridId).getElementsByTagName('div');
+    for (var i = 0; i < cards.length; i++)
+    {
+        if (cards[i].className && cards[i].className.indexOf('ds-world-card') !== -1)
+        {
+            cards[i].style.borderColor = 'transparent';
+        }
+    }
+    el.style.borderColor = '#2E86DE';
+}
 //-->
 </script>
 
@@ -231,11 +245,32 @@ function checkAnswer(checked_value)
                                                                                         <tr>
                                                                                             <input type="hidden" name="ck" value="{$CLIENT_KEY}">
                                                                                             <input type="hidden" name="start" value="1">
-                                                                                            <td width="45%" align="right"><span><b>{$lang.GAME_WORLD}</b></span>&nbsp;&nbsp;</td>
-                                                                                            <td width="55%">
-                                                                                                <select name="uiid" style="width:150px;">
-                                                                                                    {foreach from=$WORLDS_TO_ENTER key=ID item=WORLD}<option {if $WORLDS_DOWN[$ID]}disabled{else}value="{$ID}" selected="1"{/if}>{$WORLD} {if $WORLDS_DOWN[$ID]}{$lang.DOWN}{/if}{/foreach}
-                                                                                                </select>
+                                                                                            {assign var=dsEntryDefaultSet value=0}
+                                                                                            {assign var=dsEntryDefaultUiid value=''}
+                                                                                            {foreach from=$WORLDS_TO_ENTER key=ID item=WORLD}
+                                                                                                {if !$WORLDS_DOWN[$ID] && !$dsEntryDefaultSet}
+                                                                                                    {assign var=dsEntryDefaultUiid value=$ID}
+                                                                                                    {assign var=dsEntryDefaultSet value=1}
+                                                                                                {/if}
+                                                                                            {/foreach}
+                                                                                            <td colspan=2>
+                                                                                                <div style="margin-bottom:8px;"><b>{$lang.GAME_WORLD}</b></div>
+                                                                                                <input type="hidden" name="uiid" id="dsEntryUiid" value="{$dsEntryDefaultUiid}">
+                                                                                                <div id="dsEntryWorldGrid" style="display:flex;flex-wrap:wrap;gap:12px;">
+                                                                                                {foreach from=$WORLDS_TO_ENTER key=ID item=WORLD}
+                                                                                                    {if $WORLDS_DOWN[$ID]}
+                                                                                                    <div class="ds-world-card" style="width:200px;box-sizing:border-box;text-align:center;opacity:0.4;">
+                                                                                                        <img src="../img/world-icons/{if $WORLD == 'Сфера Стрельца'}sphere-sagittarius-card.png{elseif $WORLD == 'Терра Нова'}terra-nova-card.png{elseif $WORLD == 'Сфера Кентавра'}sphere-centaurus-card.png{elseif $WORLD == 'Сфера Парусов'}sphere-sails-card.png{elseif $WORLD == 'Сфера Сириуса'}sphere-sirius-card.png{elseif $WORLD == 'Сфера Волка'}sphere-wolf-card.png{elseif $WORLD == 'Сфера Гончих Псов'}sphere-hunting-dogs-card.png{elseif $WORLD == 'Сфера Водолея-Льва'}sphere-aquarius-leo-card.png{elseif $WORLD == 'Сфера Эридана'}sphere-eridanus-card.png{elseif $WORLD == 'Сфера Ориона'}sphere-orion-card.png{elseif $WORLD == 'Сфера Ориона-Ворона-Феникса'}sphere-orion-raven-phoenix-card.png{elseif $WORLD == 'Сфера Змееносца'}sphere-ophiuchus-card.png{elseif $WORLD == 'Черная дыра' || $WORLD == 'Чёрная дыра'}black-hole-closed-card.png{else}sphere-ophiuchus-card.png{/if}" width="200" height="267" style="display:block;width:100%;height:auto;border-radius:6px;" alt="">
+                                                                                                        <div style="font-size:12px;color:#93A2C7;margin-top:4px;">{$WORLD}<br>{$lang.DOWN}</div>
+                                                                                                    </div>
+                                                                                                    {else}
+                                                                                                    <div class="ds-world-card" onclick="dsSelectWorldCard('dsEntryWorldGrid','dsEntryUiid','{$ID}',this)" style="width:200px;box-sizing:border-box;text-align:center;cursor:pointer;border:2px solid {if $ID == $dsEntryDefaultUiid}#2E86DE{else}transparent{/if};border-radius:8px;padding:4px;">
+                                                                                                        <img src="../img/world-icons/{if $WORLD == 'Сфера Стрельца'}sphere-sagittarius-card.png{elseif $WORLD == 'Терра Нова'}terra-nova-card.png{elseif $WORLD == 'Сфера Кентавра'}sphere-centaurus-card.png{elseif $WORLD == 'Сфера Парусов'}sphere-sails-card.png{elseif $WORLD == 'Сфера Сириуса'}sphere-sirius-card.png{elseif $WORLD == 'Сфера Волка'}sphere-wolf-card.png{elseif $WORLD == 'Сфера Гончих Псов'}sphere-hunting-dogs-card.png{elseif $WORLD == 'Сфера Водолея-Льва'}sphere-aquarius-leo-card.png{elseif $WORLD == 'Сфера Эридана'}sphere-eridanus-card.png{elseif $WORLD == 'Сфера Ориона'}sphere-orion-card.png{elseif $WORLD == 'Сфера Ориона-Ворона-Феникса'}sphere-orion-raven-phoenix-card.png{elseif $WORLD == 'Сфера Змееносца'}sphere-ophiuchus-card.png{elseif $WORLD == 'Черная дыра' || $WORLD == 'Чёрная дыра'}black-hole-closed-card.png{else}sphere-ophiuchus-card.png{/if}" width="200" height="267" style="display:block;width:100%;height:auto;border-radius:6px;" alt="">
+                                                                                                        <div style="font-size:12px;color:#ffffff;margin-top:4px;">{$WORLD}</div>
+                                                                                                    </div>
+                                                                                                    {/if}
+                                                                                                {/foreach}
+                                                                                                </div>
                                                                                             </td>
                                                                                         </tr>
                                                                                         {if $BLOCKS.PROTECTION_CODE == 1}
@@ -302,11 +337,19 @@ function checkAnswer(checked_value)
                                                                                 <form action='index_start.php' method='post'>
                                                                                 <tr>
                                                                                     <input type="hidden" name="ck" value="{$CLIENT_KEY}">
-                                                                                    <td width="35%" align=right><b>{$lang.GAME_WORLD}&nbsp;&nbsp;</b></td>
-                                                                                    <td width="65%">
-                                                                                        <select name="world" maxlength="14">        
-                                                                                            {html_options options=$WORLDS_TO_REG selected=$REG_WORLD}
-                                                                                        </select>
+                                                                                    <td colspan=2>
+                                                                                        <div style="margin-bottom:8px;"><b>{$lang.GAME_WORLD}</b></div>
+                                                                                        <input type="hidden" name="world" id="dsRegWorld" value="{if $REG_WORLD}{$REG_WORLD}{else}-{/if}">
+                                                                                        <div id="dsRegWorldGrid" style="display:flex;flex-wrap:wrap;gap:12px;">
+                                                                                        {foreach from=$WORLDS_TO_REG key=WKEY item=WNAME}
+                                                                                            {if $WKEY != '-'}
+                                                                                            <div class="ds-world-card" onclick="dsSelectWorldCard('dsRegWorldGrid','dsRegWorld','{$WKEY}',this)" style="width:200px;box-sizing:border-box;text-align:center;cursor:pointer;border:2px solid {if $WKEY == $REG_WORLD}#2E86DE{else}transparent{/if};border-radius:8px;padding:4px;">
+                                                                                                <img src="../img/world-icons/{if $WNAME == 'Сфера Стрельца'}sphere-sagittarius-card.png{elseif $WNAME == 'Терра Нова'}terra-nova-card.png{elseif $WNAME == 'Сфера Кентавра'}sphere-centaurus-card.png{elseif $WNAME == 'Сфера Парусов'}sphere-sails-card.png{elseif $WNAME == 'Сфера Сириуса'}sphere-sirius-card.png{elseif $WNAME == 'Сфера Волка'}sphere-wolf-card.png{elseif $WNAME == 'Сфера Гончих Псов'}sphere-hunting-dogs-card.png{elseif $WNAME == 'Сфера Водолея-Льва'}sphere-aquarius-leo-card.png{elseif $WNAME == 'Сфера Эридана'}sphere-eridanus-card.png{elseif $WNAME == 'Сфера Ориона'}sphere-orion-card.png{elseif $WNAME == 'Сфера Ориона-Ворона-Феникса'}sphere-orion-raven-phoenix-card.png{elseif $WNAME == 'Сфера Змееносца'}sphere-ophiuchus-card.png{elseif $WNAME == 'Черная дыра' || $WNAME == 'Чёрная дыра'}black-hole-closed-card.png{else}sphere-ophiuchus-card.png{/if}" width="200" height="267" style="display:block;width:100%;height:auto;border-radius:6px;" alt="">
+                                                                                                <div style="font-size:12px;color:#333333;margin-top:4px;">{$WNAME}</div>
+                                                                                            </div>
+                                                                                            {/if}
+                                                                                        {/foreach}
+                                                                                        </div>
                                                                                     </td>
                                                                                 </tr>
                                                                                 <tr>
