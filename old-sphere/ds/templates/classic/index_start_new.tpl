@@ -140,7 +140,7 @@ function checkAnswer(checked_value)
 <table width=100% height=100% border=0 cellpadding=0 cellspacing=0 class=bg_top>
     <tr>
         <td height=100% align=center valign=top>
-            <table width=875 border=0 cellpadding=0 cellspacing=0>
+            <table width=1000 border=0 cellpadding=0 cellspacing=0>
                 <tr>
                     <td valign=top class=bg_left><img src="img/cabinet/bg/bg_left.jpg" border=0></td>
                     <td height=100% valign=top class=bg01>
@@ -776,60 +776,38 @@ function checkAnswer(checked_value)
                                                                                         
                                                         <!--RIGHT BLOCK -->
                                                         <td valign=top>
-                                                        <div class="dsp">
-                                                        <style>{literal}
-.dsp{background:#1E2A4A;border:1px solid #3A4A7A;border-radius:8px;padding:12px;font-family:Tahoma,Verdana,Arial,sans-serif;}
-.dsp-section{padding-bottom:10px;margin-bottom:10px;border-bottom:1px solid #3A4A7A;text-align:left;}
-.dsp-section:last-child{border-bottom:0;margin-bottom:0;padding-bottom:0;}
-.dsp-kicker{color:#93A2C7;font-size:9px;font-weight:bold;text-transform:uppercase;letter-spacing:.5px;margin:0 0 4px;}
-.dsp-title{display:flex;align-items:center;gap:6px;color:#fff;font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:.5px;margin:0 0 8px;}
-.dsp-icon{width:18px;height:18px;flex-shrink:0;border:0;}
-.dsp-name{color:#fff;font-size:14px;font-weight:bold;word-break:break-word;overflow-wrap:anywhere;}
-.dsp-email{color:#93A2C7;font-size:10px;margin-top:2px;word-break:break-all;overflow-wrap:anywhere;}
-.dsp-logoutform{margin:8px 0 0;padding:0;}
-.dsp-logout{display:inline-block;color:#93A2C7;font-size:10px;text-decoration:underline;background:none;border:0;padding:0;cursor:pointer;font-family:Tahoma,Verdana,Arial,sans-serif;}
-.dsp-logout:hover{color:#fff;}
-.dsp-status{font-size:10px;font-weight:bold;margin-bottom:6px;}
-.dsp-status-on{color:#4CD964;}
-.dsp-status-off{color:#93A2C7;}
-.dsp-left-label{color:#93A2C7;font-size:9px;margin-bottom:2px;}
-.dsp-valid{color:#fff;font-size:13px;font-weight:bold;margin-bottom:10px;}
-.dsp-btn{display:block;width:100%;box-sizing:border-box;text-align:center;padding:9px 6px;border-radius:6px;background:linear-gradient(180deg,#1c9a1e 0%,#0e6b10 100%);color:#fff;font-size:10px;font-weight:bold;text-decoration:none;text-transform:uppercase;line-height:1.3;}
-.dsp-btn:hover{background:linear-gradient(180deg,#22b024 0%,#126b13 100%);color:#fff;text-decoration:none;}
-.dsp-gift{display:block;width:100%;box-sizing:border-box;text-align:center;padding:7px 6px;border-radius:6px;background:transparent;border:1px solid #C9A227;color:#E5C158;font-size:10px;font-weight:bold;text-decoration:none;margin-top:8px;line-height:1.3;}
-.dsp-gift:hover{background:rgba(201,162,39,0.12);color:#F3D77A;text-decoration:none;}
-{/literal}</style>
+                                                        <div style="background-color:#1E2A4A;border:1px solid #3A4A7A;border-radius:8px;padding:12px;font-family:Tahoma,Verdana,Arial,sans-serif;">
 
-                                                        <div class="dsp-section">
-                                                            <div class="dsp-kicker">{$lang.ACCOUNT}</div>
-                                                            <div class="dsp-name">{$LOGIN}</div>
-                                                            <div class="dsp-email">{$EMAIL}</div>
-                                                            <form action="index_login.php" method="post" class="dsp-logoutform">
+                                                        <div style="padding-bottom:10px;margin-bottom:10px;border-bottom:1px solid #3A4A7A;text-align:left;">
+                                                            <div style="color:#93A2C7;font-size:9px;font-weight:bold;text-transform:uppercase;letter-spacing:.5px;margin:0 0 4px;">{$lang.ACCOUNT}</div>
+                                                            <div style="color:#ffffff;font-size:14px;font-weight:bold;word-break:break-word;">{$LOGIN}</div>
+                                                            <div style="color:#93A2C7;font-size:10px;margin-top:2px;word-break:break-all;">{$EMAIL}</div>
+                                                            <form action="index_login.php" method="post" style="margin:8px 0 0;padding:0;">
                                                                 <input type="hidden" name="ck" value="{$CLIENT_KEY}">
                                                                 <input type="hidden" name="logout" value="1">
-                                                                <button type="submit" class="dsp-logout">{$lang.LOGOUT}</button>
+                                                                <button type="submit" style="color:#93A2C7;font-size:10px;text-decoration:underline;background:transparent;border:0;padding:0;cursor:pointer;font-family:Tahoma,Verdana,Arial,sans-serif;">{$lang.LOGOUT}</button>
                                                             </form>
                                                         </div>
 
-                                                        <div class="dsp-section">
-                                                            <div class="dsp-title"><img src="img/cabinet/icons/premium50x50.png" class="dsp-icon" alt="">{$lang.PREMIUM}</div>
+                                                        <div style="padding-bottom:10px;margin-bottom:10px;border-bottom:1px solid #3A4A7A;text-align:left;">
+                                                            <div style="color:#ffffff;font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:.5px;margin:0 0 8px;text-align:left;"><img src="img/cabinet/icons/premium50x50.png" width="18" height="18" border="0" align="absmiddle" style="margin-right:6px;" alt="">{$lang.PREMIUM}</div>
                                                             {if isset($PREMIUM_DAYS)}
-                                                            <div class="dsp-status dsp-status-on">{$lang.PREMIUM_STATUS_ON}</div>
-                                                            <div class="dsp-left-label">{$lang.PREMIUM_LEFT_LABEL}</div>
-                                                            <div class="dsp-valid">{$PREMIUM_LEFT_TEXT}</div>
-                                                            <a class="dsp-btn" href="user_cabinet.php?action=payment_services">{$lang.PREMIUM_EXTEND}</a>
+                                                            <div style="color:#4CD964;font-size:10px;font-weight:bold;margin-bottom:6px;">{$lang.PREMIUM_STATUS_ON}</div>
+                                                            <div style="color:#93A2C7;font-size:9px;margin-bottom:2px;">{$lang.PREMIUM_LEFT_LABEL}</div>
+                                                            <div style="color:#ffffff;font-size:13px;font-weight:bold;margin-bottom:10px;">{$PREMIUM_LEFT_TEXT}</div>
+                                                            <a href="user_cabinet.php?action=payment_services" style="display:block;width:100%;box-sizing:border-box;text-align:center;padding:9px 6px;border-radius:6px;background-color:#0e6b10;background-image:linear-gradient(180deg,#1c9a1e 0%,#0e6b10 100%);color:#ffffff;font-size:10px;font-weight:bold;text-decoration:none;text-transform:uppercase;line-height:1.3;">{$lang.PREMIUM_EXTEND}</a>
                                                             {else}
-                                                            <div class="dsp-status dsp-status-off">{$lang.PREMIUM_STATUS_OFF}</div>
-                                                            <a class="dsp-btn" href="user_cabinet.php?action=payment_services">{$lang.PREMIUM_ACTIVATE}</a>
+                                                            <div style="color:#93A2C7;font-size:10px;font-weight:bold;margin-bottom:6px;">{$lang.PREMIUM_STATUS_OFF}</div>
+                                                            <a href="user_cabinet.php?action=payment_services" style="display:block;width:100%;box-sizing:border-box;text-align:center;padding:9px 6px;border-radius:6px;background-color:#0e6b10;background-image:linear-gradient(180deg,#1c9a1e 0%,#0e6b10 100%);color:#ffffff;font-size:10px;font-weight:bold;text-decoration:none;text-transform:uppercase;line-height:1.3;">{$lang.PREMIUM_ACTIVATE}</a>
                                                             {/if}
                                                             {if isset($PREMIUM_PRESENT) && $PREMIUM_PRESENT}
-                                                            <a class="dsp-gift" href="{$lang.PREMIUM_PRESENT_HREF}?ck={$CLIENT_KEY}&add_premium_present=1" onclick="if(this.getAttribute('data-busy'))return false;this.setAttribute('data-busy','1');this.style.pointerEvents='none';this.style.opacity='.6';">{$lang.PREMIUM_PRESENT_TEXT}</a>
+                                                            <a href="{$lang.PREMIUM_PRESENT_HREF}?ck={$CLIENT_KEY}&add_premium_present=1" onclick="if(this.getAttribute('data-busy'))return false;this.setAttribute('data-busy','1');this.style.pointerEvents='none';this.style.opacity='.6';" style="display:block;width:100%;box-sizing:border-box;text-align:center;padding:7px 6px;border-radius:6px;background-color:transparent;border:1px solid #C9A227;color:#E5C158;font-size:10px;font-weight:bold;text-decoration:none;margin-top:8px;line-height:1.3;">{$lang.PREMIUM_PRESENT_TEXT}</a>
                                                             {/if}
                                                         </div>
 
-                                                        <div class="dsp-section">
-                                                            <div class="dsp-title"><img src="img/cabinet/icons/gold-50x50.png" class="dsp-icon" alt="">{$lang.GOLD_CREDITS}</div>
-                                                            <a class="dsp-btn" href="/ds/billing.php?mode=gold">{$lang.GOLD_CREDITS_BUY}</a>
+                                                        <div style="text-align:left;">
+                                                            <div style="color:#ffffff;font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:.5px;margin:0 0 8px;text-align:left;"><img src="img/cabinet/icons/gold-50x50.png" width="18" height="18" border="0" align="absmiddle" style="margin-right:6px;" alt="">{$lang.GOLD_CREDITS}</div>
+                                                            <a href="/ds/billing.php?mode=gold" style="display:block;width:100%;box-sizing:border-box;text-align:center;padding:9px 6px;border-radius:6px;background-color:#0e6b10;background-image:linear-gradient(180deg,#1c9a1e 0%,#0e6b10 100%);color:#ffffff;font-size:10px;font-weight:bold;text-decoration:none;text-transform:uppercase;line-height:1.3;">{$lang.GOLD_CREDITS_BUY}</a>
                                                         </div>
 
                                                         </div>
