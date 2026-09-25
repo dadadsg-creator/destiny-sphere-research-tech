@@ -134,6 +134,22 @@ function dsSelectWorldCard(gridId, inputId, worldKey, el)
     }
     el.style.borderColor = '#2E86DE';
 }
+
+function dsLogoutToPortal(form)
+{
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', form.action, true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.onreadystatechange = function()
+    {
+        if (xhr.readyState === 4)
+        {
+            window.location.href = 'https://destinysphere.ru';
+        }
+    };
+    xhr.send('ck=' + encodeURIComponent(form.ck.value) + '&logout=1');
+    return false;
+}
 //-->
 </script>
 
@@ -825,7 +841,7 @@ function checkAnswer(checked_value)
                                                             <div style="color:#ffffff;font-size:20px;font-weight:bold;word-break:break-word;margin:0 0 4px;">{$LOGIN}</div>
                                                             <div style="color:#93A2C7;font-size:12px;margin:0 0 8px;word-break:break-all;">{$EMAIL}</div>
                                                             <a href="user_cabinet.php" onmouseover="this.style.backgroundImage='linear-gradient(180deg,#4FA3F7 0%,#1E6FB8 100%)';this.style.color='#EAF4FF';" onmouseout="this.style.backgroundImage='linear-gradient(180deg,#2E86DE 0%,#145DA0 100%)';this.style.color='#ffffff';" style="display:block;width:100%;box-sizing:border-box;text-align:center;padding:14px 12px;min-height:44px;border-radius:6px;background-color:#145DA0;background-image:linear-gradient(180deg,#2E86DE 0%,#145DA0 100%);color:#ffffff;font-size:14px;font-weight:bold;text-decoration:none;line-height:1.2;margin-top:4px;">{$lang.CABINET_LINK}</a>
-                                                            <form action="index_login.php" method="post" style="margin:8px 0 0;padding:0;">
+                                                            <form action="index_login.php" method="post" style="margin:8px 0 0;padding:0;" onsubmit="return dsLogoutToPortal(this);">
                                                                 <input type="hidden" name="ck" value="{$CLIENT_KEY}">
                                                                 <input type="hidden" name="logout" value="1">
                                                                 <button type="submit" style="color:#93A2C7;font-size:12px;text-decoration:underline;background:transparent;border:0;padding:0;cursor:pointer;font-family:Arial,Helvetica,sans-serif;">{$lang.LOGOUT}</button>
