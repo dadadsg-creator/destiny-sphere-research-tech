@@ -51,7 +51,7 @@ if(GameDown())
 
 if(!SU_GameSessionWork::SessionContinue())
 {
-    echo '<script>location.href="index_login.php";</script>';
+    echo '<script>location.href="'.GE_Login::GetPortalHome().'";</script>';
     exit();
 }
 
