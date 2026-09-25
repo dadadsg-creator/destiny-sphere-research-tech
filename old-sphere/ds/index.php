@@ -11,7 +11,7 @@ if(version_compare(PHP_VERSION,'5','>='))
 
 if(!SU_GameSessionWork::SessionContinue ()) 
 {
-    $str = "Location: index_login.php"; 
+    $str = "Location: ".GE_Login::GetPortalHome(); 
     Header ( $str );
     exit;
 }
@@ -25,7 +25,7 @@ if(SU_ClientKey::isCheckGetVarsSet())
 
 if(!key_exists('uid', $_SESSION))
 {
-    $str = "Location: index_login.php";     
+    $str = "Location: ".GE_Login::GetPortalHome();     
     Header ( $str );
     exit;
 }
@@ -49,7 +49,7 @@ if (GameDown(@$_SESSION['dbId'], @$_SESSION['world']))
 if (!GL_VersionPathWork::ValidateVersionPath($_SESSION['dbId']))
 {
     //DS_Error("Uncorrect script version. Over 3 hits - auto-ban!!!", true);
-    $str = "Location: index_login.php";     
+    $str = "Location: ".GE_Login::GetPortalHome();     
     Header ($str );
     exit;
 }
@@ -59,7 +59,7 @@ if(array_key_exists('INDEX_QUEUE_MEMBER', $_SESSION))
 {
     if(!($_SESSION['INDEX_QUEUE_MEMBER'] && $_SESSION['INDEX_QUEUE_PASSED']) )
     {
-        $str = "Location: index_login.php";     
+        $str = "Location: ".GE_Login::GetPortalHome();     
         Header ( $str );
         exit;
     }   
@@ -76,7 +76,7 @@ if(isset($_POST["xmldata"]))
 {
     if ( strpos ( decode($_POST["xmldata"]), "logout")!==FALSE) {
         session_destroy ();     
-        Header("Location: index_login.php");
+        Header("Location: ".GE_Login::GetPortalHome());
         exit;
     }
 }
@@ -92,7 +92,7 @@ if ( isset ( $_SERVER["HTTP_REFERER"] ) ) {
         // в 9 флеше в переменной HTTP_REFERER приходит имя .swf файла
         || ereg ( "flash/ds3", $_SERVER["HTTP_REFERER"]) ) ) {
         //session_destroy();
-        Header("Location: index_login.php");
+        Header("Location: ".GE_Login::GetPortalHome());
         exit;
     }
 }
@@ -101,7 +101,7 @@ if ( !isset ( $_SESSION["uiid"] ) || !isset ( $_SESSION["lang"] ) || !isset ( $_
     || !isset ( $_SESSION["world"] ) || !isset ( $_SESSION["ring"] ) || !isset ( $_SESSION["combcomplex"] )
     || !isset ( $_SESSION["comb"] ) || !isset ( $_SESSION["celltype"] ) || !isset ( $_SESSION["combnumber"] ) ) {
     //session_destroy();
-    Header("Location: index_login.php");
+    Header("Location: ".GE_Login::GetPortalHome());
     exit;
 }
 

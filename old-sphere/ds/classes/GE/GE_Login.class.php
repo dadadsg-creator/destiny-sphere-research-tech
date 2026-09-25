@@ -298,18 +298,19 @@ class GE_Login
         exit;
     }
 
+    /**
+     * Адрес главной страницы портала текущей версии (Classic/Unlimited/Pulsar), всегда по https
+     *
+     * @return string
+     */
+    public static function GetPortalHome()
+    {
+        return str_replace('http://', 'https://', constant("GAME_HOST"));
+    }
+
     static private function _redirect()
     {
-        $back = constant("GAME_HOST");
-        $langstr = '';
-        if(constant('LOCAL_LOGIN_ENABLE'))
-        {
-            if (isset($_REQUEST['lang']))
-              $langstr = '?lang='.$_REQUEST['lang'];
-            $back .= '/ds/index_login.php'.$langstr;
-        }
-        $str = "Location: ".$back;
-        Header($str);
+        Header("Location: ".self::GetPortalHome());
         exit;
     }
 

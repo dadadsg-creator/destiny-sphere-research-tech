@@ -13,7 +13,7 @@ if (GameDown())
 
 if (!SU_GameSessionWork::SessionContinue())
 {
-	$str = "Location: index_login.php";
+	$str = "Location: ".GE_Login::GetPortalHome();
 	Header ( $str );
 	exit;
 }

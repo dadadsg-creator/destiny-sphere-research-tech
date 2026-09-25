@@ -124,7 +124,7 @@ class GE_ControlStart
 
 				$logMsg = $_SESSION["s_login"]." as ".$res[0]['username']."\n";
 
-				header("Location: index_login.php");
+				header("Location: https://".$_SERVER['HTTP_HOST']);
 				exit();
 			}
 			//конец ловушки

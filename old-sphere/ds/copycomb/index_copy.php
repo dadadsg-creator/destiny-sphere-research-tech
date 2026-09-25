@@ -5,7 +5,7 @@ SU_GameSessionWork::SessionStart();
 $common = DS_Common::CreateForCurrentDB(0);
 $_SESSION['uid'] = 119338;
 if (!$_SESSION['uid']) {
-    header("Location: /ds/index_login.php");
+    header("Location: ".GE_Login::GetPortalHome());
     exit;
 }
 copycomb_header();

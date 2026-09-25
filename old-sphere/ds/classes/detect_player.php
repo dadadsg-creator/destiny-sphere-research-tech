@@ -9,7 +9,7 @@ include ("language/" . DEFAULT_LANGUAGE . "/lang_detect.php");
 
  if ( !SU_GameSessionWork::SessionContinue () ) {
 
-	$str = "Location: index_login.php";
+	$str = "Location: ".GE_Login::GetPortalHome();
 
 	Header ( $str );
 

@@ -5,7 +5,7 @@ if (VERSION_NAME!="RU_UNLIM") exit(0);
 SU_GameSessionWork::SessionStart();
 $common = DS_Common::CreateForCurrentDB(0);
 if (!$_SESSION['uid']) {
-    header("Location: /ds/index_login.php");
+    header("Location: ".GE_Login::GetPortalHome());
     exit;
 }
 

@@ -16,7 +16,7 @@ if(GameDown())
 if(!SU_GameSessionWork::SessionContinue())
 {
 	Header("Status: 302 Moved Temporaly");
-	Header("Location: index_login.php");
+	Header("Location: ".GE_Login::GetPortalHome());
 	exit();
 }
 

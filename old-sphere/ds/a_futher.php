@@ -2,24 +2,24 @@
 
   
 if ( !session_start() ) {
-	header ( "Location: index_login.php" );
+	header ( "Location: https://".$_SERVER['HTTP_HOST'] );
 	exit;
 }
   
  if ( !isset ( $_SESSION['uid'] ) ) {
-	header ( "Location: index_login.php" );
+	header ( "Location: https://".$_SERVER['HTTP_HOST'] );
 	exit;
 }
   
 if ( !isset ( $_POST['code'] ) ) {
 
-	header ( "Location: index_login.php" );
+	header ( "Location: https://".$_SERVER['HTTP_HOST'] );
 	exit;
 
 } else {
 
 	if ( !is_numeric ( $_POST['code'] ) ) {
-		header ( "Location: index_login.php" );
+		header ( "Location: https://".$_SERVER['HTTP_HOST'] );
 		exit;
 	}
 
@@ -41,7 +41,7 @@ if ( !isset ( $_POST['code'] ) ) {
 	$res = $common->getResultArray ( "is_code_valid", $sql, "", "", "" );
 	if ( !$res ) {
 		@session_destroy();
-		header ( "Location: index_login.php" );
+		header ( "Location: https://".$_SERVER['HTTP_HOST'] );
 		exit;
 	}
 

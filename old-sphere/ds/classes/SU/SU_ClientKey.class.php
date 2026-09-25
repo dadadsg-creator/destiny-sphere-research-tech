@@ -66,9 +66,9 @@ class SU_ClientKey
             
             if($sendToClient == true)
             {
-                die("loadkey=<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<key valid=\"0\" addr=\"index_login.php\"/>");
+                die("loadkey=<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<key valid=\"0\" addr=\"".GE_Login::GetPortalHome()."\"/>");
             } else {
-                Header("Location: index_login.php");
+                Header("Location: ".GE_Login::GetPortalHome());
                 exit;
             }
         }

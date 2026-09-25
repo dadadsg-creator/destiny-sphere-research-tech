@@ -3,7 +3,7 @@ require_once "Main.php";
 //require_once "IT.php";
 
 if ( !SU_GameSessionWork::SessionContinue() ) {
-    $str = "Location: index_login.php";
+    $str = "Location: ".GE_Login::GetPortalHome();
     Header ( $str );
     exit;
 }
@@ -12,7 +12,7 @@ SU_ClientKey::checkKey(false);
 SU_ClientKey::setKey(false);
 
 if ( empty ( $_SESSION["uid"] ) ) {
-    $str = "Location: index_login.php";
+    $str = "Location: ".GE_Login::GetPortalHome();
     Header ( $str );
     exit;
 }
