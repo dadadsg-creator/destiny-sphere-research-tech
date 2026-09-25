@@ -6,3 +6,11 @@ deny from 178.250.240.217
 #allow from 195.182.156.98
 #allow from 81.19.71.110
 #deny from all
+
+# CORS for the test client on alpha.destinysphere.ru (this origin only, with cookies)
+<IfModule mod_headers.c>
+    SetEnvIf Origin "^https?://alpha\.destinysphere\.ru$" CORS_ORIGIN=$0
+    Header always set Access-Control-Allow-Origin "%{CORS_ORIGIN}e" env=CORS_ORIGIN
+    Header always set Access-Control-Allow-Credentials "true" env=CORS_ORIGIN
+    Header always merge Vary "Origin"
+</IfModule>
