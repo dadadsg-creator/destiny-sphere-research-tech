@@ -80,13 +80,6 @@ class UA_GetCombArts extends UA_Action
 		$out = '<?xml version="1.0" encoding="utf-8"?>'."\n<arthint>";
 		foreach($outData as $cellID=>$cellData)
 		{
-			if(empty($cellData['production_type']))
-			{
-				$typeString = '';
-			}else{
-				$typeString = 'type="'.$cellData['production_type'].'"';
-			}
-				
 			if($cellData['id_building'] == 26)
 			{
 				$buldingType = "WAR_ARTS";
@@ -94,7 +87,10 @@ class UA_GetCombArts extends UA_Action
 				$buldingType = "COMBO";
 			}
 				
-			$out .= '<cell id="'.$cellID.'" total="'.$cellData['slots'].'" '.$typeString.' type="'.$buldingType.'">';
+			// Атрибут type должен быть один: тип производства здания, а если его нет, то COMBO/WAR_ARTS.
+			// Раньше выводились оба type сразу: Flash брал первый, а Ruffle на дубле атрибута обрывал разбор всего ответа.
+			$cellType = empty($cellData['production_type']) ? $buldingType : $cellData['production_type'];
+			$out .= '<cell id="'.$cellID.'" total="'.$cellData['slots'].'" type="'.$cellType.'">';
 			if(count($cellData['arts']) > 0)
 			{
 				foreach($cellData['arts'] as $k=>$artData)
