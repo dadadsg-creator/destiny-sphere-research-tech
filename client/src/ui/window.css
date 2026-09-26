@@ -270,6 +270,13 @@
 .ds-popup__btn:hover {
   background: #8888ff;
 }
+.ds-popup__btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.ds-popup__btn:disabled:hover {
+  background: #33447a;
+}
 
 /* Панель кнопок в ряд, не по центру, как у ds-popup__buttons, и с
    переносом строк — для окон, где кнопок больше, чем в обычном попапе

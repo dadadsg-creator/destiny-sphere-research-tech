@@ -10,6 +10,9 @@ import { BattleRenderer } from './battle/battleRenderer';
 import type { BattleRound } from './battle/battleData';
 import { WindowHost } from './ui/WindowHost';
 import { MainScreenHud } from './ui/hud/MainScreenHud';
+import { LoginScreen } from './ui/LoginScreen';
+import { GameSession } from './protocol/gameProtocol';
+import type { ComponentChildren } from 'preact';
 import { openWindow, pushPopup, popPopup } from './ui/windowStore';
 import { InfoPopup } from './ui/Popup';
 import { parseOutsideAlert } from './data/outsideAlertData';
@@ -1383,11 +1386,21 @@ const app = document.querySelector<HTMLDivElement>('#app')!;
 app.innerHTML = '';
 
 const params = new URLSearchParams(location.search);
-const wantsLive = params.has('live');
 const screen = params.get('screen'); // "battle"/"army" — тестовые экраны вместо карты
-const login = import.meta.env.VITE_TEST_LOGIN as string | undefined;
-const pass = import.meta.env.VITE_TEST_PASS as string | undefined;
-const uiid = import.meta.env.VITE_TEST_UIID as string | undefined;
+// Собранный клиент (alpha.destinysphere.ru) всегда в живом режиме; в dev —
+// только с ?live, без него показывается статичная демо-карта.
+const wantsLive = import.meta.env.PROD || params.has('live');
+// Автологин из .env.local — ТОЛЬКО в dev-сервере. В production-сборке
+// import.meta.env.DEV === false, ветка вырезается целиком, и логин/пароль
+// в бандл не попадают (проверять grep'ом по dist/ перед каждой выкладкой).
+// Без них — экран входа LoginScreen.tsx.
+const devAutoLogin = import.meta.env.DEV
+  ? {
+      login: import.meta.env.VITE_TEST_LOGIN as string | undefined,
+      pass: import.meta.env.VITE_TEST_PASS as string | undefined,
+      uiid: import.meta.env.VITE_TEST_UIID as string | undefined,
+    }
+  : null;
 
 // Главный экран (docs/main_screen.md §4) — карта на весь вьюпорт, без
 // прокрутки страницы. Для изолированных `?screen=`-тестов (окна поверх
@@ -1403,13 +1416,18 @@ if (wantsLive && !screen) {
 
 async function main() {
   const uiRoot = document.querySelector<HTMLDivElement>('#ui-root')!;
-  render(
-    <>
-      <WindowHost />
-      {wantsLive && !screen && <MainScreenHud />}
-    </>,
-    uiRoot,
-  );
+  // HUD главного экрана — только после входа в мир; до этого поверх
+  // пустой карты может висеть экран входа (overlay).
+  const renderUi = (showHud: boolean, overlay?: ComponentChildren) =>
+    render(
+      <>
+        <WindowHost />
+        {showHud && <MainScreenHud />}
+        {overlay}
+      </>,
+      uiRoot,
+    );
+  renderUi(false);
 
   if (screen === 'army' || screen === 'army-nopremium') {
     openWindow(
@@ -2129,7 +2147,7 @@ async function main() {
   // по образцу __renderDone/__renderError ниже.
   (window as any).__mapRenderer = renderer;
 
-  if (!wantsLive || !login || !pass || !uiid) {
+  if (!wantsLive) {
     await renderer.renderGround('G'.repeat(217));
     // 'bio' — тот же дефолт, что в оригинале при неизвестной расе (game.as:2354-2356).
     await renderer.renderBuildings(TEST_BUILDINGS, 'bio');
@@ -2137,7 +2155,20 @@ async function main() {
     return;
   }
 
-  await runLiveApp(renderer, login, pass, uiid);
+  let session: GameSession;
+  if (devAutoLogin?.login && devAutoLogin.pass && devAutoLogin.uiid) {
+    // baseUrl='' — через прокси Vite (vite.config.ts), см. runLiveApp().
+    session = new GameSession({ baseUrl: '' });
+    await session.login(devAutoLogin.login, devAutoLogin.pass);
+    await session.enterWorld(devAutoLogin.uiid);
+  } else {
+    session = await new Promise<GameSession>((resolve) => {
+      renderUi(false, <LoginScreen onEntered={resolve} />);
+    });
+  }
+  renderUi(true);
+
+  await runLiveApp(renderer, session);
   console.log('liveApp готов — карта отрисована, клики по ячейкам подключены.');
   (window as any).__renderDone = true;
 }

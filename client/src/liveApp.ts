@@ -9,7 +9,7 @@
  * каждого окна (см. main.tsx) — тот путь тестирования не трогается.
  */
 import { effect } from '@preact/signals';
-import { GameSession } from './protocol/gameProtocol';
+import type { GameSession } from './protocol/gameProtocol';
 import { handleResponse, openSysMessageLog, type DispatchContext } from './protocol/dispatch';
 import { tag } from './protocol/xmlBuilder';
 import type { MapRenderer } from './map/renderer';
@@ -19,11 +19,14 @@ import { hudActions } from './ui/hud/hudActionsStore';
 import { selectedBuilding } from './ui/hud/selectedBuildingStore';
 import { loadAdviceHintNumber, saveAdviceHintNumber } from './settings/adviceData';
 
-export async function runLiveApp(renderer: MapRenderer, login: string, pass: string, uiid: string): Promise<void> {
-  // baseUrl='' — запросы идут на текущий origin (localhost), прокси Vite
-  // перенаправляет /ds/* на https://destinysphere.ru server-side (иначе
-  // браузерный fetch() упрётся в CORS, см. vite.config.ts).
-  const session = new GameSession({ baseUrl: '' });
+/**
+ * `session` — уже залогиненная сессия, в которой выполнен enterWorld()
+ * (см. LoginScreen.tsx / main.tsx). Создаётся с baseUrl='' — запросы идут
+ * на текущий origin: локально это прокси Vite (vite.config.ts), на
+ * alpha.destinysphere.ru — тот же хост, где /alpha/ds -> ../ds отдаёт
+ * настоящий игровой ds/ (браузерный fetch() на чужой домен упёрся бы в CORS).
+ */
+export async function runLiveApp(renderer: MapRenderer, session: GameSession): Promise<void> {
 
   // Безопасная зона карты (docs/main_screen.md §8) — держать синхронно с
   // фактическими размерами панелей в ui/hud/hud.css (resbar 48 + nav 46
@@ -124,8 +127,6 @@ export async function runLiveApp(renderer: MapRenderer, login: string, pass: str
     });
   };
 
-  await session.login(login, pass);
-  await session.enterWorld(uiid);
   ctx.race = raceFromNumber(session.getRace());
   const marks = await session.sendCommand('<load locations="3"/>');
   handleResponse(marks, ctx);

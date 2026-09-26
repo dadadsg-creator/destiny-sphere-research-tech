@@ -1,0 +1,71 @@
+/* Экран входа живого режима (LoginScreen.tsx) — поверх пустой карты,
+   тот же визуальный язык, что и у остальных окон (window.css). */
+.ds-login {
+  width: 420px;
+}
+
+.ds-login__form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ds-login__field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ds-login__field span {
+  width: 60px;
+  color: #93a2c7;
+}
+.ds-login__field input {
+  flex: 1;
+  padding: 5px 8px;
+}
+
+.ds-login__worlds {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.ds-login__world {
+  background: #0e1a38;
+  color: #e8ecf7;
+  border: 1px solid #3a4d7a;
+  border-radius: 4px;
+  padding: 8px 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: inherit;
+  text-align: center;
+}
+.ds-login__world:hover:not(:disabled) {
+  border-color: #8888ff;
+  background: #16264d;
+}
+.ds-login__world--last {
+  border-color: #2e86de;
+}
+.ds-login__world:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.ds-login__status {
+  margin-top: 10px;
+  text-align: center;
+  color: #93a2c7;
+}
+
+.ds-login__error {
+  margin-top: 10px;
+  padding: 6px 8px;
+  border: 1px solid #7a3a3a;
+  border-radius: 3px;
+  background: #2a0e14;
+  color: #ffb4b4;
+  white-space: pre-wrap;
+}

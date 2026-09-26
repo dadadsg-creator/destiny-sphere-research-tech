@@ -58,6 +58,30 @@ export class SimpleCookieJar implements CookieJar {
 
 export class GameProtocolError extends Error {}
 
+/** Мир, доступный игроку для входа (карточка на странице index_start.php). */
+export interface WorldEntry {
+  /** `uiid` для enterWorld(), например "1236_6_2". */
+  uiid: string;
+  /** Название мира, например "Сфера Змееносца". */
+  name: string;
+}
+
+/**
+ * Список миров со страницы выбора мира. Разметка —
+ * ds/templates/classic/index_start_new.tpl:283-285: у каждой доступной
+ * карточки `onclick="dsSelectWorldCard('dsEntryWorldGrid','dsEntryUiid','<uiid>',this)"`,
+ * название — в следующем за картинкой `<div>`. Закрытые миры
+ * (`$WORLDS_DOWN`) рисуются без onclick и без uiid — в список не попадают.
+ */
+export function parseWorldList(html: string): WorldEntry[] {
+  const worlds: WorldEntry[] = [];
+  const re = /dsSelectWorldCard\([^)]*'([^']+)',\s*this\)[\s\S]*?<div[^>]*>([^<]*)<\/div>/g;
+  for (const m of html.matchAll(re)) {
+    worlds.push({ uiid: m[1], name: m[2].trim() });
+  }
+  return worlds;
+}
+
 export class GameSession {
   private ck: string | null = null;
   private race: number | null = null;
@@ -98,7 +122,7 @@ export class GameSession {
    * (возвращает форму логина 200 OK) — `ck` в `res.url` не найдётся,
    * это и есть сигнал ошибки.
    */
-  async login(login: string, password: string): Promise<void> {
+  async login(login: string, password: string): Promise<WorldEntry[]> {
     const body = new URLSearchParams({ login, pass: password, enter: 'Login' });
     const res = await this.rawPost('/ds/index_login.php', body);
     const target = new URL(res.url);
@@ -108,6 +132,11 @@ export class GameSession {
     }
     this.ck = ck;
     this.seedSessionCookieFromUrl(target);
+    // Тело ответа — уже страница выбора мира (index_start.php, куда вёл
+    // редирект). Она в windows-1251, а Response.text() всегда декодирует
+    // как UTF-8 — поэтому декодируем байты вручную.
+    const html = new TextDecoder('windows-1251').decode(await res.arrayBuffer());
+    return parseWorldList(html);
   }
 
   /**
