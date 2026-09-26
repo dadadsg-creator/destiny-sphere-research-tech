@@ -205,6 +205,15 @@ export class MapRenderer {
    * импорт).
    */
   private safeInsets = { top: 0, bottom: 0, left: 0, right: 0 };
+  /**
+   * На сколько (в пикселях мира карты) самая высокая постройка выступает
+   * над верхним краем соты — спрайт стоит на нижней вершине ячейки
+   * (anchor 0.5/1) и у высоких зданий верхнего ряда уходит выше строки 0.
+   * fitToViewport() резервирует под это место сверху, иначе крыши
+   * верхнего ряда упираются в верхнюю панель HUD. Считается по факту в
+   * renderBuildings(), поэтому зависит от конкретной колонии.
+   */
+  private buildingOverhang = 0;
 
   setSafeAreaInsets(insets: Partial<{ top: number; bottom: number; left: number; right: number }>): void {
     this.safeInsets = { ...this.safeInsets, ...insets };
@@ -598,10 +607,12 @@ export class MapRenderer {
     // 0.97, не 0.92 — небольшой отступ "для воздуха" вместо ощутимого
     // (владелец: "увеличить примерно на 12-15%"), точный зазор снизу
     // (20px) уже заложен прямо в safeInsets.bottom, не в этом множителе.
-    const scale = Math.min((availW * 0.97) / size.width, (availH * 0.97) / size.height);
+    const overhang = this.buildingOverhang;
+    const contentH = size.height + overhang;
+    const scale = Math.min((availW * 0.97) / size.width, (availH * 0.97) / contentH);
     this.worldLayer.scale.set(scale);
     this.worldLayer.x = left + (availW - size.width * scale) / 2;
-    this.worldLayer.y = top + (availH - size.height * scale) / 2;
+    this.worldLayer.y = top + (availH - contentH * scale) / 2 + overhang * scale;
   }
 
   /**
@@ -655,6 +666,7 @@ export class MapRenderer {
     this.buildRecords = new Map(records.map((r) => [r.num, r]));
 
     const cells = buildHexGrid();
+    let minSpriteTop = 0;
     const toLoad = new Map<string, string>();
     let needsUnactiveIcon = false;
     for (const record of records) {
@@ -698,6 +710,7 @@ export class MapRenderer {
       const anchor = buildingAnchor(cell);
       sprite.x = anchor.x;
       sprite.y = anchor.y;
+      minSpriteTop = Math.min(minSpriteTop, anchor.y - sprite.height);
       this.buildLayer.addChild(sprite);
 
       if (record.status === '4') {
@@ -707,6 +720,12 @@ export class MapRenderer {
         badge.y = anchor.y;
         this.buildLayer.addChild(badge);
       }
+    }
+
+    const overhang = Math.ceil(-minSpriteTop);
+    if (overhang !== this.buildingOverhang) {
+      this.buildingOverhang = overhang;
+      this.fitToViewport();
     }
   }
 
