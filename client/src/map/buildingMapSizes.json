@@ -1,0 +1,910 @@
+{
+"bio/ALLIANCE_CONNECTOR": [
+35,
+93.33
+],
+"bio/ARCHEOLOGICAL_INSTITUTE": [
+40,
+35.3
+],
+"bio/ARCHEOLOGICAL_OUTPOST": [
+31,
+22.91
+],
+"bio/ARTEFACT_TOWER": [
+32,
+71.65
+],
+"bio/CENTRAL_GATE": [
+112,
+111.32
+],
+"bio/CENTRAL_GATE_WRECK": [
+48,
+57.3
+],
+"bio/CITY": [
+40,
+46.0
+],
+"bio/CLONE_FARM": [
+39,
+42.31
+],
+"bio/CLOUD_ENDERS_TEMPLE": [
+46,
+56.06
+],
+"bio/COLONIZATION_CENTER": [
+35,
+50.72
+],
+"bio/CONSTRUCTION_FACTORY": [
+45,
+40.29
+],
+"bio/CRYSTAL_WEAVER": [
+25,
+67.07
+],
+"bio/ENERGY_COLLECTOR": [
+23,
+44.4
+],
+"bio/FARM": [
+47,
+36.43
+],
+"bio/GONDOLA_TRANSPORTER": [
+44,
+64.45
+],
+"bio/HEAVY_WEAPON_MANUFACTURE": [
+43,
+53.93
+],
+"bio/HEAVY_WEAPON_MANUFACTURE2L": [
+50,
+52.32
+],
+"bio/HUGE_KADERIUM_FORGE_LIENSU": [
+51,
+46.54
+],
+"bio/HUGE_NANO_CRYSTALLIZER_LIENSU": [
+36,
+68.26
+],
+"bio/HUGE_PRODIUM_COLLECTOR": [
+35,
+37.83
+],
+"bio/HYDRO_FARM": [
+42,
+23.39
+],
+"bio/INTERRING_TRADE_CONNECTOR": [
+41,
+55.56
+],
+"bio/KADERIUM_FORGE": [
+33,
+23.83
+],
+"bio/KADERIUM_PRESS": [
+30,
+45.87
+],
+"bio/LARGE_KADERIUM_FORGE": [
+44,
+46.42
+],
+"bio/LARGE_NANO_CRYSTALLIZER": [
+27,
+46.99
+],
+"bio/LARGE_PRODIUM_COLLECTOR": [
+31,
+40.04
+],
+"bio/LIGHT_WEAPON_MANUFACTURE": [
+32,
+30.26
+],
+"bio/LIGHT_WEAPON_MANUFACTURE2L": [
+39,
+36.1
+],
+"bio/LOCAL_TRADE_CONNECTOR": [
+39,
+63.06
+],
+"bio/MEDIUM_FOOD_DUMP": [
+33,
+53.4
+],
+"bio/MEDIUM_FOOD_SILO": [
+42,
+26.79
+],
+"bio/MEDIUM_KADERIUM_DUMP": [
+37,
+25.25
+],
+"bio/MEDIUM_KADERIUM_SILO": [
+34,
+24.03
+],
+"bio/MEDIUM_NANO_DUMP": [
+40,
+46.62
+],
+"bio/MEDIUM_NANO_SILO": [
+34,
+17.87
+],
+"bio/MEDIUM_PRODIUM_DUMP": [
+21,
+30.39
+],
+"bio/MEDIUM_PRODIUM_SILO": [
+38,
+22.74
+],
+"bio/MEDIUM_STASIS_DUMP": [
+30,
+48.23
+],
+"bio/MEDIUM_STASIS_SILO": [
+38,
+24.33
+],
+"bio/MESH_BOILER": [
+40,
+28.03
+],
+"bio/MILITARY_BASE": [
+42,
+44.46
+],
+"bio/MIND_FACTORY": [
+38,
+39.9
+],
+"bio/NANO_CRYSTALLIZER": [
+38,
+55.77
+],
+"bio/PLANTATION": [
+41,
+51.4
+],
+"bio/PRODIUM_COLLECTOR": [
+43,
+52.6
+],
+"bio/PROTECTIVE_FIELD_GENERATOR": [
+42,
+38.91
+],
+"bio/RESEARCH_CENTER": [
+46,
+36.18
+],
+"bio/RESIDENTIAL_BUILDING": [
+33,
+26.91
+],
+"bio/RING_GATE": [
+50,
+58.29
+],
+"bio/RING_TRADE_CONNECTOR": [
+43,
+26.26
+],
+"bio/RUSHERS_TEMPLE": [
+48,
+59.85
+],
+"bio/SAIL_FOREST": [
+43,
+60.49
+],
+"bio/SAIL_TRAP": [
+27,
+42.74
+],
+"bio/SECRET_SERVICE_CENTER": [
+36,
+62.78
+],
+"bio/SHELTER": [
+48,
+32.82
+],
+"bio/SHIELD_BUILD": [
+31,
+32.55
+],
+"bio/SMALL_FOOD_DUMP": [
+20,
+26.88
+],
+"bio/SMALL_FOOD_SILO": [
+36,
+26.16
+],
+"bio/SMALL_KADERIUM_DUMP": [
+30,
+26.32
+],
+"bio/SMALL_KADERIUM_SILO": [
+29,
+22.9
+],
+"bio/SMALL_NANO_DUMP": [
+38,
+48.86
+],
+"bio/SMALL_NANO_SILO": [
+29,
+22.41
+],
+"bio/SMALL_PRODIUM_DUMP": [
+25,
+38.61
+],
+"bio/SMALL_PRODIUM_SILO": [
+32,
+30.1
+],
+"bio/SMALL_STASIS_DUMP": [
+29,
+53.06
+],
+"bio/SMALL_STASIS_SILO": [
+33,
+23.87
+],
+"bio/SOURCE": [
+39,
+38.69
+],
+"bio/SPYING_CENTER": [
+35,
+37.84
+],
+"bio/STROIKA": [
+36,
+28
+],
+"bio/TERRAMORPH_TOWER": [
+50,
+64.09
+],
+"bio/TRAINING_CAMP": [
+51,
+42.43
+],
+"bio/TRAINING_CAMP2L": [
+50,
+37.75
+],
+"bio/TUNNEL_RIVER_SCANNER": [
+35,
+67.6
+],
+"bio/VILLAGE": [
+38,
+27.64
+],
+"bio/VOCATION_BUILD": [
+30,
+46.21
+],
+"bio/WELL_LADLER": [
+37,
+46.34
+],
+"psi/ALLIANCE_CONNECTOR": [
+36,
+68.7
+],
+"psi/ARCHEOLOGICAL_INSTITUTE": [
+32,
+43.11
+],
+"psi/ARCHEOLOGICAL_OUTPOST": [
+27,
+29.77
+],
+"psi/ARTEFACT_TOWER": [
+25,
+93.8
+],
+"psi/CENTRAL_GATE": [
+161,
+160.03
+],
+"psi/CENTRAL_GATE_WRECK": [
+48,
+54.7
+],
+"psi/CITY": [
+36,
+47.56
+],
+"psi/CLOUD_ENDERS_TEMPLE": [
+45,
+69.6
+],
+"psi/COLONIZATION_CENTER": [
+35,
+66.79
+],
+"psi/CONSTRUCTION_FACTORY": [
+46,
+40.93
+],
+"psi/CRYSTAL_WEAVER": [
+28,
+47.73
+],
+"psi/ENERGY_COLLECTOR": [
+30,
+29.82
+],
+"psi/FARM": [
+41,
+30.63
+],
+"psi/GONDOLA_TRANSPORTER": [
+41,
+41.67
+],
+"psi/HEAVY_WEAPON_MANUFACTURE": [
+49,
+72.59
+],
+"psi/HEAVY_WEAPON_MANUFACTURE2P": [
+41,
+63.93
+],
+"psi/HUGE_KADERIUM_FORGE": [
+43,
+47.11
+],
+"psi/HUGE_NANO_CRYSTALLIZER": [
+25,
+64.3
+],
+"psi/HYDRO_FARM": [
+43,
+21.54
+],
+"psi/INTERRING_TRADE_CONNECTOR": [
+34,
+73.82
+],
+"psi/KADERIUM_FORGE": [
+21,
+33.74
+],
+"psi/KADERIUM_PRESS": [
+35,
+45.93
+],
+"psi/LARGE_KADERIUM_FORGE": [
+35,
+47.59
+],
+"psi/LARGE_NANO_CRYSTALLIZER": [
+25,
+57.14
+],
+"psi/LARGE_PRODIUM_COLLECTOR": [
+35,
+48.73
+],
+"psi/LIGHT_WEAPON_MANUFACTURE": [
+38,
+43.72
+],
+"psi/LIGHT_WEAPON_MANUFACTURE2P": [
+32,
+44.98
+],
+"psi/LOCAL_TRADE_CONNECTOR": [
+36,
+53.68
+],
+"psi/MEDIUM_FOOD_DUMP": [
+39,
+31.33
+],
+"psi/MEDIUM_FOOD_SILO": [
+43,
+26.07
+],
+"psi/MEDIUM_KADERIUM_DUMP": [
+39,
+29.94
+],
+"psi/MEDIUM_KADERIUM_SILO": [
+37,
+23.09
+],
+"psi/MEDIUM_NANO_DUMP": [
+27,
+39.34
+],
+"psi/MEDIUM_NANO_SILO": [
+37,
+23.31
+],
+"psi/MEDIUM_PRODIUM_DUMP": [
+41,
+32.02
+],
+"psi/MEDIUM_PRODIUM_SILO": [
+41,
+20.42
+],
+"psi/MEDIUM_STASIS_DUMP": [
+38,
+45.62
+],
+"psi/MEDIUM_STASIS_SILO": [
+35,
+24.9
+],
+"psi/MESH_BOILER": [
+38,
+25.36
+],
+"psi/MILITARY_BASE": [
+42,
+45.31
+],
+"psi/MIND_FACTORY": [
+26,
+41.37
+],
+"psi/NANO_CRYSTALLIZER": [
+25,
+59.29
+],
+"psi/PLANTATION": [
+38,
+36.12
+],
+"psi/PRODIUM_COLLECTOR": [
+29,
+35.56
+],
+"psi/PROTECTIVE_FIELD_GENERATOR": [
+42,
+40.75
+],
+"psi/RESEARCH_CENTER": [
+41,
+36.87
+],
+"psi/RESIDENTIAL_BUILDING": [
+34,
+36.94
+],
+"psi/RING_GATE": [
+50,
+56.98
+],
+"psi/RING_TRADE_CONNECTOR": [
+33,
+29.09
+],
+"psi/RUSHERS_TEMPLE": [
+45,
+46.29
+],
+"psi/SAIL_FOREST": [
+45,
+52.24
+],
+"psi/SAIL_TRAP": [
+37,
+44.29
+],
+"psi/SECRET_SERVICE_CENTER": [
+32,
+44.31
+],
+"psi/SHELTER": [
+50,
+40.02
+],
+"psi/SHIELD_BUILD": [
+39,
+44.86
+],
+"psi/SMALL_FOOD_DUMP": [
+34,
+28.51
+],
+"psi/SMALL_FOOD_SILO": [
+36,
+28.66
+],
+"psi/SMALL_KADERIUM_DUMP": [
+30,
+29.05
+],
+"psi/SMALL_KADERIUM_SILO": [
+32,
+24.83
+],
+"psi/SMALL_NANO_DUMP": [
+26,
+43.39
+],
+"psi/SMALL_NANO_SILO": [
+31,
+24.8
+],
+"psi/SMALL_PRODIUM_DUMP": [
+38,
+36.19
+],
+"psi/SMALL_PRODIUM_SILO": [
+35,
+25.83
+],
+"psi/SMALL_STASIS_DUMP": [
+28,
+43.69
+],
+"psi/SMALL_STASIS_SILO": [
+30,
+22.28
+],
+"psi/SOURCE": [
+39,
+38.54
+],
+"psi/SPYING_CENTER": [
+33,
+32.22
+],
+"psi/STROIKA": [
+31,
+42
+],
+"psi/TERRAMORPH_TOWER": [
+52,
+78.15
+],
+"psi/TRAINING_CAMP": [
+46,
+35.82
+],
+"psi/TRAINING_CAMP2P": [
+57,
+39.54
+],
+"psi/TUNNEL_RIVER_SCANNER": [
+35,
+57.43
+],
+"psi/VILLAGE": [
+44,
+38.0
+],
+"psi/VOCATION_BUILD": [
+35,
+63.59
+],
+"psi/WELL_LADLER": [
+41,
+47.07
+],
+"tech/ALLIANCE_CONNECTOR": [
+38,
+79.34
+],
+"tech/ARCHEOLOGICAL_INSTITUTE": [
+41,
+33.19
+],
+"tech/ARCHEOLOGICAL_OUTPOST": [
+32,
+23.98
+],
+"tech/ARTEFACT_TOWER": [
+26,
+70.99
+],
+"tech/CENTRAL_GATE": [
+134,
+131.84
+],
+"tech/CENTRAL_GATE_WRECK": [
+48,
+53.2
+],
+"tech/CITY": [
+39,
+48.13
+],
+"tech/CLOUD_ENDERS_TEMPLE": [
+42,
+71.19
+],
+"tech/COLONIZATION_CENTER": [
+38,
+86.19
+],
+"tech/CONSTRUCTION_FACTORY": [
+45,
+38.6
+],
+"tech/CRYSTAL_WEAVER": [
+41,
+60.01
+],
+"tech/ENERGY_COLLECTOR": [
+27,
+26.51
+],
+"tech/FARM": [
+43,
+25.68
+],
+"tech/GONDOLA_TRANSPORTER": [
+43,
+64.64
+],
+"tech/HEAVY_WEAPON_MANUFACTURE": [
+45,
+55.83
+],
+"tech/HEAVY_WEAPON_MANUFACTURE2V": [
+47,
+37.21
+],
+"tech/HUGE_KADERIUM_FORGE": [
+50,
+45.22
+],
+"tech/HUGE_NANO_CRYSTALLIZER": [
+32,
+67.49
+],
+"tech/HYDRO_FARM": [
+41,
+21.07
+],
+"tech/INTERRING_TRADE_CONNECTOR": [
+39,
+64.25
+],
+"tech/KADERIUM_FORGE": [
+34,
+38.94
+],
+"tech/KADERIUM_PRESS": [
+35,
+37.41
+],
+"tech/LARGE_KADERIUM_FORGE": [
+45,
+48.67
+],
+"tech/LARGE_NANO_CRYSTALLIZER": [
+33,
+70.98
+],
+"tech/LARGE_PRODIUM_COLLECTOR": [
+40,
+53.73
+],
+"tech/LIGHT_WEAPON_MANUFACTURE": [
+42,
+60.1
+],
+"tech/LIGHT_WEAPON_MANUFACTURE2V": [
+35,
+42.1
+],
+"tech/LOCAL_TRADE_CONNECTOR": [
+42,
+38.52
+],
+"tech/MEDIUM_FOOD_DUMP": [
+48,
+27.66
+],
+"tech/MEDIUM_FOOD_SILO": [
+35,
+16.16
+],
+"tech/MEDIUM_KADERIUM_DUMP": [
+35,
+23.84
+],
+"tech/MEDIUM_KADERIUM_SILO": [
+37,
+20.47
+],
+"tech/MEDIUM_NANO_DUMP": [
+28,
+39.03
+],
+"tech/MEDIUM_NANO_SILO": [
+41,
+20.58
+],
+"tech/MEDIUM_PRODIUM_DUMP": [
+36,
+38.27
+],
+"tech/MEDIUM_PRODIUM_SILO": [
+34,
+18.47
+],
+"tech/MEDIUM_STASIS_DUMP": [
+44,
+29.83
+],
+"tech/MEDIUM_STASIS_SILO": [
+37,
+24.23
+],
+"tech/MESH_BOILER": [
+36,
+49.91
+],
+"tech/MILITARY_BASE": [
+43,
+44.31
+],
+"tech/MIND_FACTORY": [
+38,
+34.77
+],
+"tech/NANO_CRYSTALLIZER": [
+38,
+58.34
+],
+"tech/PLANTATION": [
+42,
+32.29
+],
+"tech/PRODIUM_COLLECTOR": [
+48,
+56.92
+],
+"tech/PROTECTIVE_FIELD_GENERATOR": [
+42,
+37.08
+],
+"tech/RESEARCH_CENTER": [
+41,
+43.95
+],
+"tech/RESIDENTIAL_BUILDING": [
+47,
+39.81
+],
+"tech/RING_GATE": [
+50,
+47.22
+],
+"tech/RING_TRADE_CONNECTOR": [
+33,
+36.3
+],
+"tech/RUSHERS_TEMPLE": [
+55,
+59.99
+],
+"tech/SAIL_FOREST": [
+44,
+48.09
+],
+"tech/SAIL_TRAP": [
+33,
+51.06
+],
+"tech/SECRET_SERVICE_CENTER": [
+48,
+70.47
+],
+"tech/SHELTER": [
+50,
+28.95
+],
+"tech/SHIELD_BUILD": [
+31,
+33.89
+],
+"tech/SMALL_FOOD_DUMP": [
+27,
+20.46
+],
+"tech/SMALL_FOOD_SILO": [
+30,
+22.44
+],
+"tech/SMALL_KADERIUM_DUMP": [
+31,
+20.69
+],
+"tech/SMALL_KADERIUM_SILO": [
+32,
+26.42
+],
+"tech/SMALL_NANO_DUMP": [
+30,
+44.34
+],
+"tech/SMALL_NANO_SILO": [
+34,
+23.45
+],
+"tech/SMALL_PRODIUM_DUMP": [
+28,
+34.0
+],
+"tech/SMALL_PRODIUM_SILO": [
+29,
+27.56
+],
+"tech/SMALL_STASIS_DUMP": [
+39,
+45.3
+],
+"tech/SMALL_STASIS_SILO": [
+32,
+23.08
+],
+"tech/SOURCE": [
+39,
+34.08
+],
+"tech/SPYING_CENTER": [
+32,
+23.91
+],
+"tech/STROIKA": [
+40,
+44
+],
+"tech/TERRAMORPH_TOWER": [
+39,
+46.99
+],
+"tech/TRAINING_CAMP": [
+54,
+44.4
+],
+"tech/TRAINING_CAMP2V": [
+55,
+31.96
+],
+"tech/TUNNEL_RIVER_SCANNER": [
+41,
+43.04
+],
+"tech/VILLAGE": [
+47,
+27.96
+],
+"tech/VOCATION_BUILD": [
+25,
+42.18
+],
+"tech/WELL_LADLER": [
+39,
+34.99
+]
+}

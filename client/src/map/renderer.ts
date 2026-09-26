@@ -7,7 +7,11 @@
 import { Application, Container, Sprite, Assets, Graphics, Text } from 'pixi.js';
 import { buildHexGrid, buildingAnchor, mapPixelSize, hexPolygonPoints, CELL_WEIGHT_H, CELL_WEIGHT_V } from './hexGrid';
 import { parseGroundString, GROUND_LINKAGE } from './groundTypes';
-import { BUILDING_NAMES, buildingAssetKey, buildingAssetPath, effectiveBuildingRace, type Race } from './buildingTypes';
+import { BUILDING_NAMES, buildingAssetKey, buildingMapAssetPath, effectiveBuildingRace, type Race } from './buildingTypes';
+// Размер постройки на карте в пикселях мира (как у оригинального
+// Flash-спрайта) — сами текстуры buildings-map/ хранятся с запасом
+// разрешения, см. scripts/make-map-sprites.py.
+import buildingMapSizes from './buildingMapSizes.json';
 import type { BuildRecord } from './buildData';
 
 /**
@@ -614,7 +618,7 @@ export class MapRenderer {
    * `ctx.race` текущего пользователя, потому что живьём проверялась
    * только своя сота, см. buildingTypes.ts). Один и тот же
    * `buildingname` рисуется СОВЕРШЕННО разной графикой на разных расах
-   * (`buildingAssetPath()`) — алиас текстуры тоже расо-специфичный,
+   * (`buildingMapAssetPath()`) — алиас текстуры тоже расо-специфичный,
    * иначе кэш PixiJS перепутает "RESIDENTIAL_BUILDING" разных рас между
    * сотами/перезагрузками.
    *
@@ -667,7 +671,7 @@ export class MapRenderer {
       if (buildingname === 'NO_BUILDING') continue;
       const key = buildingAssetKey(buildingname);
       const alias = `${effectiveBuildingRace(buildingname, race)}/${key}`;
-      toLoad.set(alias, buildingAssetPath(buildingname, race));
+      toLoad.set(alias, buildingMapAssetPath(buildingname, race));
       if (record.status === '4') needsUnactiveIcon = true;
     }
     if (needsUnactiveIcon) toLoad.set('UNACTIVE', '/assets/buildings/UNACTIVE.png');
@@ -686,6 +690,11 @@ export class MapRenderer {
       const alias = `${effectiveBuildingRace(buildingname, race)}/${key}`;
       const sprite = Sprite.from(alias);
       sprite.anchor.set(0.5, 1);
+      const mapSize = (buildingMapSizes as Record<string, number[]>)[alias];
+      if (mapSize) {
+        sprite.width = mapSize[0];
+        sprite.height = mapSize[1];
+      }
       const anchor = buildingAnchor(cell);
       sprite.x = anchor.x;
       sprite.y = anchor.y;

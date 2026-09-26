@@ -167,6 +167,17 @@ export function effectiveBuildingRace(buildingname: string, race: Race): Race {
   return RACE_EXCLUSIVE_BUILDING[buildingAssetKey(buildingname)] ?? race;
 }
 
+/**
+ * Картинка постройки для КАРТЫ колонии — уменьшенная копия перерисованного
+ * арта (public/assets/buildings-map/<race>/<NAME>.png, генерирует
+ * scripts/make-map-sprites.py). Крупная картинка buildingAssetPath() —
+ * для панели здания и меню стройки.
+ */
+export function buildingMapAssetPath(buildingname: string, race: Race): string {
+  const key = buildingAssetKey(buildingname);
+  return `/assets/buildings-map/${effectiveBuildingRace(buildingname, race)}/${key}.png`;
+}
+
 /** Путь к текстуре постройки с учётом расы владельца — client/public/assets/buildings/<tech|bio|psi>/<NAME>.png. */
 export function buildingAssetPath(buildingname: string, race: Race): string {
   const key = buildingAssetKey(buildingname);
