@@ -4,7 +4,7 @@
  * Координаты — портированы формула-в-формулу из sota.as, см. hexGrid.ts
  * и docs/client-map-and-grid.md (основной репозиторий документации).
  */
-import { Application, Container, Sprite, Assets, Graphics, Text } from 'pixi.js';
+import { Application, Container, Sprite, TilingSprite, Assets, Graphics, Text } from 'pixi.js';
 import { buildHexGrid, buildingAnchor, mapPixelSize, hexPolygonPoints, CELL_WEIGHT_H, CELL_WEIGHT_V } from './hexGrid';
 import { parseGroundString, GROUND_LINKAGE } from './groundTypes';
 import { BUILDING_NAMES, buildingAssetKey, buildingMapAssetPath, effectiveBuildingRace, type Race } from './buildingTypes';
@@ -125,6 +125,24 @@ const NEIGHBOR_OFFSETS: { dx: number; dy: number }[] = [
   { dx: -CELL_WEIGHT_H, dy: -1.5 * CELL_WEIGHT_V },
 ];
 
+/**
+ * Тайл грунта одной ячейки. В оригинале (`sota.as:410-422`) каждый тип
+ * грунта — ОДИН большой клип (840×500, больше всей соты ~816×338) в
+ * мировых координатах, замаскированный объединением всех ячеек этого
+ * типа: ячейка показывает свой фрагмент текстуры 1:1, а не всю PNG,
+ * ужатую в 48×26 (так было до 2026-09-26 — фактура превращалась в
+ * размазанную миниатюру, все ячейки одного типа — одинаковые клоны).
+ * TilingSprite со сдвигом `-x,-y` даёт тот же фрагмент; за пределами
+ * 840×500 (окружение соседних сот) текстура просто повторяется.
+ */
+function groundTile(alias: string, x: number, y: number): TilingSprite {
+  const sprite = new TilingSprite({ texture: Assets.get(alias), width: 2 * CELL_WEIGHT_H, height: 2 * CELL_WEIGHT_V });
+  sprite.x = x;
+  sprite.y = y;
+  sprite.tilePosition.set(-x, -y);
+  return sprite;
+}
+
 export class MapRenderer {
   readonly app: Application;
   readonly worldLayer: Container;
@@ -164,7 +182,7 @@ export class MapRenderer {
    * напрямую и молча кликали не туда. Этот массив — единственный надёжный
    * способ найти "экранную позицию ячейки num" снаружи рендерера.
    */
-  readonly groundSprites: Sprite[] = [];
+  readonly groundSprites: TilingSprite[] = [];
   /**
    * Последний известный `BuildRecord` по `num` ячейки — снапшот на
    * момент последнего `renderBuildings()`. Нужен панели выбранного
@@ -471,7 +489,7 @@ export class MapRenderer {
     const container = new Container();
 
     // Настоящие текстуры грунта — тот же приём, что и у основной сетки
-    // (`renderGround()`): Sprite + гекс-маска на ячейку. БЕЗ обводки
+    // (`renderGround()`): `groundTile()` + гекс-маска на ячейку. БЕЗ обводки
     // здесь — контур ячейки сам по себе не граница, см. ниже. Assets.load
     // с уже загруженными алиасами — дёшево (кэш PixiJS), не грузит
     // повторно при переключении между HOME/CENTRAL/NEUTRAL.
@@ -490,11 +508,7 @@ export class MapRenderer {
       mask.y = cell.y;
       container.addChild(mask);
 
-      const sprite = Sprite.from(cell.ground);
-      sprite.x = cell.x;
-      sprite.y = cell.y;
-      sprite.width = 48;
-      sprite.height = 26;
+      const sprite = groundTile(cell.ground, cell.x, cell.y);
       sprite.mask = mask;
       container.addChild(sprite);
     }
@@ -562,11 +576,7 @@ export class MapRenderer {
     const cells = buildHexGrid();
     for (const cell of cells) {
       const groundName = names[cell.num];
-      const sprite = Sprite.from(groundName);
-      sprite.x = cell.x;
-      sprite.y = cell.y;
-      sprite.width = 48;
-      sprite.height = 26;
+      const sprite = groundTile(groundName, cell.x, cell.y);
       sprite.eventMode = 'static';
       sprite.cursor = 'pointer';
       const num = cell.num;
