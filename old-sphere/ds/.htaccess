@@ -1,5 +1,5 @@
 php_flag register_globals off
-ErrorDocument 403 http://dsga.me/?p=error_403
+ErrorDocument 403 http://destinysphere.ru/?p=error_403
 php_value default_charset "WINDOWS-1251"
 #dsbot.ru
 deny from 178.250.240.217 

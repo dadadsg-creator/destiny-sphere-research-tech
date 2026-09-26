@@ -341,7 +341,7 @@
                                       <tr>
                                       <td>
                                       {$lang.REFLINK_ANONS}
-http://dsga.me/ds/reg_wizard.php?ur={$uid}<br>
+http://destinysphere.ru/ds/reg_wizard.php?ur={$uid}<br>
 {$lang.REFLINK_MOREINFO} <a href="http://ds.rambler.ru/?p=invite_friends">{$lang.REFLINK_REFTEXT}</a>.
                                       </td>
                                       </tr>

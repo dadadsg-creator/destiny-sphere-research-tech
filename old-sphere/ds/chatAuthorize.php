@@ -38,7 +38,7 @@ if (constant('VERSION_NAME') != $version) {
             $url = 'http://ds-game.ru/ds/chatAuthorize.php';
             break;
         case 'RU_CLASSIC':
-            $url = 'http://dsga.me/ds/chatAuthorize.php';
+            $url = 'http://destinysphere.ru/ds/chatAuthorize.php';
             break;
         case 'LITHUANIA':
             $url = 'http://lt.destinysphere.ru/ds/chatAuthorize.php';

@@ -20,7 +20,7 @@ if (isset($_REQUEST['world'])) {
     $dbID = (int) $tokens[0];
     $worldID = (int) $tokens[1];
 
-    $newUserID = file_get_contents("http://dsga.me/ds/copycomb/gate.php?act=getUserID&username={$_REQUEST['username']}&password={$_REQUEST['password']}");
+    $newUserID = file_get_contents("http://destinysphere.ru/ds/copycomb/gate.php?act=getUserID&username={$_REQUEST['username']}&password={$_REQUEST['password']}");
     if (!$newUserID) {
         echo 'Неверный логин/пароль';
         show_copy_form($common);
@@ -72,7 +72,7 @@ if (isset($_REQUEST['world'])) {
         );
     }
     $newUIID = SI_ControlRestoreUserInstance::Restore(1, $newCombCoords, $obj, false, false);
-    file_get_contents("http://dsga.me/ds/copycomb/gate.php?act=collect&uid=$newUserID&uiid=$newUIID");
+    file_get_contents("http://destinysphere.ru/ds/copycomb/gate.php?act=collect&uid=$newUserID&uiid=$newUIID");
 
     $_SESSION["dbId"] = $dbID;
     $common->setDbId($dbID);

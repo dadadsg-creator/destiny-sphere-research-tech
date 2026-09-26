@@ -293,7 +293,7 @@ class GE_ExecStartCreateInstance
 
                 $forumPassword = GE_ForumRegistration::forumRegistration(self::$UID);
                 if ($forumPassword!='') {
-                    $header = "Content-type: text/plain; charset=windows-1251\nFrom: Destiny Sphere <noreply@dsga.me>";
+                    $header = "Content-type: text/plain; charset=windows-1251\nFrom: Destiny Sphere <noreply@destinysphere.ru>";
                     $subject = 'Регистрация на форуме Destiny Sphere';
                     $message = "Вы автоматически зарегистрированы на форуме Destiny Sphere.\nВаш логин: ".self::$user->getName()."\nВаш пароль: $forumPassword";
                     mail(self::$user->getEmail(), '=?windows-1251?B?'.base64_encode($subject).'?=', $message, $header);

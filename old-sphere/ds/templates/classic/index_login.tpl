@@ -181,20 +181,20 @@
                                         <table width="100%" cellpadding="0" cellspacing="0" border="0">
                                             <tr>
                                                 <td><img src="img/promo/screenshots/01.png" border="0"></td>
-                                                <td><a href="http://dsga.me/img/v4/graph/screenshots/06.jpg" target="_blank"><img src="img/promo/screenshots/04.png" border="0"></a></td>
-                                                <td><a href="http://dsga.me/img/v4/graph/screenshots/01.jpg" target="_blank"><img src="img/promo/screenshots/07.png" border="0"></a></td>
+                                                <td><a href="http://destinysphere.ru/img/v4/graph/screenshots/06.jpg" target="_blank"><img src="img/promo/screenshots/04.png" border="0"></a></td>
+                                                <td><a href="http://destinysphere.ru/img/v4/graph/screenshots/01.jpg" target="_blank"><img src="img/promo/screenshots/07.png" border="0"></a></td>
                                                 <td><img src="img/promo/screenshots/10.png" border="0"></td>
                                             </tr>
                                             <tr>
                                                 <td><img src="img/promo/screenshots/02.jpg" border="0"></td>
-                                                <td><a href="http://dsga.me/img/v4/graph/screenshots/08.jpg" target="_blank"><img src="img/promo/screenshots/05.jpg" border="0"></a></td>
-                                                <td><a href="http://dsga.me/img/v4/graph/screenshots/04.jpg" target="_blank"><img src="img/promo/screenshots/08.jpg" border="0"></a></td>
+                                                <td><a href="http://destinysphere.ru/img/v4/graph/screenshots/08.jpg" target="_blank"><img src="img/promo/screenshots/05.jpg" border="0"></a></td>
+                                                <td><a href="http://destinysphere.ru/img/v4/graph/screenshots/04.jpg" target="_blank"><img src="img/promo/screenshots/08.jpg" border="0"></a></td>
                                                 <td><img src="img/promo/screenshots/11.jpg" border="0"></td>
                                             </tr>
                                             <tr>
                                                 <td><img src="img/promo/screenshots/03.jpg" border="0"></td>
-                                                <td><a href="http://dsga.me/img/v4/graph/screenshots/10.jpg" target="_blank"><img src="img/promo/screenshots/06.jpg" border="0"></a></td>
-                                                <td><a href="http://dsga.me/img/v4/graph/screenshots/09.jpg" target="_blank"><img src="img/promo/screenshots/09.jpg" border="0"></a></td>
+                                                <td><a href="http://destinysphere.ru/img/v4/graph/screenshots/10.jpg" target="_blank"><img src="img/promo/screenshots/06.jpg" border="0"></a></td>
+                                                <td><a href="http://destinysphere.ru/img/v4/graph/screenshots/09.jpg" target="_blank"><img src="img/promo/screenshots/09.jpg" border="0"></a></td>
                                                 <td><img src="img/promo/screenshots/12.jpg" border="0"></td>
                                             </tr>
                                         </table>

@@ -55,7 +55,7 @@ if (isset($_REQUEST['world'])) {
     }
     print_r ($newCombCoords);
     $newUIID = SI_ControlRestoreUserInstance::Restore(1, $newCombCoords, $obj, false, false);
-    file_get_contents("http://dsga.me/ds/copycomb/gate.php?act=collect&uid=$newUserID&uiid=$newUIID");
+    file_get_contents("http://destinysphere.ru/ds/copycomb/gate.php?act=collect&uid=$newUserID&uiid=$newUIID");
 
     $_SESSION["dbId"] = 0;
     $common->setDbId(0);

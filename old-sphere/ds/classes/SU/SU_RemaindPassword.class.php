@@ -295,11 +295,11 @@ class SU_RemaindPassword
         $to = urlencode(self::$user->getEmail());
         $subj = urlencode($lang['MAIL_SUBJECT']);
         $body = urlencode($mailBody);
-        $headers = urlencode("From: noreply@dsga.me\r\nContent-type: text/html; charset=".constant("DEFAULT_CHARSET"));
+        $headers = urlencode("From: noreply@destinysphere.ru\r\nContent-type: text/html; charset=".constant("DEFAULT_CHARSET"));
         $queryString = "to=$to&subj=$subj&body=$body&headers=$headers";
 
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "http://mail.dsga.me/mail.php");
+        curl_setopt($ch, CURLOPT_URL, "http://mail.destinysphere.ru/mail.php");
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $queryString);
         $output = curl_exec($ch);
