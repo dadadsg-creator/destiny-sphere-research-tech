@@ -30,34 +30,3 @@
                 <tr height=5>
                     <td background="../img/background/bg.gif" align=center class=wnd_gen_txt></td>
                 </tr>
-                <tr>
-                    <td align=center>
-                        <table height=100% border=0 cellpadding=0 cellspacing=0>
-                            <tr>
-                                <td width=5 height=5><img src="../img/border/01/t_l.gif" border=0 width=5 height=5></td>
-                                <td height=5 background="../img/border/01/t.gif"></td>
-                                <td width=10 height=5><img src="../img/border/01/t_r.gif" border=0 width=10 height=5></td>
-                            </tr>
-                            <tr>
-                                <td width=5 background="../img/border/01/l.gif"></td>
-                                <td height=100% class=wnd_outer valign=top>
-                                    <table width=100% height=100% border=0 cellpadding=0 cellspacing=0>
-                                        <tr>
-                                            <td width=4 background="../img/border/02/l.gif"></td>
-                                            <td class=wnd_inner align=center>
-                                            <a href="http://9donline.ru"><img border="0" src="/ds/images/banners/728x90.jpg"></a>
-                                            </td>
-                                            <td width=4 background="../img/border/02/r.gif"></td>
-                                        </tr>
-                                    </table>
-                                </td>
-                                <td width=10 background="../img/border/01/r.gif"></td>
-                            </tr>
-                            <tr>
-                                <td width=5 height=10><img src="../img/border/01/b_l.gif" border=0 width=5 height=10></td>
-                                <td height=10 background="../img/border/01/b.gif"></td>
-                                <td width=10 height=10><img src="../img/border/01/b_r.gif" border=0 width=10 height=10></td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
