@@ -64,17 +64,19 @@
 
   .count-line { font-size: 12px; color: var(--text-dim); font-family: var(--mono); margin-bottom: 10px; }
 
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
   .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; box-shadow: var(--shadow); }
   .thumb {
     background: #2a2a35;
-    height: 150px; display: flex; align-items: center; justify-content: center; padding: 10px; overflow: hidden;
+    height: 230px; display: flex; align-items: center; justify-content: center; padding: 12px; overflow: hidden;
   }
   .thumb svg, .thumb img { display: block; }
   .asset-compare { width: 100%; height: 100%; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; align-items: stretch; }
-  .asset-pane { min-width: 0; display: grid; grid-template-rows: 1fr auto; align-items: center; justify-items: center; gap: 6px; padding: 4px; border: 1px solid var(--border); border-radius: 8px; background: color-mix(in srgb, var(--surface) 60%, transparent); }
-  .asset-pane img, .asset-pane svg { max-width: 100%; max-height: 110px; }
-  .asset-label { font-family: var(--mono); font-size: 9.5px; color: #cfd6f2; text-transform: uppercase; letter-spacing: 0.06em; }
+  .asset-pane { min-width: 0; overflow: hidden; display: grid; grid-template-rows: 1fr auto; align-items: center; justify-items: center; gap: 6px; padding: 4px; }
+  .asset-pane img, .asset-pane svg { max-width: 100%; max-height: 180px; }
+  .asset-pane .original-art { max-width: 100%; max-height: 170px; display: flex; align-items: center; justify-content: center; }
+  .asset-pane.composed img { width: 176px; height: 176px; object-fit: contain; }
+  .asset-label { max-width: 100%; font-family: var(--mono); font-size: 8.5px; color: #cfd6f2; text-transform: uppercase; letter-spacing: 0.03em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .meta { padding: 8px 10px 10px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
   .ru-name { font-size: 12.5px; font-weight: 500; line-height: 1.3; }
   .ru-name .unsure { color: var(--warn); font-style: italic; }
@@ -98,7 +100,9 @@
   .scope-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-bottom: 8px; }
   .scope-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 10px; display: flex; flex-direction: column; align-items: center; gap: 6px; box-shadow: var(--shadow); }
   .scope-thumb { height: 90px; width: 100%; display: flex; align-items: center; justify-content: center; background: #2a2a35; border-radius: 8px; }
-  .scope-thumb svg { display: block; }
+  .scope-thumb svg, .scope-thumb img { display: block; }
+  .scope-thumb.compare { gap: 12px; }
+  .scope-thumb.compare img { width: 64px; height: 64px; object-fit: contain; }
   .scope-card .ru-name { font-size: 12px; text-align: center; }
 
   .color-legend { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
@@ -246,7 +250,580 @@
   const sizeColors = embedded.sizeColors;
 
   const REDRAW_DATA = {
+    FIRE: {
+      type: 'client/public/assets/artefacts-redrawn/types/FIRE_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/FIRE_WAR_GIANT_256.png',
+      scope: 'WAR',
+      color: 'GIANT'
+    },
+    PROTECTION: {
+      type: 'client/public/assets/artefacts-redrawn/types/PROTECTION_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/PROTECTION_WAR_GIANT_256.png',
+      scope: 'WAR',
+      color: 'GIANT'
+    },
+    PRECISION: {
+      type: 'client/public/assets/artefacts-redrawn/types/PRECISION_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/PRECISION_WAR_GIANT_256.png',
+      scope: 'WAR',
+      color: 'GIANT'
+    },
+    CAMOUFLAGE: {
+      type: 'client/public/assets/artefacts-redrawn/types/CAMOUFLAGE_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/CAMOUFLAGE_WAR_GIANT_256.png',
+      scope: 'WAR',
+      color: 'GIANT'
+    },
+    CORROSION: {
+      type: 'client/public/assets/artefacts-redrawn/types/CORROSION_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/CORROSION_WAR_GIANT_256.png',
+      scope: 'WAR',
+      color: 'GIANT'
+    },
+    LIGHT: {
+      type: 'client/public/assets/artefacts-redrawn/types/LIGHT_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/LIGHT_WAR_GIANT_256.png',
+      scope: 'WAR',
+      color: 'GIANT'
+    },
+    ZEAL: {
+      type: 'client/public/assets/artefacts-redrawn/types/ZEAL_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/ZEAL_WAR_GIANT_256.png',
+      scope: 'WAR',
+      color: 'GIANT'
+    },
+    UNYIELDING: {
+      type: 'client/public/assets/artefacts-redrawn/types/UNYIELDING_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/UNYIELDING_WAR_GIANT_256.png',
+      scope: 'WAR',
+      color: 'GIANT'
+    },
+    STEADFASTNESS: {
+      type: 'client/public/assets/artefacts-redrawn/types/STEADFASTNESS_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/STEADFASTNESS_WAR_GIANT_256.png',
+      scope: 'WAR',
+      color: 'GIANT'
+    },
+    STABILITY: {
+      type: 'client/public/assets/artefacts-redrawn/types/STABILITY_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/STABILITY_WAR_GIANT_256.png',
+      scope: 'WAR',
+      color: 'GIANT'
+    },
+    SECURITY: {
+      type: 'client/public/assets/artefacts-redrawn/types/SECURITY_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/SECURITY_WAR_GIANT_256.png',
+      scope: 'WAR',
+      color: 'GIANT'
+    },
+    RUSE: {
+      type: 'client/public/assets/artefacts-redrawn/types/RUSE_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/RUSE_WAR_GIANT_256.png',
+      scope: 'WAR',
+      color: 'GIANT'
+    },
+    RESISTANCE: {
+      type: 'client/public/assets/artefacts-redrawn/types/RESISTANCE_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/RESISTANCE_WAR_GIANT_256.png',
+      scope: 'WAR',
+      color: 'GIANT'
+    },
+    RELIABILITY: {
+      type: 'client/public/assets/artefacts-redrawn/types/RELIABILITY_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/RELIABILITY_WAR_GIANT_256.png',
+      scope: 'WAR',
+      color: 'GIANT'
+    },
+    REASON: {
+      type: 'client/public/assets/artefacts-redrawn/types/REASON_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/REASON_WAR_GIANT_256.png',
+      scope: 'WAR',
+      color: 'GIANT'
+    },
+    RASHNESS: {
+      type: 'client/public/assets/artefacts-redrawn/types/RASHNESS_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/RASHNESS_WAR_GIANT_256.png',
+      scope: 'WAR',
+      color: 'GIANT'
+    },
+    RANCOUR: {
+      type: 'client/public/assets/artefacts-redrawn/types/RANCOUR_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/RANCOUR_WAR_GIANT_256.png',
+      scope: 'WAR',
+      color: 'GIANT'
+    },
+    RAGE: {
+      type: 'client/public/assets/artefacts-redrawn/types/RAGE_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/RAGE_WAR_GIANT_256.png',
+      scope: 'WAR',
+      color: 'GIANT'
+    },
+    ANGER: {
+      type: 'client/public/assets/artefacts-redrawn/types/ANGER_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/ANGER_WAR_GIANT_256.png',
+      scope: 'WAR',
+      color: 'GIANT'
+    },
+    BITTERNESS: {
+      type: 'client/public/assets/artefacts-redrawn/types/BITTERNESS_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/BITTERNESS_WAR_GIANT_256.png',
+      scope: 'WAR',
+      color: 'GIANT'
+    },
+    BLAZING: {
+      type: 'client/public/assets/artefacts-redrawn/types/BLAZING_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/BLAZING_WAR_GIANT_256.png',
+      scope: 'WAR',
+      color: 'GIANT'
+    },
+    MISLEAD: {
+      type: 'client/public/assets/artefacts-redrawn/types/MISLEAD_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/MISLEAD_WAR_GIANT_256.png',
+      scope: 'WAR',
+      color: 'GIANT'
+    },
+    LOCATION: {
+      type: 'client/public/assets/artefacts-redrawn/types/LOCATION_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/LOCATION_WAR_GIANT_256.png',
+      scope: 'WAR',
+      color: 'GIANT'
+    },
+    ILLUSION: {
+      type: 'client/public/assets/artefacts-redrawn/types/ILLUSION_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/ILLUSION_WAR_GIANT_256.png',
+      scope: 'WAR',
+      color: 'GIANT'
+    },
+    DECEPTION: {
+      type: 'client/public/assets/artefacts-redrawn/types/DECEPTION_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/DECEPTION_WAR_GIANT_256.png',
+      scope: 'WAR',
+      color: 'GIANT'
+    },
+    DAZZLING: {
+      type: 'client/public/assets/artefacts-redrawn/types/DAZZLING_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/DAZZLING_WAR_GIANT_256.png',
+      scope: 'WAR',
+      color: 'GIANT'
+    },
+    HAVOC: {
+      type: 'client/public/assets/artefacts-redrawn/types/HAVOC_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/HAVOC_WAR_GIANT_256.png',
+      scope: 'WAR',
+      color: 'GIANT'
+    },
+    DEVASTATION: {
+      type: 'client/public/assets/artefacts-redrawn/types/DEVASTATION_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/DEVASTATION_WAR_GIANT_256.png',
+      scope: 'WAR',
+      color: 'GIANT'
+    },
+    DESTRUCTION: {
+      type: 'client/public/assets/artefacts-redrawn/types/DESTRUCTION_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/DESTRUCTION_WAR_GIANT_256.png',
+      scope: 'WAR',
+      color: 'GIANT'
+    },
+    ANNIHILATION: {
+      type: 'client/public/assets/artefacts-redrawn/types/ANNIHILATION_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/ANNIHILATION_WAR_GIANT_256.png',
+      scope: 'WAR',
+      color: 'GIANT'
+    },
+    FIRMNESS: {
+      type: 'client/public/assets/artefacts-redrawn/types/FIRMNESS_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/FIRMNESS_WAR_GIANT_256.png',
+      scope: 'WAR',
+      color: 'GIANT'
+    },
+    LIVING: {
+      type: 'client/public/assets/artefacts-redrawn/types/LIVING_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/LIVING_WAR_GIANT_256.png',
+      scope: 'WAR',
+      color: 'GIANT'
+    },
+    COVERING: {
+      type: 'client/public/assets/artefacts-redrawn/types/COVERING_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/COVERING_WAR_GIANT_256.png',
+      scope: 'WAR',
+      color: 'GIANT'
+    },
+    COLLOQ: {
+      type: 'client/public/assets/artefacts-redrawn/types/COLLOQ_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/COLLOQ_WAR_GIANT_256.png',
+      scope: 'WAR',
+      color: 'GIANT'
+    },
+    COGNITION: {
+      type: 'client/public/assets/artefacts-redrawn/types/COGNITION_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/COGNITION_WAR_GIANT_256.png',
+      scope: 'WAR',
+      color: 'GIANT'
+    },
+    CALMNESS: {
+      type: 'client/public/assets/artefacts-redrawn/types/CALMNESS_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/CALMNESS_WAR_GIANT_256.png',
+      scope: 'WAR',
+      color: 'GIANT'
+    },
+    WELDING: {
+      type: 'client/public/assets/artefacts-redrawn/types/WELDING_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/WELDING_BUILDING_GOLD_256.png',
+      scope: 'BUILDING',
+      color: 'GOLD'
+    },
+    SMITHING: {
+      type: 'client/public/assets/artefacts-redrawn/types/SMITHING_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/SMITHING_BUILDING_GOLD_256.png',
+      scope: 'BUILDING',
+      color: 'GOLD'
+    },
+    FORGING: {
+      type: 'client/public/assets/artefacts-redrawn/types/FORGING_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/FORGING_BUILDING_GOLD_256.png',
+      scope: 'BUILDING',
+      color: 'GOLD'
+    },
+    FOUNDING: {
+      type: 'client/public/assets/artefacts-redrawn/types/FOUNDING_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/FOUNDING_BUILDING_GOLD_256.png',
+      scope: 'BUILDING',
+      color: 'GOLD'
+    },
+    MELTING: {
+      type: 'client/public/assets/artefacts-redrawn/types/MELTING_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/MELTING_BUILDING_GOLD_256.png',
+      scope: 'BUILDING',
+      color: 'GOLD'
+    },
+    IRRIGATION: {
+      type: 'client/public/assets/artefacts-redrawn/types/IRRIGATION_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/IRRIGATION_BUILDING_GOLD_256.png',
+      scope: 'BUILDING',
+      color: 'GOLD'
+    },
+    HYDROPONIC: {
+      type: 'client/public/assets/artefacts-redrawn/types/HYDROPONIC_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/HYDROPONIC_BUILDING_GOLD_256.png',
+      scope: 'BUILDING',
+      color: 'GOLD'
+    },
+    FERTILIZATION: {
+      type: 'client/public/assets/artefacts-redrawn/types/FERTILIZATION_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/FERTILIZATION_BUILDING_GOLD_256.png',
+      scope: 'BUILDING',
+      color: 'GOLD'
+    },
+    ECOLOGY: {
+      type: 'client/public/assets/artefacts-redrawn/types/ECOLOGY_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/ECOLOGY_BUILDING_GOLD_256.png',
+      scope: 'BUILDING',
+      color: 'GOLD'
+    },
+    GENETIC_ENGINEERING: {
+      type: 'client/public/assets/artefacts-redrawn/types/GENETIC_ENGINEERING_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/GENETIC_ENGINEERING_BUILDING_GOLD_256.png',
+      scope: 'BUILDING',
+      color: 'GOLD'
+    },
+    UTILIZATION: {
+      type: 'client/public/assets/artefacts-redrawn/types/UTILIZATION_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/UTILIZATION_BUILDING_GOLD_256.png',
+      scope: 'BUILDING',
+      color: 'GOLD'
+    },
+    TRANSPORTING: {
+      type: 'client/public/assets/artefacts-redrawn/types/TRANSPORTING_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/TRANSPORTING_BUILDING_GOLD_256.png',
+      scope: 'BUILDING',
+      color: 'GOLD'
+    },
+    REFINEMENT: {
+      type: 'client/public/assets/artefacts-redrawn/types/REFINEMENT_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/REFINEMENT_BUILDING_GOLD_256.png',
+      scope: 'BUILDING',
+      color: 'GOLD'
+    },
+    ATOMIZATION: {
+      type: 'client/public/assets/artefacts-redrawn/types/ATOMIZATION_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/ATOMIZATION_BUILDING_GOLD_256.png',
+      scope: 'BUILDING',
+      color: 'GOLD'
+    },
+    QUANTUM_MECHANICS: {
+      type: 'client/public/assets/artefacts-redrawn/types/QUANTUM_MECHANICS_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/QUANTUM_MECHANICS_BUILDING_GOLD_256.png',
+      scope: 'BUILDING',
+      color: 'GOLD'
+    },
+    SYNTHESIS: {
+      type: 'client/public/assets/artefacts-redrawn/types/SYNTHESIS_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/SYNTHESIS_BUILDING_GOLD_256.png',
+      scope: 'BUILDING',
+      color: 'GOLD'
+    },
+    RADIOLYSIS: {
+      type: 'client/public/assets/artefacts-redrawn/types/RADIOLYSIS_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/RADIOLYSIS_BUILDING_GOLD_256.png',
+      scope: 'BUILDING',
+      color: 'GOLD'
+    },
+    POLYMERIZATION: {
+      type: 'client/public/assets/artefacts-redrawn/types/POLYMERIZATION_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/POLYMERIZATION_BUILDING_GOLD_256.png',
+      scope: 'BUILDING',
+      color: 'GOLD'
+    },
+    DISPERSION: {
+      type: 'client/public/assets/artefacts-redrawn/types/DISPERSION_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/DISPERSION_BUILDING_GOLD_256.png',
+      scope: 'BUILDING',
+      color: 'GOLD'
+    },
+    CRYSTALLIZATION: {
+      type: 'client/public/assets/artefacts-redrawn/types/CRYSTALLIZATION_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/CRYSTALLIZATION_BUILDING_GOLD_256.png',
+      scope: 'BUILDING',
+      color: 'GOLD'
+    },
+    THERMODYNAMICS: {
+      type: 'client/public/assets/artefacts-redrawn/types/THERMODYNAMICS_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/THERMODYNAMICS_BUILDING_GOLD_256.png',
+      scope: 'BUILDING',
+      color: 'GOLD'
+    },
+    SUPERCONDUCTIVITY: {
+      type: 'client/public/assets/artefacts-redrawn/types/SUPERCONDUCTIVITY_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/SUPERCONDUCTIVITY_BUILDING_GOLD_256.png',
+      scope: 'BUILDING',
+      color: 'GOLD'
+    },
+    SENSORING: {
+      type: 'client/public/assets/artefacts-redrawn/types/SENSORING_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/SENSORING_BUILDING_GOLD_256.png',
+      scope: 'BUILDING',
+      color: 'GOLD'
+    },
+    QUANTUM_OPTICS: {
+      type: 'client/public/assets/artefacts-redrawn/types/QUANTUM_OPTICS_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/QUANTUM_OPTICS_BUILDING_GOLD_256.png',
+      scope: 'BUILDING',
+      color: 'GOLD'
+    },
+    PLASMA: {
+      type: 'client/public/assets/artefacts-redrawn/types/PLASMA_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/PLASMA_BUILDING_GOLD_256.png',
+      scope: 'BUILDING',
+      color: 'GOLD'
+    },
+    TEMPERING: {
+      type: 'client/public/assets/artefacts-redrawn/types/TEMPERING_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/TEMPERING_BUILDING_GOLD_256.png',
+      scope: 'BUILDING',
+      color: 'GOLD'
+    },
+    STAMPING: {
+      type: 'client/public/assets/artefacts-redrawn/types/STAMPING_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/STAMPING_BUILDING_GOLD_256.png',
+      scope: 'BUILDING',
+      color: 'GOLD'
+    },
+    HIGH_PRESSURE: {
+      type: 'client/public/assets/artefacts-redrawn/types/HIGH_PRESSURE_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/HIGH_PRESSURE_BUILDING_GOLD_256.png',
+      scope: 'BUILDING',
+      color: 'GOLD'
+    },
+    COOLING: {
+      type: 'client/public/assets/artefacts-redrawn/types/COOLING_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/COOLING_BUILDING_GOLD_256.png',
+      scope: 'BUILDING',
+      color: 'GOLD'
+    },
+    CATALYZATION: {
+      type: 'client/public/assets/artefacts-redrawn/types/CATALYZATION_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/CATALYZATION_BUILDING_GOLD_256.png',
+      scope: 'BUILDING',
+      color: 'GOLD'
+    },
+    NUCLEAR_FISSION: {
+      type: 'client/public/assets/artefacts-redrawn/types/NUCLEAR_FISSION_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/NUCLEAR_FISSION_BUILDING_GOLD_256.png',
+      scope: 'BUILDING',
+      color: 'GOLD'
+    },
+    CORE_SYNTHESIS: {
+      type: 'client/public/assets/artefacts-redrawn/types/CORE_SYNTHESIS_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/CORE_SYNTHESIS_BUILDING_GOLD_256.png',
+      scope: 'BUILDING',
+      color: 'GOLD'
+    },
+    MIXING_FODDER: {
+      type: 'client/public/assets/artefacts-redrawn/types/MIXING_FODDER_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/MIXING_FODDER_BUILDING_GOLD_256.png',
+      scope: 'BUILDING',
+      color: 'GOLD'
+    },
+    MECHANIZATION: {
+      type: 'client/public/assets/artefacts-redrawn/types/MECHANIZATION_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/MECHANIZATION_BUILDING_GOLD_256.png',
+      scope: 'BUILDING',
+      color: 'GOLD'
+    },
+    CLONING: {
+      type: 'client/public/assets/artefacts-redrawn/types/CLONING_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/CLONING_BUILDING_GOLD_256.png',
+      scope: 'BUILDING',
+      color: 'GOLD'
+    },
+    FOODHEART: {
+      type: 'client/public/assets/artefacts-redrawn/types/FOODHEART_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/FOODHEART_LOVE_256.png',
+      scope: 'LOVE'
+    },
+    ENERGYHEART: {
+      type: 'client/public/assets/artefacts-redrawn/types/ENERGYHEART_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/ENERGYHEART_LOVE_256.png',
+      scope: 'LOVE'
+    },
+    PRODIUMHEART: {
+      type: 'client/public/assets/artefacts-redrawn/types/PRODIUMHEART_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/PRODIUMHEART_LOVE_256.png',
+      scope: 'LOVE'
+    },
+    NANOHEART: {
+      type: 'client/public/assets/artefacts-redrawn/types/NANOHEART_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/NANOHEART_LOVE_256.png',
+      scope: 'LOVE'
+    },
+    KADERIUMHEART: {
+      type: 'client/public/assets/artefacts-redrawn/types/KADERIUMHEART_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/KADERIUMHEART_LOVE_256.png',
+      scope: 'LOVE'
+    },
+    STASIS_ENERGY_EGG: {
+      type: 'client/public/assets/artefacts-redrawn/types/STASIS_ENERGY_EGG_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/STASIS_ENERGY_EGG_SPHERE_256.png',
+      scope: 'SPHERE'
+    },
+    PRODIUM_EGG: {
+      type: 'client/public/assets/artefacts-redrawn/types/PRODIUM_EGG_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/PRODIUM_EGG_SPHERE_256.png',
+      scope: 'SPHERE'
+    },
+    NANO_CRYSTAL_EGG: {
+      type: 'client/public/assets/artefacts-redrawn/types/NANO_CRYSTAL_EGG_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/NANO_CRYSTAL_EGG_SPHERE_256.png',
+      scope: 'SPHERE'
+    },
+    KADERIUM_EGG: {
+      type: 'client/public/assets/artefacts-redrawn/types/KADERIUM_EGG_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/KADERIUM_EGG_SPHERE_256.png',
+      scope: 'SPHERE'
+    },
+    FOOD_EGG: {
+      type: 'client/public/assets/artefacts-redrawn/types/FOOD_EGG_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/FOOD_EGG_SPHERE_256.png',
+      scope: 'SPHERE'
+    },
+    MOBILEPHONE: {
+      type: 'client/public/assets/artefacts-redrawn/types/MOBILEPHONE_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/MOBILEPHONE_SPHERE_256.png',
+      scope: 'SPHERE'
+    },
+    MOUSE: {
+      type: 'client/public/assets/artefacts-redrawn/types/MOUSE_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/MOUSE_SPHERE_256.png',
+      scope: 'SPHERE'
+    },
+    POWER_PROGRESS: {
+      type: 'client/public/assets/artefacts-redrawn/types/POWER_PROGRESS_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/POWER_PROGRESS_COMB_256.png',
+      scope: 'COMB'
+    },
+    ROAD_GEKKON: {
+      type: 'client/public/assets/artefacts-redrawn/types/ROAD_GEKKON_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/ROAD_GEKKON_COMB_256.png',
+      scope: 'COMB'
+    },
+    MAGIC_CRISTAL: {
+      type: 'client/public/assets/artefacts-redrawn/types/MAGIC_CRISTAL_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/MAGIC_CRISTAL_COMB_256.png',
+      scope: 'COMB'
+    },
+    IGROMIR_NANO: {
+      type: 'client/public/assets/artefacts-redrawn/types/IGROMIR_NANO_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/IGROMIR_NANO_COMB_256.png',
+      scope: 'COMB'
+    },
+    IGROMIR_FOOD: {
+      type: 'client/public/assets/artefacts-redrawn/types/IGROMIR_FOOD_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/IGROMIR_FOOD_COMB_256.png',
+      scope: 'COMB'
+    },
+    IGROMIR_KADERIUM: {
+      type: 'client/public/assets/artefacts-redrawn/types/IGROMIR_KADERIUM_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/IGROMIR_KADERIUM_COMB_256.png',
+      scope: 'COMB'
+    },
+    IGROMIR_STATIC: {
+      type: 'client/public/assets/artefacts-redrawn/types/IGROMIR_STATIC_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/IGROMIR_STATIC_COMB_256.png',
+      scope: 'COMB'
+    },
+    IGROMIR_PRODIUM: {
+      type: 'client/public/assets/artefacts-redrawn/types/IGROMIR_PRODIUM_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/IGROMIR_PRODIUM_COMB_256.png',
+      scope: 'COMB'
+    },
+    JOYSTIK2: {
+      type: 'client/public/assets/artefacts-redrawn/types/JOYSTIK2_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/JOYSTIK2_COMB_256.png',
+      scope: 'COMB'
+    },
+    TREE1: {
+      type: 'client/public/assets/artefacts-redrawn/types/TREE1_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/TREE1_ICE_256.png',
+      scope: 'ICE'
+    },
+    TREE2: {
+      type: 'client/public/assets/artefacts-redrawn/types/TREE2_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/TREE2_ICE_256.png',
+      scope: 'ICE'
+    },
+    ANTIDOT: {
+      type: 'client/public/assets/artefacts-redrawn/types/ANTIDOT_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/ANTIDOT_HOLIDAY2_256.png',
+      scope: 'HOLIDAY2'
+    },
+    JOYSTIKICON: {
+      type: 'client/public/assets/artefacts-redrawn/types/JOYSTIKICON_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/JOYSTIKICON_QUEST_256.png',
+      scope: 'QUEST'
+    },
+    IGROMIR_DEFEND: {
+      type: 'client/public/assets/artefacts-redrawn/types/IGROMIR_DEFEND_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/IGROMIR_DEFEND_WAR_256.png',
+      scope: 'WAR'
+    },
+    IGROMIR_DAMAGE: {
+      type: 'client/public/assets/artefacts-redrawn/types/IGROMIR_DAMAGE_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/IGROMIR_DAMAGE_WAR_256.png',
+      scope: 'WAR'
+    },
+    IGROMIR_HITPOINTS: {
+      type: 'client/public/assets/artefacts-redrawn/types/IGROMIR_HITPOINTS_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/IGROMIR_HITPOINTS_WAR_256.png',
+      scope: 'WAR'
+    },
+    IGROMIR_ATTACK: {
+      type: 'client/public/assets/artefacts-redrawn/types/IGROMIR_ATTACK_256.png',
+      composed: 'client/public/assets/artefacts-redrawn/composed/IGROMIR_ATTACK_WAR_256.png',
+      scope: 'WAR'
+    }
   };
+
+  const REDRAW_SCOPE_BASE = 'client/public/assets/artefacts-redrawn/scopes';
 
   const state = { kind: 'all', q: '' };
 
@@ -290,13 +867,17 @@
   }
 
   function cardHtml(item) {
-    const size = displaySize(item.w, item.h, DISPLAY_TARGET);
     const file = item.file;
-    const redraw = REDRAW_DATA[file];
-    const svgWrapped = `<span style="display:inline-block;width:${size.w}px;height:${size.h}px;overflow:hidden">${item.svg.replace('<svg ', `<svg width="${size.w}" height="${size.h}" viewBox="0 0 ${item.w} ${item.h}" `)}</span>`;
-    const redrawImg = redraw ? `<img src="${redraw}" alt="${item.postfix} redraw" loading="lazy">` : '';
+    const redraw = REDRAW_DATA[item.postfix] || REDRAW_DATA[file];
+    const size = displaySize(item.w, item.h, redraw ? 160 : DISPLAY_TARGET);
+    const svgWrapped = `<span class="original-art" style="width:${size.w}px;height:${size.h}px;overflow:hidden">${item.svg.replace('<svg ', `<svg width="${size.w}" height="${size.h}" viewBox="0 0 ${item.w} ${item.h}" `)}</span>`;
+    const redrawSrc = redraw && (redraw.composed || redraw.type || redraw);
+    const redrawLabel = redraw && redraw.composed
+      ? `${redraw.scope || ''}${redraw.color ? ` ${redraw.color}` : ''}`.trim()
+      : 'redraw';
+    const redrawImg = redrawSrc ? `<img src="${redrawSrc}" alt="${item.postfix} redraw" loading="lazy">` : '';
     const thumbHtml = redraw
-      ? `<div class="asset-compare"><div class="asset-pane">${svgWrapped}<span class="asset-label">original</span></div><div class="asset-pane">${redrawImg}<span class="asset-label">redraw</span></div></div>`
+      ? `<div class="asset-compare"><div class="asset-pane">${svgWrapped}<span class="asset-label">original</span></div><div class="asset-pane composed">${redrawImg}<span class="asset-label">${redrawLabel}</span></div></div>`
       : svgWrapped;
 
     const ruLine = item.ru
@@ -312,7 +893,7 @@
         <div class="meta">
           ${ruLine}
           <div class="machine">${item.postfix}</div>
-          <div class="file-path">${file}</div>
+          <div class="file-path">${redraw && redraw.composed ? redraw.composed : file}</div>
           ${noteHtml}
           <div class="tags">
             <span class="tag k-${item.kind}">${KIND_LABEL[item.kind] || item.kind}</span>
@@ -353,12 +934,13 @@
     const size = displaySize(s.w, s.h, 64);
     const svgWrapped = s.svg.replace('<svg ', `<svg width="${size.w}" height="${size.h}" viewBox="0 0 ${s.w} ${s.h}" `);
     const file = s.file;
+    const redrawScope = `${REDRAW_SCOPE_BASE}/${s.scope}_64.png`;
     return `
       <div class="scope-card">
-        <div class="scope-thumb">${svgWrapped}</div>
+        <div class="scope-thumb compare">${svgWrapped}<img src="${redrawScope}" alt="${s.scope} redraw" loading="lazy"></div>
         ${s.ru ? `<div class="ru-name">${s.ru}</div>` : ''}
         <div class="machine">${s.scope}</div>
-        <div class="file-path">${file}</div>
+        <div class="file-path">${redrawScope}</div>
       </div>
     `;
   }).join('');
@@ -370,3 +952,4 @@
   `).join('');
 })();
 </script>
+
