@@ -30,7 +30,7 @@
                                             <td align=center valign="top">
                                                 <img height=34 src="img/cabinet/graph/del_but01.gif" border=0></td>
                                             <td width="110" height="22" align=center valign="middle" class="menu_txt">
-                                                <div class=menu onclick="openURL('http://destinysphere.ru');" valign=middle><span style="position: relative; top: 9px;">œŒ–“¿À</span></div></td>
+                                                <div class=menu onclick="openURL('https://destinysphere.ru');" valign=middle><span style="position: relative; top: 9px;">œŒ–“¿À</span></div></td>
                                             <td align=center valign="top">
                                                 <img height=34 src="img/cabinet/graph/del_but01.gif" border=0></td>
                                             <td width="110" height="22" align=center valign="middle" class="menu_txt">
@@ -38,7 +38,7 @@
                                             <td align=center valign="top">
                                                 <img height=34 src="img/cabinet/graph/del_but01.gif" border=0></td>
                                             <td width="110" height="22" align=center valign="middle" class="menu_txt">
-                                                <div style="width:110px; height:100%; cursor: hand;" onclick="openURL('http://destinysphere.ru/ds/ranking_new.php');" valign=middle><span style="position: relative; top: 9px;">–≈…“»Õ√</span></div></td>
+                                                <div style="width:110px; height:100%; cursor: hand;" onclick="openURL('https://destinysphere.ru/ds/ranking_new.php');" valign=middle><span style="position: relative; top: 9px;">–≈…“»Õ√</span></div></td>
                                             <td align=center valign="top">
                                                 <img height=34 src="img/cabinet/graph/del_but01.gif" border=0></td>
                                             <td width="110" height="22" align=center valign="middle" class="menu_txt">
