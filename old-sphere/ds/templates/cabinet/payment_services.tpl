@@ -884,34 +884,7 @@ function getRadioGroupValue(radioGroupObj)
                                                                                             &nbsp;
                                                                                         </td>
                                                                                     </tr>
-                                                                                    {if key_exists('BUY_ANALIZATOR', $PARAMS)}
-                                                                                        {foreach from=$PARAMS.DAYS key=COUNT_OF_DAYS item=DATA}
-                                                                                        <form action="user_cabinet.php" method="POST">
-                                                                                        <input type="hidden" name="action" value="payment_services">
-                                                                                        <input type="hidden" name="ps_action" value="{$PARAMS.PS}">
-                                                                                        <input type="hidden" name="exec_action" value="show_second_menu">
-                                                                                        <input type="hidden" name='days' value="{$COUNT_OF_DAYS}">  
-                                                                                        <input type="hidden" name='analizator' value="yes"> 
-                                                                                        <tr>
-                                                                                            <td align="left">
-                                                                                                {$lang.PREMIUM_ON} <b>{$COUNT_OF_DAYS}</b> {$lang.DAYS_AND_ACCESS_TO_ANALIZATOR_PLUS}<br>
-                                                                                                <font color="Red"><b>{$lang.COST2}: {$DATA.PRICE_PLUS} {if $DATA.CREDIT_PLUS == 'SC'}{$lang.SILVER_CREDITS}{/if}{if $DATA.CREDIT_PLUS == 'GC'}{$lang.GOLD_CREDITS}{/if}</b></font><br>
-                                                                                            </td>
-                                                                                            </td>
-                                                                                            <td align="center"  valign="middle">
-                                                                                                <input type="submit" class="submit03" value="{$lang.NEXT}">
-
-                                                                                            </td>
-                                                                                        </form>
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            <td>
-                                                                                                &nbsp;
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                        {/foreach}
-                                                                                    {/if}
-                                                                                    
+                                                                                                                                                                        
                                                                                     {foreach from=$PARAMS.DAYS key=COUNT_OF_DAYS item=DATA}
                                                                                     <form action="user_cabinet.php" method="POST">
                                                                                     <input type="hidden" name="action" value="payment_services">
