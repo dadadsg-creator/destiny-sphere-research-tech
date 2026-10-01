@@ -1,0 +1,13 @@
+{
+  "id": "tech/residential/voraner-v01-concept",
+  "race": "tech",
+  "complexGroup": "residential",
+  "variant": 0,
+  "footprint": [1, 1],
+  "logicalWidth": 68,
+  "anchor": [0.5, 0.965],
+  "ports": [true, true, true, true, true, true],
+  "layers": {
+    "color": "../source/voraner-residential-v01-concept.png"
+  }
+}

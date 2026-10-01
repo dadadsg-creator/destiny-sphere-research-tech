@@ -1,0 +1,170 @@
+[
+  {
+    "race": "tech",
+    "building": "Археологический институт",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Археологический институт\\04 — Апгрейд института — Исследовательское ядро.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\ARCHEOLOGICAL_INSTITUTE_.png",
+    "exists": false
+  },
+  {
+    "race": "tech",
+    "building": "Археологический форпост",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Археологический форпост\\05 — По промпту Максима — Средняя детализация.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\ARCHEOLOGICAL_OUTPOST_.png",
+    "exists": false
+  },
+  {
+    "race": "tech",
+    "building": "Большой нанокристаллизатор",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Большой нанокристаллизатор\\02 — Для крупного плана — Детализированный.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\LARGE_NANO_CRYSTALLIZER_.png",
+    "exists": true
+  },
+  {
+    "race": "tech",
+    "building": "Большой сборщик продиума",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Большой сборщик продиума\\02в — Крупный план — Внутреннее свечение сферы - Kopie.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\LARGE_PRODIUM_COLLECTOR_.png",
+    "exists": true
+  },
+  {
+    "race": "tech",
+    "building": "Военная база",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Военная база\\04б — Апгрейд — Круглый артефакт без расширения базы.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\MILITARY_BASE_.png",
+    "exists": false
+  },
+  {
+    "race": "tech",
+    "building": "Деревня",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Деревня\\01 — Выразительная архитектура — Универсальная версия.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\VILLAGE_.png",
+    "exists": true
+  },
+  {
+    "race": "tech",
+    "building": "Дом отдыха",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Дом отдыха\\01 — Выразительная архитектура — Универсальная версия.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\VOCATION_BUILD_.png",
+    "exists": false
+  },
+  {
+    "race": "tech",
+    "building": "Источник",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Источник\\01 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\SOURCE_.png",
+    "exists": false
+  },
+  {
+    "race": "tech",
+    "building": "Колодец",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Колодец\\03 — Выразительная архитектура — Универсальная версия.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\WELL_LADLER_.png",
+    "exists": false
+  },
+  {
+    "race": "tech",
+    "building": "Коннектор альянса",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Коннектор альянса\\04 — Апгрейд — Узел связи альянса.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\ALLIANCE_CONNECTOR_.png",
+    "exists": false
+  },
+  {
+    "race": "tech",
+    "building": "Сканер туннельной реки",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Сканер туннельной реки\\01 — Выразительная архитектура — Универсальная версия.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\TUNNEL_RIVER_SCANNER_.png",
+    "exists": false
+  },
+  {
+    "race": "tech",
+    "building": "Терраформер",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Терраформер\\01 — Выразительная архитектура — Универсальная версия.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\TERRAMORPH_TOWER_.png",
+    "exists": false
+  },
+  {
+    "race": "tech",
+    "building": "Тренировочный лагерь",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Тренировочный лагерь\\02 — Усиленный каркас — Универсальная версия.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\TRAINING_CAMP_.png",
+    "exists": false
+  },
+  {
+    "race": "tech",
+    "building": "Улучшенный тренировочный лагерь",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Улучшенный тренировочный лагерь\\03 — Усиленный каркас — Высокая мачта.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\TRAINING_CAMP2V_.png",
+    "exists": false
+  },
+  {
+    "race": "tech",
+    "building": "Центр шпионажа",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Центр шпионажа\\02 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\SPYING_CENTER_.png",
+    "exists": false
+  },
+  {
+    "race": "bio",
+    "building": "Деревня",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Лиенсу\\Деревня\\01 — Выразительная архитектура — Универсальная версия.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\bio\\VILLAGE_.png",
+    "exists": false
+  },
+  {
+    "race": "bio",
+    "building": "Дом отдыха",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Лиенсу\\Дом отдыха\\01 — Выразительная архитектура — Универсальная версия.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\bio\\VOCATION_BUILD_.png",
+    "exists": false
+  },
+  {
+    "race": "bio",
+    "building": "Зона мутантов",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Лиенсу\\Зона мутантов\\01 — Выразительная архитектура — Универсальная версия.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\bio\\TRAINING_CAMP_.png",
+    "exists": false
+  },
+  {
+    "race": "bio",
+    "building": "Источник",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Лиенсу\\Источник\\01 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\bio\\SOURCE_.png",
+    "exists": false
+  },
+  {
+    "race": "bio",
+    "building": "Колодец",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Лиенсу\\Колодец\\03 — Живая архитектура — Пробный вариант.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\bio\\WELL_LADLER_.png",
+    "exists": false
+  },
+  {
+    "race": "bio",
+    "building": "Сканер туннельной реки",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Лиенсу\\Сканер туннельной реки\\01 — Черновик — Требует удаления ореола.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\bio\\TUNNEL_RIVER_SCANNER_.png",
+    "exists": false
+  },
+  {
+    "race": "bio",
+    "building": "Терраформер",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Лиенсу\\Терраформер\\01 — Выразительная архитектура — Универсальная версия.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\bio\\TERRAMORPH_TOWER_.png",
+    "exists": false
+  },
+  {
+    "race": "bio",
+    "building": "Улучшенная зона мутантов",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Лиенсу\\Улучшенная зона мутантов\\01 — Выразительная архитектура — Универсальная версия.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\bio\\TRAINING_CAMP2L_.png",
+    "exists": false
+  },
+  {
+    "race": "bio",
+    "building": "Центр шпионажа",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Лиенсу\\Центр шпионажа\\02 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\bio\\SPYING_CENTER_.png",
+    "exists": false
+  }
+]

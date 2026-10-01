@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "logicalCell": {
+    "width": 48,
+    "height": 26,
+    "vertices": [[24, 0], [48, 6.5], [48, 19.5], [24, 26], [0, 19.5], [0, 6.5]],
+    "anchor": [24, 26]
+  },
+  "ports": [
+    { "direction": 0, "name": "NE", "point": [36, 3.25], "neighborOffset": [24, -19.5] },
+    { "direction": 1, "name": "E", "point": [48, 13], "neighborOffset": [48, 0] },
+    { "direction": 2, "name": "SE", "point": [36, 22.75], "neighborOffset": [24, 19.5] },
+    { "direction": 3, "name": "SW", "point": [12, 22.75], "neighborOffset": [-24, 19.5] },
+    { "direction": 4, "name": "W", "point": [0, 13], "neighborOffset": [-48, 0] },
+    { "direction": 5, "name": "NW", "point": [12, 3.25], "neighborOffset": [-24, -19.5] }
+  ],
+  "pilotEnvelope": {
+    "baseMax": [46, 25],
+    "visualWidthRecommended": [72, 88],
+    "visualWidthMaximum": 96,
+    "heightRecommendedMaximum": 104,
+    "heightAbsoluteMaximum": 112,
+    "belowAnchorMaximum": 2
+  },
+  "camera": {
+    "type": "orthographic",
+    "azimuthDegrees": 45,
+    "elevationDegrees": 30,
+    "keyLightScreenDirection": "upper-left",
+    "status": "pilot-baseline"
+  }
+}
+

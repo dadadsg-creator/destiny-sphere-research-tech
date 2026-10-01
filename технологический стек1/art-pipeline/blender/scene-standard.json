@@ -1,0 +1,34 @@
+{
+  "version": 2,
+  "units": "meters",
+  "camera": {
+    "type": "ORTHO",
+    "azimuthDegrees": 45,
+    "elevationDegrees": 30,
+    "resolution": [1024, 1024],
+    "transparentFilm": true
+  },
+  "renderer": {
+    "engine": "CYCLES",
+    "device": "CPU",
+    "samples": 64,
+    "denoising": true
+  },
+  "sun": {
+    "elevationDegrees": 33,
+    "shadowScreenAzimuthDegrees": 220,
+    "worldAzimuthDegrees": -14.210263,
+    "screenSide": "lower-right",
+    "shadowScreenDirection": "upper-left",
+    "angularDiameterDegrees": 0.75
+  },
+  "collections": [
+    "DS_BUILDING",
+    "DS_EMISSIVE",
+    "DS_GROUND_RECEIVER",
+    "DS_GUIDES"
+  ],
+  "passes": ["color", "castShadow", "emissive"],
+  "anchor": "ground contact at world origin",
+  "projectionRule": "camera, screen-space sun direction and object scale are identical for every pass"
+}

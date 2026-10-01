@@ -1,0 +1,596 @@
+[
+  {
+    "race": "tech",
+    "building": "Археологический институт",
+    "machine": "ARCHEOLOGICAL_INSTITUTE",
+    "version": "04 — Апгрейд института — Исследовательское ядро.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Археологический институт\\04 — Апгрейд института — Исследовательское ядро.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\ARCHEOLOGICAL_INSTITUTE_.png",
+    "action": "SAME"
+  },
+  {
+    "race": "tech",
+    "building": "Археологический форпост",
+    "machine": "ARCHEOLOGICAL_OUTPOST",
+    "version": "05 — По промпту Максима — Средняя детализация.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Археологический форпост\\05 — По промпту Максима — Средняя детализация.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\ARCHEOLOGICAL_OUTPOST_.png",
+    "action": "SAME"
+  },
+  {
+    "race": "tech",
+    "building": "Большой нанокристаллизатор",
+    "machine": "LARGE_NANO_CRYSTALLIZER",
+    "version": "02 — Для крупного плана — Детализированный.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Большой нанокристаллизатор\\02 — Для крупного плана — Детализированный.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\LARGE_NANO_CRYSTALLIZER_.png",
+    "action": "SAME"
+  },
+  {
+    "race": "tech",
+    "building": "Большой сборщик продиума",
+    "machine": "LARGE_PRODIUM_COLLECTOR",
+    "version": "02в — Крупный план — Внутреннее свечение сферы - Kopie.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Большой сборщик продиума\\02в — Крупный план — Внутреннее свечение сферы - Kopie.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\LARGE_PRODIUM_COLLECTOR_.png",
+    "action": "SAME"
+  },
+  {
+    "race": "tech",
+    "building": "Военная база",
+    "machine": "MILITARY_BASE",
+    "version": "04б — Апгрейд — Круглый артефакт без расширения базы.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Военная база\\04б — Апгрейд — Круглый артефакт без расширения базы.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\MILITARY_BASE_.png",
+    "action": "SAME"
+  },
+  {
+    "race": "tech",
+    "building": "Деревня",
+    "machine": "VILLAGE",
+    "version": "01 — Выразительная архитектура — Универсальная версия.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Деревня\\01 — Выразительная архитектура — Универсальная версия.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\VILLAGE_.png",
+    "action": "SAME"
+  },
+  {
+    "race": "tech",
+    "building": "Дом отдыха",
+    "machine": "VOCATION_BUILD",
+    "version": "01 — Выразительная архитектура — Универсальная версия.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Дом отдыха\\01 — Выразительная архитектура — Универсальная версия.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\VOCATION_BUILD_.png",
+    "action": "SAME"
+  },
+  {
+    "race": "tech",
+    "building": "Источник",
+    "machine": "SOURCE",
+    "version": "01 — Материалы и внутренний свет.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Источник\\01 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\SOURCE_.png",
+    "action": "SAME"
+  },
+  {
+    "race": "tech",
+    "building": "Колодец",
+    "machine": "WELL_LADLER",
+    "version": "03 — Выразительная архитектура — Универсальная версия.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Колодец\\03 — Выразительная архитектура — Универсальная версия.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\WELL_LADLER_.png",
+    "action": "SAME"
+  },
+  {
+    "race": "tech",
+    "building": "Коннектор альянса",
+    "machine": "ALLIANCE_CONNECTOR",
+    "version": "04 — Апгрейд — Узел связи альянса.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Коннектор альянса\\04 — Апгрейд — Узел связи альянса.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\ALLIANCE_CONNECTOR_.png",
+    "action": "SAME"
+  },
+  {
+    "race": "tech",
+    "building": "Малое хранилище еды",
+    "machine": "SMALL_FOOD_SILO",
+    "version": "01 — Материалы и внутренний свет.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Малое хранилище еды\\01 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\SMALL_FOOD_SILO_.png",
+    "action": "NEW"
+  },
+  {
+    "race": "tech",
+    "building": "Малое хранилище кадериума",
+    "machine": "SMALL_KADERIUM_SILO",
+    "version": "01 — Материалы и внутренний свет.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Малое хранилище кадериума\\01 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\SMALL_KADERIUM_SILO_.png",
+    "action": "NEW"
+  },
+  {
+    "race": "tech",
+    "building": "Малое хранилище нанокристаллов",
+    "machine": "SMALL_NANO_SILO",
+    "version": "01 — Материалы и внутренний свет.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Малое хранилище нанокристаллов\\01 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\SMALL_NANO_SILO_.png",
+    "action": "NEW"
+  },
+  {
+    "race": "tech",
+    "building": "Малое хранилище продиума",
+    "machine": "SMALL_PRODIUM_SILO",
+    "version": "01 — Материалы и внутренний свет.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Малое хранилище продиума\\01 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\SMALL_PRODIUM_SILO_.png",
+    "action": "NEW"
+  },
+  {
+    "race": "tech",
+    "building": "Малое хранилище энергии",
+    "machine": "SMALL_STASIS_SILO",
+    "version": "01 — Материалы и внутренний свет.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Малое хранилище энергии\\01 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\SMALL_STASIS_SILO_.png",
+    "action": "NEW"
+  },
+  {
+    "race": "tech",
+    "building": "Малый склад еды",
+    "machine": "SMALL_FOOD_DUMP",
+    "version": "01 — Материалы и внутренний свет.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Малый склад еды\\01 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\SMALL_FOOD_DUMP_.png",
+    "action": "NEW"
+  },
+  {
+    "race": "tech",
+    "building": "Малый склад кадериума",
+    "machine": "SMALL_KADERIUM_DUMP",
+    "version": "01 — Материалы и внутренний свет.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Малый склад кадериума\\01 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\SMALL_KADERIUM_DUMP_.png",
+    "action": "NEW"
+  },
+  {
+    "race": "tech",
+    "building": "Малый склад нанокристаллов",
+    "machine": "SMALL_NANO_DUMP",
+    "version": "02 — Исправленная изометрия.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Малый склад нанокристаллов\\02 — Исправленная изометрия.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\SMALL_NANO_DUMP_.png",
+    "action": "NEW"
+  },
+  {
+    "race": "tech",
+    "building": "Малый склад продиума",
+    "machine": "SMALL_PRODIUM_DUMP",
+    "version": "01 — Материалы и внутренний свет.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Малый склад продиума\\01 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\SMALL_PRODIUM_DUMP_.png",
+    "action": "NEW"
+  },
+  {
+    "race": "tech",
+    "building": "Малый склад энергии",
+    "machine": "SMALL_STASIS_DUMP",
+    "version": "01 — Материалы и внутренний свет.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Малый склад энергии\\01 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\SMALL_STASIS_DUMP_.png",
+    "action": "NEW"
+  },
+  {
+    "race": "tech",
+    "building": "Силовой щит",
+    "machine": "SHIELD_BUILD",
+    "version": "01 — Материалы и внутренний свет.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Силовой щит\\01 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\SHIELD_BUILD_.png",
+    "action": "NEW"
+  },
+  {
+    "race": "tech",
+    "building": "Сканер туннельной реки",
+    "machine": "TUNNEL_RIVER_SCANNER",
+    "version": "01 — Выразительная архитектура — Универсальная версия.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Сканер туннельной реки\\01 — Выразительная архитектура — Универсальная версия.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\TUNNEL_RIVER_SCANNER_.png",
+    "action": "SAME"
+  },
+  {
+    "race": "tech",
+    "building": "Терраформер",
+    "machine": "TERRAMORPH_TOWER",
+    "version": "01 — Выразительная архитектура — Универсальная версия.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Терраформер\\01 — Выразительная архитектура — Универсальная версия.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\TERRAMORPH_TOWER_.png",
+    "action": "SAME"
+  },
+  {
+    "race": "tech",
+    "building": "Тренировочный лагерь",
+    "machine": "TRAINING_CAMP",
+    "version": "02 — Усиленный каркас — Универсальная версия.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Тренировочный лагерь\\02 — Усиленный каркас — Универсальная версия.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\TRAINING_CAMP_.png",
+    "action": "SAME"
+  },
+  {
+    "race": "tech",
+    "building": "Улучшенный тренировочный лагерь",
+    "machine": "TRAINING_CAMP2V",
+    "version": "03 — Усиленный каркас — Высокая мачта.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Улучшенный тренировочный лагерь\\03 — Усиленный каркас — Высокая мачта.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\TRAINING_CAMP2V_.png",
+    "action": "SAME"
+  },
+  {
+    "race": "tech",
+    "building": "Центр шпионажа",
+    "machine": "SPYING_CENTER",
+    "version": "02 — Материалы и внутренний свет.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Воранеры\\Центр шпионажа\\02 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\tech\\SPYING_CENTER_.png",
+    "action": "SAME"
+  },
+  {
+    "race": "bio",
+    "building": "Деревня",
+    "machine": "VILLAGE",
+    "version": "01 — Выразительная архитектура — Универсальная версия.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Лиенсу\\Деревня\\01 — Выразительная архитектура — Универсальная версия.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\bio\\VILLAGE_.png",
+    "action": "SAME"
+  },
+  {
+    "race": "bio",
+    "building": "Дом отдыха",
+    "machine": "VOCATION_BUILD",
+    "version": "01 — Выразительная архитектура — Универсальная версия.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Лиенсу\\Дом отдыха\\01 — Выразительная архитектура — Универсальная версия.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\bio\\VOCATION_BUILD_.png",
+    "action": "SAME"
+  },
+  {
+    "race": "bio",
+    "building": "Зона мутантов",
+    "machine": "TRAINING_CAMP",
+    "version": "01 — Выразительная архитектура — Универсальная версия.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Лиенсу\\Зона мутантов\\01 — Выразительная архитектура — Универсальная версия.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\bio\\TRAINING_CAMP_.png",
+    "action": "SAME"
+  },
+  {
+    "race": "bio",
+    "building": "Источник",
+    "machine": "SOURCE",
+    "version": "01 — Материалы и внутренний свет.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Лиенсу\\Источник\\01 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\bio\\SOURCE_.png",
+    "action": "SAME"
+  },
+  {
+    "race": "bio",
+    "building": "Колодец",
+    "machine": "WELL_LADLER",
+    "version": "03 — Живая архитектура — Пробный вариант.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Лиенсу\\Колодец\\03 — Живая архитектура — Пробный вариант.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\bio\\WELL_LADLER_.png",
+    "action": "SAME"
+  },
+  {
+    "race": "bio",
+    "building": "Малое хранилище еды",
+    "machine": "SMALL_FOOD_SILO",
+    "version": "01 — Материалы и внутренний свет.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Лиенсу\\Малое хранилище еды\\01 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\bio\\SMALL_FOOD_SILO_.png",
+    "action": "NEW"
+  },
+  {
+    "race": "bio",
+    "building": "Малое хранилище кадериума",
+    "machine": "SMALL_KADERIUM_SILO",
+    "version": "01 — Материалы и внутренний свет.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Лиенсу\\Малое хранилище кадериума\\01 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\bio\\SMALL_KADERIUM_SILO_.png",
+    "action": "NEW"
+  },
+  {
+    "race": "bio",
+    "building": "Малое хранилище нанокристаллов",
+    "machine": "SMALL_NANO_SILO",
+    "version": "01 — Материалы и внутренний свет.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Лиенсу\\Малое хранилище нанокристаллов\\01 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\bio\\SMALL_NANO_SILO_.png",
+    "action": "NEW"
+  },
+  {
+    "race": "bio",
+    "building": "Малое хранилище продиума",
+    "machine": "SMALL_PRODIUM_SILO",
+    "version": "01 — Материалы и внутренний свет.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Лиенсу\\Малое хранилище продиума\\01 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\bio\\SMALL_PRODIUM_SILO_.png",
+    "action": "NEW"
+  },
+  {
+    "race": "bio",
+    "building": "Малое хранилище энергии",
+    "machine": "SMALL_STASIS_SILO",
+    "version": "01 — Материалы и внутренний свет.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Лиенсу\\Малое хранилище энергии\\01 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\bio\\SMALL_STASIS_SILO_.png",
+    "action": "NEW"
+  },
+  {
+    "race": "bio",
+    "building": "Малый склад еды",
+    "machine": "SMALL_FOOD_DUMP",
+    "version": "02 — Вместительный живой склад.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Лиенсу\\Малый склад еды\\02 — Вместительный живой склад.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\bio\\SMALL_FOOD_DUMP_.png",
+    "action": "NEW"
+  },
+  {
+    "race": "bio",
+    "building": "Малый склад кадериума",
+    "machine": "SMALL_KADERIUM_DUMP",
+    "version": "01 — Материалы и внутренний свет.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Лиенсу\\Малый склад кадериума\\01 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\bio\\SMALL_KADERIUM_DUMP_.png",
+    "action": "NEW"
+  },
+  {
+    "race": "bio",
+    "building": "Малый склад нанокристаллов",
+    "machine": "SMALL_NANO_DUMP",
+    "version": "01 — Материалы и внутренний свет.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Лиенсу\\Малый склад нанокристаллов\\01 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\bio\\SMALL_NANO_DUMP_.png",
+    "action": "NEW"
+  },
+  {
+    "race": "bio",
+    "building": "Малый склад продиума",
+    "machine": "SMALL_PRODIUM_DUMP",
+    "version": "01 — Материалы и внутренний свет.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Лиенсу\\Малый склад продиума\\01 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\bio\\SMALL_PRODIUM_DUMP_.png",
+    "action": "NEW"
+  },
+  {
+    "race": "bio",
+    "building": "Малый склад энергии",
+    "machine": "SMALL_STASIS_DUMP",
+    "version": "01 — Материалы и внутренний свет.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Лиенсу\\Малый склад энергии\\01 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\bio\\SMALL_STASIS_DUMP_.png",
+    "action": "NEW"
+  },
+  {
+    "race": "bio",
+    "building": "Силовой щит",
+    "machine": "SHIELD_BUILD",
+    "version": "01 — Материалы и внутренний свет.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Лиенсу\\Силовой щит\\01 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\bio\\SHIELD_BUILD_.png",
+    "action": "NEW"
+  },
+  {
+    "race": "bio",
+    "building": "Сканер туннельной реки",
+    "machine": "TUNNEL_RIVER_SCANNER",
+    "version": "01 — Черновик — Требует удаления ореола.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Лиенсу\\Сканер туннельной реки\\01 — Черновик — Требует удаления ореола.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\bio\\TUNNEL_RIVER_SCANNER_.png",
+    "action": "SAME"
+  },
+  {
+    "race": "bio",
+    "building": "Терраформер",
+    "machine": "TERRAMORPH_TOWER",
+    "version": "01 — Выразительная архитектура — Универсальная версия.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Лиенсу\\Терраформер\\01 — Выразительная архитектура — Универсальная версия.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\bio\\TERRAMORPH_TOWER_.png",
+    "action": "SAME"
+  },
+  {
+    "race": "bio",
+    "building": "Улучшенная зона мутантов",
+    "machine": "TRAINING_CAMP2L",
+    "version": "01 — Выразительная архитектура — Универсальная версия.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Лиенсу\\Улучшенная зона мутантов\\01 — Выразительная архитектура — Универсальная версия.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\bio\\TRAINING_CAMP2L_.png",
+    "action": "SAME"
+  },
+  {
+    "race": "bio",
+    "building": "Центр шпионажа",
+    "machine": "SPYING_CENTER",
+    "version": "02 — Материалы и внутренний свет.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Лиенсу\\Центр шпионажа\\02 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\bio\\SPYING_CENTER_.png",
+    "action": "SAME"
+  },
+  {
+    "race": "psi",
+    "building": "Деревня",
+    "machine": "VILLAGE",
+    "version": "01 — Выразительная архитектура — Универсальная версия.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Псолао\\Деревня\\01 — Выразительная архитектура — Универсальная версия.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\psi\\VILLAGE_.png",
+    "action": "SAME"
+  },
+  {
+    "race": "psi",
+    "building": "Дом отдыха",
+    "machine": "VOCATION_BUILD",
+    "version": "01 — Черновик — Требует удаления фона.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Псолао\\Дом отдыха\\01 — Черновик — Требует удаления фона.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\psi\\VOCATION_BUILD_.png",
+    "action": "SAME"
+  },
+  {
+    "race": "psi",
+    "building": "Источник",
+    "machine": "SOURCE",
+    "version": "01 — Материалы и внутренний свет.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Псолао\\Источник\\01 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\psi\\SOURCE_.png",
+    "action": "SAME"
+  },
+  {
+    "race": "psi",
+    "building": "Колодец",
+    "machine": "WELL_LADLER",
+    "version": "03 — Выразительная архитектура — Универсальная версия.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Псолао\\Колодец\\03 — Выразительная архитектура — Универсальная версия.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\psi\\WELL_LADLER_.png",
+    "action": "SAME"
+  },
+  {
+    "race": "psi",
+    "building": "Малое хранилище еды",
+    "machine": "SMALL_FOOD_SILO",
+    "version": "01 — Материалы и внутренний свет.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Псолао\\Малое хранилище еды\\01 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\psi\\SMALL_FOOD_SILO_.png",
+    "action": "NEW"
+  },
+  {
+    "race": "psi",
+    "building": "Малое хранилище кадериума",
+    "machine": "SMALL_KADERIUM_SILO",
+    "version": "01 — Материалы и внутренний свет.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Псолао\\Малое хранилище кадериума\\01 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\psi\\SMALL_KADERIUM_SILO_.png",
+    "action": "NEW"
+  },
+  {
+    "race": "psi",
+    "building": "Малое хранилище нанокристаллов",
+    "machine": "SMALL_NANO_SILO",
+    "version": "01 — Материалы и внутренний свет.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Псолао\\Малое хранилище нанокристаллов\\01 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\psi\\SMALL_NANO_SILO_.png",
+    "action": "NEW"
+  },
+  {
+    "race": "psi",
+    "building": "Малое хранилище продиума",
+    "machine": "SMALL_PRODIUM_SILO",
+    "version": "01 — Материалы и внутренний свет.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Псолао\\Малое хранилище продиума\\01 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\psi\\SMALL_PRODIUM_SILO_.png",
+    "action": "NEW"
+  },
+  {
+    "race": "psi",
+    "building": "Малое хранилище энергии",
+    "machine": "SMALL_STASIS_SILO",
+    "version": "01 — Материалы и внутренний свет.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Псолао\\Малое хранилище энергии\\01 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\psi\\SMALL_STASIS_SILO_.png",
+    "action": "NEW"
+  },
+  {
+    "race": "psi",
+    "building": "Малый склад еды",
+    "machine": "SMALL_FOOD_DUMP",
+    "version": "01 — Материалы и внутренний свет.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Псолао\\Малый склад еды\\01 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\psi\\SMALL_FOOD_DUMP_.png",
+    "action": "NEW"
+  },
+  {
+    "race": "psi",
+    "building": "Малый склад кадериума",
+    "machine": "SMALL_KADERIUM_DUMP",
+    "version": "01 — Материалы и внутренний свет.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Псолао\\Малый склад кадериума\\01 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\psi\\SMALL_KADERIUM_DUMP_.png",
+    "action": "NEW"
+  },
+  {
+    "race": "psi",
+    "building": "Малый склад нанокристаллов",
+    "machine": "SMALL_NANO_DUMP",
+    "version": "01 — Материалы и внутренний свет.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Псолао\\Малый склад нанокристаллов\\01 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\psi\\SMALL_NANO_DUMP_.png",
+    "action": "NEW"
+  },
+  {
+    "race": "psi",
+    "building": "Малый склад продиума",
+    "machine": "SMALL_PRODIUM_DUMP",
+    "version": "01 — Материалы и внутренний свет.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Псолао\\Малый склад продиума\\01 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\psi\\SMALL_PRODIUM_DUMP_.png",
+    "action": "NEW"
+  },
+  {
+    "race": "psi",
+    "building": "Малый склад энергии",
+    "machine": "SMALL_STASIS_DUMP",
+    "version": "01 — Материалы и внутренний свет.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Псолао\\Малый склад энергии\\01 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\psi\\SMALL_STASIS_DUMP_.png",
+    "action": "NEW"
+  },
+  {
+    "race": "psi",
+    "building": "Площадка для медитации",
+    "machine": "TRAINING_CAMP",
+    "version": "01 — Выразительная архитектура — Универсальная версия.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Псолао\\Площадка для медитации\\01 — Выразительная архитектура — Универсальная версия.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\psi\\TRAINING_CAMP_.png",
+    "action": "SAME"
+  },
+  {
+    "race": "psi",
+    "building": "Силовой щит",
+    "machine": "SHIELD_BUILD",
+    "version": "03 — Голубой и персиковый баланс.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Псолао\\Силовой щит\\03 — Голубой и персиковый баланс.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\psi\\SHIELD_BUILD_.png",
+    "action": "NEW"
+  },
+  {
+    "race": "psi",
+    "building": "Сканер туннельной реки",
+    "machine": "TUNNEL_RIVER_SCANNER",
+    "version": "01 — Выразительная архитектура — Универсальная версия.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Псолао\\Сканер туннельной реки\\01 — Выразительная архитектура — Универсальная версия.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\psi\\TUNNEL_RIVER_SCANNER_.png",
+    "action": "SAME"
+  },
+  {
+    "race": "psi",
+    "building": "Терраформер",
+    "machine": "TERRAMORPH_TOWER",
+    "version": "02 — Объёмные крылья и внутреннее свечение.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Псолао\\Терраформер\\02 — Объёмные крылья и внутреннее свечение.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\psi\\TERRAMORPH_TOWER_.png",
+    "action": "SAME"
+  },
+  {
+    "race": "psi",
+    "building": "Улучшенная площадка для медитации",
+    "machine": "TRAINING_CAMP2P",
+    "version": "01 — Выразительная архитектура — Универсальная версия.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Псолао\\Улучшенная площадка для медитации\\01 — Выразительная архитектура — Универсальная версия.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\psi\\TRAINING_CAMP2P_.png",
+    "action": "SAME"
+  },
+  {
+    "race": "psi",
+    "building": "Центр шпионажа",
+    "machine": "SPYING_CENTER",
+    "version": "02 — Материалы и внутренний свет.png",
+    "source": "C:\\Users\\Dima\\Documents\\Codex\\2026-09-19\\destinysphere\\outputs\\Варианты графики\\Псолао\\Центр шпионажа\\02 — Материалы и внутренний свет.png",
+    "destination": "D:\\ProjektDS\\client\\public\\assets\\buildings\\psi\\SPYING_CENTER_.png",
+    "action": "SAME"
+  }
+]

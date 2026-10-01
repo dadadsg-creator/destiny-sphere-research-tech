@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Технологический стек 1 — геометрия</title>
+    <link rel="stylesheet" href="./styles.css?v=20260930-6" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <p class="eyebrow">DESTINYSPHERE · ТЕХНОЛОГИЧЕСКИЙ СТЕК 1</p>
+        <h1>Геометрия жилого комплекса Воранеров</h1>
+        <p>Художественный полигон квартала и окружения с точными тестами объединений на 3–7 клетках.</p>
+      </header>
+      <section class="workspace">
+        <canvas id="scene" tabindex="0" aria-label="Художественный полигон гексагональных клеток. Нажмите на клетку, чтобы выбрать её."></canvas>
+        <aside>
+          <h2>Управление</h2>
+          <label class="field">
+            Пакет здания
+            <select id="packageSelect" autocomplete="off">
+              <option value="auto">Авто · три варианта</option>
+              <option value="blue">Только синий</option>
+              <option value="gold">Только золотой</option>
+              <option value="teal">Только бирюзовый</option>
+              <option value="voraner01">Воранеры · жилой v01</option>
+              <option value="voraner02">Воранеры · простой дом v02</option>
+              <option value="voranerMix" selected>Воранеры · дома и объединения</option>
+              <option value="voraner03">Воранеры · купольный дом v03</option>
+              <option value="voraner05">Воранеры · овальный дом v05</option>
+              <option value="voraner3d">Воранеры · 3D-блок-аут L1</option>
+              <option value="shadowLab">Полигон · математика и физическая тень</option>
+            </select>
+          </label>
+          <p id="packageStatus" class="status" role="status">Загрузка пакета…</p>
+          <label class="field zoom-field">
+            Масштаб сцены <output id="zoomValue" for="zoom">145%</output>
+            <input id="zoom" type="range" min="90" max="190" step="5" value="145" autocomplete="off" />
+          </label>
+          <label class="field">
+            Поверхность
+            <select id="surfaceSelect" autocomplete="off">
+              <option value="ancient" selected>Древняя платформа</option>
+              <option value="grass">Трава</option>
+              <option value="desert">Пустыня</option>
+            </select>
+          </label>
+          <label class="field">
+            Конфигурация
+            <select id="scenarioSelect" autocomplete="off">
+              <option value="district" selected>Полигон · 19 клеток — квартал и окружение</option>
+              <option value="districtWide">Окружение · 61 клетка, квартал в центре</option>
+              <option value="complexShadow">Тень · комплекс 7 → 1 на 19 клетках</option>
+              <option value="sevenFull">1 · 7 с центром — 7 → 1</option>
+              <option value="sixCenter">2 · 6 с центром — 3 → 1 + 3</option>
+              <option value="sixRing">3 · 6 по кольцу — одиночные</option>
+              <option value="fiveCenter">4 · 5 с центром — 3 → 1 + 2</option>
+              <option value="fiveRing">5 · 5 по кольцу — одиночные</option>
+              <option value="fourCenter">6 · 4 с центром — 3 → 1 + 1</option>
+              <option value="fourRing">7 · 4 по кольцу — одиночные</option>
+              <option value="threeCenter">8 · 3 треугольником — 3 → 1</option>
+              <option value="threeRing">9 · 3 по кольцу — одиночные</option>
+              <option value="single">Диагностика · одиночка</option>
+              <option value="pair">Диагностика · пара</option>
+              <option value="line">Диагностика · линия</option>
+              <option value="states">Диагностика · состояния</option>
+              <option value="shadowLab">Тени · PNG и 3D-дублёр рядом</option>
+            </select>
+          </label>
+          <section id="buildPanel" class="build-panel" aria-live="polite">
+            <h3>Выбранная клетка</h3>
+            <p id="buildHint">Выберите свободную клетку.</p>
+            <div id="buildMenu" class="build-menu" hidden>
+              <button type="button" data-building-variant="0">Башенный дом v02</button>
+              <button type="button" data-building-variant="1">Купольный дом v03</button>
+              <button type="button" data-building-variant="2">Овальный дом v05</button>
+            </div>
+            <div id="powerMenu" class="build-menu" hidden>
+              <button id="togglePower" type="button">Отключить здание</button>
+              <button id="toggleDamage" type="button">Повредить здание</button>
+              <button id="upgradeBuilding" type="button">Улучшить до уровня 2</button>
+              <button id="demolishBuilding" class="danger-button" type="button">Снести здание</button>
+            </div>
+          </section>
+          <label><input id="showPorts" type="checkbox" /> Порты</label>
+          <label><input id="showAnchors" type="checkbox" /> Anchor</label>
+          <label><input id="showEnvelope" type="checkbox" /> Envelope здания</label>
+          <label><input id="showLabels" type="checkbox" /> Номера и маски</label>
+          <label><input id="showMathShadow" type="checkbox" checked /> Математическая тень</label>
+          <label><input id="showPhysicalShadow" type="checkbox" checked /> Физическая тень 3D</label>
+          <label><input id="showFacadeShadow" type="checkbox" checked /> Тень поверх соседа</label>
+          <section class="shadow-tuning" aria-labelledby="shadowTuningTitle">
+            <h3 id="shadowTuningTitle">Модификаторы тени</h3>
+            <p>Изменения применяются сразу ко всем математическим теням и пересобирают их маски.</p>
+            <fieldset>
+              <legend>1. Свет и длина</legend>
+              <label class="modifier">Направление на экране <output id="shadowAzimuthValue">220°</output>
+                <input id="shadowAzimuth" type="range" min="180" max="270" step="1" value="220" />
+                <small>Куда уходит тень: 180° — влево, 270° — вверх.</small>
+              </label>
+              <label class="modifier">Высота звезды <output id="sunElevationValue">33°</output>
+                <input id="sunElevation" type="range" min="10" max="80" step="1" value="33" />
+                <small>Низкая звезда удлиняет тень, высокая укорачивает.</small>
+              </label>
+              <label class="modifier">Сжатие изометрии <output id="projectionCompressionValue">0,84</output>
+                <input id="projectionCompression" type="range" min="0.15" max="0.90" step="0.01" value="0.84" />
+                <small>Переводит экранную высоту картинки в расстояние по земле.</small>
+              </label>
+              <p class="derived">Итоговая длина на 1 px высоты: <output id="shadowLengthValue">1,29 px</output></p>
+            </fieldset>
+            <fieldset>
+              <legend>2. Чтение PNG-силуэта</legend>
+              <label class="modifier">Порог прозрачности <output id="alphaThresholdValue">26</output>
+                <input id="alphaThreshold" type="range" min="1" max="180" step="1" value="26" />
+                <small>Отсекает слабые полупрозрачные ореолы по краям PNG.</small>
+              </label>
+              <label class="modifier">Шаг выборки столбцов <output id="columnStepValue">1 px</output>
+                <input id="columnStep" type="range" min="1" max="8" step="1" value="1" />
+                <small>1 даёт точный контур; большее значение ускоряет расчёт.</small>
+              </label>
+              <label class="modifier">Толщина луча <output id="rayWidthValue">2,25 px</output>
+                <input id="rayWidth" type="range" min="0.5" max="8" step="0.25" value="2.25" />
+                <small>Заполняет промежутки между проекциями столбцов.</small>
+              </label>
+              <label class="modifier">Поправка основания <output id="baselineOffsetValue">0,060</output>
+                <input id="baselineOffset" type="range" min="-0.10" max="0.10" step="0.005" value="0.06" />
+                <small>Сдвигает линию, от которой измеряется высота здания.</small>
+              </label>
+            </fieldset>
+            <fieldset>
+              <legend>3. Смешивание слоёв</legend>
+              <label class="modifier">Математическая тень на земле <output id="mathOpacityValue">74%</output>
+                <input id="mathOpacity" type="range" min="0" max="1" step="0.02" value="0.74" />
+                <small>Непрозрачность вычисленной тени на поверхности клетки.</small>
+              </label>
+              <label class="modifier">Физическая тень на земле <output id="physicalOpacityValue">74%</output>
+                <input id="physicalOpacity" type="range" min="0" max="1" step="0.02" value="0.74" />
+                <small>Непрозрачность эталонной Blender-тени на земле.</small>
+              </label>
+              <label class="modifier">Математическая тень на соседнем доме <output id="mathFacadeOpacityValue">42%</output>
+                <input id="mathFacadeOpacity" type="range" min="0" max="0.70" step="0.02" value="0.42" />
+                <small>Прозрачность вычисленной маски поверх чужого фасада.</small>
+              </label>
+              <label class="modifier">Физическая тень на соседнем доме <output id="facadeOpacityValue">42%</output>
+                <input id="facadeOpacity" type="range" min="0" max="0.70" step="0.02" value="0.42" />
+                <small>Ослабленная физическая маска поверх чужого фасада.</small>
+              </label>
+              <label class="modifier">Размытие края <output id="shadowBlurValue">2,0 px</output>
+                <input id="shadowBlur" type="range" min="0" max="4" step="0.25" value="2" />
+                <small>0 сохраняет резкую тень оригинальной игры.</small>
+              </label>
+            </fieldset>
+            <button id="resetShadowTuning" type="button">Сбросить модификаторы</button>
+          </section>
+          <button id="rotate" type="button">Повернуть маску</button>
+          <dl id="metrics"></dl>
+        </aside>
+      </section>
+    </main>
+    <script type="module" src="./src/main.mjs?v=20261002-24"></script>
+  </body>
+</html>

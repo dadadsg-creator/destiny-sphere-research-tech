@@ -1,0 +1,18 @@
+{
+  "id": "tech/residential/voraner-v05-oval",
+  "race": "tech",
+  "complexGroup": "residential",
+  "variant": 2,
+  "footprint": [1, 1],
+  "logicalWidth": 52,
+  "anchor": [0.5, 0.840701],
+  "shadowOffset": [0, 0],
+  "emissiveOffset": [0, 0],
+  "ports": [true, true, true, true, true, true],
+  "layers": {
+    "color": "../exports/voraner-residential-v05-color.png?v=20261001-7",
+    "shadow": "../exports/voraner-residential-v05-shadow.png?v=20261001-7",
+    "emissive": "../exports/voraner-residential-v05-emissive.png?v=20261001-7"
+  }
+}
+

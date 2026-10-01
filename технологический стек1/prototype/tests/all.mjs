@@ -1,0 +1,11 @@
+import './geometry.test.mjs';
+import './visualManifest.test.mjs';
+import './complexes.test.mjs';
+import './complexVisuals.test.mjs';
+import './complexTheme.test.mjs';
+import './complexFusion.test.mjs';
+import './deterministicVariants.test.mjs';
+import './constructionState.test.mjs';
+import './lighting.test.mjs';
+import './silhouetteShadow.test.mjs';
+import './environmentArt.test.mjs';

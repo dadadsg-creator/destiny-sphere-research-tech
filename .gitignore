@@ -31,3 +31,10 @@ desktop.ini
 #   final selected PNGs that make it into client/public/assets/ are tracked.
 /old-sphere/SPHERE_client/
 /client-assets/
+
+# Local prototype previews and application caches
+/tmp/
+/технологический стек1/tmp/
+**/__pycache__/
+*.pyc
+*.blend1

@@ -1,0 +1,17 @@
+{
+  "id": "tech/residential/diagnostic-blue",
+  "race": "tech",
+  "complexGroup": "residential",
+  "variant": 0,
+  "footprint": [1, 1],
+  "logicalWidth": 82,
+  "anchor": [0.5, 0.95625],
+  "shadowOffset": [0, 1],
+  "emissiveOffset": [0, 0],
+  "ports": [true, true, true, true, true, true],
+  "layers": {
+    "color": "../exports/diagnostic-blue-color.png",
+    "shadow": "../exports/diagnostic-blue-shadow.png",
+    "emissive": "../exports/diagnostic-blue-emissive.png"
+  }
+}

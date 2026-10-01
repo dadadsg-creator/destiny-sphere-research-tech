@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://destinysphere.local/schemas/building-visual.schema.json",
+  "title": "DestinySphere Building Visual",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "race",
+    "complexGroup",
+    "footprint",
+    "logicalWidth",
+    "anchor",
+    "ports",
+    "layers"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "race": {
+      "enum": ["tech", "bio", "psi", "common"]
+    },
+    "complexGroup": {
+      "type": ["string", "null"]
+    },
+    "variant": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "footprint": {
+      "type": "array",
+      "prefixItems": [
+        { "type": "integer", "minimum": 1 },
+        { "type": "integer", "minimum": 1 }
+      ],
+      "items": false
+    },
+    "logicalWidth": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "anchor": {
+      "type": "array",
+      "prefixItems": [
+        { "type": "number", "minimum": 0, "maximum": 1 },
+        { "type": "number", "minimum": 0, "maximum": 1 }
+      ],
+      "items": false
+    },
+    "shadowOffset": {
+      "$ref": "#/$defs/vector2"
+    },
+    "emissiveOffset": {
+      "$ref": "#/$defs/vector2"
+    },
+    "ports": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "items": { "type": "boolean" }
+    },
+    "layers": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["color"],
+      "properties": {
+        "color": { "type": "string", "minLength": 1 },
+        "shadow": { "type": "string", "minLength": 1 },
+        "castShadow": { "type": "string", "minLength": 1 },
+        "emissive": { "type": "string", "minLength": 1 },
+        "construction": { "type": "string", "minLength": 1 },
+        "disabled": { "type": "string", "minLength": 1 },
+        "damage": { "type": "string", "minLength": 1 }
+      }
+    }
+  },
+  "$defs": {
+    "vector2": {
+      "type": "array",
+      "prefixItems": [
+        { "type": "number" },
+        { "type": "number" }
+      ],
+      "items": false
+    }
+  }
+}

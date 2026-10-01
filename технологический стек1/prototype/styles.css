@@ -1,0 +1,117 @@
+:root {
+  color-scheme: dark;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #061321;
+  color: #eaf6ff;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 72% 18%, rgba(41, 155, 220, 0.18), transparent 36%),
+    linear-gradient(160deg, #0a2843, #061321 55%);
+}
+
+main {
+  width: min(1440px, 100%);
+  margin: 0 auto;
+  padding: 28px;
+}
+
+header { margin-bottom: 22px; }
+.eyebrow { color: #75d6ff; font-size: 12px; letter-spacing: 0.16em; }
+h1 { margin: 8px 0; font-size: clamp(25px, 4vw, 42px); }
+header > p:last-child { color: #a9bfd0; }
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  min-height: 680px;
+  border: 1px solid rgba(109, 203, 255, 0.4);
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(2, 13, 24, 0.72);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.38);
+}
+
+canvas { width: 100%; height: 680px; display: block; cursor: pointer; }
+canvas:focus-visible { outline: 2px solid #65e1ff; outline-offset: -3px; }
+
+aside {
+  padding: 22px;
+  max-height: 680px;
+  overflow-y: auto;
+  border-left: 1px solid rgba(109, 203, 255, 0.25);
+  background: rgba(8, 31, 53, 0.86);
+}
+
+aside h2 { margin-top: 0; font-size: 18px; }
+label { display: block; margin: 15px 0; color: #c8dce9; }
+input { accent-color: #38c5ff; margin-right: 8px; }
+.zoom-field { display: grid; grid-template-columns: 1fr auto; gap: 7px 10px; align-items: center; }
+.zoom-field output { color: #eaf6ff; font-variant-numeric: tabular-nums; }
+.zoom-field input { grid-column: 1 / -1; width: 100%; margin: 0; }
+select {
+  width: 100%; margin-top: 8px; padding: 9px 10px;
+  border: 1px solid rgba(56, 197, 255, 0.7); border-radius: 7px;
+  color: #eaf6ff; background: #0d2c46;
+}
+.field { color: #72d6ff; font-size: 13px; }
+.status { min-height: 18px; margin: -5px 0 14px; color: #91abc0; font-size: 12px; }
+.status.error { color: #ff9baa; }
+button {
+  width: 100%; padding: 10px 12px; margin: 10px 0 18px;
+  border: 1px solid #38c5ff; border-radius: 7px;
+  color: #eaf6ff; background: #123c5e; cursor: pointer;
+}
+button:hover { background: #195178; }
+.build-panel {
+  margin: 16px 0;
+  padding: 13px;
+  border: 1px solid rgba(85, 201, 255, 0.42);
+  border-radius: 9px;
+  background: rgba(4, 20, 34, 0.48);
+}
+.build-panel h3 { margin: 0 0 7px; font-size: 15px; }
+.build-panel p { min-height: 32px; margin: 0; color: #a9bfd0; font-size: 12px; line-height: 1.35; }
+.build-menu { display: grid; gap: 7px; margin-top: 10px; }
+.build-menu[hidden] { display: none; }
+.build-menu button { margin: 0; padding: 8px; font-size: 12px; text-align: left; }
+.build-menu .danger-button { border-color: rgba(255, 125, 104, 0.7); color: #ffd0c8; background: rgba(92, 34, 34, 0.62); }
+.build-menu .danger-button:hover { background: rgba(126, 45, 42, 0.78); }
+dl { font-size: 13px; color: #a9bfd0; }
+dt { margin-top: 12px; color: #72d6ff; }
+dd { margin: 3px 0 0; }
+.shadow-tuning { margin: 20px 0; }
+.shadow-tuning > h3 { margin: 0 0 6px; font-size: 16px; }
+.shadow-tuning > p { margin: 0 0 12px; color: #91abc0; font-size: 12px; line-height: 1.4; }
+.shadow-tuning fieldset {
+  margin: 12px 0;
+  padding: 10px 12px 12px;
+  border: 1px solid rgba(91, 198, 244, 0.34);
+  border-radius: 8px;
+  background: rgba(3, 18, 31, 0.36);
+}
+.shadow-tuning legend { padding: 0 6px; color: #72d6ff; font-size: 12px; font-weight: 600; }
+.modifier {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 5px 10px;
+  margin: 10px 0 14px;
+  font-size: 12px;
+}
+.modifier output { color: #fff0b8; font-variant-numeric: tabular-nums; }
+.modifier input { grid-column: 1 / -1; width: 100%; margin: 0; }
+.modifier small { grid-column: 1 / -1; color: #829caf; line-height: 1.35; }
+.derived { margin: 8px 0 0; color: #b8ccd9; font-size: 12px; }
+.derived output { color: #fff0b8; }
+
+@media (max-width: 900px) {
+  main { padding: 16px; }
+  .workspace { grid-template-columns: 1fr; }
+  canvas { height: 500px; }
+  aside { border-left: 0; border-top: 1px solid rgba(109, 203, 255, 0.25); }
+}
