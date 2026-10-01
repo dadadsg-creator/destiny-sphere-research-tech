@@ -205,6 +205,12 @@ if(!$strOut || ($_REQUEST['nfs'] == 79)){
         '',
         $strOut
     );
+    $strOut = str_replace("http://forum.destinysphere.ru/viewforum.php?f=2", "https://forum.destinysphere.ru/viewforum.php?f=2", $strOut);
+    $strOut = str_replace("http://forum.destinysphere.ru/viewforum.php?f=776", "https://forum.destinysphere.ru/viewforum.php?f=776", $strOut);
+    $strOut = str_replace("http://destinysphere.ru/ds/tree.html", "https://destinysphere.ru/ds/tree.html", $strOut);
+    $strOut = str_replace("http://forum.destinysphere.ru/search.php", "https://forum.destinysphere.ru/search.php", $strOut);
+    $strOut = str_replace("http://forum.destinysphere.ru/index.php", "https://forum.destinysphere.ru/index.php", $strOut);
+    $strOut = str_replace('mm_menu_42.addMenuItem("ICQ-Консультант","location=\'?p=icq_helper\'");', '', $strOut);
     $pageCache->set($strOut);
     echo "<!--REAL PAGE!-->";
 }else{
