@@ -1561,6 +1561,28 @@ if(!$strOut || ($_REQUEST['nfs'] == 79)){
         <br /><br />
         <span style="font-size:13px;">Вы можете получить карту вращения колец на 3-е суток - <a href="http://sms.destinysphere.ru/?p=sms_dsring" class=wnd_gen_txt_large><b>получите</b></a> список ближайших к вам комплексов!</span>
         </span></td>', $strOut);
+    $strOut = str_replace('На данный момент Шпионаж включен <span style="text-decoration: underline;">в Сфере Волка, Сфере Ориона, Сфере Эридана, Сфере Единорога и Сфере Змееносца</span> классической версии &quot;Сфера Судьбы&quot;, а также <span style="text-decoration: underline;">в Сфере Весов</span> в Destiny Sphere Unlimited.</span><span style=""><o:p></o:p></span></p>', 'На данный момент Шпионаж включен <span style="text-decoration: underline;">в Сфере Волка, Сфере Эридана, Сфере Стрельца и Сфере Змееносца</span> классической версии &quot;Сфера Судьбы&quot;, а также <span style="text-decoration: underline;">в Сфере Весов</span> в Destiny Sphere Unlimited.</span><span style=""><o:p></o:p></span></p>', $strOut);
+    $strOut = str_replace('<tr>
+            <td bgcolor="#ffffff" style="vertical-align: top; font-style: italic;" bordercolor="#999999">
+            <div style="margin-left: 40px;"><font size="2">Шпионаж включен:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font><font size="2">       </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font><font size="2"></font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">         <font size="2">нет</font></td>
+        ', '<tr>
+            <td bgcolor="#ffffff" style="vertical-align: top; font-style: italic;" bordercolor="#999999">
+            <div style="margin-left: 40px;"><font size="2">Шпионаж включен:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font><font size="2">       </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font><font size="2"></font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">         <font size="2">да</font></td>
+        ', $strOut);
     $pageCache->set($strOut);
     echo "<!--REAL PAGE!-->";
 }else{
