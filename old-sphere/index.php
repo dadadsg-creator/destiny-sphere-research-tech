@@ -236,6 +236,115 @@ if(!$strOut || ($_REQUEST['nfs'] == 79)){
             <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">мир для новичков&nbsp; </font><font size="2"><br />
             </font></td>
         ', $strOut);
+    $strOut = str_replace('<tr>
+            <td width="22%" bgcolor="#ffffff" style="font-style: italic;" bordercolor="#999999">
+            <div style="margin-left: 40px;"><font size="2">Тип игры:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">каждый&nbsp; против&nbsp; каждого</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">&nbsp;</font><font size="2">каждый&nbsp; против&nbsp; каждого</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">каждый&nbsp; против&nbsp; каждого</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">каждый&nbsp; против&nbsp; каждого</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">каждый&nbsp; против&nbsp; каждого</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">каждый&nbsp; против&nbsp; каждого</font></td>
+        ', '<tr>
+            <td width="22%" bgcolor="#ffffff" style="font-style: italic;" bordercolor="#999999">
+            <div style="margin-left: 40px;"><font size="2">Тип игры:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">каждый&nbsp; против&nbsp; каждого</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">&nbsp;</font><font size="2">каждый&nbsp; против&nbsp; каждого</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">раса&nbsp; против&nbsp; расы</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">каждый&nbsp; против&nbsp; каждого</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">каждый&nbsp; против&nbsp; каждого</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">каждый&nbsp; против&nbsp; каждого</font></td>
+        ', $strOut);
+    $strOut = str_replace('<tr>
+            <td width="35%" bgcolor="#ffffff" style="font-style: italic;" bordercolor="#999999">
+            <div style="margin-left: 40px;"><font size="2">Тип игры:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">&nbsp;раса против расы</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">&nbsp;раса против расы</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">&nbsp;раса против расы</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">&nbsp;раса против расы</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">&nbsp;раса против расы</font></td>
+        ', '<tr>
+            <td width="35%" bgcolor="#ffffff" style="font-style: italic;" bordercolor="#999999">
+            <div style="margin-left: 40px;"><font size="2">Тип игры:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">&nbsp;раса против расы</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">&nbsp;раса против расы</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">&nbsp;раса против расы</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">&nbsp;каждый против каждого</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">&nbsp;раса против расы</font></td>
+        ', $strOut);
+    $strOut = str_replace('<tr>
+            <td width="35%" bgcolor="#ffffff" style="font-style: italic;" bordercolor="#999999">
+            <div style="margin-left: 40px;"><font size="2">Особенности мира:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">обычный мир &nbsp;</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">обычный мир &nbsp;</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">обычный мир &nbsp;</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">обычный мир &nbsp;</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">мир для новичков &nbsp;</font></td>
+        ', '<tr>
+            <td width="35%" bgcolor="#ffffff" style="font-style: italic;" bordercolor="#999999">
+            <div style="margin-left: 40px;"><font size="2">Особенности мира:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">обычный мир &nbsp;</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">регистрация закрыта &nbsp;</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">обычный мир &nbsp;</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">обычный мир &nbsp;</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">мир для новичков &nbsp;</font></td>
+        ', $strOut);
+    $strOut = str_replace('<tr>
+            <td bgcolor="#ffffff" style="vertical-align: top; font-style: italic;" bordercolor="#999999">
+            <div style="margin-left: 40px;"><font size="2">Вращение колец включено:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font><font size="2">       </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">         <font size="2">нет</font></td>
+        ', '<tr>
+            <td bgcolor="#ffffff" style="vertical-align: top; font-style: italic;" bordercolor="#999999">
+            <div style="margin-left: 40px;"><font size="2">Вращение колец включено:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font><font size="2">       </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">         <font size="2">нет</font></td>
+        ', $strOut);
+    $strOut = str_replace('<tr>
+            <td bgcolor="#ffffff" style="vertical-align: top; font-style: italic;" bordercolor="#999999">
+            <div style="margin-left: 40px;"><font size="2">Шпионаж включен:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font><font size="2">       </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font><font size="2"></font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">         <font size="2">нет</font></td>
+        ', '<tr>
+            <td bgcolor="#ffffff" style="vertical-align: top; font-style: italic;" bordercolor="#999999">
+            <div style="margin-left: 40px;"><font size="2">Шпионаж включен:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font><font size="2">       </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font><font size="2"></font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">         <font size="2">нет</font></td>
+        ', $strOut);
     $pageCache->set($strOut);
     echo "<!--REAL PAGE!-->";
 }else{
