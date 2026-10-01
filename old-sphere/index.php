@@ -345,6 +345,1208 @@ if(!$strOut || ($_REQUEST['nfs'] == 79)){
             <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font><font size="2"></font></td>
             <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">         <font size="2">нет</font></td>
         ', $strOut);
+    $strOut = str_replace('<table width="85%" cellspacing="0" cellpadding="0" border="1" align="center" style="border-collapse: collapse;">
+    <tbody>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" style="font-style: italic;" bordercolor="#999999">
+            <div style="margin-left: 40px;"><font size="2">Название Сферы:<br />
+            </font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center; font-weight: bold;" bordercolor="#999999"><font size="2"><br />
+            ЭРИДАН<br />
+            </font><font size="2"><img vspace="5" hspace="5" align="middle" alt="" src="http://ds.rambler.ru/ds/images/world_logo/eridan_1.gif" /></font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center; font-weight: bold;" bordercolor="#999999"><font size="2">&nbsp;<br />
+            ПЕГАС<br />
+            </font><font size="2"><img vspace="5" hspace="5" align="middle" alt="" src="http://ds.rambler.ru/ds/images/world_logo/pegassus_1.gif" /></font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center; font-weight: bold;" bordercolor="#999999"><font size="2"><br />
+            ВОДОЛЕЙ<br />
+            </font><font size="2"><img vspace="5" hspace="5" align="middle" alt="" src="http://ds.rambler.ru/ds/images/world_logo/vodolei_2.gif" /></font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center; font-weight: bold;" bordercolor="#999999"><font size="2"><br />
+            КЕНТАВР<br />
+            </font><font size="2"><img vspace="5" hspace="5" align="middle" alt="" src="http://ds.rambler.ru/ds/images/world_logo/lion_2.gif" /></font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center; font-weight: bold;" bordercolor="#999999"><font size="2"><br />
+            ТЕРРА НОВА<br />
+            </font><font size="2"><img vspace="5" hspace="5" align="middle" alt="" src="http://ds.rambler.ru/ds/images/world_logo/priemka_6.gif" /></font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" style="font-style: italic;" bordercolor="#999999">
+            <div style="margin-left: 40px;"><font size="2">Тип игры:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">&nbsp;раса против расы</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">&nbsp;раса против расы</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">&nbsp;раса против расы</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">&nbsp;каждый против каждого</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">&nbsp;раса против расы</font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" style="font-style: italic;" bordercolor="#999999">
+            <div style="margin-left: 40px;"><font size="2">День рождения мира:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">&nbsp;13.07.2004</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">&nbsp;27.10.2004</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">26.04.2005&nbsp;</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">26.09.2006&nbsp;</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">&nbsp;3.04.2007</font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" style="font-style: italic;" bordercolor="#999999">
+            <div style="margin-left: 40px;"><font size="2">Особенности мира:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">обычный мир &nbsp;</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">регистрация закрыта &nbsp;</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">обычный мир &nbsp;</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">обычный мир &nbsp;</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">мир для новичков &nbsp;</font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Уровень развития мира (от 1 до 4):</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">IV</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">III</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">III</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">II</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">I</font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Максимальное количество игроков в альянсе:<br />
+            </font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">&nbsp;<font size="2">200<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">100</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">175</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">175</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">50</font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Максимальное количество колоний в мире:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">4</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">3</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">2</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">2</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">1</font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Размер средней армии в продиуме игрока ТОП-100 мира:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">22 682 291 150&nbsp;</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">5 331 330 871&nbsp;</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">8 358 699 565&nbsp;</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">3 853 891 509&nbsp;</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">62 138 046&nbsp;</font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Количество комплексов на Ворании <br />
+            </font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">360              </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">360 <br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">320</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">500</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">418 <br />
+            </font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Количество комплексов на </font><font size="2">Лиенсорде</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">360<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">360</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">330</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">520 <br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">418</font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Количество комплексов на Псолеоне<br />
+            </font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">360</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">360</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">321</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">500 <br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">418</font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Количество комплексов на Мельсионе<br />
+            </font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">800</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">760</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">630</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">1000 <br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">901</font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Одновременное количество строящихся зданий на соте:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">7<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">7<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">7<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">5<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">11<br />
+            </font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Время игрового хода в минутах:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">60<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">60<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">60<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">60<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">30<br />
+            </font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Бонус на производство ресурсов премиум-игрокам:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">5%<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">5%<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">10%<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">10%<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">10%<br />
+            </font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Вращение колец включено:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Коэффициент расчета стоимости проживания юнитов на соте:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">0.0000007500<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">0.0000008000</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">0.0000007500</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">0.0000100000</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">0.0000010000</font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Коэффициент для расчета стоимости движения юнитов (во время боя):</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">0.0000050000<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">0.0000050000<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">0.0000050000</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">0.0000100000</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">0.0000050000</font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Коэффициент для расчета стоимости не военного перемещения юнитов (торговля, перенос на колонии):</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">0.0000010000<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">0.0000010000<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">0.0000010000<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">0.0000100000</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">0.0000010000</font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Разрешено ли отступление в мире:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Сколько можно одновременно отправить армий с соты:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">200<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">150<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">150<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">100<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">200<br />
+            </font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Максимальное количество армий, которое разрешено создавать игроку на одной соте:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">300<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">200<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">250<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">150<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">200<br />
+            </font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">&quot;Голые сумки&quot;&nbsp; могут выиграть бой по весу:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Шпионаж включен:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Общее максимальное количество зондов на соте:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">1000<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">1000<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">1000<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">1000<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">1000<br />
+            </font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Количество зондов за каждый уровень науки:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">20<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">20<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">20<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">20<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">20<br />
+            </font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Торговля за серебро:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Возможность торговать в мире раса против расы на межкольце артефактами:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Возможность торговать в мире раса против расы на межкольце ресурсами:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Возможность торговать в мире раса против расы на межкольце юнитами:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Включение персональных торгов:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Можно ли выставить лот анонимно:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Включение налогов на торгах:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Ограничение на максимальное количество выставляемых лотов:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Ограбление соты даже если в атакующей армии не осталось юнитов способных наносить урон:</font><br />
+            </div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">                          <font size="2">да</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">             Налог на грабеж:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Максимально время работы силового щита в игровых ходах:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">150<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">150<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">150<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">150<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">300<br />
+            </font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Минимальное время отпуска в игровых ходах:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">72<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">72<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">72<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">72<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">144<br />
+            </font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Сколько дней после открытия ворот будет действовать защита новичков:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">21<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">21<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">21<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">28<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">28<br />
+            </font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Максимальная сила армии (кол-во звезд) после которой снимается защита с новичков:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">7<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">9<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">7<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">7<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">6<br />
+            </font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Бонус локальных артефактов:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">&nbsp;да</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">да</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">да</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">да</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">да</font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Бесплатный переезд по домашнему кольцу разрешен:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Через сколько дней можно повторно использовать бесплатный переезд по кольцу:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">90<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">90<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">90<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">60<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">60<br />
+            </font></td>
+        </tr>
+        <tr>
+            <td width="35%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Из мира возможен переезд в миры:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center; font-style: italic;"><font size="2">Черная Дыра<br />
+            Змееносец</font>             </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center; font-style: italic;"><font size="2">Черная Дыра<br />
+            Феникс<br />
+            Эридан<br />
+            Орион<br />
+            Змееносец</font>             </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center; font-style: italic;"><font size="2">Черная Дыра<br />
+            Пегас<br />
+            Ворон<br />
+            Феникс<br />
+            Эридан<br />
+            Орион<br />
+            Змееносец</font>             </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center; font-style: italic;"><font size="2">Черная Дыра<br />
+            Пегас<br />
+            Водолей<br />
+            Ворон<br />
+            Феникс<br />
+            Эридан<br />
+            Орион<br />
+            Змееносец</font>             </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center; font-style: italic;"><font size="2">Черная Дыра<br />
+            Лев<br />
+            Волк<br />
+            Пегас<br />
+            Водолей<br />
+            Ворон<br />
+            Феникс<br />
+            Эридан<br />
+            Орион<br />
+            Змееносец</font>             </td>
+        </tr>
+    </tbody>
+', '<table width="85%" cellspacing="0" cellpadding="0" border="1" align="center" style="border-collapse: collapse;">
+    <tbody>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" style="font-style: italic;" bordercolor="#999999">
+            <div style="margin-left: 40px;"><font size="2">Название Сферы:<br />
+            </font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center; font-weight: bold;" bordercolor="#999999"><font size="2"><br />
+            ЭРИДАН<br />
+            </font><font size="2"><img vspace="5" hspace="5" align="middle" alt="" src="http://ds.rambler.ru/ds/images/world_logo/eridan_1.gif" /></font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center; font-weight: bold;" bordercolor="#999999"><font size="2">&nbsp;<br />
+            ПЕГАС<br />
+            </font><font size="2"><img vspace="5" hspace="5" align="middle" alt="" src="http://ds.rambler.ru/ds/images/world_logo/pegassus_1.gif" /></font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center; font-weight: bold;" bordercolor="#999999"><font size="2"><br />
+            ВОДОЛЕЙ<br />
+            </font><font size="2"><img vspace="5" hspace="5" align="middle" alt="" src="http://ds.rambler.ru/ds/images/world_logo/vodolei_2.gif" /></font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center; font-weight: bold;" bordercolor="#999999"><font size="2"><br />
+            КЕНТАВР<br />
+            </font><font size="2"><img vspace="5" hspace="5" align="middle" alt="" src="http://ds.rambler.ru/ds/images/world_logo/lion_2.gif" /></font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center; font-weight: bold;" bordercolor="#999999"><font size="2"><br />
+            ТЕРРА НОВА<br />
+            </font><font size="2"><img vspace="5" hspace="5" align="middle" alt="" src="http://ds.rambler.ru/ds/images/world_logo/priemka_6.gif" /></font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center; font-weight: bold;" bordercolor="#999999"><font size="2"><br />
+            СИРИУС<br />
+            </font><font size="2"><img vspace="5" hspace="5" align="middle" alt="" src="http://ds.rambler.ru/ds/images/world_logo/edinorog_15.gif" /></font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" style="font-style: italic;" bordercolor="#999999">
+            <div style="margin-left: 40px;"><font size="2">Тип игры:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">&nbsp;раса против расы</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">&nbsp;раса против расы</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">&nbsp;раса против расы</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">&nbsp;каждый против каждого</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">&nbsp;раса против расы</font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">&nbsp;каждый против каждого</font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" style="font-style: italic;" bordercolor="#999999">
+            <div style="margin-left: 40px;"><font size="2">День рождения мира:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">&nbsp;13.07.2004</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">&nbsp;27.10.2004</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">26.04.2005&nbsp;</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">26.09.2006&nbsp;</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">&nbsp;3.04.2007</font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">&mdash;</font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" style="font-style: italic;" bordercolor="#999999">
+            <div style="margin-left: 40px;"><font size="2">Особенности мира:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">обычный мир &nbsp;</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">регистрация закрыта &nbsp;</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">обычный мир &nbsp;</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">обычный мир &nbsp;</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">мир для новичков &nbsp;</font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">обычный мир &nbsp;</font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Уровень развития мира (от 1 до 4):</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">IV</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">III</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">III</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">II</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">I</font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">&mdash;</font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Максимальное количество игроков в альянсе:<br />
+            </font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">&nbsp;<font size="2">200<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">100</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">175</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">175</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">50</font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">50</font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Максимальное количество колоний в мире:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">4</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">3</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">2</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">2</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">1</font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">2</font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Размер средней армии в продиуме игрока ТОП-100 мира:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">22 682 291 150&nbsp;</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">5 331 330 871&nbsp;</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">8 358 699 565&nbsp;</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">3 853 891 509&nbsp;</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">62 138 046&nbsp;</font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">&mdash;</font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Количество комплексов на Ворании <br />
+            </font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">360              </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">360 <br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">320</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">500</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">418 <br />
+            </font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">&mdash;</font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Количество комплексов на </font><font size="2">Лиенсорде</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">360<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">360</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">330</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">520 <br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">418</font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">&mdash;</font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Количество комплексов на Псолеоне<br />
+            </font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">360</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">360</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">321</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">500 <br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">418</font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">&mdash;</font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Количество комплексов на Мельсионе<br />
+            </font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">800</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">760</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">630</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">1000 <br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">901</font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">&mdash;</font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Одновременное количество строящихся зданий на соте:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">7<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">7<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">7<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">5<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">11<br />
+            </font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">&mdash;</font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Время игрового хода в минутах:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">60<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">60<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">60<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">60<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">30<br />
+            </font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">10<br />
+            </font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Бонус на производство ресурсов премиум-игрокам:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">5%<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">5%<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">10%<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">10%<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">10%<br />
+            </font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">&asymp;55%<br />
+            </font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Вращение колец включено:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Коэффициент расчета стоимости проживания юнитов на соте:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">0.0000007500<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">0.0000008000</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">0.0000007500</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">0.0000100000</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">0.0000010000</font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">0.0000000000</font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Коэффициент для расчета стоимости движения юнитов (во время боя):</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">0.0000050000<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">0.0000050000<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">0.0000050000</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">0.0000100000</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">0.0000050000</font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">0.0000005000</font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Коэффициент для расчета стоимости не военного перемещения юнитов (торговля, перенос на колонии):</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">0.0000010000<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">0.0000010000<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">0.0000010000<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">0.0000100000</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">0.0000010000</font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">0.0000003300</font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Разрешено ли отступление в мире:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да<br />
+            </font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Сколько можно одновременно отправить армий с соты:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">200<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">150<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">150<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">100<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">200<br />
+            </font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">50<br />
+            </font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Максимальное количество армий, которое разрешено создавать игроку на одной соте:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">300<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">200<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">250<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">150<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">200<br />
+            </font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">100<br />
+            </font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">&quot;Голые сумки&quot;&nbsp; могут выиграть бой по весу:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Шпионаж включен:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Общее максимальное количество зондов на соте:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">1000<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">1000<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">1000<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">1000<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">1000<br />
+            </font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">2000<br />
+            </font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Количество зондов за каждый уровень науки:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">20<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">20<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">20<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">20<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">20<br />
+            </font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">20<br />
+            </font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Торговля за серебро:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да<br />
+            </font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Возможность торговать в мире раса против расы на межкольце артефактами:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Возможность торговать в мире раса против расы на межкольце ресурсами:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Возможность торговать в мире раса против расы на межкольце юнитами:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет<br />
+            </font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Включение персональных торгов:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Можно ли выставить лот анонимно:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Включение налогов на торгах:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Ограничение на максимальное количество выставляемых лотов:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">600</font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Ограбление соты даже если в атакующей армии не осталось юнитов способных наносить урон:</font><br />
+            </div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">                          <font size="2">да</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">             Налог на грабеж:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">нет</font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">&asymp;5%</font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Максимально время работы силового щита в игровых ходах:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">150<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">150<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">150<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">150<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">300<br />
+            </font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">288<br />
+            </font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Минимальное время отпуска в игровых ходах:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">72<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">72<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">72<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">72<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">144<br />
+            </font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">288<br />
+            </font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Сколько дней после открытия ворот будет действовать защита новичков:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">21<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">21<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">21<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">28<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">28<br />
+            </font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">&asymp;84<br />
+            </font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Максимальная сила армии (кол-во звезд) после которой снимается защита с новичков:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">7<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">9<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">7<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">7<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">6<br />
+            </font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">8<br />
+            </font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Бонус локальных артефактов:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">&nbsp;да</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">да</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">да</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">да</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">да</font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;"><font size="2">нет</font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Бесплатный переезд по домашнему кольцу разрешен:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">да</font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Через сколько дней можно повторно использовать бесплатный переезд по кольцу:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">90<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">90<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">90<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">60<br />
+            </font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">60<br />
+            </font></td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">90<br />
+            </font></td>
+        </tr>
+        <tr>
+            <td width="22%" bgcolor="#ffffff" bordercolor="#999999" style="vertical-align: top; font-style: italic;">
+            <div style="margin-left: 40px;"><font size="2">Из мира возможен переезд в миры:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center; font-style: italic;"><font size="2">Черная Дыра<br />
+            Змееносец</font>             </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center; font-style: italic;"><font size="2">Черная Дыра<br />
+            Феникс<br />
+            Эридан<br />
+            Орион<br />
+            Змееносец</font>             </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center; font-style: italic;"><font size="2">Черная Дыра<br />
+            Пегас<br />
+            Ворон<br />
+            Феникс<br />
+            Эридан<br />
+            Орион<br />
+            Змееносец</font>             </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center; font-style: italic;"><font size="2">Черная Дыра<br />
+            Пегас<br />
+            Водолей<br />
+            Ворон<br />
+            Феникс<br />
+            Эридан<br />
+            Орион<br />
+            Змееносец</font>             </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center; font-style: italic;"><font size="2">Черная Дыра<br />
+            Лев<br />
+            Волк<br />
+            Пегас<br />
+            Водолей<br />
+            Ворон<br />
+            Феникс<br />
+            Эридан<br />
+            Орион<br />
+            Змееносец</font>             </td><td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center; font-style: italic;"><font size="2">&mdash;</font>             </td>
+        </tr>
+    </tbody>
+', $strOut);
     $pageCache->set($strOut);
     echo "<!--REAL PAGE!-->";
 }else{
