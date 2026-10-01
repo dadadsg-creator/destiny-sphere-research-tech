@@ -1547,6 +1547,20 @@ if(!$strOut || ($_REQUEST['nfs'] == 79)){
         </tr>
     </tbody>
 ', $strOut);
+    $strOut = str_replace('mm_menu_42.addMenuItem("Вращение колец","location=\'?p=ring_rotate\'");
+', '', $strOut);
+    $strOut = str_replace('<span class=wnd_gen_txt_large>
+        <form method="post" action=/index.php>
+        Выберите мир: 
+        <select name=\'id_world\'><option value=\'1_1\'>Сфера Парусов</option><option value=\'2_1\'>Сфера Эридана</option><option value=\'3_2\'>Сфера Кентавра</option><option value=\'4_1\'>Сфера Ориона-Ворона-Феникса</option><option value=\'5_2\'>Сфера Ориона</option><option value=\'6_2\'>Сфера Змееносца</option><option value=\'7_2\'>Сфера Водолея-Льва</option><option value=\'8_1\'>Сфера Стрельца</option><option value=\'9_3\'>Черная дыра</option><option value=\'10_6\'>Терра Нова</option><option value=\'11_2\'>Сфера Волка</option><option value=\'12_15\'>Сфера Сириуса</option><option value=\'13_1\'>Сфера Гончих Псов</option></select> 
+        <input type="hidden" name="p" value="ring_rotate">
+        <input type=\'submit\' name=\'enter\' value=\'Построить схему\' class=input_button></form>
+        <span style="font-size:13px;">Вы можете получить карту вращения колец на 3-е суток - <a href="http://sms.destinysphere.ru/?p=sms_dsring" class=wnd_gen_txt_large><b>получите</b></a> список ближайших к вам комплексов!</span>
+        </span></td>', '<span class=wnd_gen_txt_large>
+        <b>Калькулятор вращения колец временно недоступен и находится в разработке.</b>
+        <br /><br />
+        <span style="font-size:13px;">Вы можете получить карту вращения колец на 3-е суток - <a href="http://sms.destinysphere.ru/?p=sms_dsring" class=wnd_gen_txt_large><b>получите</b></a> список ближайших к вам комплексов!</span>
+        </span></td>', $strOut);
     $pageCache->set($strOut);
     echo "<!--REAL PAGE!-->";
 }else{
