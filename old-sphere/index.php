@@ -1583,6 +1583,9 @@ if(!$strOut || ($_REQUEST['nfs'] == 79)){
             <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">             <font size="2">‰‡</font><font size="2"></font></td>
             <td width="13%" valign="middle" bgcolor="#ffffff" align="center" bordercolor="#999999" style="vertical-align: top; text-align: center;">         <font size="2">‰‡</font></td>
         ', $strOut);
+    $strOut = str_replace('—‘≈–¿ À‹¬¿', '—‘≈–¿  ≈Õ“¿¬–¿', $strOut);
+    $strOut = str_replace('—‘≈–¿ ≈ƒ»ÕŒ–Œ√¿', '—‘≈–¿ —»–»”—¿', $strOut);
+    $strOut = str_replace('—‘≈–¿ ¬Œ–ŒÕ¿-œ¿–”—¿¿', '—‘≈–¿ ¬Œ–ŒÕ¿-œ¿–”—¿', $strOut);
     $pageCache->set($strOut);
     echo "<!--REAL PAGE!-->";
 }else{
