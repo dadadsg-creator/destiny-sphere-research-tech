@@ -211,6 +211,31 @@ if(!$strOut || ($_REQUEST['nfs'] == 79)){
     $strOut = str_replace("http://forum.destinysphere.ru/search.php", "https://forum.destinysphere.ru/search.php", $strOut);
     $strOut = str_replace("http://forum.destinysphere.ru/index.php", "https://forum.destinysphere.ru/index.php", $strOut);
     $strOut = str_replace('mm_menu_42.addMenuItem("ICQ-Консультант","location=\'?p=icq_helper\'");', '', $strOut);
+    $strOut = str_replace('ФЕНИКС', 'ПАРУСА', $strOut);
+    $strOut = str_replace('ЛЕВ', 'КЕНТАВР', $strOut);
+    $strOut = str_replace('<tr>
+            <td width="22%" bgcolor="#ffffff" style="font-style: italic;" bordercolor="#999999">
+            <div style="margin-left: 40px;"><font size="2">Особенности мира:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">премиум-мир &nbsp;</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">обычный мир &nbsp;</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">обычный мир &nbsp;</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">обычный мир &nbsp;</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">экспериментальный мир&nbsp; &nbsp;</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">мир для новичков&nbsp; </font><font size="2"><br />
+            </font></td>
+        ', '<tr>
+            <td width="22%" bgcolor="#ffffff" style="font-style: italic;" bordercolor="#999999">
+            <div style="margin-left: 40px;"><font size="2">Особенности мира:</font></div>
+            </td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">премиум-мир &nbsp;</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">обычный мир &nbsp;</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">заморожен &nbsp;</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">обычный мир &nbsp;</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">экспериментальный мир&nbsp; &nbsp;</font></td>
+            <td width="13%" valign="middle" bgcolor="#ffffff" align="center" style="text-align: center;" bordercolor="#999999"><font size="2">мир для новичков&nbsp; </font><font size="2"><br />
+            </font></td>
+        ', $strOut);
     $pageCache->set($strOut);
     echo "<!--REAL PAGE!-->";
 }else{
