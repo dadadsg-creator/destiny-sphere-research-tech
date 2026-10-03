@@ -6,14 +6,11 @@ import { resolveComplexes } from '../src/complexes.mjs';
 import { resolveComplexFusions } from '../src/complexFusion.mjs';
 import { nineteenCellCluster, sevenCellCluster } from '../src/geometry.mjs';
 
-test('visual links connect adjacent occupied objects without creating cell occupancy', () => {
+test('visual links stay sparse and do not force every adjacent object into the network', () => {
   const cells = sevenCellCluster();
   const links = buildArchitecturalLinks({ cells, occupiedCellNums: [0, 2, 3] });
-  assert.equal(links.length, 2);
-  assert.deepEqual(
-    [...new Set(links.flatMap((link) => [link.fromCellNum, link.toCellNum]))].sort((a, b) => a - b),
-    [0, 2, 3],
-  );
+  assert.equal(links.length, 1);
+  assert.equal(links[0].throughCellNums.length, 0);
   assert.equal(links.every((link) => link.port.length === 2), true);
 });
 
@@ -49,4 +46,33 @@ test('district links form a sparse deterministic forest between visual objects',
   assert.equal(first.length > 0, true);
   assert.equal(first.length < occupiedCellNums.length - 1, true);
   assert.equal(first.every((link) => link.fromObjectId !== link.toObjectId), true);
+});
+
+test('same-row houses connect entrance to entrance through the free cell below them', () => {
+  const cells = sevenCellCluster();
+  const [link] = buildArchitecturalLinks({ cells, occupiedCellNums: [0, 2] });
+  assert.equal(link.fromSide, 'front');
+  assert.equal(link.toSide, 'front');
+  assert.deepEqual(link.throughCellNums, [3]);
+  assert.deepEqual(link.from, [24, 26]);
+  assert.deepEqual(link.to, [72, 26]);
+});
+
+test('a lower adjacent house receives a short route at its rear service side', () => {
+  const cells = sevenCellCluster();
+  const [link] = buildArchitecturalLinks({ cells, occupiedCellNums: [0, 3] });
+  assert.deepEqual([link.fromSide, link.toSide], ['front', 'rear']);
+  assert.deepEqual(link.throughCellNums, []);
+  assert.equal(link.points.length, 3);
+});
+
+test('routed links never spend a free-route cell occupied by a building', () => {
+  const cells = nineteenCellCluster();
+  const occupiedCellNums = [0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 12, 13, 15, 16, 18];
+  const occupied = new Set(occupiedCellNums);
+  const links = buildArchitecturalLinks({ cells, occupiedCellNums });
+  assert.equal(
+    links.every((link) => link.throughCellNums.every((cellNum) => !occupied.has(cellNum))),
+    true,
+  );
 });

@@ -17,7 +17,7 @@ import { buildComplexVisualPlan, pickCell } from './complexVisuals.mjs?v=2026093
 import { resolveComplexTheme } from './complexTheme.mjs?v=20260930-2';
 import { resolveComplexFusions, sortComplexRenderItems } from './complexFusion.mjs?v=20261003-1';
 import { assignDeterministicVariants } from './deterministicVariants.mjs?v=20260930-2';
-import { buildArchitecturalLinks } from './architecturalLinks.mjs?v=20261003-1';
+import { buildArchitecturalLinks } from './architecturalLinks.mjs?v=20261004-3';
 import {
   RING_GATE_CELL_NUMS,
   drawAncientEnvironment,
@@ -1105,51 +1105,41 @@ function drawConnector(connector, theme) {
   ctx.restore();
 }
 
+function appendArchitecturalPath(points) {
+  ctx.beginPath();
+  ctx.moveTo(...points[0]);
+  for (const point of points.slice(1)) ctx.lineTo(...point);
+}
+
 function drawArchitecturalLinkLayer(links) {
   ctx.save();
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
   for (const link of links) {
-    const path = () => {
-      ctx.beginPath();
-      ctx.moveTo(...link.from);
-      ctx.lineTo(...link.port);
-      ctx.lineTo(...link.to);
-    };
     const stroke = (color, width) => {
-      path();
+      appendArchitecturalPath(link.points);
       ctx.strokeStyle = color;
       ctx.lineWidth = width;
       ctx.stroke();
     };
 
-    // A short built-in gallery between two foundations.  It belongs to the
-    // visual bases and never creates an economic road cell.
-    stroke('rgba(4, 15, 23, 0.82)', 8.4);
-    stroke('rgba(116, 88, 48, 0.94)', 6.8);
-    stroke('rgba(218, 214, 190, 0.97)', 5.25);
-    stroke('rgba(252, 242, 211, 0.74)', 2.15);
-    stroke('rgba(45, 190, 225, 0.88)', 0.72);
+    // Narrow pedestrian route. Its path starts at a visible entrance and is
+    // allowed through empty cells only; it remains visual ground detail.
+    stroke('rgba(4, 15, 23, 0.72)', 3.1);
+    stroke('rgba(119, 88, 47, 0.86)', 2.45);
+    stroke('rgba(211, 210, 194, 0.84)', 1.72);
+    stroke('rgba(246, 239, 217, 0.56)', 0.72);
+    stroke('rgba(48, 193, 226, 0.7)', 0.3);
 
-    const dx = link.to[0] - link.from[0];
-    const dy = link.to[1] - link.from[1];
-    const length = Math.hypot(dx, dy) || 1;
-    const nx = -dy / length;
-    const ny = dx / length;
-    ctx.beginPath();
-    ctx.moveTo(link.port[0] - nx * 3.05, link.port[1] - ny * 3.05);
-    ctx.lineTo(link.port[0] + nx * 3.05, link.port[1] + ny * 3.05);
-    ctx.strokeStyle = 'rgba(109, 78, 42, 0.9)';
-    ctx.lineWidth = 0.82;
-    ctx.stroke();
-
-    for (const endpoint of [link.from, link.to]) {
+    for (const [index, endpoint] of [link.from, link.to].entries()) {
+      const neighbor = index === 0 ? link.points[1] : link.points.at(-2);
+      const angle = Math.atan2(neighbor[1] - endpoint[1], neighbor[0] - endpoint[0]);
       ctx.beginPath();
-      ctx.ellipse(endpoint[0], endpoint[1], 4.35, 2.55, Math.atan2(dy, dx), 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(224, 219, 194, 0.96)';
+      ctx.ellipse(endpoint[0], endpoint[1], 1.75, 0.95, angle, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(216, 213, 195, 0.88)';
       ctx.fill();
       ctx.strokeStyle = 'rgba(130, 96, 51, 0.9)';
-      ctx.lineWidth = 0.78;
+      ctx.lineWidth = 0.4;
       ctx.stroke();
     }
   }
@@ -1163,26 +1153,27 @@ function drawArchitecturalLinkDiagnostics(links) {
   ctx.setLineDash([3, 2]);
   for (const link of links) {
     ctx.beginPath();
-    ctx.moveTo(...link.from);
-    ctx.lineTo(...link.port);
-    ctx.lineTo(...link.to);
+    ctx.moveTo(...link.points[0]);
+    for (const point of link.points.slice(1)) ctx.lineTo(...point);
     ctx.strokeStyle = 'rgba(55, 226, 255, 0.96)';
     ctx.lineWidth = 1.15;
     ctx.stroke();
     ctx.setLineDash([]);
-    ctx.fillStyle = 'rgba(77, 228, 255, 0.98)';
-    for (const point of [link.from, link.to]) {
+    for (const [point, side] of [[link.from, link.fromSide], [link.to, link.toSide]]) {
+      ctx.fillStyle = side === 'front' ? 'rgba(102, 255, 170, 0.98)' : 'rgba(201, 138, 255, 0.98)';
       ctx.beginPath();
-      ctx.arc(point[0], point[1], 1.55, 0, Math.PI * 2);
+      ctx.arc(point[0], point[1], 1.8, 0, Math.PI * 2);
       ctx.fill();
     }
-    ctx.fillStyle = 'rgba(255, 210, 92, 1)';
+    ctx.fillStyle = 'rgba(255, 210, 92, 0.96)';
     ctx.strokeStyle = 'rgba(4, 19, 27, 0.96)';
     ctx.lineWidth = 0.7;
-    ctx.beginPath();
-    ctx.arc(link.port[0], link.port[1], 2.15, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
+    for (const point of link.points.slice(1, -1)) {
+      ctx.beginPath();
+      ctx.arc(point[0], point[1], 1.35, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+    }
     ctx.setLineDash([3, 2]);
   }
   ctx.setLineDash([]);
@@ -1512,6 +1503,7 @@ function render() {
       .filter((member) => member.state !== 'construction')
       .map((member) => member.cellNum),
     fusions,
+    endpointOffset: ART_PLACEMENT_OFFSET,
   });
   if (controls.architecturalLinks.checked && !complexTheme.showTopology) {
     drawArchitecturalLinkLayer(architecturalLinks);
