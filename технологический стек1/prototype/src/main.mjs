@@ -18,6 +18,7 @@ import { resolveComplexTheme } from './complexTheme.mjs?v=20260930-2';
 import { resolveComplexFusions, sortComplexRenderItems } from './complexFusion.mjs?v=20261003-1';
 import { assignDeterministicVariants } from './deterministicVariants.mjs?v=20260930-2';
 import { buildArchitecturalLinks } from './architecturalLinks.mjs?v=20261004-3';
+import { buildResidentialGroundPlan } from './residentialGround.mjs?v=20261004-1';
 import {
   RING_GATE_CELL_NUMS,
   drawAncientEnvironment,
@@ -55,6 +56,7 @@ const controls = {
   anchors: document.querySelector('#showAnchors'),
   envelope: document.querySelector('#showEnvelope'),
   labels: document.querySelector('#showLabels'),
+  residentialGround: document.querySelector('#showResidentialGround'),
   architecturalLinks: document.querySelector('#showArchitecturalLinks'),
   linkDebug: document.querySelector('#showLinkDebug'),
   mathShadow: document.querySelector('#showMathShadow'),
@@ -125,7 +127,8 @@ controls.ports.checked = false;
 controls.anchors.checked = false;
 controls.envelope.checked = false;
 controls.labels.checked = false;
-controls.architecturalLinks.checked = true;
+controls.residentialGround.checked = true;
+controls.architecturalLinks.checked = false;
 controls.linkDebug.checked = false;
 controls.zoom.value = '145';
 controls.surfaceSelect.value = 'ancient';
@@ -366,7 +369,10 @@ const previewParams = new URLSearchParams(window.location.search);
 if (previewParams.get('mathShadow') === '0') controls.mathShadow.checked = false;
 if (previewParams.get('physicalShadow') === '0') controls.physicalShadow.checked = false;
 if (previewParams.get('facadeShadow') === '0') controls.facadeShadow.checked = false;
+if (previewParams.get('courtyard') === '0') controls.residentialGround.checked = false;
+if (previewParams.get('courtyard') === '1') controls.residentialGround.checked = true;
 if (previewParams.get('links') === '0') controls.architecturalLinks.checked = false;
+if (previewParams.get('links') === '1') controls.architecturalLinks.checked = true;
 if (previewParams.get('linkDebug') === '0') controls.linkDebug.checked = false;
 if (previewParams.get('linkDebug') === '1') controls.linkDebug.checked = true;
 const requestedShadowMode = previewParams.get('shadowMode');
@@ -1384,6 +1390,92 @@ function drawUpgradeCellOverlay(cell) {
   ctx.restore();
 }
 
+function drawResidentialGroundLayer(plan, cells) {
+  if (plan.cellNums.length === 0) return;
+  const cellByNum = new Map(cells.map((cell) => [cell.num, cell]));
+  const pavedCells = plan.cellNums.map((cellNum) => cellByNum.get(cellNum));
+  const minX = Math.min(...pavedCells.map((cell) => cell.x));
+  const maxX = Math.max(...pavedCells.map((cell) => cell.x + CELL_WIDTH));
+  const minY = Math.min(...pavedCells.map((cell) => cell.y));
+  const maxY = Math.max(...pavedCells.map((cell) => cell.y + CELL_HEIGHT));
+
+  ctx.save();
+  ctx.beginPath();
+  pavedCells.forEach((cell) => appendHexPathOn(ctx, cell.x, cell.y, 1));
+  ctx.clip();
+
+  const stone = ctx.createLinearGradient(0, minY, 0, maxY);
+  stone.addColorStop(0, '#b5b2a5');
+  stone.addColorStop(0.48, '#9fa19a');
+  stone.addColorStop(1, '#858e8b');
+  ctx.fillStyle = stone;
+  ctx.fillRect(minX - 2, minY - 2, maxX - minX + 4, maxY - minY + 4);
+
+  const tileHalfWidth = 12;
+  const tileHalfHeight = 3.25;
+  let row = 0;
+  for (let y = minY - tileHalfHeight * 2; y <= maxY + tileHalfHeight * 2; y += tileHalfHeight * 2) {
+    const stagger = row % 2 === 0 ? 0 : tileHalfWidth;
+    let column = 0;
+    for (let x = minX - tileHalfWidth * 2 + stagger; x <= maxX + tileHalfWidth * 2; x += tileHalfWidth * 2) {
+      const diamond = (offsetY = 0) => {
+        ctx.beginPath();
+        ctx.moveTo(x, y - tileHalfHeight + offsetY);
+        ctx.lineTo(x + tileHalfWidth, y + offsetY);
+        ctx.lineTo(x, y + tileHalfHeight + offsetY);
+        ctx.lineTo(x - tileHalfWidth, y + offsetY);
+        ctx.closePath();
+      };
+      diamond();
+      ctx.fillStyle = (row + column) % 4 === 0
+        ? 'rgba(239, 230, 203, 0.055)'
+        : 'rgba(29, 52, 55, 0.025)';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(35, 52, 53, 0.28)';
+      ctx.lineWidth = 0.56;
+      ctx.stroke();
+      diamond(-0.38);
+      ctx.strokeStyle = 'rgba(244, 239, 218, 0.21)';
+      ctx.lineWidth = 0.3;
+      ctx.stroke();
+      column += 1;
+    }
+    row += 1;
+  }
+
+  const centerGlow = ctx.createRadialGradient(
+    (minX + maxX) / 2,
+    (minY + maxY) / 2,
+    4,
+    (minX + maxX) / 2,
+    (minY + maxY) / 2,
+    Math.max(maxX - minX, maxY - minY) * 0.55,
+  );
+  centerGlow.addColorStop(0, 'rgba(238, 228, 198, 0.1)');
+  centerGlow.addColorStop(1, 'rgba(20, 41, 46, 0.075)');
+  ctx.fillStyle = centerGlow;
+  ctx.fillRect(minX - 2, minY - 2, maxX - minX + 4, maxY - minY + 4);
+  ctx.restore();
+
+  ctx.save();
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  for (const edge of plan.externalEdges) {
+    const stroke = (color, width) => {
+      ctx.beginPath();
+      ctx.moveTo(...edge.start);
+      ctx.lineTo(...edge.end);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width;
+      ctx.stroke();
+    };
+    stroke('rgba(18, 34, 37, 0.74)', 2.55);
+    stroke('rgba(111, 112, 103, 0.94)', 1.82);
+    stroke('rgba(211, 204, 178, 0.78)', 0.52);
+  }
+  ctx.restore();
+}
+
 function drawSurface(cells) {
   const theme = SURFACE_THEMES[controls.surfaceSelect.value] ?? SURFACE_THEMES.ancient;
   const drawWideAncientEnvironment = showsAncientEnvironment();
@@ -1476,6 +1568,8 @@ function render() {
   );
   const visualPlan = buildComplexVisualPlan(scenarioComplexes, cells);
   const fusions = activeFusionPackages.size > 0 ? resolveComplexFusions(scenarioComplexes, cells) : [];
+  const occupiedCellNums = [...memberByCell.values()].map((member) => member.cellNum);
+  const residentialGroundPlan = buildResidentialGroundPlan(cells, occupiedCellNums);
   const fusedComplexIds = new Set(fusions.map((fusion) => fusion.complexId));
   const fusedCellNums = new Set(fusions.flatMap((fusion) => fusion.cellNums));
   const complexTheme = resolveComplexTheme(activeVisual);
@@ -1495,6 +1589,10 @@ function render() {
     }
   } else {
     drawSurface(cells);
+  }
+
+  if (controls.residentialGround.checked && !complexTheme.showTopology) {
+    drawResidentialGroundLayer(residentialGroundPlan, cells);
   }
 
   const architecturalLinks = buildArchitecturalLinks({
@@ -1652,6 +1750,7 @@ function render() {
     <dt>Устойчивые ID</dt><dd>${scenarioComplexes.map((item) => item.id).join('<br>') || '—'}</dd>
     <dt>Переходов</dt><dd>${visualPlan.connectors.length}</dd>
     <dt>Визуальных связей</dt><dd>${architecturalLinks.length} · клетки не занимают</dd>
+    <dt>Дворовое мощение</dt><dd>${residentialGroundPlan.cellNums.length} клеток · внутренние швы скрыты</dd>
     <dt>Внешних граней</dt><dd>${visualPlan.perimeters.length}</dd>
     <dt>Дворов</dt><dd>${visualPlan.courtyards.length}</dd>
     <dt>Центральных акцентов</dt><dd>${visualPlan.centerpieces.length}</dd>
@@ -1715,6 +1814,7 @@ for (const control of [
   controls.anchors,
   controls.envelope,
   controls.labels,
+  controls.residentialGround,
   controls.architecturalLinks,
   controls.linkDebug,
   controls.mathShadow,
