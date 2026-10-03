@@ -4,6 +4,7 @@ import './complexes.test.mjs';
 import './complexVisuals.test.mjs';
 import './complexTheme.test.mjs';
 import './complexFusion.test.mjs';
+import './architecturalLinks.test.mjs';
 import './deterministicVariants.test.mjs';
 import './constructionState.test.mjs';
 import './lighting.test.mjs';

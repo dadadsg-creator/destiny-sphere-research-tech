@@ -17,6 +17,7 @@ import { buildComplexVisualPlan, pickCell } from './complexVisuals.mjs?v=2026093
 import { resolveComplexTheme } from './complexTheme.mjs?v=20260930-2';
 import { resolveComplexFusions, sortComplexRenderItems } from './complexFusion.mjs?v=20260930-2';
 import { assignDeterministicVariants } from './deterministicVariants.mjs?v=20260930-2';
+import { buildArchitecturalLinks } from './architecturalLinks.mjs?v=20261003-1';
 import {
   RING_GATE_CELL_NUMS,
   drawAncientEnvironment,
@@ -54,6 +55,8 @@ const controls = {
   anchors: document.querySelector('#showAnchors'),
   envelope: document.querySelector('#showEnvelope'),
   labels: document.querySelector('#showLabels'),
+  architecturalLinks: document.querySelector('#showArchitecturalLinks'),
+  linkDebug: document.querySelector('#showLinkDebug'),
   mathShadow: document.querySelector('#showMathShadow'),
   physicalShadow: document.querySelector('#showPhysicalShadow'),
   facadeShadow: document.querySelector('#showFacadeShadow'),
@@ -122,6 +125,8 @@ controls.ports.checked = false;
 controls.anchors.checked = false;
 controls.envelope.checked = false;
 controls.labels.checked = false;
+controls.architecturalLinks.checked = true;
+controls.linkDebug.checked = true;
 controls.zoom.value = '145';
 controls.surfaceSelect.value = 'ancient';
 
@@ -350,6 +355,8 @@ const previewParams = new URLSearchParams(window.location.search);
 if (previewParams.get('mathShadow') === '0') controls.mathShadow.checked = false;
 if (previewParams.get('physicalShadow') === '0') controls.physicalShadow.checked = false;
 if (previewParams.get('facadeShadow') === '0') controls.facadeShadow.checked = false;
+if (previewParams.get('links') === '0') controls.architecturalLinks.checked = false;
+if (previewParams.get('linkDebug') === '0') controls.linkDebug.checked = false;
 const requestedShadowMode = previewParams.get('shadowMode');
 const shadowMode = requestedShadowMode === 'projection' || requestedShadowMode === 'calibrated'
   ? requestedShadowMode
@@ -1086,6 +1093,80 @@ function drawConnector(connector, theme) {
   ctx.restore();
 }
 
+function drawArchitecturalLinkLayer(links, debug = false) {
+  ctx.save();
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  for (const link of links) {
+    ctx.beginPath();
+    ctx.moveTo(...link.from);
+    ctx.lineTo(...link.port);
+    ctx.lineTo(...link.to);
+    ctx.strokeStyle = 'rgba(13, 27, 34, 0.88)';
+    ctx.lineWidth = debug ? 6.4 : 5.2;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(...link.from);
+    ctx.lineTo(...link.port);
+    ctx.lineTo(...link.to);
+    ctx.strokeStyle = debug ? 'rgba(230, 204, 128, 0.96)' : 'rgba(190, 194, 171, 0.86)';
+    ctx.lineWidth = debug ? 3.2 : 2.8;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(...link.from);
+    ctx.lineTo(...link.port);
+    ctx.lineTo(...link.to);
+    ctx.strokeStyle = 'rgba(68, 210, 241, 0.86)';
+    ctx.lineWidth = debug ? 1.15 : 0.65;
+    ctx.stroke();
+
+    if (!debug) continue;
+    ctx.fillStyle = 'rgba(255, 213, 109, 0.98)';
+    ctx.beginPath();
+    ctx.arc(link.port[0], link.port[1], 2.15, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(4, 19, 27, 0.96)';
+    ctx.lineWidth = 0.75;
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawArchitecturalLinkDiagnostics(links) {
+  ctx.save();
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.setLineDash([3, 2]);
+  for (const link of links) {
+    ctx.beginPath();
+    ctx.moveTo(...link.from);
+    ctx.lineTo(...link.port);
+    ctx.lineTo(...link.to);
+    ctx.strokeStyle = 'rgba(55, 226, 255, 0.96)';
+    ctx.lineWidth = 1.15;
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = 'rgba(77, 228, 255, 0.98)';
+    for (const point of [link.from, link.to]) {
+      ctx.beginPath();
+      ctx.arc(point[0], point[1], 1.55, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.fillStyle = 'rgba(255, 210, 92, 1)';
+    ctx.strokeStyle = 'rgba(4, 19, 27, 0.96)';
+    ctx.lineWidth = 0.7;
+    ctx.beginPath();
+    ctx.arc(link.port[0], link.port[1], 2.15, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.setLineDash([3, 2]);
+  }
+  ctx.setLineDash([]);
+  ctx.restore();
+}
+
 function drawConnectorHighlight(connector) {
   const middleX = (connector.from[0] + connector.to[0]) / 2;
   const middleY = (connector.from[1] + connector.to[1]) / 2;
@@ -1403,6 +1484,17 @@ function render() {
     drawSurface(cells);
   }
 
+  const architecturalLinks = buildArchitecturalLinks({
+    cells,
+    occupiedCellNums: [...memberByCell.values()]
+      .filter((member) => member.state !== 'construction')
+      .map((member) => member.cellNum),
+    fusions,
+  });
+  if (controls.architecturalLinks.checked && !complexTheme.showTopology) {
+    drawArchitecturalLinkLayer(architecturalLinks, false);
+  }
+
   const hoveredCellNums = interactionCellNums(hoveredCellNum);
   if (hoveredCellNum !== null && hoveredCellNum !== selectedCellNum) {
     for (const cellNum of hoveredCellNums) {
@@ -1501,6 +1593,10 @@ function render() {
   cells.filter((cell) => memberByCell.get(cell.num)?.state === 'damaged').forEach(drawDamagedCellOverlay);
   cells.filter((cell) => (memberByCell.get(cell.num)?.level ?? 1) > 1).forEach(drawUpgradeCellOverlay);
 
+  if (controls.architecturalLinks.checked && controls.linkDebug.checked && !complexTheme.showTopology) {
+    drawArchitecturalLinkDiagnostics(architecturalLinks);
+  }
+
   if (complexTheme.showTopology && complexTheme.connector.highlight) {
     visualPlan.connectors
       .filter((item) => !(fusedCellNums.has(item.fromCellNum) && fusedCellNums.has(item.toCellNum)))
@@ -1541,6 +1637,7 @@ function render() {
     <dt>Комплексов</dt><dd>${scenarioComplexes.length}</dd>
     <dt>Устойчивые ID</dt><dd>${scenarioComplexes.map((item) => item.id).join('<br>') || '—'}</dd>
     <dt>Переходов</dt><dd>${visualPlan.connectors.length}</dd>
+    <dt>Визуальных связей</dt><dd>${architecturalLinks.length} · клетки не занимают</dd>
     <dt>Внешних граней</dt><dd>${visualPlan.perimeters.length}</dd>
     <dt>Дворов</dt><dd>${visualPlan.courtyards.length}</dd>
     <dt>Центральных акцентов</dt><dd>${visualPlan.centerpieces.length}</dd>
@@ -1604,6 +1701,8 @@ for (const control of [
   controls.anchors,
   controls.envelope,
   controls.labels,
+  controls.architecturalLinks,
+  controls.linkDebug,
   controls.mathShadow,
   controls.physicalShadow,
   controls.facadeShadow,
