@@ -1,10 +1,15 @@
-export function beginConstruction(buildings, cellNum, buildingVariant) {
+export function beginConstruction(buildings, cellNum, buildingVariant, complexGroup = null) {
   if (!(buildings instanceof Map)) throw new TypeError('buildings должен быть Map');
   if (!Number.isInteger(cellNum) || cellNum < 0) throw new RangeError('cellNum должен быть неотрицательным целым');
   if (!Number.isInteger(buildingVariant) || buildingVariant < 0) throw new RangeError('buildingVariant должен быть неотрицательным целым');
   if (buildings.has(cellNum)) throw new TypeError(`Клетка ${cellNum} уже занята`);
   const next = new Map(buildings);
-  next.set(cellNum, Object.freeze({ cellNum, buildingVariant, state: 'construction' }));
+  next.set(cellNum, Object.freeze({
+    cellNum,
+    buildingVariant,
+    state: 'construction',
+    ...(complexGroup == null ? {} : { complexGroup }),
+  }));
   return next;
 }
 
@@ -20,7 +25,10 @@ export function completeConstruction(buildings, cellNum) {
 export function appendConstructionBuildings(definition, buildings, complexGroup = 'residential-ring') {
   return [
     ...definition,
-    ...[...buildings.values()].map((building) => ({ ...building, complexGroup })),
+    ...[...buildings.values()].map((building) => ({
+      ...building,
+      complexGroup: building.complexGroup ?? complexGroup,
+    })),
   ];
 }
 

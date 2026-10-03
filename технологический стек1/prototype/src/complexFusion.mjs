@@ -39,6 +39,7 @@ export function resolveComplexFusions(complexes, cells) {
   const fusions = [];
 
   for (const complex of complexes) {
+    if (complex.members.some((member) => member.state === 'construction')) continue;
     const edges = internalEdgeCount(complex);
     let kind = null;
     let fusedCellNums = null;

@@ -15,7 +15,7 @@ import { loadBuildingVisual, loadVisualLayers } from './visualManifest.mjs?v=202
 import { resolveComplexes } from './complexes.mjs?v=20260930-2';
 import { buildComplexVisualPlan, pickCell } from './complexVisuals.mjs?v=20260930-2';
 import { resolveComplexTheme } from './complexTheme.mjs?v=20260930-2';
-import { resolveComplexFusions, sortComplexRenderItems } from './complexFusion.mjs?v=20260930-2';
+import { resolveComplexFusions, sortComplexRenderItems } from './complexFusion.mjs?v=20261003-1';
 import { assignDeterministicVariants } from './deterministicVariants.mjs?v=20260930-2';
 import { buildArchitecturalLinks } from './architecturalLinks.mjs?v=20261003-1';
 import {
@@ -43,7 +43,7 @@ import {
   setBuildingCondition,
   setBuildingPower,
   upgradeBuilding,
-} from './constructionState.mjs?v=20261001-4';
+} from './constructionState.mjs?v=20261003-1';
 
 const canvas = document.querySelector('#scene');
 const ctx = canvas.getContext('2d');
@@ -334,6 +334,17 @@ function isBuildableCell(cellNum) {
     return pilotCells.some((cell) => cell.num === cellNum);
   }
   return DISTRICT_BUILD_SLOTS.has(cellNum) || removedCells.has(cellNum);
+}
+
+function constructionComplexGroup(cellNum) {
+  const scenarioDefinition = SCENARIOS[controls.scenarioSelect.value] ?? [];
+  const original = scenarioDefinition.find((entry) => (
+    (typeof entry === 'number' ? entry : entry.cellNum) === cellNum
+  ));
+  if (typeof original === 'object' && original?.complexGroup) return original.complexGroup;
+  return ['district', 'districtWide'].includes(controls.scenarioSelect.value)
+    ? 'residential-ring'
+    : 'residential';
 }
 
 function showsAncientEnvironment() {
@@ -1747,6 +1758,7 @@ controls.buildMenu.addEventListener('click', (event) => {
     constructionBuildings,
     selectedCellNum,
     Number(button.dataset.buildingVariant),
+    constructionComplexGroup(selectedCellNum),
   );
   rebuildScenario();
   render();

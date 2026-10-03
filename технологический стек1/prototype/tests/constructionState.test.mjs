@@ -12,6 +12,9 @@ import {
   setBuildingPower,
   upgradeBuilding,
 } from '../src/constructionState.mjs';
+import { resolveComplexFusions } from '../src/complexFusion.mjs';
+import { resolveComplexes } from '../src/complexes.mjs';
+import { sevenCellCluster } from '../src/geometry.mjs';
 
 test('first action starts construction and second action completes it', () => {
   const started = beginConstruction(new Map(), 11, 2);
@@ -77,4 +80,23 @@ test('construction buildings join the scenario without modifying its base defini
     state: 'construction',
     complexGroup: 'residential-ring',
   });
+});
+
+test('a rebuilt member keeps its original group and restores the seven-cell complex', () => {
+  const cells = sevenCellCluster();
+  const base = cells.map(({ num }) => ({ cellNum: num, complexGroup: 'residential-core' }));
+  const demolished = removeBuildings(base, new Set([0]));
+  const started = beginConstruction(new Map(), 0, 1, 'residential-core');
+  const underConstruction = appendConstructionBuildings(demolished, started);
+  const constructionComplexes = resolveComplexes(underConstruction, cells, { location: 'PILOT' });
+  const completed = completeConstruction(started, 0);
+  const rebuilt = appendConstructionBuildings(demolished, completed);
+  const complexes = resolveComplexes(rebuilt, cells, { location: 'PILOT' });
+  const fusions = resolveComplexFusions(complexes, cells);
+
+  assert.deepEqual(resolveComplexFusions(constructionComplexes, cells), []);
+  assert.equal(rebuilt.find(({ cellNum }) => cellNum === 0).complexGroup, 'residential-core');
+  assert.equal(fusions.length, 1);
+  assert.equal(fusions[0].kind, 'seven');
+  assert.deepEqual(fusions[0].cellNums, [0, 1, 2, 3, 4, 5, 6]);
 });
