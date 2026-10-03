@@ -1405,14 +1405,14 @@ function drawResidentialGroundLayer(plan, cells) {
   ctx.clip();
 
   const stone = ctx.createLinearGradient(0, minY, 0, maxY);
-  stone.addColorStop(0, '#b5b2a5');
-  stone.addColorStop(0.48, '#9fa19a');
-  stone.addColorStop(1, '#858e8b');
+  stone.addColorStop(0, '#cbc4ad');
+  stone.addColorStop(0.46, '#afa99a');
+  stone.addColorStop(1, '#888f8a');
   ctx.fillStyle = stone;
   ctx.fillRect(minX - 2, minY - 2, maxX - minX + 4, maxY - minY + 4);
 
-  const tileHalfWidth = 12;
-  const tileHalfHeight = 3.25;
+  const tileHalfWidth = 10;
+  const tileHalfHeight = 3.5;
   let row = 0;
   for (let y = minY - tileHalfHeight * 2; y <= maxY + tileHalfHeight * 2; y += tileHalfHeight * 2) {
     const stagger = row % 2 === 0 ? 0 : tileHalfWidth;
@@ -1427,16 +1427,16 @@ function drawResidentialGroundLayer(plan, cells) {
         ctx.closePath();
       };
       diamond();
-      ctx.fillStyle = (row + column) % 4 === 0
-        ? 'rgba(239, 230, 203, 0.055)'
-        : 'rgba(29, 52, 55, 0.025)';
+      ctx.fillStyle = (row + column) % 5 === 0
+        ? 'rgba(255, 243, 208, 0.105)'
+        : 'rgba(35, 51, 50, 0.035)';
       ctx.fill();
-      ctx.strokeStyle = 'rgba(35, 52, 53, 0.28)';
-      ctx.lineWidth = 0.56;
+      ctx.strokeStyle = 'rgba(38, 51, 49, 0.34)';
+      ctx.lineWidth = 0.62;
       ctx.stroke();
       diamond(-0.38);
-      ctx.strokeStyle = 'rgba(244, 239, 218, 0.21)';
-      ctx.lineWidth = 0.3;
+      ctx.strokeStyle = 'rgba(255, 246, 219, 0.28)';
+      ctx.lineWidth = 0.34;
       ctx.stroke();
       column += 1;
     }
@@ -1455,6 +1455,48 @@ function drawResidentialGroundLayer(plan, cells) {
   centerGlow.addColorStop(1, 'rgba(20, 41, 46, 0.075)');
   ctx.fillStyle = centerGlow;
   ctx.fillRect(minX - 2, minY - 2, maxX - minX + 4, maxY - minY + 4);
+
+  // Broad oval courses tie each sprite foundation into the paved field without
+  // reproducing the hex grid. Their overlaps read as one courtyard in clusters.
+  for (const cell of pavedCells) {
+    const centerX = cell.x + CELL_WIDTH / 2;
+    const centerY = cell.y + CELL_HEIGHT * 0.57;
+    ctx.beginPath();
+    ctx.ellipse(centerX, centerY, 19, 8.1, 0, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(252, 241, 209, 0.055)';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(81, 75, 62, 0.22)';
+    ctx.lineWidth = 0.75;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.ellipse(centerX, centerY - 0.42, 15.8, 6.35, 0, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(251, 239, 207, 0.24)';
+    ctx.lineWidth = 0.42;
+    ctx.stroke();
+  }
+
+  // A shared stone inlay crosses every occupied adjacency. It is deliberately
+  // wider than a seam and therefore joins foundations instead of drawing roads.
+  for (const edge of plan.sharedEdges) {
+    const cell = cellByNum.get(edge.cellNum);
+    const neighbor = cellByNum.get(edge.neighborCellNum);
+    const fromX = cell.x + CELL_WIDTH / 2;
+    const fromY = cell.y + CELL_HEIGHT * 0.54;
+    const toX = neighbor.x + CELL_WIDTH / 2;
+    const toY = neighbor.y + CELL_HEIGHT * 0.54;
+    const stroke = (color, width) => {
+      ctx.beginPath();
+      ctx.moveTo(fromX, fromY);
+      ctx.lineTo(toX, toY);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+    };
+    stroke('rgba(62, 65, 60, 0.2)', 5.2);
+    stroke('rgba(214, 205, 181, 0.36)', 3.7);
+    stroke('rgba(255, 235, 181, 0.3)', 0.52);
+  }
   ctx.restore();
 
   ctx.save();
@@ -1469,10 +1511,24 @@ function drawResidentialGroundLayer(plan, cells) {
       ctx.lineWidth = width;
       ctx.stroke();
     };
-    stroke('rgba(18, 34, 37, 0.74)', 2.55);
-    stroke('rgba(111, 112, 103, 0.94)', 1.82);
-    stroke('rgba(211, 204, 178, 0.78)', 0.52);
+    stroke('rgba(16, 30, 33, 0.78)', 2.85);
+    stroke('rgba(124, 119, 104, 0.96)', 1.98);
+    stroke('rgba(230, 217, 180, 0.82)', 0.58);
   }
+
+  // Sparse stasis studs give the otherwise neutral courtyard a Voraner accent.
+  plan.externalEdges.forEach((edge, index) => {
+    if ((edge.cellNum * 7 + edge.direction * 3 + index) % 9 !== 0) return;
+    const x = (edge.start[0] + edge.end[0]) / 2;
+    const y = (edge.start[1] + edge.end[1]) / 2;
+    ctx.shadowColor = 'rgba(64, 218, 255, 0.92)';
+    ctx.shadowBlur = 3.2;
+    ctx.fillStyle = 'rgba(116, 231, 255, 0.92)';
+    ctx.beginPath();
+    ctx.ellipse(x, y - 0.2, 1.3, 0.65, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+  });
   ctx.restore();
 }
 
@@ -1751,6 +1807,7 @@ function render() {
     <dt>Переходов</dt><dd>${visualPlan.connectors.length}</dd>
     <dt>Визуальных связей</dt><dd>${architecturalLinks.length} · клетки не занимают</dd>
     <dt>Дворовое мощение</dt><dd>${residentialGroundPlan.cellNums.length} клеток · внутренние швы скрыты</dd>
+    <dt>Дворовых площадок</dt><dd>${residentialGroundPlan.components.length}</dd>
     <dt>Внешних граней</dt><dd>${visualPlan.perimeters.length}</dd>
     <dt>Дворов</dt><dd>${visualPlan.courtyards.length}</dd>
     <dt>Центральных акцентов</dt><dd>${visualPlan.centerpieces.length}</dd>

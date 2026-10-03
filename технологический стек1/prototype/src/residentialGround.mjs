@@ -20,12 +20,39 @@ export function buildResidentialGroundPlan(cells, occupiedCellNums) {
   const occupiedSet = new Set(occupied);
   const neighbors = buildNeighborTable(cells);
   const externalEdges = [];
+  const sharedEdges = [];
 
   for (const cellNum of occupied) {
     const cell = cellByNum.get(cellNum);
     (neighbors.get(cellNum) ?? []).forEach((neighborCellNum, direction) => {
-      if (!occupiedSet.has(neighborCellNum)) externalEdges.push(edgeOf(cell, direction));
+      if (!occupiedSet.has(neighborCellNum)) {
+        externalEdges.push(edgeOf(cell, direction));
+      } else if (cellNum < neighborCellNum) {
+        sharedEdges.push(Object.freeze({
+          ...edgeOf(cell, direction),
+          neighborCellNum,
+        }));
+      }
     });
+  }
+
+  const remaining = new Set(occupied);
+  const components = [];
+  while (remaining.size > 0) {
+    const first = Math.min(...remaining);
+    const queue = [first];
+    const component = [];
+    remaining.delete(first);
+    while (queue.length > 0) {
+      const cellNum = queue.shift();
+      component.push(cellNum);
+      for (const neighborCellNum of neighbors.get(cellNum) ?? []) {
+        if (!remaining.has(neighborCellNum)) continue;
+        remaining.delete(neighborCellNum);
+        queue.push(neighborCellNum);
+      }
+    }
+    components.push(Object.freeze(component.sort((left, right) => left - right)));
   }
 
   return Object.freeze({
@@ -33,5 +60,9 @@ export function buildResidentialGroundPlan(cells, occupiedCellNums) {
     externalEdges: Object.freeze(externalEdges.sort((left, right) => (
       left.cellNum - right.cellNum || left.direction - right.direction
     ))),
+    sharedEdges: Object.freeze(sharedEdges.sort((left, right) => (
+      left.cellNum - right.cellNum || left.direction - right.direction
+    ))),
+    components: Object.freeze(components),
   });
 }
