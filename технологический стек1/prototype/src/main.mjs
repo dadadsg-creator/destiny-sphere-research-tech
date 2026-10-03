@@ -126,7 +126,7 @@ controls.anchors.checked = false;
 controls.envelope.checked = false;
 controls.labels.checked = false;
 controls.architecturalLinks.checked = true;
-controls.linkDebug.checked = true;
+controls.linkDebug.checked = false;
 controls.zoom.value = '145';
 controls.surfaceSelect.value = 'ancient';
 
@@ -368,6 +368,7 @@ if (previewParams.get('physicalShadow') === '0') controls.physicalShadow.checked
 if (previewParams.get('facadeShadow') === '0') controls.facadeShadow.checked = false;
 if (previewParams.get('links') === '0') controls.architecturalLinks.checked = false;
 if (previewParams.get('linkDebug') === '0') controls.linkDebug.checked = false;
+if (previewParams.get('linkDebug') === '1') controls.linkDebug.checked = true;
 const requestedShadowMode = previewParams.get('shadowMode');
 const shadowMode = requestedShadowMode === 'projection' || requestedShadowMode === 'calibrated'
   ? requestedShadowMode
@@ -1104,43 +1105,53 @@ function drawConnector(connector, theme) {
   ctx.restore();
 }
 
-function drawArchitecturalLinkLayer(links, debug = false) {
+function drawArchitecturalLinkLayer(links) {
   ctx.save();
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
   for (const link of links) {
+    const path = () => {
+      ctx.beginPath();
+      ctx.moveTo(...link.from);
+      ctx.lineTo(...link.port);
+      ctx.lineTo(...link.to);
+    };
+    const stroke = (color, width) => {
+      path();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width;
+      ctx.stroke();
+    };
+
+    // A short built-in gallery between two foundations.  It belongs to the
+    // visual bases and never creates an economic road cell.
+    stroke('rgba(4, 15, 23, 0.82)', 8.4);
+    stroke('rgba(116, 88, 48, 0.94)', 6.8);
+    stroke('rgba(218, 214, 190, 0.97)', 5.25);
+    stroke('rgba(252, 242, 211, 0.74)', 2.15);
+    stroke('rgba(45, 190, 225, 0.88)', 0.72);
+
+    const dx = link.to[0] - link.from[0];
+    const dy = link.to[1] - link.from[1];
+    const length = Math.hypot(dx, dy) || 1;
+    const nx = -dy / length;
+    const ny = dx / length;
     ctx.beginPath();
-    ctx.moveTo(...link.from);
-    ctx.lineTo(...link.port);
-    ctx.lineTo(...link.to);
-    ctx.strokeStyle = 'rgba(13, 27, 34, 0.88)';
-    ctx.lineWidth = debug ? 6.4 : 5.2;
+    ctx.moveTo(link.port[0] - nx * 3.05, link.port[1] - ny * 3.05);
+    ctx.lineTo(link.port[0] + nx * 3.05, link.port[1] + ny * 3.05);
+    ctx.strokeStyle = 'rgba(109, 78, 42, 0.9)';
+    ctx.lineWidth = 0.82;
     ctx.stroke();
 
-    ctx.beginPath();
-    ctx.moveTo(...link.from);
-    ctx.lineTo(...link.port);
-    ctx.lineTo(...link.to);
-    ctx.strokeStyle = debug ? 'rgba(230, 204, 128, 0.96)' : 'rgba(190, 194, 171, 0.86)';
-    ctx.lineWidth = debug ? 3.2 : 2.8;
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.moveTo(...link.from);
-    ctx.lineTo(...link.port);
-    ctx.lineTo(...link.to);
-    ctx.strokeStyle = 'rgba(68, 210, 241, 0.86)';
-    ctx.lineWidth = debug ? 1.15 : 0.65;
-    ctx.stroke();
-
-    if (!debug) continue;
-    ctx.fillStyle = 'rgba(255, 213, 109, 0.98)';
-    ctx.beginPath();
-    ctx.arc(link.port[0], link.port[1], 2.15, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(4, 19, 27, 0.96)';
-    ctx.lineWidth = 0.75;
-    ctx.stroke();
+    for (const endpoint of [link.from, link.to]) {
+      ctx.beginPath();
+      ctx.ellipse(endpoint[0], endpoint[1], 4.35, 2.55, Math.atan2(dy, dx), 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(224, 219, 194, 0.96)';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(130, 96, 51, 0.9)';
+      ctx.lineWidth = 0.78;
+      ctx.stroke();
+    }
   }
   ctx.restore();
 }
@@ -1503,7 +1514,7 @@ function render() {
     fusions,
   });
   if (controls.architecturalLinks.checked && !complexTheme.showTopology) {
-    drawArchitecturalLinkLayer(architecturalLinks, false);
+    drawArchitecturalLinkLayer(architecturalLinks);
   }
 
   const hoveredCellNums = interactionCellNums(hoveredCellNum);
