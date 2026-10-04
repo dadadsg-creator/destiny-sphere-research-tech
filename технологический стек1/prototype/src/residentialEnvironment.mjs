@@ -1,4 +1,5 @@
 import { HEX_POINTS } from './geometry.mjs';
+import { extractSilhouetteShadowSegments } from './silhouetteShadow.mjs?v=20261002-2';
 
 const ASSET_BASE = '../../assets/tech/environment/exports/';
 const CENTER_X = 24;
@@ -25,6 +26,7 @@ const RUIN_ASSIGNMENTS = Object.freeze([
 
 const sprites = new Map();
 let groundSprite = null;
+const ruinShadowCache = new WeakMap();
 
 function requestRender() {
   if (typeof window !== 'undefined') {
@@ -133,6 +135,80 @@ export function drawResidentialEnvironmentRuins(ctx, plan) {
   plan.ruins.forEach((descriptor) => {
     ctx.drawImage(
       descriptor.image,
+      descriptor.anchorX - descriptor.width / 2,
+      descriptor.anchorY - descriptor.height,
+      descriptor.width,
+      descriptor.height,
+    );
+  });
+  ctx.restore();
+}
+
+function ruinShadowFor(image, tuning) {
+  if (!image?.complete || image.naturalWidth === 0 || !tuning) return null;
+  let byTuning = ruinShadowCache.get(image);
+  if (!byTuning) {
+    byTuning = new Map();
+    ruinShadowCache.set(image, byTuning);
+  }
+  const cacheKey = [
+    tuning.azimuth,
+    tuning.elevation,
+    tuning.compression,
+    tuning.alphaThreshold,
+    tuning.columnStep,
+    tuning.rayWidth,
+    tuning.baselineOffset,
+  ].join(':');
+  if (byTuning.has(cacheKey)) return byTuning.get(cacheKey);
+
+  const source = document.createElement('canvas');
+  source.width = image.naturalWidth;
+  source.height = image.naturalHeight;
+  const sourceCtx = source.getContext('2d', { willReadFrequently: true });
+  sourceCtx.drawImage(image, 0, 0);
+  const rgba = sourceCtx.getImageData(0, 0, source.width, source.height).data;
+  const alpha = new Uint8ClampedArray(source.width * source.height);
+  for (let index = 0; index < alpha.length; index += 1) alpha[index] = rgba[index * 4 + 3];
+
+  const segments = extractSilhouetteShadowSegments({
+    alpha,
+    width: source.width,
+    height: source.height,
+    anchorY: 0.98 + tuning.baselineOffset,
+    threshold: tuning.alphaThreshold,
+    direction: tuning.direction,
+    lengthPerScreenHeight: tuning.lengthPerScreenHeight,
+    sampleStep: tuning.columnStep,
+  });
+  const shadow = document.createElement('canvas');
+  shadow.width = source.width;
+  shadow.height = source.height;
+  const shadowCtx = shadow.getContext('2d');
+  shadowCtx.strokeStyle = 'rgba(0, 0, 0, 0.88)';
+  shadowCtx.lineWidth = tuning.rayWidth;
+  shadowCtx.lineCap = 'butt';
+  shadowCtx.beginPath();
+  segments.forEach(({ start, end }) => {
+    shadowCtx.moveTo(start[0], start[1]);
+    shadowCtx.lineTo(end[0], end[1]);
+  });
+  shadowCtx.stroke();
+  byTuning.set(cacheKey, shadow);
+  return shadow;
+}
+
+export function drawResidentialEnvironmentShadows(ctx, plan, tuning) {
+  if (!tuning) return;
+  ctx.save();
+  ctx.globalCompositeOperation = 'multiply';
+  ctx.globalAlpha = tuning.mathOpacity;
+  ctx.filter = tuning.blur > 0 ? `blur(${tuning.blur}px)` : 'none';
+  plan.ruins.forEach((descriptor) => {
+    const shadow = ruinShadowFor(descriptor.image, tuning);
+    if (!shadow) return;
+    ctx.drawImage(
+      shadow,
       descriptor.anchorX - descriptor.width / 2,
       descriptor.anchorY - descriptor.height,
       descriptor.width,

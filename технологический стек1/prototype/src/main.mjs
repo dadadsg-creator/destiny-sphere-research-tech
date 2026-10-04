@@ -23,7 +23,8 @@ import {
   buildResidentialEnvironmentPlan,
   drawResidentialEnvironmentGround,
   drawResidentialEnvironmentRuins,
-} from './residentialEnvironment.mjs?v=20261004-4';
+  drawResidentialEnvironmentShadows,
+} from './residentialEnvironment.mjs?v=20261005-1';
 import {
   RING_GATE_CELL_NUMS,
   drawAncientEnvironment,
@@ -1725,6 +1726,11 @@ function render() {
       },
     );
     if (controls.residentialEnvironment.checked) {
+      drawResidentialEnvironmentShadows(
+        ctx,
+        residentialEnvironmentPlan,
+        controls.mathShadow.checked ? shadowTuning() : null,
+      );
       drawResidentialEnvironmentRuins(ctx, residentialEnvironmentPlan);
     }
   }
