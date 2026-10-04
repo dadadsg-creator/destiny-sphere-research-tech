@@ -110,6 +110,9 @@ const controls = {
   toggleDamage: document.querySelector('#toggleDamage'),
   upgradeBuilding: document.querySelector('#upgradeBuilding'),
   demolishBuilding: document.querySelector('#demolishBuilding'),
+  controlsPanel: document.querySelector('#controlsPanel'),
+  scrollControlsUp: document.querySelector('#scrollControlsUp'),
+  scrollControlsDown: document.querySelector('#scrollControlsDown'),
 };
 
 let mask = 0b100111;
@@ -1991,6 +1994,20 @@ controls.zoom.addEventListener('input', () => {
   render();
 });
 controls.surfaceSelect.addEventListener('change', render);
+controls.scrollControlsUp.addEventListener('click', () => {
+  controls.controlsPanel.scrollBy({
+    top: -Math.max(280, controls.controlsPanel.clientHeight * 0.78),
+    behavior: 'smooth',
+  });
+  controls.controlsPanel.focus({ preventScroll: true });
+});
+controls.scrollControlsDown.addEventListener('click', () => {
+  controls.controlsPanel.scrollBy({
+    top: Math.max(280, controls.controlsPanel.clientHeight * 0.78),
+    behavior: 'smooth',
+  });
+  controls.controlsPanel.focus({ preventScroll: true });
+});
 canvas.addEventListener('wheel', (event) => {
   event.preventDefault();
   const direction = event.deltaY < 0 ? 1 : -1;

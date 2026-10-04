@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Технологический стек 1 — геометрия</title>
-    <link rel="stylesheet" href="./styles.css?v=20260930-6" />
+    <link rel="stylesheet" href="./styles.css?v=20261004-1" />
   </head>
   <body>
     <main>
@@ -15,7 +15,7 @@
       </header>
       <section class="workspace">
         <canvas id="scene" tabindex="0" aria-label="Художественный полигон гексагональных клеток. Нажмите на клетку, чтобы выбрать её."></canvas>
-        <aside>
+        <aside id="controlsPanel" tabindex="0" aria-label="Панель управления прототипом">
           <h2>Управление</h2>
           <label class="field">
             Пакет здания
@@ -160,8 +160,12 @@
           <button id="rotate" type="button">Повернуть маску</button>
           <dl id="metrics"></dl>
         </aside>
+        <nav class="scroll-buttons" aria-label="Прокрутка панели управления">
+          <button id="scrollControlsUp" type="button" title="Прокрутить панель вверх" aria-label="Прокрутить панель вверх">▲</button>
+          <button id="scrollControlsDown" type="button" title="Прокрутить панель вниз" aria-label="Прокрутить панель вниз">▼</button>
+        </nav>
       </section>
     </main>
-    <script type="module" src="./src/main.mjs?v=20261004-8"></script>
+    <script type="module" src="./src/main.mjs?v=20261004-9"></script>
   </body>
 </html>
