@@ -1,10 +1,9 @@
 import { HEX_POINTS } from './geometry.mjs';
-import { buildNeighborTable } from './complexes.mjs';
 
 const ASSET_BASE = '../../assets/tech/environment/exports/';
 const CENTER_X = 24;
 const CENTER_Y = 13;
-const SURFACE_VARIANTS = Object.freeze(['plain', 'weathered', 'service']);
+const SURFACE_VARIANT = 'sandstone';
 
 const DEFINITIONS = Object.freeze({
   arch: Object.freeze({ file: 'voraner-ruin-arch-v02-color.png', width: 54 }),
@@ -23,6 +22,11 @@ const RUIN_ASSIGNMENTS = Object.freeze([
 ]);
 
 const sprites = new Map();
+
+function hash01(seed) {
+  const value = Math.sin(seed * 12.9898 + 78.233) * 43758.5453;
+  return value - Math.floor(value);
+}
 
 function requestRender() {
   if (typeof window !== 'undefined') {
@@ -66,62 +70,12 @@ function ruinDescriptor(cellByNum, [cellNum, kind]) {
   });
 }
 
-function buildChannelNetwork(cells) {
-  if (cells.length === 0) return [];
-  const cellByNum = new Map(cells.map((cell) => [cell.num, cell]));
-  const neighbors = buildNeighborTable(cells);
-  const first = Math.min(...cellByNum.keys());
-  const queue = [first];
-  const visited = new Set([first]);
-  const pairs = [];
-  const pairKeys = new Set();
-  const addPair = (left, right) => {
-    const fromCellNum = Math.min(left, right);
-    const toCellNum = Math.max(left, right);
-    const key = `${fromCellNum}:${toCellNum}`;
-    if (pairKeys.has(key)) return;
-    pairKeys.add(key);
-    pairs.push([fromCellNum, toCellNum]);
-  };
-
-  while (queue.length > 0) {
-    const cellNum = queue.shift();
-    const adjacent = (neighbors.get(cellNum) ?? [])
-      .filter((neighborCellNum) => Number.isInteger(neighborCellNum))
-      .sort((left, right) => left - right);
-    for (const neighborCellNum of adjacent) {
-      if (visited.has(neighborCellNum)) continue;
-      visited.add(neighborCellNum);
-      queue.push(neighborCellNum);
-      addPair(cellNum, neighborCellNum);
-    }
-  }
-
-  for (const cell of cells) {
-    for (const neighborCellNum of neighbors.get(cell.num) ?? []) {
-      if (!Number.isInteger(neighborCellNum) || cell.num >= neighborCellNum) continue;
-      if ((cell.num * 11 + neighborCellNum * 7) % 19 === 0) addPair(cell.num, neighborCellNum);
-    }
-  }
-
-  return pairs.map(([fromCellNum, toCellNum]) => {
-    const from = cellByNum.get(fromCellNum);
-    const to = cellByNum.get(toCellNum);
-    return Object.freeze({
-      fromCellNum,
-      toCellNum,
-      from: Object.freeze([from.x + CENTER_X, from.y + CENTER_Y]),
-      to: Object.freeze([to.x + CENTER_X, to.y + CENTER_Y]),
-    });
-  });
-}
-
 export function buildResidentialEnvironmentPlan(cells) {
   const cellByNum = new Map(cells.map((cell) => [cell.num, cell]));
   const structures = cells.map((cell) => Object.freeze({
     cellNum: cell.num,
     cell,
-    variant: SURFACE_VARIANTS[(cell.num * 7 + 1) % SURFACE_VARIANTS.length],
+    variant: SURFACE_VARIANT,
   }));
   const ruins = RUIN_ASSIGNMENTS
     .map((assignment) => ruinDescriptor(cellByNum, assignment))
@@ -129,99 +83,141 @@ export function buildResidentialEnvironmentPlan(cells) {
     .sort((left, right) => left.anchorY - right.anchorY || left.cellNum - right.cellNum);
   return Object.freeze({
     structures: Object.freeze(structures),
-    channels: Object.freeze(buildChannelNetwork(cells)),
+    channels: Object.freeze([]),
     ruins: Object.freeze(ruins),
   });
+}
+
+function drawRock(ctx, x, y, width, height, tone) {
+  ctx.fillStyle = 'rgba(46, 38, 29, 0.2)';
+  ctx.beginPath();
+  ctx.ellipse(x - 1.3, y - 0.7, width * 0.58, height * 0.62, -0.12, 0, Math.PI * 2);
+  ctx.fill();
+
+  const rock = ctx.createLinearGradient(x - width / 2, y - height / 2, x + width / 2, y + height / 2);
+  rock.addColorStop(0, `rgba(${tone - 25}, ${tone - 31}, ${tone - 39}, 0.96)`);
+  rock.addColorStop(0.58, `rgba(${tone}, ${tone - 7}, ${tone - 17}, 0.98)`);
+  rock.addColorStop(1, `rgba(${tone + 22}, ${tone + 13}, ${tone - 2}, 0.98)`);
+  ctx.fillStyle = rock;
+  ctx.beginPath();
+  ctx.moveTo(x - width * 0.48, y + height * 0.02);
+  ctx.lineTo(x - width * 0.2, y - height * 0.47);
+  ctx.lineTo(x + width * 0.28, y - height * 0.36);
+  ctx.lineTo(x + width * 0.5, y + height * 0.04);
+  ctx.lineTo(x + width * 0.13, y + height * 0.46);
+  ctx.lineTo(x - width * 0.32, y + height * 0.34);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.strokeStyle = 'rgba(255, 232, 184, 0.42)';
+  ctx.lineWidth = 0.34;
+  ctx.beginPath();
+  ctx.moveTo(x - width * 0.18, y - height * 0.37);
+  ctx.lineTo(x + width * 0.27, y - height * 0.27);
+  ctx.lineTo(x + width * 0.43, y + height * 0.01);
+  ctx.stroke();
+}
+
+function drawSandstoneCell(ctx, structure) {
+  const { cell, cellNum } = structure;
+  const centerX = cell.x + CENTER_X;
+  const centerY = cell.y + CENTER_Y;
+
+  ctx.save();
+  ctx.beginPath();
+  appendHex(ctx, cell);
+  ctx.clip();
+
+  // Broad sediment bands follow the same 2:1 projection as the buildings.
+  ctx.strokeStyle = 'rgba(86, 66, 43, 0.2)';
+  ctx.lineWidth = 0.52;
+  const bandShift = hash01(cellNum * 19 + 5) * 7;
+  ctx.beginPath();
+  ctx.moveTo(cell.x - 5, cell.y + 8 + bandShift * 0.25);
+  ctx.lineTo(cell.x + 19, cell.y + 14 + bandShift * 0.25);
+  ctx.lineTo(cell.x + 48, cell.y + 8 + bandShift * 0.25);
+  ctx.moveTo(cell.x + 2, cell.y + 20 - bandShift * 0.2);
+  ctx.lineTo(cell.x + 25, cell.y + 14 - bandShift * 0.2);
+  ctx.lineTo(cell.x + 52, cell.y + 21 - bandShift * 0.2);
+  ctx.stroke();
+
+  ctx.strokeStyle = 'rgba(245, 210, 153, 0.18)';
+  ctx.lineWidth = 0.34;
+  ctx.beginPath();
+  ctx.moveTo(cell.x + 1, cell.y + 6 + bandShift * 0.22);
+  ctx.lineTo(cell.x + 20, cell.y + 10.7 + bandShift * 0.22);
+  ctx.lineTo(cell.x + 43, cell.y + 6 + bandShift * 0.22);
+  ctx.stroke();
+
+  const patchX = cell.x + 8 + hash01(cellNum * 43 + 3) * 29;
+  const patchY = cell.y + 8 + hash01(cellNum * 61 + 17) * 10;
+  ctx.fillStyle = 'rgba(91, 74, 52, 0.11)';
+  ctx.beginPath();
+  ctx.ellipse(patchX, patchY, 7 + hash01(cellNum * 13) * 5, 1.6, -0.08, 0, Math.PI * 2);
+  ctx.fill();
+
+  const rockCount = 2 + (cellNum % 2);
+  for (let index = 0; index < rockCount; index += 1) {
+    const seed = cellNum * 101 + index * 29;
+    const x = cell.x + 8 + hash01(seed + 1) * 32;
+    const y = cell.y + 7 + hash01(seed + 2) * 12;
+    const width = 2.4 + hash01(seed + 3) * 3.4;
+    const height = 1.3 + hash01(seed + 4) * 1.8;
+    const tone = 118 + Math.round(hash01(seed + 5) * 32);
+    drawRock(ctx, x, y, width, height, tone);
+  }
+
+  ctx.fillStyle = 'rgba(66, 52, 37, 0.38)';
+  for (let index = 0; index < 7; index += 1) {
+    const seed = cellNum * 173 + index * 41;
+    const x = cell.x + 5 + hash01(seed + 7) * 38;
+    const y = cell.y + 5 + hash01(seed + 9) * 16;
+    const radius = 0.18 + hash01(seed + 11) * 0.34;
+    ctx.beginPath();
+    ctx.ellipse(x, y, radius * 1.4, radius, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // A weak common light wash keeps neighbouring cells visually continuous.
+  const light = ctx.createLinearGradient(centerX - 20, centerY - 8, centerX + 20, centerY + 8);
+  light.addColorStop(0, 'rgba(46, 37, 27, 0.08)');
+  light.addColorStop(1, 'rgba(255, 228, 177, 0.08)');
+  ctx.fillStyle = light;
+  ctx.fillRect(cell.x, cell.y, 48, 26);
+  ctx.restore();
 }
 
 export function drawResidentialEnvironmentGround(ctx, plan) {
   if (plan.structures.length === 0) return;
   const cells = plan.structures.map(({ cell }) => cell);
   const minX = Math.min(...cells.map((cell) => cell.x));
-  const maxX = Math.max(...cells.map((cell) => cell.x + 48));
   const minY = Math.min(...cells.map((cell) => cell.y));
+  const maxX = Math.max(...cells.map((cell) => cell.x + 48));
   const maxY = Math.max(...cells.map((cell) => cell.y + 26));
-
   ctx.save();
   ctx.beginPath();
   cells.forEach((cell) => appendHex(ctx, cell));
   ctx.clip();
+  const soil = ctx.createLinearGradient(maxX, minY, minX, maxY);
+  soil.addColorStop(0, '#c9ab79');
+  soil.addColorStop(0.48, '#aa8b61');
+  soil.addColorStop(1, '#816c52');
+  ctx.fillStyle = soil;
+  ctx.fillRect(minX - 1, minY - 1, maxX - minX + 2, maxY - minY + 2);
 
-  const stone = ctx.createLinearGradient(0, minY, 0, maxY);
-  stone.addColorStop(0, '#b6b4a6');
-  stone.addColorStop(0.5, '#9da19a');
-  stone.addColorStop(1, '#7e8988');
-  ctx.fillStyle = stone;
-  ctx.fillRect(minX - 2, minY - 2, maxX - minX + 4, maxY - minY + 4);
-
-  const halfWidth = 12;
-  const halfHeight = 3.4;
-  let row = 0;
-  for (let y = minY - 8; y <= maxY + 8; y += halfHeight * 2) {
-    const stagger = row % 2 === 0 ? 0 : halfWidth;
-    for (let x = minX - 24 + stagger; x <= maxX + 24; x += halfWidth * 2) {
-      ctx.beginPath();
-      ctx.moveTo(x, y - halfHeight);
-      ctx.lineTo(x + halfWidth, y);
-      ctx.lineTo(x, y + halfHeight);
-      ctx.lineTo(x - halfWidth, y);
-      ctx.closePath();
-      ctx.strokeStyle = 'rgba(43, 58, 57, 0.22)';
-      ctx.lineWidth = 0.48;
-      ctx.stroke();
-    }
-    row += 1;
-  }
-
-  for (const structure of plan.structures) {
-    const x = structure.cell.x + CENTER_X;
-    const y = structure.cell.y + CENTER_Y;
-    if (structure.variant === 'service') {
-      ctx.fillStyle = 'rgba(58, 70, 67, 0.38)';
-      ctx.strokeStyle = 'rgba(226, 200, 132, 0.52)';
-      ctx.lineWidth = 0.55;
-      ctx.beginPath();
-      ctx.ellipse(x, y, 5.2, 2.3, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
-    } else if (structure.variant === 'weathered') {
-      ctx.strokeStyle = 'rgba(61, 66, 60, 0.34)';
-      ctx.lineWidth = 0.55;
-      ctx.beginPath();
-      ctx.moveTo(x - 7, y - 1);
-      ctx.lineTo(x - 2, y + 1.8);
-      ctx.lineTo(x + 2, y - 0.4);
-      ctx.lineTo(x + 6, y + 2.2);
-      ctx.stroke();
-    } else {
-      ctx.strokeStyle = 'rgba(244, 228, 190, 0.2)';
-      ctx.lineWidth = 0.5;
-      ctx.beginPath();
-      ctx.ellipse(x, y, 7.4, 3.1, 0, 0, Math.PI * 2);
-      ctx.stroke();
-    }
-  }
+  const sunWash = ctx.createRadialGradient(maxX - 18, minY + 8, 2, maxX - 18, minY + 8, maxX - minX);
+  sunWash.addColorStop(0, 'rgba(255, 224, 166, 0.22)');
+  sunWash.addColorStop(0.48, 'rgba(233, 192, 128, 0.05)');
+  sunWash.addColorStop(1, 'rgba(50, 45, 38, 0.12)');
+  ctx.fillStyle = sunWash;
+  ctx.fillRect(minX - 1, minY - 1, maxX - minX + 2, maxY - minY + 2);
   ctx.restore();
+
+  plan.structures.forEach((structure) => drawSandstoneCell(ctx, structure));
 }
 
 export function drawResidentialEnvironmentChannels(ctx, plan) {
-  ctx.save();
-  ctx.lineCap = 'round';
-  ctx.lineJoin = 'round';
-  for (const channel of plan.channels) {
-    const stroke = (color, width) => {
-      ctx.beginPath();
-      ctx.moveTo(...channel.from);
-      ctx.lineTo(...channel.to);
-      ctx.strokeStyle = color;
-      ctx.lineWidth = width;
-      ctx.stroke();
-    };
-    stroke('rgba(20, 42, 47, 0.48)', 2.35);
-    stroke('rgba(28, 171, 205, 0.4)', 0.95);
-    stroke('rgba(159, 236, 244, 0.52)', 0.28);
-  }
-  ctx.restore();
+  // Intentionally empty. The simplified surface has no channels or roads.
 }
 
 export function drawResidentialEnvironmentRuins(ctx, plan) {
