@@ -21,7 +21,6 @@ import { buildArchitecturalLinks } from './architecturalLinks.mjs?v=20261004-3';
 import { buildResidentialGroundPlan } from './residentialGround.mjs?v=20261004-1';
 import {
   buildResidentialEnvironmentPlan,
-  drawResidentialEnvironmentChannels,
   drawResidentialEnvironmentGround,
   drawResidentialEnvironmentRuins,
 } from './residentialEnvironment.mjs?v=20261004-4';
@@ -1678,10 +1677,6 @@ function render() {
     });
   }
 
-  if (showsAncientEnvironment() && controls.residentialEnvironment.checked) {
-    drawResidentialEnvironmentChannels(ctx, residentialEnvironmentPlan);
-  }
-
   const architecturalLinks = buildArchitecturalLinks({
     cells,
     occupiedCellNums: [...memberByCell.values()]
@@ -1845,7 +1840,7 @@ function render() {
     <dt>Визуальных связей</dt><dd>${architecturalLinks.length} · клетки не занимают</dd>
     <dt>Дворовое мощение</dt><dd>${residentialGroundPlan.cellNums.length} клеток · внутренние швы скрыты</dd>
     <dt>Дворовых площадок</dt><dd>${residentialGroundPlan.components.length}</dd>
-    <dt>Жилое окружение</dt><dd>${controls.residentialEnvironment.checked ? `${residentialEnvironmentPlan.structures.length} структур · ${residentialEnvironmentPlan.channels.length} каналов · ${residentialEnvironmentPlan.ruins.length} руины` : 'выключено'}</dd>
+    <dt>Жилое окружение</dt><dd>${controls.residentialEnvironment.checked ? `единый фон · ${residentialEnvironmentPlan.structures.length} логических клеток · ${residentialEnvironmentPlan.ruins.length} руины` : 'выключено'}</dd>
     <dt>Внешних граней</dt><dd>${visualPlan.perimeters.length}</dd>
     <dt>Дворов</dt><dd>${visualPlan.courtyards.length}</dd>
     <dt>Центральных акцентов</dt><dd>${visualPlan.centerpieces.length}</dd>

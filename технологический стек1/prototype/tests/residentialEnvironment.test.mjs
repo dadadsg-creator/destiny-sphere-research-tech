@@ -7,6 +7,7 @@ import {
   buildResidentialEnvironmentPlan,
   RESIDENTIAL_ENVIRONMENT_ASSET_FILES,
   RESIDENTIAL_ENVIRONMENT_CELLS,
+  RESIDENTIAL_GROUND_ASSET_FILE,
 } from '../src/residentialEnvironment.mjs';
 
 test('one sandy-rock surface structure is assigned to every wide-map cell', () => {
@@ -25,7 +26,7 @@ test('simplified sandy-rock surface contains no technical channels', () => {
   assert.deepEqual(plan.channels, []);
 });
 
-test('three standalone ruin sprites stay inside the runtime size budget', async () => {
+test('authored ground and three standalone ruins stay inside the runtime size budget', async () => {
   const exportRoot = new URL('../../assets/tech/environment/exports/', import.meta.url);
   const sizes = await Promise.all(RESIDENTIAL_ENVIRONMENT_ASSET_FILES.map(async (file) => (
     await stat(new URL(file, exportRoot))
@@ -33,4 +34,6 @@ test('three standalone ruin sprites stay inside the runtime size budget', async 
   assert.equal(sizes.length, 3);
   assert.ok(sizes.every((size) => size < 350_000));
   assert.ok(sizes.reduce((total, size) => total + size, 0) < 900_000);
+  const groundSize = (await stat(new URL(RESIDENTIAL_GROUND_ASSET_FILE, exportRoot))).size;
+  assert.ok(groundSize < 3_500_000);
 });
