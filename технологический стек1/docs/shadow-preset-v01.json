@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "status": "provisional-accepted",
+  "recordedAt": "2026-10-05",
+  "screenShadow": {
+    "azimuthDegrees": 220,
+    "sunElevationDegrees": 33,
+    "projectionCompression": 0.84,
+    "lengthPerScreenHeight": 1.2935
+  },
+  "silhouette": {
+    "alphaThreshold": 26,
+    "columnStepSourcePx": 1,
+    "rayWidthSourcePx": 2.25,
+    "joinRadiusLogicalPx": 0.8,
+    "baselineOffsetImageHeight": 0.06
+  },
+  "mixing": {
+    "mathGroundOpacity": 0.74,
+    "physicalGroundOpacity": 0.74,
+    "mathFacadeOpacity": 0.42,
+    "physicalFacadeOpacity": 0.42,
+    "blurLogicalPx": 2
+  }
+}
