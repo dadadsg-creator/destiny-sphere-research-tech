@@ -21,9 +21,10 @@ import { buildArchitecturalLinks } from './architecturalLinks.mjs?v=20261004-3';
 import { buildResidentialGroundPlan } from './residentialGround.mjs?v=20261004-1';
 import {
   buildResidentialEnvironmentPlan,
+  drawResidentialEnvironmentChannels,
   drawResidentialEnvironmentGround,
   drawResidentialEnvironmentRuins,
-} from './residentialEnvironment.mjs?v=20261004-2';
+} from './residentialEnvironment.mjs?v=20261004-4';
 import {
   RING_GATE_CELL_NUMS,
   drawAncientEnvironment,
@@ -1405,7 +1406,7 @@ function drawUpgradeCellOverlay(cell) {
   ctx.restore();
 }
 
-function drawResidentialGroundLayer(plan, cells) {
+function drawResidentialGroundLayer(plan, cells, options = {}) {
   if (plan.cellNums.length === 0) return;
   const cellByNum = new Map(cells.map((cell) => [cell.num, cell]));
   const pavedCells = plan.cellNums.map((cellNum) => cellByNum.get(cellNum));
@@ -1514,10 +1515,11 @@ function drawResidentialGroundLayer(plan, cells) {
   }
   ctx.restore();
 
-  ctx.save();
-  ctx.lineCap = 'round';
-  ctx.lineJoin = 'round';
-  for (const edge of plan.externalEdges) {
+  if (options.outline !== false) {
+    ctx.save();
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    for (const edge of plan.externalEdges) {
     const stroke = (color, width) => {
       ctx.beginPath();
       ctx.moveTo(...edge.start);
@@ -1526,25 +1528,26 @@ function drawResidentialGroundLayer(plan, cells) {
       ctx.lineWidth = width;
       ctx.stroke();
     };
-    stroke('rgba(16, 30, 33, 0.78)', 2.85);
-    stroke('rgba(124, 119, 104, 0.96)', 1.98);
-    stroke('rgba(230, 217, 180, 0.82)', 0.58);
-  }
+      stroke('rgba(16, 30, 33, 0.78)', 2.85);
+      stroke('rgba(124, 119, 104, 0.96)', 1.98);
+      stroke('rgba(230, 217, 180, 0.82)', 0.58);
+    }
 
   // Sparse stasis studs give the otherwise neutral courtyard a Voraner accent.
-  plan.externalEdges.forEach((edge, index) => {
-    if ((edge.cellNum * 7 + edge.direction * 3 + index) % 9 !== 0) return;
-    const x = (edge.start[0] + edge.end[0]) / 2;
-    const y = (edge.start[1] + edge.end[1]) / 2;
-    ctx.shadowColor = 'rgba(64, 218, 255, 0.92)';
-    ctx.shadowBlur = 3.2;
-    ctx.fillStyle = 'rgba(116, 231, 255, 0.92)';
-    ctx.beginPath();
-    ctx.ellipse(x, y - 0.2, 1.3, 0.65, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.shadowBlur = 0;
-  });
-  ctx.restore();
+    plan.externalEdges.forEach((edge, index) => {
+      if ((edge.cellNum * 7 + edge.direction * 3 + index) % 9 !== 0) return;
+      const x = (edge.start[0] + edge.end[0]) / 2;
+      const y = (edge.start[1] + edge.end[1]) / 2;
+      ctx.shadowColor = 'rgba(64, 218, 255, 0.92)';
+      ctx.shadowBlur = 3.2;
+      ctx.fillStyle = 'rgba(116, 231, 255, 0.92)';
+      ctx.beginPath();
+      ctx.ellipse(x, y - 0.2, 1.3, 0.65, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    });
+    ctx.restore();
+  }
 }
 
 function drawSurface(cells) {
@@ -1590,7 +1593,9 @@ function drawSurface(cells) {
     ctx.beginPath();
     cells.forEach((cell) => appendHexPathOn(ctx, cell.x, cell.y, 1));
     ctx.clip();
-    drawAncientEnvironment(ctx, [center.x + CELL_WIDTH / 2, center.y + CELL_HEIGHT / 2]);
+    if (!controls.residentialEnvironment.checked) {
+      drawAncientEnvironment(ctx, [center.x + CELL_WIDTH / 2, center.y + CELL_HEIGHT / 2]);
+    }
     ctx.restore();
     drawAncientPlatformEdgeLights(ctx, [center.x + CELL_WIDTH / 2, center.y + CELL_HEIGHT / 2]);
     return;
@@ -1668,7 +1673,13 @@ function render() {
   }
 
   if (controls.residentialGround.checked && !complexTheme.showTopology) {
-    drawResidentialGroundLayer(residentialGroundPlan, cells);
+    drawResidentialGroundLayer(residentialGroundPlan, cells, {
+      outline: !controls.residentialEnvironment.checked,
+    });
+  }
+
+  if (showsAncientEnvironment() && controls.residentialEnvironment.checked) {
+    drawResidentialEnvironmentChannels(ctx, residentialEnvironmentPlan);
   }
 
   const architecturalLinks = buildArchitecturalLinks({
@@ -1834,7 +1845,7 @@ function render() {
     <dt>Визуальных связей</dt><dd>${architecturalLinks.length} · клетки не занимают</dd>
     <dt>Дворовое мощение</dt><dd>${residentialGroundPlan.cellNums.length} клеток · внутренние швы скрыты</dd>
     <dt>Дворовых площадок</dt><dd>${residentialGroundPlan.components.length}</dd>
-    <dt>Жилое окружение</dt><dd>${controls.residentialEnvironment.checked ? `${residentialEnvironmentPlan.ground.length} типовых клеток · ${residentialEnvironmentPlan.ruins.length} руины` : 'выключено'}</dd>
+    <dt>Жилое окружение</dt><dd>${controls.residentialEnvironment.checked ? `${residentialEnvironmentPlan.structures.length} структур · ${residentialEnvironmentPlan.channels.length} каналов · ${residentialEnvironmentPlan.ruins.length} руины` : 'выключено'}</dd>
     <dt>Внешних граней</dt><dd>${visualPlan.perimeters.length}</dd>
     <dt>Дворов</dt><dd>${visualPlan.courtyards.length}</dd>
     <dt>Центральных акцентов</dt><dd>${visualPlan.centerpieces.length}</dd>
