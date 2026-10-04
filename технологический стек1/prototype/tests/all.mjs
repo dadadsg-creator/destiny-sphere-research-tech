@@ -6,6 +6,7 @@ import './complexTheme.test.mjs';
 import './complexFusion.test.mjs';
 import './architecturalLinks.test.mjs';
 import './residentialGround.test.mjs';
+import './residentialEnvironment.test.mjs';
 import './deterministicVariants.test.mjs';
 import './constructionState.test.mjs';
 import './lighting.test.mjs';

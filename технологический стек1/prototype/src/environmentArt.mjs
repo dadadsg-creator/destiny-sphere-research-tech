@@ -480,7 +480,7 @@ export function hitTestAncientInfrastructure([centerX, centerY], x, y) {
 
 export function drawAncientInfrastructure(ctx, center, options = {}) {
   ctx.save();
-  drawArchaeologyNodes(ctx, center);
+  if (!options.hideArchaeologyNodes) drawArchaeologyNodes(ctx, center);
   drawGateShadow(ctx, center, options.shadow);
   drawGateNode(ctx, center);
   ctx.restore();

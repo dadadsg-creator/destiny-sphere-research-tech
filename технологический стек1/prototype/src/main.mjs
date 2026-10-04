@@ -20,6 +20,11 @@ import { assignDeterministicVariants } from './deterministicVariants.mjs?v=20260
 import { buildArchitecturalLinks } from './architecturalLinks.mjs?v=20261004-3';
 import { buildResidentialGroundPlan } from './residentialGround.mjs?v=20261004-1';
 import {
+  buildResidentialEnvironmentPlan,
+  drawResidentialEnvironmentGround,
+  drawResidentialEnvironmentRuins,
+} from './residentialEnvironment.mjs?v=20261004-2';
+import {
   RING_GATE_CELL_NUMS,
   drawAncientEnvironment,
   drawAncientInfrastructure,
@@ -57,6 +62,7 @@ const controls = {
   envelope: document.querySelector('#showEnvelope'),
   labels: document.querySelector('#showLabels'),
   residentialGround: document.querySelector('#showResidentialGround'),
+  residentialEnvironment: document.querySelector('#showResidentialEnvironment'),
   architecturalLinks: document.querySelector('#showArchitecturalLinks'),
   linkDebug: document.querySelector('#showLinkDebug'),
   mathShadow: document.querySelector('#showMathShadow'),
@@ -118,6 +124,9 @@ let latestScene = null;
 window.addEventListener('ancient-environment-assets-ready', () => {
   if (activeVisual) render();
 });
+window.addEventListener('residential-environment-assets-ready', () => {
+  if (activeVisual) render();
+});
 
 // Browsers may restore the previous value of native selects on reload.  The
 // current art review must always open on the expanded district.
@@ -128,6 +137,7 @@ controls.anchors.checked = false;
 controls.envelope.checked = false;
 controls.labels.checked = false;
 controls.residentialGround.checked = true;
+controls.residentialEnvironment.checked = true;
 controls.architecturalLinks.checked = false;
 controls.linkDebug.checked = false;
 controls.zoom.value = '145';
@@ -371,6 +381,8 @@ if (previewParams.get('physicalShadow') === '0') controls.physicalShadow.checked
 if (previewParams.get('facadeShadow') === '0') controls.facadeShadow.checked = false;
 if (previewParams.get('courtyard') === '0') controls.residentialGround.checked = false;
 if (previewParams.get('courtyard') === '1') controls.residentialGround.checked = true;
+if (previewParams.get('environment') === '0') controls.residentialEnvironment.checked = false;
+if (previewParams.get('environment') === '1') controls.residentialEnvironment.checked = true;
 if (previewParams.get('links') === '0') controls.architecturalLinks.checked = false;
 if (previewParams.get('links') === '1') controls.architecturalLinks.checked = true;
 if (previewParams.get('linkDebug') === '0') controls.linkDebug.checked = false;
@@ -1626,6 +1638,7 @@ function render() {
   const fusions = activeFusionPackages.size > 0 ? resolveComplexFusions(scenarioComplexes, cells) : [];
   const occupiedCellNums = [...memberByCell.values()].map((member) => member.cellNum);
   const residentialGroundPlan = buildResidentialGroundPlan(cells, occupiedCellNums);
+  const residentialEnvironmentPlan = buildResidentialEnvironmentPlan(cells);
   const fusedComplexIds = new Set(fusions.map((fusion) => fusion.complexId));
   const fusedCellNums = new Set(fusions.flatMap((fusion) => fusion.cellNums));
   const complexTheme = resolveComplexTheme(activeVisual);
@@ -1645,6 +1658,10 @@ function render() {
     }
   } else {
     drawSurface(cells);
+  }
+
+  if (showsAncientEnvironment() && controls.residentialEnvironment.checked) {
+    drawResidentialEnvironmentGround(ctx, residentialEnvironmentPlan);
   }
 
   if (controls.residentialGround.checked && !complexTheme.showTopology) {
@@ -1693,8 +1710,14 @@ function render() {
     drawAncientInfrastructure(
       ctx,
       [center.x + CELL_WIDTH / 2, center.y + CELL_HEIGHT / 2],
-      { shadow: controls.mathShadow.checked ? shadowTuning() : null },
+      {
+        shadow: controls.mathShadow.checked ? shadowTuning() : null,
+        hideArchaeologyNodes: controls.residentialEnvironment.checked,
+      },
     );
+    if (controls.residentialEnvironment.checked) {
+      drawResidentialEnvironmentRuins(ctx, residentialEnvironmentPlan);
+    }
   }
 
   if (complexTheme.showTopology) {
@@ -1808,6 +1831,7 @@ function render() {
     <dt>Визуальных связей</dt><dd>${architecturalLinks.length} · клетки не занимают</dd>
     <dt>Дворовое мощение</dt><dd>${residentialGroundPlan.cellNums.length} клеток · внутренние швы скрыты</dd>
     <dt>Дворовых площадок</dt><dd>${residentialGroundPlan.components.length}</dd>
+    <dt>Жилое окружение</dt><dd>${controls.residentialEnvironment.checked ? `${residentialEnvironmentPlan.ground.length} типовых клеток · ${residentialEnvironmentPlan.ruins.length} руины` : 'выключено'}</dd>
     <dt>Внешних граней</dt><dd>${visualPlan.perimeters.length}</dd>
     <dt>Дворов</dt><dd>${visualPlan.courtyards.length}</dd>
     <dt>Центральных акцентов</dt><dd>${visualPlan.centerpieces.length}</dd>
@@ -1872,6 +1896,7 @@ for (const control of [
   controls.envelope,
   controls.labels,
   controls.residentialGround,
+  controls.residentialEnvironment,
   controls.architecturalLinks,
   controls.linkDebug,
   controls.mathShadow,
