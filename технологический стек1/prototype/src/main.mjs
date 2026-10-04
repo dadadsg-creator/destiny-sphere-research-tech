@@ -51,7 +51,6 @@ import {
   beginConstruction,
   completeConstruction,
   removeBuildings,
-  setBuildingCondition,
   setBuildingPower,
   upgradeBuilding,
 } from './constructionState.mjs?v=20261003-1';
@@ -114,7 +113,6 @@ const controls = {
   buildMenu: document.querySelector('#buildMenu'),
   powerMenu: document.querySelector('#powerMenu'),
   togglePower: document.querySelector('#togglePower'),
-  toggleDamage: document.querySelector('#toggleDamage'),
   upgradeBuilding: document.querySelector('#upgradeBuilding'),
   demolishBuilding: document.querySelector('#demolishBuilding'),
   controlsPanel: document.querySelector('#controlsPanel'),
@@ -441,11 +439,6 @@ const previewDisabledParam = new URLSearchParams(window.location.search).get('di
 const previewDisabledCell = previewDisabledParam === null ? null : Number(previewDisabledParam);
 if (previewDisabledCell !== null && Number.isInteger(previewDisabledCell) && previewDisabledCell >= 0) {
   powerStates.set(previewDisabledCell, 'disabled');
-}
-const previewDamagedParam = new URLSearchParams(window.location.search).get('damagedCell');
-const previewDamagedCell = previewDamagedParam === null ? null : Number(previewDamagedParam);
-if (previewDamagedCell !== null && Number.isInteger(previewDamagedCell) && previewDamagedCell >= 0) {
-  powerStates.set(previewDamagedCell, 'damaged');
 }
 const previewUpgradedParam = previewParams.get('upgradedCell');
 const previewUpgradedCell = previewUpgradedParam === null ? null : Number(previewUpgradedParam);
@@ -1091,7 +1084,7 @@ function drawArtRenderQueue(renderItems, cells, scale, dpr) {
   ctx.restore();
   renderItems.forEach((item) => {
     const state = resolveArtItem(item)?.state;
-    const alpha = state === 'disabled' ? 0.56 : state === 'damaged' ? 0.76 : state === 'construction' ? 0.42 : 1;
+    const alpha = state === 'disabled' ? 0.56 : state === 'construction' ? 0.42 : 1;
     drawArtItemLayer(item, 'color', { alpha });
   });
   drawFacadeCastShadows(renderItems, scale, dpr);
@@ -1099,11 +1092,7 @@ function drawArtRenderQueue(renderItems, cells, scale, dpr) {
   drawPhysicalFacadeShadowLab(renderItems, scale, dpr);
   renderItems.forEach((item) => {
     const state = resolveArtItem(item)?.state;
-    if (state === 'working') {
-      drawArtItemLayer(item, 'emissive', { alpha: 0.78, composite: 'screen' });
-    } else if (state === 'damaged') {
-      drawArtItemLayer(item, 'emissive', { alpha: 0.24, composite: 'screen' });
-    }
+    if (state === 'working') drawArtItemLayer(item, 'emissive', { alpha: 0.78, composite: 'screen' });
   });
   renderItems.filter((item) => resolveArtItem(item)?.state === 'construction').forEach(drawConstructionMarker);
 }
@@ -1327,18 +1316,15 @@ function updateBuildPanel() {
   }
   if (member) {
     const disabled = member.state === 'disabled';
-    const damaged = member.state === 'damaged';
     const level = member.level ?? 1;
     controls.buildHint.textContent = disabled
       ? `Клетка ${selectedCellNum}: здание уровня ${level} отключено.`
-      : damaged ? `Клетка ${selectedCellNum}: здание уровня ${level} повреждено.` : `Клетка ${selectedCellNum}: здание уровня ${level} работает.`;
+      : `Клетка ${selectedCellNum}: здание уровня ${level} работает.`;
     controls.togglePower.textContent = disabled ? 'Включить здание' : 'Отключить здание';
-    controls.togglePower.hidden = damaged;
-    controls.toggleDamage.textContent = damaged ? 'Отремонтировать здание' : 'Повредить здание';
-    controls.toggleDamage.hidden = disabled;
+    controls.togglePower.hidden = false;
     controls.upgradeBuilding.textContent = level >= 3 ? 'Максимальный уровень 3' : `Улучшить до уровня ${level + 1}`;
     controls.upgradeBuilding.disabled = level >= 3;
-    controls.upgradeBuilding.hidden = disabled || damaged;
+    controls.upgradeBuilding.hidden = disabled;
     controls.powerMenu.hidden = false;
     return;
   }
@@ -1373,34 +1359,6 @@ function drawDisabledCellOverlay(cell) {
   ctx.moveTo(x, y - 7);
   ctx.lineTo(x, y - 1);
   ctx.stroke();
-  ctx.restore();
-}
-
-function drawDamagedCellOverlay(cell) {
-  ctx.save();
-  hexPath(cell.x, cell.y, 1);
-  ctx.fillStyle = 'rgba(52, 18, 12, 0.32)';
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(255, 139, 67, 0.9)';
-  ctx.lineWidth = 1;
-  ctx.stroke();
-  const x = cell.x + BUILDING_ANCHOR[0];
-  const y = cell.y + CELL_HEIGHT * 0.48;
-  ctx.strokeStyle = 'rgba(255, 198, 105, 0.98)';
-  ctx.lineWidth = 1.4;
-  ctx.beginPath();
-  ctx.moveTo(x - 7, y - 6);
-  ctx.lineTo(x - 2, y - 2);
-  ctx.lineTo(x - 5, y + 2);
-  ctx.lineTo(x + 1, y + 6);
-  ctx.lineTo(x + 7, y + 2);
-  ctx.stroke();
-  ctx.fillStyle = 'rgba(255, 102, 42, 0.95)';
-  for (const [dx, dy, radius] of [[-8, -7, 1.4], [5, -6, 1.1], [8, 4, 0.9]]) {
-    ctx.beginPath();
-    ctx.arc(x + dx, y + dy, radius, 0, Math.PI * 2);
-    ctx.fill();
-  }
   ctx.restore();
 }
 
@@ -1815,7 +1773,6 @@ function render() {
     }
   }
   cells.filter((cell) => memberByCell.get(cell.num)?.state === 'disabled').forEach(drawDisabledCellOverlay);
-  cells.filter((cell) => memberByCell.get(cell.num)?.state === 'damaged').forEach(drawDamagedCellOverlay);
   cells.filter((cell) => (memberByCell.get(cell.num)?.level ?? 1) > 1).forEach(drawUpgradeCellOverlay);
 
   if (controls.architecturalLinks.checked && controls.linkDebug.checked && !complexTheme.showTopology) {
@@ -1986,17 +1943,6 @@ controls.togglePower.addEventListener('click', () => {
   const member = memberByCell.get(selectedCellNum);
   if (!member || member.state === 'construction') return;
   powerStates = setBuildingPower(powerStates, selectedCellNum, member.state === 'disabled');
-  rebuildScenario();
-  render();
-});
-controls.toggleDamage.addEventListener('click', () => {
-  const member = memberByCell.get(selectedCellNum);
-  if (!member || member.state === 'construction' || member.state === 'disabled') return;
-  powerStates = setBuildingCondition(
-    powerStates,
-    selectedCellNum,
-    member.state === 'damaged' ? 'working' : 'damaged',
-  );
   rebuildScenario();
   render();
 });
