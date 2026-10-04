@@ -86,6 +86,7 @@ test('three simple Voraner homes form a complete deterministic variant set', asy
   }));
   assert.deepEqual(visuals.map((visual) => visual.variant), [0, 1, 2]);
   assert.ok(visuals.every((visual) => visual.race === 'tech' && visual.complexGroup === 'residential'));
+  assert.equal(new Set(visuals.map((visual) => visual.layers.construction)).size, 1);
   await Promise.all(visuals.flatMap((visual) => Object.values(visual.layers).map((url) => access(fileURLToPath(url)))));
 });
 

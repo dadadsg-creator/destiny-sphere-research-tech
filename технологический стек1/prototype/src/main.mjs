@@ -695,8 +695,9 @@ function drawArtItemLayer(item, name, options = {}) {
   const { visual } = descriptor;
   const levelScale = descriptor.level > 1 ? 1 + (descriptor.level - 1) * 0.035 : 1;
   const width = visual.logicalWidth * levelScale;
-  const heightScale = name === 'shadow' ? 1 : descriptor.heightScale;
+  const heightScale = name === 'shadow' || name === 'construction' ? 1 : descriptor.heightScale;
   const height = width * image.naturalHeight / image.naturalWidth * heightScale;
+  const layerAnchor = name === 'construction' ? [0.5, 0.95] : visual.anchor;
   const manifestOffset = name === 'shadow'
     ? (visual.shadowOffset ?? [0, 0])
     : name === 'emissive' ? (visual.emissiveOffset ?? [0, 0]) : [0, 0];
@@ -713,8 +714,8 @@ function drawArtItemLayer(item, name, options = {}) {
   if (options.matrix) target.transform(...options.matrix);
   if (options.localClip) {
     const [clipX, clipY, clipWidth, clipHeight] = options.localClip;
-    const imageLeft = -visual.anchor[0] * width + manifestOffset[0];
-    const imageTop = -visual.anchor[1] * height + manifestOffset[1];
+    const imageLeft = -layerAnchor[0] * width + manifestOffset[0];
+    const imageTop = -layerAnchor[1] * height + manifestOffset[1];
     target.beginPath();
     target.rect(
       imageLeft + clipX * width,
@@ -729,8 +730,8 @@ function drawArtItemLayer(item, name, options = {}) {
   target.filter = options.filter ?? (name === 'color' ? toneFilters[descriptor.tone % toneFilters.length] : 'none');
   target.drawImage(
     image,
-    -visual.anchor[0] * width + manifestOffset[0],
-    -visual.anchor[1] * height + manifestOffset[1],
+    -layerAnchor[0] * width + manifestOffset[0],
+    -layerAnchor[1] * height + manifestOffset[1],
     width,
     height,
   );
@@ -802,13 +803,17 @@ function calibratedShadowFor(image, anchorY, logicalWidth) {
 
 function drawCalibratedShadowLayer(item, options = {}) {
   const descriptor = resolveArtItem(item);
-  const image = descriptor?.layers.color;
-  if (!descriptor || !image || descriptor.state === 'construction') return;
+  if (!descriptor) return;
+  const usesConstructionLayer = descriptor.state === 'construction' && descriptor.layers.construction;
+  const image = usesConstructionLayer ? descriptor.layers.construction : descriptor.layers.color;
+  if (!image) return;
   const { visual } = descriptor;
   const levelScale = descriptor.level > 1 ? 1 + (descriptor.level - 1) * 0.035 : 1;
   const width = visual.logicalWidth * levelScale;
-  const height = width * image.naturalHeight / image.naturalWidth * descriptor.heightScale;
-  const shadow = calibratedShadowFor(image, visual.anchor[1], width);
+  const heightScale = usesConstructionLayer ? 1 : descriptor.heightScale;
+  const layerAnchor = usesConstructionLayer ? [0.5, 0.95] : visual.anchor;
+  const height = width * image.naturalHeight / image.naturalWidth * heightScale;
+  const shadow = calibratedShadowFor(image, layerAnchor[1], width);
   const tuning = shadowTuning();
   const target = options.targetCtx ?? ctx;
   target.save();
@@ -818,8 +823,8 @@ function drawCalibratedShadowLayer(item, options = {}) {
   target.filter = options.filter ?? (tuning.blur > 0 ? `blur(${tuning.blur}px)` : 'none');
   target.drawImage(
     shadow,
-    -visual.anchor[0] * width,
-    -visual.anchor[1] * height,
+    -layerAnchor[0] * width,
+    -layerAnchor[1] * height,
     width,
     height,
   );
@@ -832,7 +837,7 @@ function drawCalibratedGroundShadow(item) {
 
 function drawGroundShadow(item) {
   const metrics = shadowMetrics(item);
-  if (!metrics || metrics.descriptor.state === 'construction') return;
+  if (!metrics) return;
   const { descriptor, width, height } = metrics;
   if (controls.packageSelect.value === 'shadowLab') {
     const tuning = shadowTuning();
@@ -994,8 +999,10 @@ function drawMathematicalFacadeShadows(renderItems, scale, dpr) {
 
 function shadowMetrics(item) {
   const descriptor = resolveArtItem(item);
-  const image = descriptor?.layers.color;
-  if (!descriptor || !image) return null;
+  if (!descriptor) return null;
+  const usesConstructionLayer = descriptor.state === 'construction' && descriptor.layers.construction;
+  const image = usesConstructionLayer ? descriptor.layers.construction : descriptor.layers.color;
+  if (!image) return null;
   const levelScale = descriptor.level > 1 ? 1 + (descriptor.level - 1) * 0.035 : 1;
   const width = descriptor.visual.logicalWidth * levelScale;
   const occupiedCellCount = item.kind === 'fusion' ? item.fusion.cellNums.length : 1;
@@ -1009,7 +1016,7 @@ function shadowMetrics(item) {
     occupiedCellCount,
     widthMultiplier,
     groundCastHeightRatio,
-    height: width * image.naturalHeight / image.naturalWidth * descriptor.heightScale,
+    height: width * image.naturalHeight / image.naturalWidth * (usesConstructionLayer ? 1 : descriptor.heightScale),
   };
 }
 
@@ -1083,9 +1090,13 @@ function drawArtRenderQueue(renderItems, cells, scale, dpr) {
   renderItems.forEach(drawGroundShadow);
   ctx.restore();
   renderItems.forEach((item) => {
-    const state = resolveArtItem(item)?.state;
-    const alpha = state === 'disabled' ? 0.56 : state === 'construction' ? 0.42 : 1;
-    drawArtItemLayer(item, 'color', { alpha });
+    const descriptor = resolveArtItem(item);
+    const state = descriptor?.state;
+    if (state === 'construction' && descriptor?.layers.construction) {
+      drawArtItemLayer(item, 'construction');
+    } else {
+      drawArtItemLayer(item, 'color', { alpha: state === 'disabled' ? 0.56 : state === 'construction' ? 0.42 : 1 });
+    }
   });
   drawFacadeCastShadows(renderItems, scale, dpr);
   drawMathematicalFacadeShadows(renderItems, scale, dpr);
@@ -1094,7 +1105,12 @@ function drawArtRenderQueue(renderItems, cells, scale, dpr) {
     const state = resolveArtItem(item)?.state;
     if (state === 'working') drawArtItemLayer(item, 'emissive', { alpha: 0.78, composite: 'screen' });
   });
-  renderItems.filter((item) => resolveArtItem(item)?.state === 'construction').forEach(drawConstructionMarker);
+  renderItems
+    .filter((item) => {
+      const descriptor = resolveArtItem(item);
+      return descriptor?.state === 'construction' && !descriptor.layers.construction;
+    })
+    .forEach(drawConstructionMarker);
 }
 
 function drawConstructionMarker(item) {
