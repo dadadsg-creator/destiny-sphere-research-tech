@@ -15,6 +15,17 @@ export function resolveScreenShadowProjection({ azimuthDegrees, elevationDegrees
   });
 }
 
+export function resolveSilhouetteStrokeWidth({
+  rayWidth,
+  joinRadius = 0,
+  sourceWidth,
+  logicalWidth,
+}) {
+  if (!(sourceWidth > 0) || !(logicalWidth > 0)) throw new RangeError('Некорректный масштаб тени');
+  const scale = sourceWidth / logicalWidth;
+  return Math.max(0.1, rayWidth + Math.max(0, joinRadius) * 2 * scale);
+}
+
 export function extractSilhouetteShadowSegments({
   alpha,
   width,

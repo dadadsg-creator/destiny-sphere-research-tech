@@ -39,7 +39,11 @@ import {
   canReceiveProjectedShadow,
   resolveGroundCastHeightRatio,
 } from './lighting.mjs?v=20261002-15';
-import { extractSilhouetteShadowSegments, resolveScreenShadowProjection } from './silhouetteShadow.mjs?v=20261002-2';
+import {
+  extractSilhouetteShadowSegments,
+  resolveScreenShadowProjection,
+  resolveSilhouetteStrokeWidth,
+} from './silhouetteShadow.mjs?v=20261005-1';
 import {
   appendConstructionBuildings,
   applyBuildingLevels,
@@ -82,6 +86,8 @@ const controls = {
   columnStepValue: document.querySelector('#columnStepValue'),
   rayWidth: document.querySelector('#rayWidth'),
   rayWidthValue: document.querySelector('#rayWidthValue'),
+  shadowJoin: document.querySelector('#shadowJoin'),
+  shadowJoinValue: document.querySelector('#shadowJoinValue'),
   baselineOffset: document.querySelector('#baselineOffset'),
   baselineOffsetValue: document.querySelector('#baselineOffsetValue'),
   mathOpacity: document.querySelector('#mathOpacity'),
@@ -164,6 +170,7 @@ const SHADOW_TUNING_DEFAULTS = Object.freeze({
   alphaThreshold: 26,
   columnStep: 1,
   rayWidth: 2.25,
+  shadowJoin: 0.8,
   baselineOffset: 0.06,
   mathOpacity: 0.74,
   physicalOpacity: 0.74,
@@ -179,6 +186,7 @@ const shadowModifierInputs = [
   controls.alphaThreshold,
   controls.columnStep,
   controls.rayWidth,
+  controls.shadowJoin,
   controls.baselineOffset,
   controls.mathOpacity,
   controls.physicalOpacity,
@@ -205,6 +213,7 @@ function shadowTuning() {
     alphaThreshold: Number(controls.alphaThreshold.value),
     columnStep: Number(controls.columnStep.value),
     rayWidth: Number(controls.rayWidth.value),
+    shadowJoin: Number(controls.shadowJoin.value),
     baselineOffset: Number(controls.baselineOffset.value),
     mathOpacity: Number(controls.mathOpacity.value),
     physicalOpacity: Number(controls.physicalOpacity.value),
@@ -227,6 +236,7 @@ function updateShadowTuningLabels() {
   controls.alphaThresholdValue.value = String(tuning.alphaThreshold);
   controls.columnStepValue.value = `${tuning.columnStep} px`;
   controls.rayWidthValue.value = `${decimal(tuning.rayWidth, 2)} px`;
+  controls.shadowJoinValue.value = `${decimal(tuning.shadowJoin, 1)} px`;
   controls.baselineOffsetValue.value = decimal(tuning.baselineOffset, 3);
   controls.mathOpacityValue.value = `${Math.round(tuning.mathOpacity * 100)}%`;
   controls.physicalOpacityValue.value = `${Math.round(tuning.physicalOpacity * 100)}%`;
@@ -242,6 +252,7 @@ function resetShadowTuning() {
   controls.alphaThreshold.value = String(SHADOW_TUNING_DEFAULTS.alphaThreshold);
   controls.columnStep.value = String(SHADOW_TUNING_DEFAULTS.columnStep);
   controls.rayWidth.value = String(SHADOW_TUNING_DEFAULTS.rayWidth);
+  controls.shadowJoin.value = String(SHADOW_TUNING_DEFAULTS.shadowJoin);
   controls.baselineOffset.value = String(SHADOW_TUNING_DEFAULTS.baselineOffset);
   controls.mathOpacity.value = String(SHADOW_TUNING_DEFAULTS.mathOpacity);
   controls.physicalOpacity.value = String(SHADOW_TUNING_DEFAULTS.physicalOpacity);
@@ -733,7 +744,7 @@ function drawArtItemLayer(item, name, options = {}) {
   target.restore();
 }
 
-function calibratedShadowFor(image, anchorY) {
+function calibratedShadowFor(image, anchorY, logicalWidth) {
   const tuning = shadowTuning();
   let byAnchor = calibratedShadowCache.get(image);
   if (!byAnchor) {
@@ -742,12 +753,14 @@ function calibratedShadowFor(image, anchorY) {
   }
   const cacheKey = [
     anchorY,
+    logicalWidth,
     tuning.azimuth,
     tuning.elevation,
     tuning.compression,
     tuning.alphaThreshold,
     tuning.columnStep,
     tuning.rayWidth,
+    tuning.shadowJoin,
     tuning.baselineOffset,
   ].join(':');
   if (byAnchor.has(cacheKey)) return byAnchor.get(cacheKey);
@@ -776,8 +789,14 @@ function calibratedShadowFor(image, anchorY) {
   shadow.height = source.height;
   const shadowCtx = shadow.getContext('2d');
   shadowCtx.strokeStyle = 'rgba(0, 0, 0, 0.88)';
-  shadowCtx.lineWidth = tuning.rayWidth;
-  shadowCtx.lineCap = 'butt';
+  shadowCtx.lineWidth = resolveSilhouetteStrokeWidth({
+    rayWidth: tuning.rayWidth,
+    joinRadius: tuning.shadowJoin,
+    sourceWidth: source.width,
+    logicalWidth,
+  });
+  shadowCtx.lineCap = tuning.shadowJoin > 0 ? 'round' : 'butt';
+  shadowCtx.lineJoin = 'round';
   shadowCtx.beginPath();
   segments.forEach(({ start, end }) => {
     shadowCtx.moveTo(start[0], start[1]);
@@ -796,7 +815,7 @@ function drawCalibratedShadowLayer(item, options = {}) {
   const levelScale = descriptor.level > 1 ? 1 + (descriptor.level - 1) * 0.035 : 1;
   const width = visual.logicalWidth * levelScale;
   const height = width * image.naturalHeight / image.naturalWidth * descriptor.heightScale;
-  const shadow = calibratedShadowFor(image, visual.anchor[1]);
+  const shadow = calibratedShadowFor(image, visual.anchor[1], width);
   const tuning = shadowTuning();
   const target = options.targetCtx ?? ctx;
   target.save();

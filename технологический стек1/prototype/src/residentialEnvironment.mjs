@@ -1,5 +1,8 @@
 import { HEX_POINTS } from './geometry.mjs';
-import { extractSilhouetteShadowSegments } from './silhouetteShadow.mjs?v=20261002-2';
+import {
+  extractSilhouetteShadowSegments,
+  resolveSilhouetteStrokeWidth,
+} from './silhouetteShadow.mjs?v=20261005-1';
 
 const ASSET_BASE = '../../assets/tech/environment/exports/';
 const CENTER_X = 24;
@@ -144,7 +147,7 @@ export function drawResidentialEnvironmentRuins(ctx, plan) {
   ctx.restore();
 }
 
-function ruinShadowFor(image, tuning) {
+function ruinShadowFor(image, tuning, logicalWidth) {
   if (!image?.complete || image.naturalWidth === 0 || !tuning) return null;
   let byTuning = ruinShadowCache.get(image);
   if (!byTuning) {
@@ -158,6 +161,8 @@ function ruinShadowFor(image, tuning) {
     tuning.alphaThreshold,
     tuning.columnStep,
     tuning.rayWidth,
+    tuning.shadowJoin,
+    logicalWidth,
     tuning.baselineOffset,
   ].join(':');
   if (byTuning.has(cacheKey)) return byTuning.get(cacheKey);
@@ -186,8 +191,14 @@ function ruinShadowFor(image, tuning) {
   shadow.height = source.height;
   const shadowCtx = shadow.getContext('2d');
   shadowCtx.strokeStyle = 'rgba(0, 0, 0, 0.88)';
-  shadowCtx.lineWidth = tuning.rayWidth;
-  shadowCtx.lineCap = 'butt';
+  shadowCtx.lineWidth = resolveSilhouetteStrokeWidth({
+    rayWidth: tuning.rayWidth,
+    joinRadius: tuning.shadowJoin,
+    sourceWidth: source.width,
+    logicalWidth,
+  });
+  shadowCtx.lineCap = tuning.shadowJoin > 0 ? 'round' : 'butt';
+  shadowCtx.lineJoin = 'round';
   shadowCtx.beginPath();
   segments.forEach(({ start, end }) => {
     shadowCtx.moveTo(start[0], start[1]);
@@ -205,7 +216,7 @@ export function drawResidentialEnvironmentShadows(ctx, plan, tuning) {
   ctx.globalAlpha = tuning.mathOpacity;
   ctx.filter = tuning.blur > 0 ? `blur(${tuning.blur}px)` : 'none';
   plan.ruins.forEach((descriptor) => {
-    const shadow = ruinShadowFor(descriptor.image, tuning);
+    const shadow = ruinShadowFor(descriptor.image, tuning, descriptor.width);
     if (!shadow) return;
     ctx.drawImage(
       shadow,

@@ -411,6 +411,7 @@ function gateShadowFor(tuning) {
     tuning.alphaThreshold,
     tuning.columnStep,
     tuning.rayWidth,
+    tuning.shadowJoin,
     tuning.baselineOffset,
   ].join(':');
   if (gateShadowCache.has(cacheKey)) return gateShadowCache.get(cacheKey);
@@ -439,8 +440,14 @@ function gateShadowFor(tuning) {
   shadow.height = source.height;
   const shadowCtx = shadow.getContext('2d');
   shadowCtx.strokeStyle = 'rgba(0, 0, 0, 0.88)';
-  shadowCtx.lineWidth = tuning.rayWidth;
-  shadowCtx.lineCap = 'butt';
+  shadowCtx.lineWidth = resolveSilhouetteStrokeWidth({
+    rayWidth: tuning.rayWidth,
+    joinRadius: tuning.shadowJoin,
+    sourceWidth: source.width,
+    logicalWidth: RING_GATE_WIDTH,
+  });
+  shadowCtx.lineCap = tuning.shadowJoin > 0 ? 'round' : 'butt';
+  shadowCtx.lineJoin = 'round';
   shadowCtx.beginPath();
   segments.forEach(({ start, end }) => {
     shadowCtx.moveTo(start[0], start[1]);
@@ -513,4 +520,7 @@ export function drawAncientEnvironment(ctx, center) {
   drawArchaeologyMarks(ctx, center);
   ctx.restore();
 }
-import { extractSilhouetteShadowSegments } from './silhouetteShadow.mjs?v=20261002-2';
+import {
+  extractSilhouetteShadowSegments,
+  resolveSilhouetteStrokeWidth,
+} from './silhouetteShadow.mjs?v=20261005-1';

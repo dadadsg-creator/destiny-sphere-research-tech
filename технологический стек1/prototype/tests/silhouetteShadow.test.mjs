@@ -1,6 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { extractSilhouetteShadowSegments, resolveScreenShadowProjection } from '../src/silhouetteShadow.mjs';
+import {
+  extractSilhouetteShadowSegments,
+  resolveScreenShadowProjection,
+  resolveSilhouetteStrokeWidth,
+} from '../src/silhouetteShadow.mjs';
 
 function alphaMask(width, height, columns) {
   const alpha = new Uint8ClampedArray(width * height);
@@ -45,4 +49,14 @@ test('screen projection converts star elevation and isometric compression into r
   });
   assert.ok(projection.direction.x < 0 && projection.direction.y < 0);
   assert.ok(Math.abs(projection.lengthPerScreenHeight - 1.2935) < 0.001);
+});
+
+test('silhouette joining remains expressed in final logical pixels', () => {
+  const width = resolveSilhouetteStrokeWidth({
+    rayWidth: 2.25,
+    joinRadius: 0.8,
+    sourceWidth: 512,
+    logicalWidth: 64,
+  });
+  assert.equal(width, 15.05);
 });
