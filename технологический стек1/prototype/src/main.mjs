@@ -344,6 +344,7 @@ const SCENARIOS = Object.freeze({
   threeCenter: [0, 1, 2],
   threeRing: [1, 2, 3],
   single: [0],
+  waterLab: [0],
   pair: [0, 2],
   line: [5, 0, 2],
   break: [5, 2],
@@ -370,6 +371,9 @@ function cellsForScenario(originX = 0, originY = 0) {
   }
   if (['district', 'complexShadow', 'shadowLab'].includes(controls.scenarioSelect.value)) {
     return nineteenCellCluster(originX, originY);
+  }
+  if (controls.scenarioSelect.value === 'waterLab') {
+    return [sevenCellCluster(originX, originY)[0]];
   }
   return sevenCellCluster(originX, originY);
 }
@@ -1283,16 +1287,18 @@ function drawFacadeCastShadows(renderItems, scale, dpr) {
   }
 }
 
-function drawArtRenderQueue(renderItems, cells, scale, dpr) {
+function drawArtRenderQueue(renderItems, cells, scale, dpr, options = {}) {
   // Each ground shadow is a projection of the actual building alpha mask.
   // Legacy shadow PNGs and facade-to-facade masks remain excluded.
-  ctx.save();
-  ctx.beginPath();
-  cells.forEach((cell) => appendHexPathOn(ctx, cell.x, cell.y, 1));
-  ctx.clip();
-  renderItems.forEach(drawGroundShadow);
-  renderItems.forEach(drawContactOcclusion);
-  ctx.restore();
+  if (!options.skipShadows) {
+    ctx.save();
+    ctx.beginPath();
+    cells.forEach((cell) => appendHexPathOn(ctx, cell.x, cell.y, 1));
+    ctx.clip();
+    renderItems.forEach(drawGroundShadow);
+    renderItems.forEach(drawContactOcclusion);
+    ctx.restore();
+  }
   renderItems.forEach((item) => {
     const descriptor = resolveArtItem(item);
     const state = descriptor?.state;
@@ -1304,9 +1310,11 @@ function drawArtRenderQueue(renderItems, cells, scale, dpr) {
       drawArtItemLayer(item, 'color', { alpha: state === 'construction' ? 0.42 : 1 });
     }
   });
-  drawFacadeCastShadows(renderItems, scale, dpr);
-  drawMathematicalFacadeShadows(renderItems, scale, dpr);
-  drawPhysicalFacadeShadowLab(renderItems, scale, dpr);
+  if (!options.skipShadows) {
+    drawFacadeCastShadows(renderItems, scale, dpr);
+    drawMathematicalFacadeShadows(renderItems, scale, dpr);
+    drawPhysicalFacadeShadowLab(renderItems, scale, dpr);
+  }
   renderItems.forEach((item) => {
     const state = resolveArtItem(item)?.state;
     if (state === 'working') drawArtItemLayer(item, 'emissive', { alpha: 0.7, composite: 'screen' });
@@ -1898,13 +1906,14 @@ function render() {
   if (showsAncientEnvironment()) drawRingWorldBackdrop(ctx, rect.width, rect.height);
 
   const wideEnvironment = controls.scenarioSelect.value === 'districtWide';
+  const waterAnimationLab = controls.scenarioSelect.value === 'waterLab';
   const baseScale = Math.min(
-    rect.width / (wideEnvironment ? 500 : 420),
-    rect.height / (wideEnvironment ? 410 : 340),
+    rect.width / (waterAnimationLab ? 150 : wideEnvironment ? 500 : 420),
+    rect.height / (waterAnimationLab ? 165 : wideEnvironment ? 410 : 340),
   );
   const scale = baseScale * zoomFactor();
   const originX = rect.width / (2 * scale) - CELL_WIDTH / 2;
-  const originY = rect.height / (2 * scale) - CELL_HEIGHT / 2 + 35;
+  const originY = rect.height / (2 * scale) - CELL_HEIGHT / 2 + (waterAnimationLab ? 5 : 35);
   const cells = cellsForScenario(originX, originY);
   canvas.setAttribute(
     'aria-label',
@@ -1940,7 +1949,7 @@ function render() {
     drawResidentialEnvironmentGround(ctx, residentialEnvironmentPlan);
   }
 
-  if (controls.residentialGround.checked && !complexTheme.showTopology) {
+  if (controls.residentialGround.checked && !complexTheme.showTopology && !waterAnimationLab) {
     drawResidentialGroundLayer(residentialGroundPlan, cells, {
       outline: !controls.residentialEnvironment.checked,
     });
@@ -1959,7 +1968,7 @@ function render() {
   }
 
   const hoveredCellNums = interactionCellNums(hoveredCellNum);
-  if (hoveredCellNum !== null && hoveredCellNum !== selectedCellNum) {
+  if (!waterAnimationLab && hoveredCellNum !== null && hoveredCellNum !== selectedCellNum) {
     for (const cellNum of hoveredCellNums) {
       const hoveredCell = cells.find((cell) => cell.num === cellNum);
       if (!hoveredCell) continue;
@@ -1975,7 +1984,7 @@ function render() {
     }
   }
 
-  for (const cellNum of interactionCellNums(selectedCellNum)) {
+  for (const cellNum of waterAnimationLab ? [] : interactionCellNums(selectedCellNum)) {
     const selectedCell = cells.find((cell) => cell.num === cellNum);
     if (!selectedCell) continue;
     hexPath(selectedCell.x, selectedCell.y, 1);
@@ -2062,7 +2071,7 @@ function render() {
     || hasAuthoredCastShadow
     || usesCalibratedMathShadows()
   )) {
-    drawArtRenderQueue(renderItems, cells, scale, dpr);
+    drawArtRenderQueue(renderItems, cells, scale, dpr, { skipShadows: waterAnimationLab });
   } else {
     for (const item of renderItems) {
       if (item.kind === 'fusion') drawFusion(item.fusion);
