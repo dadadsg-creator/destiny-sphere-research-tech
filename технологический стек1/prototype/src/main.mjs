@@ -73,6 +73,7 @@ const controls = {
   animateScene: document.querySelector('#animateScene'),
   waterIntensity: document.querySelector('#waterIntensity'),
   waterIntensityValue: document.querySelector('#waterIntensityValue'),
+  waterProfileStatus: document.querySelector('#waterProfileStatus'),
   ringOffsetX: document.querySelector('#ringOffsetX'),
   ringOffsetXValue: document.querySelector('#ringOffsetXValue'),
   ringOffsetY: document.querySelector('#ringOffsetY'),
@@ -177,6 +178,58 @@ const WATER_SURFACES = Object.freeze({
     Object.freeze({ x: 0.63, y: 0.825, rx: 0.075, ry: 0.022 }),
   ]),
 });
+const WATER_TUNING_STORAGE_KEY = 'destinysphere.prototype.water-tuning.v1';
+const DEFAULT_WATER_TUNING_PROFILE = Object.freeze({
+  rings: Object.freeze({ offsetX: 0, offsetY: 0, scaleX: 1, scaleY: 1 }),
+  ripples: Object.freeze({ offsetX: 0, offsetY: 0, scaleX: 1, scaleY: 1 }),
+});
+
+function finiteWaterValue(value, fallback, min, max) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? Math.min(max, Math.max(min, parsed)) : fallback;
+}
+
+function normalizeWaterTuningProfile(profile = {}) {
+  return {
+    rings: {
+      offsetX: finiteWaterValue(profile.rings?.offsetX, 0, -12, 12),
+      offsetY: finiteWaterValue(profile.rings?.offsetY, 0, -16, 16),
+      scaleX: finiteWaterValue(profile.rings?.scaleX, 1, 0.4, 1.6),
+      scaleY: finiteWaterValue(profile.rings?.scaleY, 1, 0.2, 1.4),
+    },
+    ripples: {
+      offsetX: finiteWaterValue(profile.ripples?.offsetX, 0, -12, 12),
+      offsetY: finiteWaterValue(profile.ripples?.offsetY, 0, -16, 16),
+      scaleX: finiteWaterValue(profile.ripples?.scaleX, 1, 0.4, 1.6),
+      scaleY: finiteWaterValue(profile.ripples?.scaleY, 1, 0.2, 1.6),
+    },
+  };
+}
+
+function loadWaterTuningProfiles() {
+  try {
+    const saved = JSON.parse(window.localStorage.getItem(WATER_TUNING_STORAGE_KEY) ?? '{}');
+    return Object.fromEntries(
+      Object.entries(saved).map(([visualId, profile]) => [visualId, normalizeWaterTuningProfile(profile)]),
+    );
+  } catch {
+    return {};
+  }
+}
+
+let waterTuningProfiles = loadWaterTuningProfiles();
+
+function waterTuningProfile(visualId) {
+  return waterTuningProfiles[visualId] ?? DEFAULT_WATER_TUNING_PROFILE;
+}
+
+function saveWaterTuningProfiles() {
+  try {
+    window.localStorage.setItem(WATER_TUNING_STORAGE_KEY, JSON.stringify(waterTuningProfiles));
+  } catch {
+    // The live profile still works when storage is blocked by the browser.
+  }
+}
 
 window.addEventListener('ancient-environment-assets-ready', () => {
   if (activeVisual) render();
@@ -274,6 +327,62 @@ function resetRippleTuning() {
 }
 
 updateRippleTuningLabels();
+
+function activeWaterVisualId() {
+  return activeVisual?.id ?? null;
+}
+
+function currentWaterTuningProfile() {
+  return normalizeWaterTuningProfile({
+    rings: ringTuning(),
+    ripples: rippleTuning(),
+  });
+}
+
+function storeCurrentWaterTuningProfile() {
+  const visualId = activeWaterVisualId();
+  if (!visualId || !WATER_SURFACES[visualId]?.length) return;
+  waterTuningProfiles = {
+    ...waterTuningProfiles,
+    [visualId]: currentWaterTuningProfile(),
+  };
+  saveWaterTuningProfiles();
+}
+
+function applyActiveWaterTuningProfile() {
+  const visualId = activeWaterVisualId();
+  const hasWater = Boolean(visualId && WATER_SURFACES[visualId]?.length);
+  const profile = waterTuningProfile(visualId);
+  controls.ringOffsetX.value = String(profile.rings.offsetX);
+  controls.ringOffsetY.value = String(profile.rings.offsetY);
+  controls.ringScaleX.value = String(profile.rings.scaleX * 100);
+  controls.ringScaleY.value = String(profile.rings.scaleY * 100);
+  controls.rippleOffsetX.value = String(profile.ripples.offsetX);
+  controls.rippleOffsetY.value = String(profile.ripples.offsetY);
+  controls.rippleScaleX.value = String(profile.ripples.scaleX * 100);
+  controls.rippleScaleY.value = String(profile.ripples.scaleY * 100);
+  updateRingTuningLabels();
+  updateRippleTuningLabels();
+
+  for (const control of [
+    controls.ringOffsetX,
+    controls.ringOffsetY,
+    controls.ringScaleX,
+    controls.ringScaleY,
+    controls.resetRingTuning,
+    controls.rippleOffsetX,
+    controls.rippleOffsetY,
+    controls.rippleScaleX,
+    controls.rippleScaleY,
+    controls.resetRippleTuning,
+  ]) {
+    control.disabled = !hasWater;
+  }
+
+  controls.waterProfileStatus.textContent = hasWater
+    ? `Индивидуальный профиль: ${visualId}. Изменения сохраняются автоматически.`
+    : 'У выбранного дома нет настраиваемой водной поверхности.';
+}
 
 const SHADOW_TUNING_DEFAULTS = Object.freeze({
   azimuth: 220,
@@ -934,8 +1043,9 @@ function drawWaterSurfaceEffects(item, timeMs) {
   const seconds = timeMs / 1000;
   const seed = motionSeedFor(item);
   const intensity = waterEffectIntensity();
-  const rings = ringTuning();
-  const ripples = rippleTuning();
+  const tuning = waterTuningProfile(descriptor.visual.id);
+  const rings = tuning.rings;
+  const ripples = tuning.ripples;
 
   for (const [surfaceIndex, surface] of surfaces.entries()) {
     const centerX = imageLeft + surface.x * width;
@@ -2346,6 +2456,7 @@ async function selectPackage(manifestUrl) {
     activePackages = packages;
     activeFusionPackages = new Map(fusionPackages);
     activeVisual = packages[0].visual;
+    applyActiveWaterTuningProfile();
     rebuildScenario();
     const layerCount = [...packages, ...fusionPackages.map(([, item]) => item)]
       .reduce((sum, item) => sum + Object.keys(item.layers).length, 0);
@@ -2358,6 +2469,7 @@ async function selectPackage(manifestUrl) {
     activeVisual = null;
     activePackages = [];
     activeFusionPackages = new Map();
+    applyActiveWaterTuningProfile();
     controls.packageStatus.classList.add('error');
     controls.packageStatus.textContent = error instanceof Error ? error.message : String(error);
     render();
@@ -2461,21 +2573,25 @@ controls.waterIntensity.addEventListener('input', () => {
 for (const control of [controls.ringOffsetX, controls.ringOffsetY, controls.ringScaleX, controls.ringScaleY]) {
   control.addEventListener('input', () => {
     updateRingTuningLabels();
+    storeCurrentWaterTuningProfile();
     drawDynamicEffects();
   });
 }
 controls.resetRingTuning.addEventListener('click', () => {
   resetRingTuning();
+  storeCurrentWaterTuningProfile();
   drawDynamicEffects();
 });
 for (const control of [controls.rippleOffsetX, controls.rippleOffsetY, controls.rippleScaleX, controls.rippleScaleY]) {
   control.addEventListener('input', () => {
     updateRippleTuningLabels();
+    storeCurrentWaterTuningProfile();
     drawDynamicEffects();
   });
 }
 controls.resetRippleTuning.addEventListener('click', () => {
   resetRippleTuning();
+  storeCurrentWaterTuningProfile();
   drawDynamicEffects();
 });
 controls.surfaceSelect.addEventListener('change', render);
