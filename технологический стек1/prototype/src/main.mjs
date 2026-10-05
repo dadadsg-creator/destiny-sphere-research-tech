@@ -329,6 +329,8 @@ function resetRippleTuning() {
 updateRippleTuningLabels();
 
 function activeWaterVisualId() {
+  if (controls.packageSelect.value === 'voranerComplex3') return 'tech/residential/voraner-complex-3';
+  if (controls.packageSelect.value === 'voranerComplex7') return 'tech/residential/voraner-complex-7';
   return activeVisual?.id ?? null;
 }
 
@@ -503,11 +505,18 @@ const PACKAGE_URLS = Object.freeze({
 const PACKAGE_PRESETS = Object.freeze({
   auto: Object.freeze(['blue', 'gold', 'teal']),
   voranerMix: Object.freeze(['voraner02', 'voraner03', 'voraner05']),
+  voranerComplex3: Object.freeze(['voraner02']),
+  voranerComplex7: Object.freeze(['voraner02']),
   shadowLab: Object.freeze(['voraner02', 'voranerProxy']),
 });
 const FUSION_PACKAGE_URLS = Object.freeze({
   three: '../assets/tech/residential/metadata/voraner-residential-complex-3.json?v=20261001-13',
   seven: '../assets/tech/residential/metadata/voraner-residential-complex-7.json?v=20261001-13',
+});
+const FUSION_PACKAGE_PRESETS = Object.freeze({
+  voranerMix: Object.freeze(['three', 'seven']),
+  voranerComplex3: Object.freeze(['three']),
+  voranerComplex7: Object.freeze(['seven']),
 });
 const DISTRICT_BUILD_SLOTS = new Set([8, 11, 14, 17]);
 const ART_PLACEMENT_OFFSET = Object.freeze([0, -4.5]);
@@ -2444,8 +2453,10 @@ async function selectPackage(manifestUrl) {
       const layers = await loadVisualLayers(visual);
       return { visual, layers };
     }));
-    const fusionPackages = manifestUrl === 'voranerMix'
-      ? await Promise.all(Object.entries(FUSION_PACKAGE_URLS).map(async ([kind, url]) => {
+    const fusionKinds = FUSION_PACKAGE_PRESETS[manifestUrl] ?? [];
+    const fusionPackages = fusionKinds.length > 0
+      ? await Promise.all(fusionKinds.map(async (kind) => {
+        const url = FUSION_PACKAGE_URLS[kind];
         const visual = await loadBuildingVisual(url);
         const layers = await loadVisualLayers(visual);
         return [kind, { visual, layers }];
@@ -2511,6 +2522,14 @@ controls.packageSelect.addEventListener('change', () => {
   if (controls.packageSelect.value === 'shadowLab') {
     controls.scenarioSelect.value = 'shadowLab';
     rebuildScenario();
+  } else if (controls.packageSelect.value === 'voranerComplex3') {
+    controls.scenarioSelect.value = 'threeCenter';
+    controls.zoom.value = '190';
+    updateZoomLabel();
+  } else if (controls.packageSelect.value === 'voranerComplex7') {
+    controls.scenarioSelect.value = 'sevenFull';
+    controls.zoom.value = '145';
+    updateZoomLabel();
   }
   selectPackage(controls.packageSelect.value);
 });
