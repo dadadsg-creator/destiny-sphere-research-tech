@@ -710,10 +710,15 @@ function drawArtItemLayer(item, name, options = {}) {
     : name === 'emissive' ? (visual.emissiveOffset ?? [0, 0]) : [0, 0];
   const screenOffset = options.screenOffset ?? [0, 0];
   const toneFilters = [
-    'brightness(0.86) saturate(1.10)',
-    'brightness(1.06) saturate(0.88)',
-    'brightness(0.96) saturate(1.20) sepia(0.07)',
+    'brightness(0.97) saturate(0.94) contrast(1.03) hue-rotate(-3deg)',
+    'brightness(1.035) saturate(0.88) contrast(1.02) sepia(0.055)',
+    'brightness(0.95) saturate(1.02) contrast(1.045) sepia(0.018)',
   ];
+  const fusionToneFilter = item.kind === 'fusion'
+    ? item.fusion.kind === 'seven'
+      ? 'brightness(0.93) saturate(0.88) contrast(1.07) hue-rotate(-4deg)'
+      : 'brightness(1.01) saturate(0.92) contrast(1.035) sepia(0.035)'
+    : null;
 
   const target = options.targetCtx ?? ctx;
   target.save();
@@ -734,7 +739,11 @@ function drawArtItemLayer(item, name, options = {}) {
   }
   target.globalCompositeOperation = options.composite ?? 'source-over';
   target.globalAlpha = options.alpha ?? 1;
-  target.filter = options.filter ?? (name === 'color' ? toneFilters[descriptor.tone % toneFilters.length] : 'none');
+  target.filter = options.filter ?? (
+    name === 'color'
+      ? fusionToneFilter ?? toneFilters[descriptor.tone % toneFilters.length]
+      : 'none'
+  );
   target.drawImage(
     image,
     -layerAnchor[0] * width + manifestOffset[0],
