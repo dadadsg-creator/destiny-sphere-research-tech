@@ -835,6 +835,17 @@ function drawCalibratedGroundShadow(item) {
   drawCalibratedShadowLayer(item);
 }
 
+function drawDisabledArtItem(item) {
+  drawArtItemLayer(item, 'color', {
+    alpha: 0.42,
+    composite: 'screen',
+    filter: 'brightness(0) saturate(100%) invert(83%) sepia(20%) saturate(1250%) hue-rotate(153deg) brightness(1.08) blur(0.9px)',
+  });
+  drawArtItemLayer(item, 'color', {
+    filter: 'brightness(0.68) saturate(0.24) contrast(1.08) sepia(0.08) hue-rotate(155deg)',
+  });
+}
+
 function drawGroundShadow(item) {
   const metrics = shadowMetrics(item);
   if (!metrics) return;
@@ -1094,8 +1105,10 @@ function drawArtRenderQueue(renderItems, cells, scale, dpr) {
     const state = descriptor?.state;
     if (state === 'construction' && descriptor?.layers.construction) {
       drawArtItemLayer(item, 'construction');
+    } else if (state === 'disabled') {
+      drawDisabledArtItem(item);
     } else {
-      drawArtItemLayer(item, 'color', { alpha: state === 'disabled' ? 0.56 : state === 'construction' ? 0.42 : 1 });
+      drawArtItemLayer(item, 'color', { alpha: state === 'construction' ? 0.42 : 1 });
     }
   });
   drawFacadeCastShadows(renderItems, scale, dpr);
@@ -1357,24 +1370,63 @@ function updateBuildPanel() {
 }
 
 function drawDisabledCellOverlay(cell) {
+  const centerX = cell.x + BUILDING_ANCHOR[0];
+  const groundY = cell.y + CELL_HEIGHT * 0.72;
+  const seed = (cell.num * 17 + 11) % 7;
   ctx.save();
   hexPath(cell.x, cell.y, 1);
-  ctx.fillStyle = 'rgba(4, 13, 22, 0.58)';
+  const field = ctx.createRadialGradient(centerX, groundY - 8, 1, centerX, groundY - 5, 28);
+  field.addColorStop(0, 'rgba(188, 242, 255, 0.22)');
+  field.addColorStop(0.56, 'rgba(76, 174, 209, 0.12)');
+  field.addColorStop(1, 'rgba(12, 56, 78, 0.04)');
+  ctx.fillStyle = field;
   ctx.fill();
-  ctx.strokeStyle = 'rgba(112, 170, 195, 0.82)';
-  ctx.lineWidth = 1.1;
+  ctx.strokeStyle = 'rgba(144, 224, 246, 0.62)';
+  ctx.lineWidth = 0.8;
   ctx.stroke();
-  const x = cell.x + BUILDING_ANCHOR[0];
-  const y = cell.y + CELL_HEIGHT * 0.48;
-  ctx.strokeStyle = 'rgba(170, 218, 232, 0.95)';
-  ctx.lineWidth = 1.5;
+
+  ctx.globalCompositeOperation = 'screen';
+  ctx.shadowColor = 'rgba(103, 221, 255, 0.8)';
+  ctx.shadowBlur = 3;
+  ctx.setLineDash([2.2, 2.2]);
+  ctx.strokeStyle = 'rgba(155, 235, 255, 0.82)';
+  ctx.lineWidth = 0.9;
   ctx.beginPath();
-  ctx.arc(x, y, 5, -Math.PI * 0.25, Math.PI * 1.25);
+  ctx.ellipse(centerX, groundY - 1.4, 18, 5.7, 0, 0, Math.PI * 2);
   ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(x, y - 7);
-  ctx.lineTo(x, y - 1);
-  ctx.stroke();
+  ctx.setLineDash([]);
+
+  ctx.strokeStyle = 'rgba(190, 244, 255, 0.7)';
+  ctx.lineWidth = 0.7;
+  for (let index = 0; index < 5; index += 1) {
+    const offsetX = -14 + index * 7 + ((seed + index) % 3 - 1) * 1.4;
+    const height = 15 + ((seed + index * 3) % 5) * 4;
+    ctx.beginPath();
+    ctx.moveTo(centerX + offsetX, groundY - 1);
+    ctx.lineTo(centerX + offsetX * 0.72, groundY - height);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(centerX + offsetX * 0.82, groundY - height * 0.48);
+    ctx.lineTo(centerX + offsetX * 0.55 - 3, groundY - height * 0.6);
+    ctx.moveTo(centerX + offsetX * 0.82, groundY - height * 0.48);
+    ctx.lineTo(centerX + offsetX * 0.65 + 3, groundY - height * 0.67);
+    ctx.stroke();
+  }
+
+  ctx.fillStyle = 'rgba(218, 250, 255, 0.92)';
+  for (let index = 0; index < 4; index += 1) {
+    const angle = (index + seed * 0.35) * Math.PI * 0.63;
+    const radius = 8 + (index % 2) * 8;
+    ctx.beginPath();
+    ctx.arc(
+      centerX + Math.cos(angle) * radius,
+      groundY - 10 + Math.sin(angle) * 5,
+      0.75,
+      0,
+      Math.PI * 2,
+    );
+    ctx.fill();
+  }
   ctx.restore();
 }
 
