@@ -67,6 +67,7 @@ const controls = {
   labels: document.querySelector('#showLabels'),
   residentialGround: document.querySelector('#showResidentialGround'),
   residentialEnvironment: document.querySelector('#showResidentialEnvironment'),
+  animateScene: document.querySelector('#animateScene'),
   architecturalLinks: document.querySelector('#showArchitecturalLinks'),
   linkDebug: document.querySelector('#showLinkDebug'),
   mathShadow: document.querySelector('#showMathShadow'),
@@ -128,6 +129,10 @@ let packageRequest = 0;
 let selectedCellNum = 0;
 let hoveredCellNum = null;
 let latestScene = null;
+let sceneAnimationTimeMs = 0;
+let sceneAnimationFrame = null;
+let lastAnimatedRenderMs = -Infinity;
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 window.addEventListener('ancient-environment-assets-ready', () => {
   if (activeVisual) render();
@@ -146,6 +151,7 @@ controls.envelope.checked = false;
 controls.labels.checked = false;
 controls.residentialGround.checked = true;
 controls.residentialEnvironment.checked = true;
+controls.animateScene.checked = true;
 controls.architecturalLinks.checked = false;
 controls.linkDebug.checked = false;
 controls.zoom.value = '145';
@@ -1155,7 +1161,39 @@ function drawArtRenderQueue(renderItems, cells, scale, dpr) {
   drawPhysicalFacadeShadowLab(renderItems, scale, dpr);
   renderItems.forEach((item) => {
     const state = resolveArtItem(item)?.state;
-    if (state === 'working') drawArtItemLayer(item, 'emissive', { alpha: 0.78, composite: 'screen' });
+    if (state !== 'working') return;
+    const animated = controls.animateScene.checked && !reducedMotion.matches;
+    if (!animated) {
+      drawArtItemLayer(item, 'emissive', { alpha: 0.78, composite: 'screen' });
+      return;
+    }
+
+    const seed = item.kind === 'fusion'
+      ? item.fusion.cellNums.reduce((sum, cellNum) => sum + cellNum, 0) + item.fusion.cellNums.length * 3
+      : item.cellNum * 1.73;
+    const seconds = sceneAnimationTimeMs / 1000;
+    const lightPhase = seconds * 0.82 + seed;
+    const waterPhase = seconds * 0.54 + seed * 0.71;
+    const lightAlpha = 0.745
+      + Math.sin(lightPhase) * 0.045
+      + Math.sin(lightPhase * 0.43 + 1.1) * 0.018;
+    drawArtItemLayer(item, 'emissive', {
+      alpha: lightAlpha,
+      composite: 'screen',
+    });
+
+    // A second, very weak copy of the authored emissive mask moves by less
+    // than one logical pixel. Fountain streams and basin highlights therefore
+    // shimmer slowly while windows only receive a soft breathing halo.
+    drawArtItemLayer(item, 'emissive', {
+      alpha: 0.055 + (Math.sin(waterPhase) + 1) * 0.022,
+      composite: 'screen',
+      filter: 'brightness(1.3) blur(0.38px)',
+      screenOffset: [
+        Math.sin(waterPhase * 0.73) * 0.18,
+        Math.cos(waterPhase) * 0.32,
+      ],
+    });
   });
   renderItems
     .filter((item) => {
@@ -2029,6 +2067,7 @@ for (const control of [
   controls.labels,
   controls.residentialGround,
   controls.residentialEnvironment,
+  controls.animateScene,
   controls.architecturalLinks,
   controls.linkDebug,
   controls.mathShadow,
@@ -2175,8 +2214,44 @@ canvas.addEventListener('click', (event) => {
   render();
 });
 const scheduleRender = () => requestAnimationFrame(render);
+
+function sceneAnimationAllowed() {
+  return controls.animateScene.checked
+    && !reducedMotion.matches
+    && document.visibilityState === 'visible';
+}
+
+function animateScene(timeMs) {
+  sceneAnimationFrame = null;
+  if (!sceneAnimationAllowed()) return;
+  sceneAnimationTimeMs = timeMs;
+  // The movement is deliberately slow; 20 redraws per second are enough for
+  // sub-pixel shimmer and keep the shadow laboratory inexpensive.
+  if (timeMs - lastAnimatedRenderMs >= 50) {
+    lastAnimatedRenderMs = timeMs;
+    if (activeVisual) render();
+  }
+  sceneAnimationFrame = requestAnimationFrame(animateScene);
+}
+
+function syncSceneAnimation() {
+  if (sceneAnimationAllowed()) {
+    if (sceneAnimationFrame === null) sceneAnimationFrame = requestAnimationFrame(animateScene);
+    return;
+  }
+  if (sceneAnimationFrame !== null) cancelAnimationFrame(sceneAnimationFrame);
+  sceneAnimationFrame = null;
+}
+
+controls.animateScene.addEventListener('change', syncSceneAnimation);
+document.addEventListener('visibilitychange', syncSceneAnimation);
+reducedMotion.addEventListener('change', () => {
+  syncSceneAnimation();
+  if (activeVisual) render();
+});
 window.addEventListener('resize', scheduleRender);
 window.addEventListener('load', scheduleRender, { once: true });
 new ResizeObserver(scheduleRender).observe(canvas);
 scheduleRender();
+syncSceneAnimation();
 selectPackage(controls.packageSelect.value);
