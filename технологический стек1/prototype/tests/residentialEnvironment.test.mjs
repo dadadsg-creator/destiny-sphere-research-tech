@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { stat } from 'node:fs/promises';
 import test from 'node:test';
 
-import { sixtyOneCellCluster } from '../src/geometry.mjs';
+import { nineteenCellCluster, sixtyOneCellCluster } from '../src/geometry.mjs';
 import {
   buildResidentialEnvironmentPlan,
   RESIDENTIAL_ENVIRONMENT_ASSET_FILES,
@@ -24,6 +24,12 @@ test('simplified sandy-rock surface contains no technical channels', () => {
   const cells = sixtyOneCellCluster();
   const plan = buildResidentialEnvironmentPlan(cells);
   assert.deepEqual(plan.channels, []);
+});
+
+test('the authored sandy-rock surface also covers the nineteen-cell art district', () => {
+  const plan = buildResidentialEnvironmentPlan(nineteenCellCluster());
+  assert.equal(plan.structures.length, 19);
+  assert.deepEqual(plan.ruins, []);
 });
 
 test('authored ground and three standalone ruins stay inside the runtime size budget', async () => {

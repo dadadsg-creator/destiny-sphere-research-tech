@@ -380,6 +380,13 @@ function showsAncientEnvironment() {
   );
 }
 
+function showsResidentialEnvironment() {
+  return (
+    ['district', 'districtWide'].includes(controls.scenarioSelect.value)
+    && controls.surfaceSelect.value === 'ancient'
+  );
+}
+
 function isRingGateCell(cellNum) {
   return RING_GATE_CELL_NUMS.includes(cellNum);
 }
@@ -835,6 +842,28 @@ function drawCalibratedGroundShadow(item) {
   drawCalibratedShadowLayer(item);
 }
 
+function drawContactOcclusion(item) {
+  const descriptor = resolveArtItem(item);
+  if (!descriptor) return;
+  const levelScale = descriptor.level > 1 ? 1 + (descriptor.level - 1) * 0.035 : 1;
+  const width = descriptor.visual.logicalWidth * levelScale;
+  const radiusX = width * (item.kind === 'fusion' ? 0.42 : 0.39);
+  const radiusY = Math.max(1.8, width * 0.052);
+  ctx.save();
+  ctx.translate(descriptor.anchor[0] - width * 0.018, descriptor.anchor[1] - radiusY * 0.56);
+  ctx.globalCompositeOperation = 'multiply';
+  ctx.filter = 'blur(1.2px)';
+  const gradient = ctx.createRadialGradient(0, 0, radiusX * 0.08, 0, 0, radiusX);
+  gradient.addColorStop(0, 'rgba(10, 16, 18, 0.22)');
+  gradient.addColorStop(0.64, 'rgba(10, 16, 18, 0.12)');
+  gradient.addColorStop(1, 'rgba(10, 16, 18, 0)');
+  ctx.fillStyle = gradient;
+  ctx.beginPath();
+  ctx.ellipse(0, 0, radiusX, radiusY, -0.07, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
 function drawDisabledArtItem(item) {
   drawArtItemLayer(item, 'color', {
     alpha: 0.42,
@@ -1099,6 +1128,7 @@ function drawArtRenderQueue(renderItems, cells, scale, dpr) {
   cells.forEach((cell) => appendHexPathOn(ctx, cell.x, cell.y, 1));
   ctx.clip();
   renderItems.forEach(drawGroundShadow);
+  renderItems.forEach(drawContactOcclusion);
   ctx.restore();
   renderItems.forEach((item) => {
     const descriptor = resolveArtItem(item);
@@ -1713,7 +1743,7 @@ function render() {
     drawSurface(cells);
   }
 
-  if (showsAncientEnvironment() && controls.residentialEnvironment.checked) {
+  if (showsResidentialEnvironment() && controls.residentialEnvironment.checked) {
     drawResidentialEnvironmentGround(ctx, residentialEnvironmentPlan);
   }
 
@@ -1741,10 +1771,13 @@ function render() {
       const hoveredCell = cells.find((cell) => cell.num === cellNum);
       if (!hoveredCell) continue;
       hexPath(hoveredCell.x, hoveredCell.y, 1);
-      ctx.fillStyle = 'rgba(75, 218, 255, 0.13)';
+      ctx.fillStyle = 'rgba(75, 218, 255, 0.035)';
       ctx.fill();
-      ctx.strokeStyle = 'rgba(119, 231, 255, 0.9)';
-      ctx.lineWidth = 1.35;
+      ctx.strokeStyle = 'rgba(98, 225, 255, 0.18)';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+      ctx.strokeStyle = 'rgba(142, 237, 255, 0.88)';
+      ctx.lineWidth = 0.85;
       ctx.stroke();
     }
   }
@@ -1753,10 +1786,13 @@ function render() {
     const selectedCell = cells.find((cell) => cell.num === cellNum);
     if (!selectedCell) continue;
     hexPath(selectedCell.x, selectedCell.y, 1);
-    ctx.fillStyle = 'rgba(255, 211, 94, 0.17)';
+    ctx.fillStyle = 'rgba(255, 218, 112, 0.045)';
     ctx.fill();
-    ctx.strokeStyle = '#ffdc78';
-    ctx.lineWidth = 2.2;
+    ctx.strokeStyle = 'rgba(255, 210, 92, 0.2)';
+    ctx.lineWidth = 3.6;
+    ctx.stroke();
+    ctx.strokeStyle = 'rgba(255, 226, 139, 0.96)';
+    ctx.lineWidth = 1.15;
     ctx.stroke();
   }
 
