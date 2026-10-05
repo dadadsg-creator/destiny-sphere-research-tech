@@ -62,6 +62,7 @@ const effectsCtx = effectsCanvas.getContext('2d');
 const castShadowCanvas = document.createElement('canvas');
 const receiverMaskCanvas = document.createElement('canvas');
 let calibratedShadowCache = new WeakMap();
+const v02RinglessLayerCache = new WeakMap();
 const controls = {
   ports: document.querySelector('#showPorts'),
   anchors: document.querySelector('#showAnchors'),
@@ -150,7 +151,7 @@ const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 const WATER_SURFACES = Object.freeze({
   'tech/residential/voraner-v02-simple': Object.freeze([
-    Object.freeze({ x: 0.545, y: 0.402, rx: 0.05, ry: 0.016, jet: 0.105 }),
+    Object.freeze({ x: 0.545, y: 0.402, rx: 0.05, ry: 0.016, jet: 0.105, rings: false, caustics: false }),
     Object.freeze({ x: 0.37, y: 0.83, rx: 0.088, ry: 0.025 }),
   ]),
   'tech/residential/voraner-v03-dome': Object.freeze([
@@ -804,6 +805,48 @@ function drawArtItemLayer(item, name, options = {}) {
     : null;
 
   const target = options.targetCtx ?? ctx;
+  let drawable = image;
+  if (
+    descriptor.visual.id === 'tech/residential/voraner-v02-simple'
+    && (name === 'color' || name === 'emissive')
+  ) {
+    let masked = v02RinglessLayerCache.get(image);
+    if (!masked) {
+      const sourceWidth = image.naturalWidth;
+      const sourceHeight = image.naturalHeight;
+      masked = document.createElement('canvas');
+      masked.width = sourceWidth;
+      masked.height = sourceHeight;
+      const maskedCtx = masked.getContext('2d');
+      maskedCtx.drawImage(image, 0, 0);
+
+      // The source art contains an entire cyan holographic ornament above the
+      // rooftop basin. Remove its cyan/white pixels from the derived layer,
+      // while keeping the gold basin, dome and original source files intact.
+      const maskLeft = Math.floor(sourceWidth * 0.49);
+      const maskTop = Math.floor(sourceHeight * 0.275);
+      const maskRight = Math.ceil(sourceWidth * 0.60);
+      const maskBottom = Math.ceil(sourceHeight * 0.445);
+      const maskWidth = maskRight - maskLeft;
+      const maskHeight = maskBottom - maskTop;
+      const pixels = maskedCtx.getImageData(maskLeft, maskTop, maskWidth, maskHeight);
+      for (let pixelIndex = 0; pixelIndex < pixels.data.length; pixelIndex += 4) {
+        const red = pixels.data[pixelIndex];
+        const green = pixels.data[pixelIndex + 1];
+        const blue = pixels.data[pixelIndex + 2];
+        const alpha = pixels.data[pixelIndex + 3];
+        const isCyanEnergy = alpha > 0
+          && blue > 145
+          && green > 90
+          && blue - red > 18
+          && blue > red * 1.04;
+        if (isCyanEnergy) pixels.data[pixelIndex + 3] = 0;
+      }
+      maskedCtx.putImageData(pixels, maskLeft, maskTop);
+      v02RinglessLayerCache.set(image, masked);
+    }
+    drawable = masked;
+  }
   target.save();
   target.translate(descriptor.anchor[0] + screenOffset[0], descriptor.anchor[1] + screenOffset[1]);
   if (options.matrix) target.transform(...options.matrix);
@@ -828,7 +871,7 @@ function drawArtItemLayer(item, name, options = {}) {
       : 'none'
   );
   target.drawImage(
-    image,
+    drawable,
     -layerAnchor[0] * width + manifestOffset[0],
     -layerAnchor[1] * height + manifestOffset[1],
     width,
@@ -866,81 +909,85 @@ function drawWaterSurfaceEffects(item, timeMs) {
     const radiusY = surface.ry * height;
     const phase = seconds * 0.23 + seed * 0.17 + surfaceIndex * 0.31;
 
-    effectsCtx.save();
-    effectsCtx.beginPath();
-    effectsCtx.ellipse(centerX, centerY, radiusX, radiusY, 0, 0, Math.PI * 2);
-    effectsCtx.clip();
-    effectsCtx.lineCap = 'round';
+    if (surface.caustics !== false) {
+      effectsCtx.save();
+      effectsCtx.beginPath();
+      effectsCtx.ellipse(centerX, centerY, radiusX, radiusY, 0, 0, Math.PI * 2);
+      effectsCtx.clip();
+      effectsCtx.lineCap = 'round';
 
-    // Dark troughs make the movement readable against already bright water.
-    // They travel with the highlights, but remain broad and soft enough to
-    // avoid looking like animated scratches at the normal game scale.
-    effectsCtx.globalCompositeOperation = 'source-over';
-    for (let lineIndex = 0; lineIndex < 4; lineIndex += 1) {
-      const progress = (phase * 0.91 + lineIndex / 4) % 1;
-      const y = centerY + (progress * 2 - 1) * radiusY;
-      const bend = Math.cos(phase * Math.PI * 2 + lineIndex * 1.35) * radiusY * 0.32;
-      const alpha = Math.min(0.34, (0.09 + (1 - Math.abs(progress * 2 - 1)) * 0.08) * intensity);
-      effectsCtx.strokeStyle = `rgba(2, 45, 78, ${alpha})`;
-      effectsCtx.lineWidth = 0.82;
-      effectsCtx.beginPath();
-      effectsCtx.moveTo(centerX - radiusX, y);
-      effectsCtx.quadraticCurveTo(centerX, y - bend, centerX + radiusX, y + bend * 0.4);
-      effectsCtx.stroke();
+      // Dark troughs make the movement readable against already bright water.
+      // They travel with the highlights, but remain broad and soft enough to
+      // avoid looking like animated scratches at the normal game scale.
+      effectsCtx.globalCompositeOperation = 'source-over';
+      for (let lineIndex = 0; lineIndex < 4; lineIndex += 1) {
+        const progress = (phase * 0.91 + lineIndex / 4) % 1;
+        const y = centerY + (progress * 2 - 1) * radiusY;
+        const bend = Math.cos(phase * Math.PI * 2 + lineIndex * 1.35) * radiusY * 0.32;
+        const alpha = Math.min(0.34, (0.09 + (1 - Math.abs(progress * 2 - 1)) * 0.08) * intensity);
+        effectsCtx.strokeStyle = `rgba(2, 45, 78, ${alpha})`;
+        effectsCtx.lineWidth = 0.82;
+        effectsCtx.beginPath();
+        effectsCtx.moveTo(centerX - radiusX, y);
+        effectsCtx.quadraticCurveTo(centerX, y - bend, centerX + radiusX, y + bend * 0.4);
+        effectsCtx.stroke();
+      }
+
+      effectsCtx.globalCompositeOperation = 'screen';
+      // Two families of caustic strokes drift in opposite directions. They are
+      // clipped to the authored basin and therefore never cross a stone edge.
+      for (let lineIndex = 0; lineIndex < 5; lineIndex += 1) {
+        const progress = (phase + lineIndex / 5) % 1;
+        const y = centerY + (progress * 2 - 1) * radiusY;
+        const bend = Math.sin(phase * Math.PI * 2 + lineIndex * 1.7) * radiusY * 0.42;
+        const alpha = Math.min(0.58, (0.13 + (1 - Math.abs(progress * 2 - 1)) * 0.14) * intensity);
+        effectsCtx.strokeStyle = `rgba(143, 239, 255, ${alpha})`;
+        effectsCtx.lineWidth = 0.5;
+        effectsCtx.beginPath();
+        effectsCtx.moveTo(centerX - radiusX, y);
+        effectsCtx.quadraticCurveTo(centerX, y + bend, centerX + radiusX, y - bend * 0.35);
+        effectsCtx.stroke();
+      }
+      for (let lineIndex = 0; lineIndex < 3; lineIndex += 1) {
+        const rawProgress = 1 - phase * 0.73 + lineIndex / 3;
+        const progress = ((rawProgress % 1) + 1) % 1;
+        const x = centerX + (progress * 2 - 1) * radiusX;
+        effectsCtx.strokeStyle = `rgba(78, 194, 255, ${Math.min(0.42, 0.16 * intensity)})`;
+        effectsCtx.lineWidth = 0.38;
+        effectsCtx.beginPath();
+        effectsCtx.moveTo(x, centerY - radiusY);
+        effectsCtx.quadraticCurveTo(x + radiusX * 0.12, centerY, x - radiusX * 0.08, centerY + radiusY);
+        effectsCtx.stroke();
+      }
+      effectsCtx.restore();
     }
 
-    effectsCtx.globalCompositeOperation = 'screen';
-    // Two families of caustic strokes drift in opposite directions. They are
-    // clipped to the authored basin and therefore never cross a stone edge.
-    for (let lineIndex = 0; lineIndex < 5; lineIndex += 1) {
-      const progress = (phase + lineIndex / 5) % 1;
-      const y = centerY + (progress * 2 - 1) * radiusY;
-      const bend = Math.sin(phase * Math.PI * 2 + lineIndex * 1.7) * radiusY * 0.42;
-      const alpha = Math.min(0.58, (0.13 + (1 - Math.abs(progress * 2 - 1)) * 0.14) * intensity);
-      effectsCtx.strokeStyle = `rgba(143, 239, 255, ${alpha})`;
-      effectsCtx.lineWidth = 0.5;
-      effectsCtx.beginPath();
-      effectsCtx.moveTo(centerX - radiusX, y);
-      effectsCtx.quadraticCurveTo(centerX, y + bend, centerX + radiusX, y - bend * 0.35);
-      effectsCtx.stroke();
+    if (surface.rings !== false) {
+      // Expanding rings make the pool readable as water even at game scale.
+      effectsCtx.save();
+      effectsCtx.globalCompositeOperation = 'screen';
+      const ringCenterX = centerX + rings.offsetX;
+      const ringCenterY = centerY + rings.offsetY;
+      const ringRadiusX = radiusX * rings.scaleX;
+      const ringRadiusY = radiusY * rings.scaleY;
+      for (let ringIndex = 0; ringIndex < 3; ringIndex += 1) {
+        const progress = (phase * 0.58 + ringIndex / 3) % 1;
+        effectsCtx.strokeStyle = `rgba(177, 246, 255, ${Math.min(0.64, (1 - progress) * 0.34 * intensity)})`;
+        effectsCtx.lineWidth = 0.62 - progress * 0.2;
+        effectsCtx.beginPath();
+        effectsCtx.ellipse(
+          ringCenterX,
+          ringCenterY,
+          Math.max(0.2, ringRadiusX * progress),
+          Math.max(0.1, ringRadiusY * progress),
+          0,
+          0,
+          Math.PI * 2,
+        );
+        effectsCtx.stroke();
+      }
+      effectsCtx.restore();
     }
-    for (let lineIndex = 0; lineIndex < 3; lineIndex += 1) {
-      const rawProgress = 1 - phase * 0.73 + lineIndex / 3;
-      const progress = ((rawProgress % 1) + 1) % 1;
-      const x = centerX + (progress * 2 - 1) * radiusX;
-      effectsCtx.strokeStyle = `rgba(78, 194, 255, ${Math.min(0.42, 0.16 * intensity)})`;
-      effectsCtx.lineWidth = 0.38;
-      effectsCtx.beginPath();
-      effectsCtx.moveTo(x, centerY - radiusY);
-      effectsCtx.quadraticCurveTo(x + radiusX * 0.12, centerY, x - radiusX * 0.08, centerY + radiusY);
-      effectsCtx.stroke();
-    }
-    effectsCtx.restore();
-
-    // Expanding rings make the pool readable as water even at game scale.
-    effectsCtx.save();
-    effectsCtx.globalCompositeOperation = 'screen';
-    const ringCenterX = centerX + rings.offsetX;
-    const ringCenterY = centerY + rings.offsetY;
-    const ringRadiusX = radiusX * rings.scaleX;
-    const ringRadiusY = radiusY * rings.scaleY;
-    for (let ringIndex = 0; ringIndex < 3; ringIndex += 1) {
-      const progress = (phase * 0.58 + ringIndex / 3) % 1;
-      effectsCtx.strokeStyle = `rgba(177, 246, 255, ${Math.min(0.64, (1 - progress) * 0.34 * intensity)})`;
-      effectsCtx.lineWidth = 0.62 - progress * 0.2;
-      effectsCtx.beginPath();
-      effectsCtx.ellipse(
-        ringCenterX,
-        ringCenterY,
-        Math.max(0.2, ringRadiusX * progress),
-        Math.max(0.1, ringRadiusY * progress),
-        0,
-        0,
-        Math.PI * 2,
-      );
-      effectsCtx.stroke();
-    }
-    effectsCtx.restore();
 
     if (surface.jet) {
       const jetHeight = surface.jet * height;
