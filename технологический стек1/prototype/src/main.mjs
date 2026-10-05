@@ -151,11 +151,9 @@ const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 const WATER_SURFACES = Object.freeze({
   'tech/residential/voraner-v02-simple': Object.freeze([
-    Object.freeze({ x: 0.545, y: 0.402, rx: 0.05, ry: 0.016, jet: 0.105, rings: false, caustics: false }),
     Object.freeze({ x: 0.37, y: 0.83, rx: 0.088, ry: 0.025 }),
   ]),
   'tech/residential/voraner-v03-dome': Object.freeze([
-    Object.freeze({ x: 0.51, y: 0.225, rx: 0.05, ry: 0.016, jet: 0.09 }),
     Object.freeze({ x: 0.805, y: 0.69, rx: 0.082, ry: 0.023 }),
   ]),
   'tech/residential/voraner-complex-3': Object.freeze([
