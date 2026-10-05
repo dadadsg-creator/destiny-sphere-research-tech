@@ -183,6 +183,12 @@ const DEFAULT_WATER_TUNING_PROFILE = Object.freeze({
   rings: Object.freeze({ offsetX: 0, offsetY: 0, scaleX: 1, scaleY: 1 }),
   ripples: Object.freeze({ offsetX: 0, offsetY: 0, scaleX: 1, scaleY: 1 }),
 });
+const BUILT_IN_WATER_TUNING_PROFILES = Object.freeze({
+  'tech/residential/voraner-v02-simple': DEFAULT_WATER_TUNING_PROFILE,
+  'tech/residential/voraner-v03-dome': DEFAULT_WATER_TUNING_PROFILE,
+  'tech/residential/voraner-complex-3': DEFAULT_WATER_TUNING_PROFILE,
+  'tech/residential/voraner-complex-7': DEFAULT_WATER_TUNING_PROFILE,
+});
 
 function finiteWaterValue(value, fallback, min, max) {
   const parsed = Number(value);
@@ -220,7 +226,9 @@ function loadWaterTuningProfiles() {
 let waterTuningProfiles = loadWaterTuningProfiles();
 
 function waterTuningProfile(visualId) {
-  return waterTuningProfiles[visualId] ?? DEFAULT_WATER_TUNING_PROFILE;
+  return waterTuningProfiles[visualId]
+    ?? BUILT_IN_WATER_TUNING_PROFILES[visualId]
+    ?? DEFAULT_WATER_TUNING_PROFILE;
 }
 
 function saveWaterTuningProfiles() {
@@ -381,9 +389,11 @@ function applyActiveWaterTuningProfile() {
     control.disabled = !hasWater;
   }
 
-  controls.waterProfileStatus.textContent = hasWater
-    ? `Индивидуальный профиль: ${visualId}. Изменения сохраняются автоматически.`
-    : 'У выбранного дома нет настраиваемой водной поверхности.';
+  controls.waterProfileStatus.textContent = controls.packageSelect.value === 'voranerMix'
+    ? 'Большая площадка: одновременно применяются профили v02, v03, 3 → 1 и 7 → 1. Ползунки редактируют v02.'
+    : hasWater
+      ? `Индивидуальный профиль: ${visualId}. Изменения сохраняются автоматически.`
+      : 'У выбранного дома нет настраиваемой водной поверхности.';
 }
 
 const SHADOW_TUNING_DEFAULTS = Object.freeze({

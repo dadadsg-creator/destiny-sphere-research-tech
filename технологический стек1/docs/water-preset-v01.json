@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "status": "provisional-accepted",
+  "recordedAt": "2026-10-06",
+  "global": {
+    "effectIntensity": 1.6,
+    "animationFps": 20
+  },
+  "profiles": {
+    "tech/residential/voraner-v02-simple": {
+      "rings": { "offsetX": 0, "offsetY": 0, "scaleX": 1, "scaleY": 1 },
+      "ripples": { "offsetX": 0, "offsetY": 0, "scaleX": 1, "scaleY": 1 }
+    },
+    "tech/residential/voraner-v03-dome": {
+      "rings": { "offsetX": 0, "offsetY": 0, "scaleX": 1, "scaleY": 1 },
+      "ripples": { "offsetX": 0, "offsetY": 0, "scaleX": 1, "scaleY": 1 }
+    },
+    "tech/residential/voraner-complex-3": {
+      "rings": { "offsetX": 0, "offsetY": 0, "scaleX": 1, "scaleY": 1 },
+      "ripples": { "offsetX": 0, "offsetY": 0, "scaleX": 1, "scaleY": 1 }
+    },
+    "tech/residential/voraner-complex-7": {
+      "rings": { "offsetX": 0, "offsetY": 0, "scaleX": 1, "scaleY": 1 },
+      "ripples": { "offsetX": 0, "offsetY": 0, "scaleX": 1, "scaleY": 1 }
+    },
+    "tech/residential/voraner-v05-oval": null
+  }
+}
