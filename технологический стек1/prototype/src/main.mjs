@@ -72,6 +72,15 @@ const controls = {
   animateScene: document.querySelector('#animateScene'),
   waterIntensity: document.querySelector('#waterIntensity'),
   waterIntensityValue: document.querySelector('#waterIntensityValue'),
+  ringOffsetX: document.querySelector('#ringOffsetX'),
+  ringOffsetXValue: document.querySelector('#ringOffsetXValue'),
+  ringOffsetY: document.querySelector('#ringOffsetY'),
+  ringOffsetYValue: document.querySelector('#ringOffsetYValue'),
+  ringScaleX: document.querySelector('#ringScaleX'),
+  ringScaleXValue: document.querySelector('#ringScaleXValue'),
+  ringScaleY: document.querySelector('#ringScaleY'),
+  ringScaleYValue: document.querySelector('#ringScaleYValue'),
+  resetRingTuning: document.querySelector('#resetRingTuning'),
   architecturalLinks: document.querySelector('#showArchitecturalLinks'),
   linkDebug: document.querySelector('#showLinkDebug'),
   mathShadow: document.querySelector('#showMathShadow'),
@@ -203,6 +212,33 @@ function updateWaterIntensityLabel() {
 }
 
 updateWaterIntensityLabel();
+
+function ringTuning() {
+  return {
+    offsetX: Number(controls.ringOffsetX.value),
+    offsetY: Number(controls.ringOffsetY.value),
+    scaleX: Number(controls.ringScaleX.value) / 100,
+    scaleY: Number(controls.ringScaleY.value) / 100,
+  };
+}
+
+function updateRingTuningLabels() {
+  const tuning = ringTuning();
+  controls.ringOffsetXValue.value = `${tuning.offsetX.toFixed(1).replace('.0', '').replace('.', ',')} px`;
+  controls.ringOffsetYValue.value = `${tuning.offsetY.toFixed(1).replace('.0', '').replace('.', ',')} px`;
+  controls.ringScaleXValue.value = `${Math.round(tuning.scaleX * 100)}%`;
+  controls.ringScaleYValue.value = `${Math.round(tuning.scaleY * 100)}%`;
+}
+
+function resetRingTuning() {
+  controls.ringOffsetX.value = '0';
+  controls.ringOffsetY.value = '0';
+  controls.ringScaleX.value = '100';
+  controls.ringScaleY.value = '100';
+  updateRingTuningLabels();
+}
+
+updateRingTuningLabels();
 
 const SHADOW_TUNING_DEFAULTS = Object.freeze({
   azimuth: 220,
@@ -821,6 +857,7 @@ function drawWaterSurfaceEffects(item, timeMs) {
   const seconds = timeMs / 1000;
   const seed = motionSeedFor(item);
   const intensity = waterEffectIntensity();
+  const rings = ringTuning();
 
   for (const [surfaceIndex, surface] of surfaces.entries()) {
     const centerX = imageLeft + surface.x * width;
@@ -883,16 +920,20 @@ function drawWaterSurfaceEffects(item, timeMs) {
     // Expanding rings make the pool readable as water even at game scale.
     effectsCtx.save();
     effectsCtx.globalCompositeOperation = 'screen';
+    const ringCenterX = centerX + rings.offsetX;
+    const ringCenterY = centerY + rings.offsetY;
+    const ringRadiusX = radiusX * rings.scaleX;
+    const ringRadiusY = radiusY * rings.scaleY;
     for (let ringIndex = 0; ringIndex < 3; ringIndex += 1) {
       const progress = (phase * 0.58 + ringIndex / 3) % 1;
       effectsCtx.strokeStyle = `rgba(177, 246, 255, ${Math.min(0.64, (1 - progress) * 0.34 * intensity)})`;
       effectsCtx.lineWidth = 0.62 - progress * 0.2;
       effectsCtx.beginPath();
       effectsCtx.ellipse(
-        centerX,
-        centerY,
-        Math.max(0.2, radiusX * progress),
-        Math.max(0.1, radiusY * progress),
+        ringCenterX,
+        ringCenterY,
+        Math.max(0.2, ringRadiusX * progress),
+        Math.max(0.1, ringRadiusY * progress),
         0,
         0,
         Math.PI * 2,
@@ -2313,6 +2354,16 @@ controls.zoom.addEventListener('input', () => {
 });
 controls.waterIntensity.addEventListener('input', () => {
   updateWaterIntensityLabel();
+  drawDynamicEffects();
+});
+for (const control of [controls.ringOffsetX, controls.ringOffsetY, controls.ringScaleX, controls.ringScaleY]) {
+  control.addEventListener('input', () => {
+    updateRingTuningLabels();
+    drawDynamicEffects();
+  });
+}
+controls.resetRingTuning.addEventListener('click', () => {
+  resetRingTuning();
   drawDynamicEffects();
 });
 controls.surfaceSelect.addEventListener('change', render);

@@ -95,6 +95,27 @@
             <input id="waterIntensity" type="range" min="0.5" max="2.5" step="0.1" value="1.6" />
             <small>Меняет контраст водяных бликов и волн без пересборки основного кадра.</small>
           </label>
+          <section class="water-tuning" aria-labelledby="waterTuningTitle">
+            <h3 id="waterTuningTitle">Посадка колец в фонтан</h3>
+            <p>Модификаторы двигают и масштабируют только расходящиеся кольца. Блики и струи остаются привязаны к воде.</p>
+            <label class="modifier">Смещение вправо <output id="ringOffsetXValue" for="ringOffsetX">0 px</output>
+              <input id="ringOffsetX" type="range" min="-12" max="12" step="0.5" value="0" />
+              <small>Отрицательное значение двигает кольца влево.</small>
+            </label>
+            <label class="modifier">Смещение вниз <output id="ringOffsetYValue" for="ringOffsetY">0 px</output>
+              <input id="ringOffsetY" type="range" min="-16" max="16" step="0.5" value="0" />
+              <small>Положительное значение опускает кольца внутрь чаши.</small>
+            </label>
+            <label class="modifier">Ширина колец <output id="ringScaleXValue" for="ringScaleX">100%</output>
+              <input id="ringScaleX" type="range" min="40" max="160" step="5" value="100" />
+              <small>Размер эллипса слева направо.</small>
+            </label>
+            <label class="modifier">Глубина колец <output id="ringScaleYValue" for="ringScaleY">100%</output>
+              <input id="ringScaleY" type="range" min="20" max="140" step="5" value="100" />
+              <small>Вертикальный размер эллипса; уменьшение сильнее сплющивает его в изометрии.</small>
+            </label>
+            <button id="resetRingTuning" type="button">Сбросить посадку колец</button>
+          </section>
           <label><input id="showArchitecturalLinks" type="checkbox" /> Экспериментальные дорожки</label>
           <label><input id="showLinkDebug" type="checkbox" /> Диагностика переходов</label>
           <label><input id="showMathShadow" type="checkbox" checked /> Математическая тень</label>
@@ -176,6 +197,6 @@
         </nav>
       </section>
     </main>
-    <script type="module" src="./src/main.mjs?v=20261005-22"></script>
+    <script type="module" src="./src/main.mjs?v=20261005-23"></script>
   </body>
 </html>
