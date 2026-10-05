@@ -947,18 +947,29 @@ function drawWaterSurfaceEffects(item, timeMs) {
       effectsCtx.save();
       effectsCtx.globalCompositeOperation = 'screen';
       effectsCtx.lineCap = 'round';
-      for (let segmentIndex = 0; segmentIndex < 4; segmentIndex += 1) {
-        const progress = (seconds * 0.38 + seed * 0.11 + surfaceIndex * 0.19 + segmentIndex / 4) % 1;
-        const y = centerY - jetHeight * progress;
-        const sway = Math.sin(seconds * 0.9 + segmentIndex * 1.7 + seed) * radiusX * 0.055;
-        const alpha = Math.min(0.68, (0.1 + Math.sin(progress * Math.PI) * 0.2) * intensity);
-        effectsCtx.strokeStyle = `rgba(176, 247, 255, ${alpha})`;
-        effectsCtx.lineWidth = 0.4 + (1 - progress) * 0.2;
-        effectsCtx.beginPath();
-        effectsCtx.moveTo(centerX + sway, y);
-        effectsCtx.lineTo(centerX - sway * 0.45, y + Math.max(0.55, jetHeight * 0.07));
-        effectsCtx.stroke();
-      }
+      const sway = Math.sin(seconds * 0.9 + seed + surfaceIndex * 0.7) * radiusX * 0.055;
+      const topX = centerX + sway;
+      const topY = centerY - jetHeight;
+      const jetGradient = effectsCtx.createLinearGradient(topX, topY, centerX, centerY);
+      jetGradient.addColorStop(0, `rgba(156, 232, 255, ${Math.min(0.36, 0.14 * intensity)})`);
+      jetGradient.addColorStop(0.55, `rgba(92, 211, 255, ${Math.min(0.58, 0.25 * intensity)})`);
+      jetGradient.addColorStop(1, `rgba(190, 249, 255, ${Math.min(0.72, 0.34 * intensity)})`);
+
+      // One uninterrupted water column keeps every animated highlight visually
+      // connected to the basin instead of leaving bright dashes in mid-air.
+      effectsCtx.strokeStyle = jetGradient;
+      effectsCtx.lineWidth = 0.72;
+      effectsCtx.beginPath();
+      effectsCtx.moveTo(centerX, centerY);
+      effectsCtx.quadraticCurveTo(centerX - sway * 0.5, centerY - jetHeight * 0.48, topX, topY);
+      effectsCtx.stroke();
+
+      effectsCtx.strokeStyle = `rgba(218, 252, 255, ${Math.min(0.66, (0.2 + Math.sin(seconds * 1.4 + seed) * 0.04) * intensity)})`;
+      effectsCtx.lineWidth = 0.24;
+      effectsCtx.beginPath();
+      effectsCtx.moveTo(centerX + 0.12, centerY);
+      effectsCtx.quadraticCurveTo(centerX - sway * 0.34, centerY - jetHeight * 0.5, topX + 0.08, topY);
+      effectsCtx.stroke();
       effectsCtx.restore();
     }
   }
