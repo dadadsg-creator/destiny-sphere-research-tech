@@ -149,6 +149,13 @@ dd { margin: 3px 0 0; }
 .modifier output { color: #fff0b8; font-variant-numeric: tabular-nums; }
 .modifier input { grid-column: 1 / -1; width: 100%; margin: 0; }
 .modifier small { grid-column: 1 / -1; color: #829caf; line-height: 1.35; }
+.effect-intensity {
+  margin: 4px 0 16px;
+  padding: 9px 10px;
+  border: 1px solid rgba(91, 198, 244, 0.22);
+  border-radius: 7px;
+  background: rgba(3, 18, 31, 0.26);
+}
 .derived { margin: 8px 0 0; color: #b8ccd9; font-size: 12px; }
 .derived output { color: #fff0b8; }
 

@@ -70,6 +70,8 @@ const controls = {
   residentialGround: document.querySelector('#showResidentialGround'),
   residentialEnvironment: document.querySelector('#showResidentialEnvironment'),
   animateScene: document.querySelector('#animateScene'),
+  waterIntensity: document.querySelector('#waterIntensity'),
+  waterIntensityValue: document.querySelector('#waterIntensityValue'),
   architecturalLinks: document.querySelector('#showArchitecturalLinks'),
   linkDebug: document.querySelector('#showLinkDebug'),
   mathShadow: document.querySelector('#showMathShadow'),
@@ -191,6 +193,16 @@ function updateZoomLabel() {
 }
 
 updateZoomLabel();
+
+function waterEffectIntensity() {
+  return Number(controls.waterIntensity.value);
+}
+
+function updateWaterIntensityLabel() {
+  controls.waterIntensityValue.value = `${waterEffectIntensity().toFixed(1).replace('.', ',')}×`;
+}
+
+updateWaterIntensityLabel();
 
 const SHADOW_TUNING_DEFAULTS = Object.freeze({
   azimuth: 220,
@@ -808,6 +820,7 @@ function drawWaterSurfaceEffects(item, timeMs) {
   const imageTop = descriptor.anchor[1] - descriptor.visual.anchor[1] * height;
   const seconds = timeMs / 1000;
   const seed = motionSeedFor(item);
+  const intensity = waterEffectIntensity();
 
   for (const [surfaceIndex, surface] of surfaces.entries()) {
     const centerX = imageLeft + surface.x * width;
@@ -820,17 +833,35 @@ function drawWaterSurfaceEffects(item, timeMs) {
     effectsCtx.beginPath();
     effectsCtx.ellipse(centerX, centerY, radiusX, radiusY, 0, 0, Math.PI * 2);
     effectsCtx.clip();
-    effectsCtx.globalCompositeOperation = 'screen';
     effectsCtx.lineCap = 'round';
 
+    // Dark troughs make the movement readable against already bright water.
+    // They travel with the highlights, but remain broad and soft enough to
+    // avoid looking like animated scratches at the normal game scale.
+    effectsCtx.globalCompositeOperation = 'source-over';
+    for (let lineIndex = 0; lineIndex < 4; lineIndex += 1) {
+      const progress = (phase * 0.91 + lineIndex / 4) % 1;
+      const y = centerY + (progress * 2 - 1) * radiusY;
+      const bend = Math.cos(phase * Math.PI * 2 + lineIndex * 1.35) * radiusY * 0.32;
+      const alpha = Math.min(0.34, (0.09 + (1 - Math.abs(progress * 2 - 1)) * 0.08) * intensity);
+      effectsCtx.strokeStyle = `rgba(2, 45, 78, ${alpha})`;
+      effectsCtx.lineWidth = 0.82;
+      effectsCtx.beginPath();
+      effectsCtx.moveTo(centerX - radiusX, y);
+      effectsCtx.quadraticCurveTo(centerX, y - bend, centerX + radiusX, y + bend * 0.4);
+      effectsCtx.stroke();
+    }
+
+    effectsCtx.globalCompositeOperation = 'screen';
     // Two families of caustic strokes drift in opposite directions. They are
     // clipped to the authored basin and therefore never cross a stone edge.
     for (let lineIndex = 0; lineIndex < 5; lineIndex += 1) {
       const progress = (phase + lineIndex / 5) % 1;
       const y = centerY + (progress * 2 - 1) * radiusY;
       const bend = Math.sin(phase * Math.PI * 2 + lineIndex * 1.7) * radiusY * 0.42;
-      effectsCtx.strokeStyle = `rgba(143, 239, 255, ${0.13 + (1 - Math.abs(progress * 2 - 1)) * 0.14})`;
-      effectsCtx.lineWidth = 0.44;
+      const alpha = Math.min(0.58, (0.13 + (1 - Math.abs(progress * 2 - 1)) * 0.14) * intensity);
+      effectsCtx.strokeStyle = `rgba(143, 239, 255, ${alpha})`;
+      effectsCtx.lineWidth = 0.5;
       effectsCtx.beginPath();
       effectsCtx.moveTo(centerX - radiusX, y);
       effectsCtx.quadraticCurveTo(centerX, y + bend, centerX + radiusX, y - bend * 0.35);
@@ -840,8 +871,8 @@ function drawWaterSurfaceEffects(item, timeMs) {
       const rawProgress = 1 - phase * 0.73 + lineIndex / 3;
       const progress = ((rawProgress % 1) + 1) % 1;
       const x = centerX + (progress * 2 - 1) * radiusX;
-      effectsCtx.strokeStyle = 'rgba(78, 194, 255, 0.16)';
-      effectsCtx.lineWidth = 0.32;
+      effectsCtx.strokeStyle = `rgba(78, 194, 255, ${Math.min(0.42, 0.16 * intensity)})`;
+      effectsCtx.lineWidth = 0.38;
       effectsCtx.beginPath();
       effectsCtx.moveTo(x, centerY - radiusY);
       effectsCtx.quadraticCurveTo(x + radiusX * 0.12, centerY, x - radiusX * 0.08, centerY + radiusY);
@@ -854,8 +885,8 @@ function drawWaterSurfaceEffects(item, timeMs) {
     effectsCtx.globalCompositeOperation = 'screen';
     for (let ringIndex = 0; ringIndex < 3; ringIndex += 1) {
       const progress = (phase * 0.58 + ringIndex / 3) % 1;
-      effectsCtx.strokeStyle = `rgba(177, 246, 255, ${(1 - progress) * 0.34})`;
-      effectsCtx.lineWidth = 0.52 - progress * 0.18;
+      effectsCtx.strokeStyle = `rgba(177, 246, 255, ${Math.min(0.64, (1 - progress) * 0.34 * intensity)})`;
+      effectsCtx.lineWidth = 0.62 - progress * 0.2;
       effectsCtx.beginPath();
       effectsCtx.ellipse(
         centerX,
@@ -879,8 +910,9 @@ function drawWaterSurfaceEffects(item, timeMs) {
         const progress = (seconds * 0.38 + seed * 0.11 + surfaceIndex * 0.19 + segmentIndex / 4) % 1;
         const y = centerY - jetHeight * progress;
         const sway = Math.sin(seconds * 0.9 + segmentIndex * 1.7 + seed) * radiusX * 0.055;
-        effectsCtx.strokeStyle = `rgba(176, 247, 255, ${0.1 + Math.sin(progress * Math.PI) * 0.2})`;
-        effectsCtx.lineWidth = 0.34 + (1 - progress) * 0.18;
+        const alpha = Math.min(0.68, (0.1 + Math.sin(progress * Math.PI) * 0.2) * intensity);
+        effectsCtx.strokeStyle = `rgba(176, 247, 255, ${alpha})`;
+        effectsCtx.lineWidth = 0.4 + (1 - progress) * 0.2;
         effectsCtx.beginPath();
         effectsCtx.moveTo(centerX + sway, y);
         effectsCtx.lineTo(centerX - sway * 0.45, y + Math.max(0.55, jetHeight * 0.07));
@@ -2278,6 +2310,10 @@ controls.demolishBuilding.addEventListener('click', () => {
 controls.zoom.addEventListener('input', () => {
   updateZoomLabel();
   render();
+});
+controls.waterIntensity.addEventListener('input', () => {
+  updateWaterIntensityLabel();
+  drawDynamicEffects();
 });
 controls.surfaceSelect.addEventListener('change', render);
 controls.scrollControlsUp.addEventListener('click', () => {

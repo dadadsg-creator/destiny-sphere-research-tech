@@ -91,6 +91,10 @@
           <label><input id="showResidentialGround" type="checkbox" checked /> Дворовое мощение</label>
           <label><input id="showResidentialEnvironment" type="checkbox" checked /> Песчано-каменистая почва и руины</label>
           <label><input id="animateScene" type="checkbox" checked /> Оживление света и воды</label>
+          <label class="modifier effect-intensity">Интенсивность движения <output id="waterIntensityValue" for="waterIntensity">1,6×</output>
+            <input id="waterIntensity" type="range" min="0.5" max="2.5" step="0.1" value="1.6" />
+            <small>Меняет контраст водяных бликов и волн без пересборки основного кадра.</small>
+          </label>
           <label><input id="showArchitecturalLinks" type="checkbox" /> Экспериментальные дорожки</label>
           <label><input id="showLinkDebug" type="checkbox" /> Диагностика переходов</label>
           <label><input id="showMathShadow" type="checkbox" checked /> Математическая тень</label>
@@ -172,6 +176,6 @@
         </nav>
       </section>
     </main>
-    <script type="module" src="./src/main.mjs?v=20261005-21"></script>
+    <script type="module" src="./src/main.mjs?v=20261005-22"></script>
   </body>
 </html>
