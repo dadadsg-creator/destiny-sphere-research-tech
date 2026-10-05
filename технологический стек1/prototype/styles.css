@@ -38,7 +38,14 @@ header > p:last-child { color: #a9bfd0; }
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.38);
 }
 
+.scene-stack { position: relative; min-width: 0; height: 680px; }
 canvas { width: 100%; height: 680px; display: block; cursor: pointer; }
+#sceneEffects {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  cursor: default;
+}
 canvas:focus-visible { outline: 2px solid #65e1ff; outline-offset: -3px; }
 
 aside {
@@ -148,6 +155,7 @@ dd { margin: 3px 0 0; }
 @media (max-width: 900px) {
   main { padding: 16px; }
   .workspace { grid-template-columns: 1fr; }
+  .scene-stack { height: 500px; }
   canvas { height: 500px; }
   aside { border-left: 0; border-top: 1px solid rgba(109, 203, 255, 0.25); }
 }

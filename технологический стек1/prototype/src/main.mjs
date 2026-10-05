@@ -57,6 +57,8 @@ import {
 
 const canvas = document.querySelector('#scene');
 const ctx = canvas.getContext('2d');
+const effectsCanvas = document.querySelector('#sceneEffects');
+const effectsCtx = effectsCanvas.getContext('2d');
 const castShadowCanvas = document.createElement('canvas');
 const receiverMaskCanvas = document.createElement('canvas');
 let calibratedShadowCache = new WeakMap();
@@ -129,10 +131,33 @@ let packageRequest = 0;
 let selectedCellNum = 0;
 let hoveredCellNum = null;
 let latestScene = null;
+let latestEffectsScene = null;
 let sceneAnimationTimeMs = 0;
 let sceneAnimationFrame = null;
 let lastAnimatedRenderMs = -Infinity;
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+const WATER_SURFACES = Object.freeze({
+  'tech/residential/voraner-v02-simple': Object.freeze([
+    Object.freeze({ x: 0.545, y: 0.402, rx: 0.05, ry: 0.016, jet: 0.105 }),
+    Object.freeze({ x: 0.37, y: 0.83, rx: 0.088, ry: 0.025 }),
+  ]),
+  'tech/residential/voraner-v03-dome': Object.freeze([
+    Object.freeze({ x: 0.51, y: 0.225, rx: 0.05, ry: 0.016, jet: 0.09 }),
+    Object.freeze({ x: 0.805, y: 0.69, rx: 0.082, ry: 0.023 }),
+  ]),
+  'tech/residential/voraner-complex-3': Object.freeze([
+    Object.freeze({ x: 0.555, y: 0.59, rx: 0.145, ry: 0.052, jet: 0.125 }),
+  ]),
+  'tech/residential/voraner-complex-7': Object.freeze([
+    Object.freeze({ x: 0.515, y: 0.35, rx: 0.07, ry: 0.021, jet: 0.11 }),
+    Object.freeze({ x: 0.205, y: 0.625, rx: 0.06, ry: 0.021, jet: 0.075 }),
+    Object.freeze({ x: 0.52, y: 0.625, rx: 0.055, ry: 0.019, jet: 0.08 }),
+    Object.freeze({ x: 0.825, y: 0.625, rx: 0.06, ry: 0.021, jet: 0.075 }),
+    Object.freeze({ x: 0.405, y: 0.825, rx: 0.075, ry: 0.022 }),
+    Object.freeze({ x: 0.63, y: 0.825, rx: 0.075, ry: 0.022 }),
+  ]),
+});
 
 window.addEventListener('ancient-environment-assets-ready', () => {
   if (activeVisual) render();
@@ -760,6 +785,129 @@ function drawArtItemLayer(item, name, options = {}) {
   target.restore();
 }
 
+function motionSeedFor(item) {
+  return item.kind === 'fusion'
+    ? item.fusion.cellNums.reduce((sum, cellNum) => sum + cellNum, 0) + item.fusion.cellNums.length * 3
+    : item.cellNum * 1.73;
+}
+
+function drawWaterSurfaceEffects(item, timeMs) {
+  const descriptor = resolveArtItem(item);
+  const surfaces = WATER_SURFACES[descriptor?.visual.id];
+  const image = descriptor?.layers.color;
+  if (!descriptor || !image || !surfaces?.length || descriptor.state !== 'working') return;
+
+  const levelScale = descriptor.level > 1 ? 1 + (descriptor.level - 1) * 0.035 : 1;
+  const width = descriptor.visual.logicalWidth * levelScale;
+  const height = width * image.naturalHeight / image.naturalWidth * descriptor.heightScale;
+  const imageLeft = descriptor.anchor[0] - descriptor.visual.anchor[0] * width;
+  const imageTop = descriptor.anchor[1] - descriptor.visual.anchor[1] * height;
+  const seconds = timeMs / 1000;
+  const seed = motionSeedFor(item);
+
+  for (const [surfaceIndex, surface] of surfaces.entries()) {
+    const centerX = imageLeft + surface.x * width;
+    const centerY = imageTop + surface.y * height;
+    const radiusX = surface.rx * width;
+    const radiusY = surface.ry * height;
+    const phase = seconds * 0.23 + seed * 0.17 + surfaceIndex * 0.31;
+
+    effectsCtx.save();
+    effectsCtx.beginPath();
+    effectsCtx.ellipse(centerX, centerY, radiusX, radiusY, 0, 0, Math.PI * 2);
+    effectsCtx.clip();
+    effectsCtx.globalCompositeOperation = 'screen';
+    effectsCtx.lineCap = 'round';
+
+    // Two families of caustic strokes drift in opposite directions. They are
+    // clipped to the authored basin and therefore never cross a stone edge.
+    for (let lineIndex = 0; lineIndex < 5; lineIndex += 1) {
+      const progress = (phase + lineIndex / 5) % 1;
+      const y = centerY + (progress * 2 - 1) * radiusY;
+      const bend = Math.sin(phase * Math.PI * 2 + lineIndex * 1.7) * radiusY * 0.42;
+      effectsCtx.strokeStyle = `rgba(143, 239, 255, ${0.13 + (1 - Math.abs(progress * 2 - 1)) * 0.14})`;
+      effectsCtx.lineWidth = 0.44;
+      effectsCtx.beginPath();
+      effectsCtx.moveTo(centerX - radiusX, y);
+      effectsCtx.quadraticCurveTo(centerX, y + bend, centerX + radiusX, y - bend * 0.35);
+      effectsCtx.stroke();
+    }
+    for (let lineIndex = 0; lineIndex < 3; lineIndex += 1) {
+      const rawProgress = 1 - phase * 0.73 + lineIndex / 3;
+      const progress = ((rawProgress % 1) + 1) % 1;
+      const x = centerX + (progress * 2 - 1) * radiusX;
+      effectsCtx.strokeStyle = 'rgba(78, 194, 255, 0.16)';
+      effectsCtx.lineWidth = 0.32;
+      effectsCtx.beginPath();
+      effectsCtx.moveTo(x, centerY - radiusY);
+      effectsCtx.quadraticCurveTo(x + radiusX * 0.12, centerY, x - radiusX * 0.08, centerY + radiusY);
+      effectsCtx.stroke();
+    }
+    effectsCtx.restore();
+
+    // Expanding rings make the pool readable as water even at game scale.
+    effectsCtx.save();
+    effectsCtx.globalCompositeOperation = 'screen';
+    for (let ringIndex = 0; ringIndex < 3; ringIndex += 1) {
+      const progress = (phase * 0.58 + ringIndex / 3) % 1;
+      effectsCtx.strokeStyle = `rgba(177, 246, 255, ${(1 - progress) * 0.34})`;
+      effectsCtx.lineWidth = 0.52 - progress * 0.18;
+      effectsCtx.beginPath();
+      effectsCtx.ellipse(
+        centerX,
+        centerY,
+        Math.max(0.2, radiusX * progress),
+        Math.max(0.1, radiusY * progress),
+        0,
+        0,
+        Math.PI * 2,
+      );
+      effectsCtx.stroke();
+    }
+    effectsCtx.restore();
+
+    if (surface.jet) {
+      const jetHeight = surface.jet * height;
+      effectsCtx.save();
+      effectsCtx.globalCompositeOperation = 'screen';
+      effectsCtx.lineCap = 'round';
+      for (let segmentIndex = 0; segmentIndex < 4; segmentIndex += 1) {
+        const progress = (seconds * 0.38 + seed * 0.11 + surfaceIndex * 0.19 + segmentIndex / 4) % 1;
+        const y = centerY - jetHeight * progress;
+        const sway = Math.sin(seconds * 0.9 + segmentIndex * 1.7 + seed) * radiusX * 0.055;
+        effectsCtx.strokeStyle = `rgba(176, 247, 255, ${0.1 + Math.sin(progress * Math.PI) * 0.2})`;
+        effectsCtx.lineWidth = 0.34 + (1 - progress) * 0.18;
+        effectsCtx.beginPath();
+        effectsCtx.moveTo(centerX + sway, y);
+        effectsCtx.lineTo(centerX - sway * 0.45, y + Math.max(0.55, jetHeight * 0.07));
+        effectsCtx.stroke();
+      }
+      effectsCtx.restore();
+    }
+  }
+}
+
+function drawDynamicEffects(timeMs = sceneAnimationTimeMs) {
+  effectsCtx.setTransform(1, 0, 0, 1, 0, 0);
+  effectsCtx.clearRect(0, 0, effectsCanvas.width, effectsCanvas.height);
+  if (!latestEffectsScene || !sceneAnimationAllowed()) return;
+
+  const { renderItems, scale, dpr } = latestEffectsScene;
+  effectsCtx.setTransform(dpr * scale, 0, 0, dpr * scale, 0, 0);
+  for (const item of renderItems) {
+    const descriptor = resolveArtItem(item);
+    if (descriptor?.state !== 'working') continue;
+    const phase = timeMs / 1000 * 0.68 + motionSeedFor(item);
+    drawArtItemLayer(item, 'emissive', {
+      targetCtx: effectsCtx,
+      alpha: 0.045 + (Math.sin(phase) + 1) * 0.027,
+      composite: 'screen',
+      filter: 'brightness(1.18) blur(0.32px)',
+    });
+    drawWaterSurfaceEffects(item, timeMs);
+  }
+}
+
 function calibratedShadowFor(image, anchorY, logicalWidth) {
   const tuning = shadowTuning();
   let byAnchor = calibratedShadowCache.get(image);
@@ -1161,39 +1309,7 @@ function drawArtRenderQueue(renderItems, cells, scale, dpr) {
   drawPhysicalFacadeShadowLab(renderItems, scale, dpr);
   renderItems.forEach((item) => {
     const state = resolveArtItem(item)?.state;
-    if (state !== 'working') return;
-    const animated = controls.animateScene.checked && !reducedMotion.matches;
-    if (!animated) {
-      drawArtItemLayer(item, 'emissive', { alpha: 0.78, composite: 'screen' });
-      return;
-    }
-
-    const seed = item.kind === 'fusion'
-      ? item.fusion.cellNums.reduce((sum, cellNum) => sum + cellNum, 0) + item.fusion.cellNums.length * 3
-      : item.cellNum * 1.73;
-    const seconds = sceneAnimationTimeMs / 1000;
-    const lightPhase = seconds * 0.82 + seed;
-    const waterPhase = seconds * 0.54 + seed * 0.71;
-    const lightAlpha = 0.745
-      + Math.sin(lightPhase) * 0.045
-      + Math.sin(lightPhase * 0.43 + 1.1) * 0.018;
-    drawArtItemLayer(item, 'emissive', {
-      alpha: lightAlpha,
-      composite: 'screen',
-    });
-
-    // A second, very weak copy of the authored emissive mask moves by less
-    // than one logical pixel. Fountain streams and basin highlights therefore
-    // shimmer slowly while windows only receive a soft breathing halo.
-    drawArtItemLayer(item, 'emissive', {
-      alpha: 0.055 + (Math.sin(waterPhase) + 1) * 0.022,
-      composite: 'screen',
-      filter: 'brightness(1.3) blur(0.38px)',
-      screenOffset: [
-        Math.sin(waterPhase * 0.73) * 0.18,
-        Math.cos(waterPhase) * 0.32,
-      ],
-    });
+    if (state === 'working') drawArtItemLayer(item, 'emissive', { alpha: 0.7, composite: 'screen' });
   });
   renderItems
     .filter((item) => {
@@ -1774,6 +1890,8 @@ function render() {
   const rect = canvas.getBoundingClientRect();
   canvas.width = Math.max(1, Math.round(rect.width * dpr));
   canvas.height = Math.max(1, Math.round(rect.height * dpr));
+  effectsCanvas.width = canvas.width;
+  effectsCanvas.height = canvas.height;
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.clearRect(0, 0, rect.width, rect.height);
 
@@ -2015,6 +2133,8 @@ function render() {
     <dt>Визуальный пакет</dt><dd>${activeVisual?.id ?? 'техническая форма'}</dd>
     <dt>Логическая ширина</dt><dd>${activeVisual?.logicalWidth ?? 78}</dd>
   `;
+  latestEffectsScene = { renderItems, scale, dpr };
+  drawDynamicEffects();
   updateBuildPanel();
 }
 
@@ -2225,11 +2345,11 @@ function animateScene(timeMs) {
   sceneAnimationFrame = null;
   if (!sceneAnimationAllowed()) return;
   sceneAnimationTimeMs = timeMs;
-  // The movement is deliberately slow; 20 redraws per second are enough for
-  // sub-pixel shimmer and keep the shadow laboratory inexpensive.
+  // Only the transparent effects canvas is redrawn. Ground, buildings, shadow
+  // masks and interface overlays stay cached on the main canvas.
   if (timeMs - lastAnimatedRenderMs >= 50) {
     lastAnimatedRenderMs = timeMs;
-    if (activeVisual) render();
+    if (activeVisual) drawDynamicEffects(timeMs);
   }
   sceneAnimationFrame = requestAnimationFrame(animateScene);
 }
@@ -2241,6 +2361,7 @@ function syncSceneAnimation() {
   }
   if (sceneAnimationFrame !== null) cancelAnimationFrame(sceneAnimationFrame);
   sceneAnimationFrame = null;
+  drawDynamicEffects();
 }
 
 controls.animateScene.addEventListener('change', syncSceneAnimation);
