@@ -1496,14 +1496,14 @@ function drawResidentialGroundLayer(plan, cells, options = {}) {
   ctx.clip();
 
   const stone = ctx.createLinearGradient(0, minY, 0, maxY);
-  stone.addColorStop(0, '#cbc4ad');
-  stone.addColorStop(0.46, '#afa99a');
-  stone.addColorStop(1, '#888f8a');
+  stone.addColorStop(0, '#dcc9a4');
+  stone.addColorStop(0.46, '#c8b58e');
+  stone.addColorStop(1, '#a9916c');
   ctx.fillStyle = stone;
   ctx.fillRect(minX - 2, minY - 2, maxX - minX + 4, maxY - minY + 4);
 
-  const tileHalfWidth = 10;
-  const tileHalfHeight = 3.5;
+  const tileHalfWidth = 18;
+  const tileHalfHeight = 5.8;
   let row = 0;
   for (let y = minY - tileHalfHeight * 2; y <= maxY + tileHalfHeight * 2; y += tileHalfHeight * 2) {
     const stagger = row % 2 === 0 ? 0 : tileHalfWidth;
@@ -1518,16 +1518,16 @@ function drawResidentialGroundLayer(plan, cells, options = {}) {
         ctx.closePath();
       };
       diamond();
-      ctx.fillStyle = (row + column) % 5 === 0
-        ? 'rgba(255, 243, 208, 0.105)'
-        : 'rgba(35, 51, 50, 0.035)';
+      ctx.fillStyle = (row + column) % 4 === 0
+        ? 'rgba(255, 239, 204, 0.055)'
+        : 'rgba(89, 65, 42, 0.018)';
       ctx.fill();
-      ctx.strokeStyle = 'rgba(38, 51, 49, 0.34)';
-      ctx.lineWidth = 0.62;
+      ctx.strokeStyle = 'rgba(88, 69, 47, 0.15)';
+      ctx.lineWidth = 0.5;
       ctx.stroke();
-      diamond(-0.38);
-      ctx.strokeStyle = 'rgba(255, 246, 219, 0.28)';
-      ctx.lineWidth = 0.34;
+      diamond(-0.32);
+      ctx.strokeStyle = 'rgba(255, 239, 204, 0.12)';
+      ctx.lineWidth = 0.28;
       ctx.stroke();
       column += 1;
     }
@@ -1542,8 +1542,8 @@ function drawResidentialGroundLayer(plan, cells, options = {}) {
     (minY + maxY) / 2,
     Math.max(maxX - minX, maxY - minY) * 0.55,
   );
-  centerGlow.addColorStop(0, 'rgba(238, 228, 198, 0.1)');
-  centerGlow.addColorStop(1, 'rgba(20, 41, 46, 0.075)');
+  centerGlow.addColorStop(0, 'rgba(255, 238, 199, 0.09)');
+  centerGlow.addColorStop(1, 'rgba(81, 56, 35, 0.055)');
   ctx.fillStyle = centerGlow;
   ctx.fillRect(minX - 2, minY - 2, maxX - minX + 4, maxY - minY + 4);
 
@@ -1554,15 +1554,15 @@ function drawResidentialGroundLayer(plan, cells, options = {}) {
     const centerY = cell.y + CELL_HEIGHT * 0.57;
     ctx.beginPath();
     ctx.ellipse(centerX, centerY, 19, 8.1, 0, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(252, 241, 209, 0.055)';
+    ctx.fillStyle = 'rgba(255, 239, 204, 0.045)';
     ctx.fill();
-    ctx.strokeStyle = 'rgba(81, 75, 62, 0.22)';
-    ctx.lineWidth = 0.75;
+    ctx.strokeStyle = 'rgba(104, 81, 55, 0.13)';
+    ctx.lineWidth = 0.58;
     ctx.stroke();
     ctx.beginPath();
     ctx.ellipse(centerX, centerY - 0.42, 15.8, 6.35, 0, 0, Math.PI * 2);
-    ctx.strokeStyle = 'rgba(251, 239, 207, 0.24)';
-    ctx.lineWidth = 0.42;
+    ctx.strokeStyle = 'rgba(255, 239, 204, 0.16)';
+    ctx.lineWidth = 0.34;
     ctx.stroke();
   }
 
@@ -1584,11 +1584,39 @@ function drawResidentialGroundLayer(plan, cells, options = {}) {
       ctx.lineCap = 'round';
       ctx.stroke();
     };
-    stroke('rgba(62, 65, 60, 0.2)', 5.2);
-    stroke('rgba(214, 205, 181, 0.36)', 3.7);
-    stroke('rgba(255, 235, 181, 0.3)', 0.52);
+    stroke('rgba(91, 69, 45, 0.11)', 5.2);
+    stroke('rgba(222, 199, 157, 0.22)', 3.7);
+    stroke('rgba(255, 231, 181, 0.18)', 0.46);
   }
   ctx.restore();
+
+  if (options.outline === false) {
+    // The courtyard ends in an irregular dusty fringe rather than a clean
+    // hexagonal border. Broad warm strokes visually return its edge to sand.
+    ctx.save();
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.filter = 'blur(1.5px)';
+    for (const edge of plan.externalEdges) {
+      ctx.beginPath();
+      ctx.moveTo(...edge.start);
+      ctx.lineTo(...edge.end);
+      ctx.strokeStyle = 'rgba(191, 139, 83, 0.3)';
+      ctx.lineWidth = 6.4;
+      ctx.stroke();
+    }
+    ctx.filter = 'blur(0.45px)';
+    plan.externalEdges.forEach((edge, index) => {
+      if ((edge.cellNum * 5 + edge.direction + index) % 3 === 0) return;
+      const x = (edge.start[0] + edge.end[0]) / 2 + ((edge.cellNum + index) % 3 - 1) * 2.1;
+      const y = (edge.start[1] + edge.end[1]) / 2 + ((edge.direction + index) % 3 - 1) * 0.9;
+      ctx.fillStyle = 'rgba(221, 169, 104, 0.34)';
+      ctx.beginPath();
+      ctx.ellipse(x, y, 3.8 + (index % 3), 1.2 + (index % 2) * 0.45, 0, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.restore();
+  }
 
   if (options.outline !== false) {
     ctx.save();
