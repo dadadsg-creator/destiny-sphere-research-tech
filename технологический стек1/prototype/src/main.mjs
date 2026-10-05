@@ -82,6 +82,15 @@ const controls = {
   ringScaleY: document.querySelector('#ringScaleY'),
   ringScaleYValue: document.querySelector('#ringScaleYValue'),
   resetRingTuning: document.querySelector('#resetRingTuning'),
+  rippleOffsetX: document.querySelector('#rippleOffsetX'),
+  rippleOffsetXValue: document.querySelector('#rippleOffsetXValue'),
+  rippleOffsetY: document.querySelector('#rippleOffsetY'),
+  rippleOffsetYValue: document.querySelector('#rippleOffsetYValue'),
+  rippleScaleX: document.querySelector('#rippleScaleX'),
+  rippleScaleXValue: document.querySelector('#rippleScaleXValue'),
+  rippleScaleY: document.querySelector('#rippleScaleY'),
+  rippleScaleYValue: document.querySelector('#rippleScaleYValue'),
+  resetRippleTuning: document.querySelector('#resetRippleTuning'),
   architecturalLinks: document.querySelector('#showArchitecturalLinks'),
   linkDebug: document.querySelector('#showLinkDebug'),
   mathShadow: document.querySelector('#showMathShadow'),
@@ -238,6 +247,33 @@ function resetRingTuning() {
 }
 
 updateRingTuningLabels();
+
+function rippleTuning() {
+  return {
+    offsetX: Number(controls.rippleOffsetX.value),
+    offsetY: Number(controls.rippleOffsetY.value),
+    scaleX: Number(controls.rippleScaleX.value) / 100,
+    scaleY: Number(controls.rippleScaleY.value) / 100,
+  };
+}
+
+function updateRippleTuningLabels() {
+  const tuning = rippleTuning();
+  controls.rippleOffsetXValue.value = `${tuning.offsetX.toFixed(1).replace('.0', '').replace('.', ',')} px`;
+  controls.rippleOffsetYValue.value = `${tuning.offsetY.toFixed(1).replace('.0', '').replace('.', ',')} px`;
+  controls.rippleScaleXValue.value = `${Math.round(tuning.scaleX * 100)}%`;
+  controls.rippleScaleYValue.value = `${Math.round(tuning.scaleY * 100)}%`;
+}
+
+function resetRippleTuning() {
+  controls.rippleOffsetX.value = '0';
+  controls.rippleOffsetY.value = '0';
+  controls.rippleScaleX.value = '100';
+  controls.rippleScaleY.value = '100';
+  updateRippleTuningLabels();
+}
+
+updateRippleTuningLabels();
 
 const SHADOW_TUNING_DEFAULTS = Object.freeze({
   azimuth: 220,
@@ -899,18 +935,23 @@ function drawWaterSurfaceEffects(item, timeMs) {
   const seed = motionSeedFor(item);
   const intensity = waterEffectIntensity();
   const rings = ringTuning();
+  const ripples = rippleTuning();
 
   for (const [surfaceIndex, surface] of surfaces.entries()) {
     const centerX = imageLeft + surface.x * width;
     const centerY = imageTop + surface.y * height;
     const radiusX = surface.rx * width;
     const radiusY = surface.ry * height;
+    const rippleCenterX = centerX + ripples.offsetX;
+    const rippleCenterY = centerY + ripples.offsetY;
+    const rippleRadiusX = radiusX * ripples.scaleX;
+    const rippleRadiusY = radiusY * ripples.scaleY;
     const phase = seconds * 0.23 + seed * 0.17 + surfaceIndex * 0.31;
 
     if (surface.caustics !== false) {
       effectsCtx.save();
       effectsCtx.beginPath();
-      effectsCtx.ellipse(centerX, centerY, radiusX, radiusY, 0, 0, Math.PI * 2);
+      effectsCtx.ellipse(rippleCenterX, rippleCenterY, rippleRadiusX, rippleRadiusY, 0, 0, Math.PI * 2);
       effectsCtx.clip();
       effectsCtx.lineCap = 'round';
 
@@ -920,14 +961,14 @@ function drawWaterSurfaceEffects(item, timeMs) {
       effectsCtx.globalCompositeOperation = 'source-over';
       for (let lineIndex = 0; lineIndex < 4; lineIndex += 1) {
         const progress = (phase * 0.91 + lineIndex / 4) % 1;
-        const y = centerY + (progress * 2 - 1) * radiusY;
-        const bend = Math.cos(phase * Math.PI * 2 + lineIndex * 1.35) * radiusY * 0.32;
+        const y = rippleCenterY + (progress * 2 - 1) * rippleRadiusY;
+        const bend = Math.cos(phase * Math.PI * 2 + lineIndex * 1.35) * rippleRadiusY * 0.32;
         const alpha = Math.min(0.34, (0.09 + (1 - Math.abs(progress * 2 - 1)) * 0.08) * intensity);
         effectsCtx.strokeStyle = `rgba(2, 45, 78, ${alpha})`;
         effectsCtx.lineWidth = 0.82;
         effectsCtx.beginPath();
-        effectsCtx.moveTo(centerX - radiusX, y);
-        effectsCtx.quadraticCurveTo(centerX, y - bend, centerX + radiusX, y + bend * 0.4);
+        effectsCtx.moveTo(rippleCenterX - rippleRadiusX, y);
+        effectsCtx.quadraticCurveTo(rippleCenterX, y - bend, rippleCenterX + rippleRadiusX, y + bend * 0.4);
         effectsCtx.stroke();
       }
 
@@ -936,25 +977,30 @@ function drawWaterSurfaceEffects(item, timeMs) {
       // clipped to the authored basin and therefore never cross a stone edge.
       for (let lineIndex = 0; lineIndex < 5; lineIndex += 1) {
         const progress = (phase + lineIndex / 5) % 1;
-        const y = centerY + (progress * 2 - 1) * radiusY;
-        const bend = Math.sin(phase * Math.PI * 2 + lineIndex * 1.7) * radiusY * 0.42;
+        const y = rippleCenterY + (progress * 2 - 1) * rippleRadiusY;
+        const bend = Math.sin(phase * Math.PI * 2 + lineIndex * 1.7) * rippleRadiusY * 0.42;
         const alpha = Math.min(0.58, (0.13 + (1 - Math.abs(progress * 2 - 1)) * 0.14) * intensity);
         effectsCtx.strokeStyle = `rgba(143, 239, 255, ${alpha})`;
         effectsCtx.lineWidth = 0.5;
         effectsCtx.beginPath();
-        effectsCtx.moveTo(centerX - radiusX, y);
-        effectsCtx.quadraticCurveTo(centerX, y + bend, centerX + radiusX, y - bend * 0.35);
+        effectsCtx.moveTo(rippleCenterX - rippleRadiusX, y);
+        effectsCtx.quadraticCurveTo(rippleCenterX, y + bend, rippleCenterX + rippleRadiusX, y - bend * 0.35);
         effectsCtx.stroke();
       }
       for (let lineIndex = 0; lineIndex < 3; lineIndex += 1) {
         const rawProgress = 1 - phase * 0.73 + lineIndex / 3;
         const progress = ((rawProgress % 1) + 1) % 1;
-        const x = centerX + (progress * 2 - 1) * radiusX;
+        const x = rippleCenterX + (progress * 2 - 1) * rippleRadiusX;
         effectsCtx.strokeStyle = `rgba(78, 194, 255, ${Math.min(0.42, 0.16 * intensity)})`;
         effectsCtx.lineWidth = 0.38;
         effectsCtx.beginPath();
-        effectsCtx.moveTo(x, centerY - radiusY);
-        effectsCtx.quadraticCurveTo(x + radiusX * 0.12, centerY, x - radiusX * 0.08, centerY + radiusY);
+        effectsCtx.moveTo(x, rippleCenterY - rippleRadiusY);
+        effectsCtx.quadraticCurveTo(
+          x + rippleRadiusX * 0.12,
+          rippleCenterY,
+          x - rippleRadiusX * 0.08,
+          rippleCenterY + rippleRadiusY,
+        );
         effectsCtx.stroke();
       }
       effectsCtx.restore();
@@ -2420,6 +2466,16 @@ for (const control of [controls.ringOffsetX, controls.ringOffsetY, controls.ring
 }
 controls.resetRingTuning.addEventListener('click', () => {
   resetRingTuning();
+  drawDynamicEffects();
+});
+for (const control of [controls.rippleOffsetX, controls.rippleOffsetY, controls.rippleScaleX, controls.rippleScaleY]) {
+  control.addEventListener('input', () => {
+    updateRippleTuningLabels();
+    drawDynamicEffects();
+  });
+}
+controls.resetRippleTuning.addEventListener('click', () => {
+  resetRippleTuning();
   drawDynamicEffects();
 });
 controls.surfaceSelect.addEventListener('change', render);

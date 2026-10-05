@@ -116,6 +116,27 @@
             </label>
             <button id="resetRingTuning" type="button">Сбросить посадку колец</button>
           </section>
+          <section class="water-tuning" aria-labelledby="rippleTuningTitle">
+            <h3 id="rippleTuningTitle">Посадка ряби в чашу</h3>
+            <p>Модификаторы двигают всю область тёмных проходов и световых бликов. Кольца настраиваются отдельно выше.</p>
+            <label class="modifier">Смещение вправо <output id="rippleOffsetXValue" for="rippleOffsetX">0 px</output>
+              <input id="rippleOffsetX" type="range" min="-12" max="12" step="0.5" value="0" />
+              <small>Отрицательное значение двигает рябь влево.</small>
+            </label>
+            <label class="modifier">Смещение вниз <output id="rippleOffsetYValue" for="rippleOffsetY">0 px</output>
+              <input id="rippleOffsetY" type="range" min="-16" max="16" step="0.5" value="0" />
+              <small>Положительное значение опускает рябь к переднему краю чаши.</small>
+            </label>
+            <label class="modifier">Ширина ряби <output id="rippleScaleXValue" for="rippleScaleX">100%</output>
+              <input id="rippleScaleX" type="range" min="40" max="160" step="5" value="100" />
+              <small>Ширина всей анимированной поверхности.</small>
+            </label>
+            <label class="modifier">Глубина ряби <output id="rippleScaleYValue" for="rippleScaleY">100%</output>
+              <input id="rippleScaleY" type="range" min="20" max="160" step="5" value="100" />
+              <small>Вертикальный размер области; уменьшение не даёт бликам залезать на водопад.</small>
+            </label>
+            <button id="resetRippleTuning" type="button">Сбросить посадку ряби</button>
+          </section>
           <label><input id="showArchitecturalLinks" type="checkbox" /> Экспериментальные дорожки</label>
           <label><input id="showLinkDebug" type="checkbox" /> Диагностика переходов</label>
           <label><input id="showMathShadow" type="checkbox" checked /> Математическая тень</label>
@@ -197,6 +218,6 @@
         </nav>
       </section>
     </main>
-    <script type="module" src="./src/main.mjs?v=20261005-30"></script>
+    <script type="module" src="./src/main.mjs?v=20261005-31"></script>
   </body>
 </html>
