@@ -17,6 +17,11 @@ function groupAnchorOf(cellNums, cellByNum) {
   ];
 }
 
+function groupDepthYOf(cellNums, cellByNum) {
+  const anchors = cellNums.map((cellNum) => anchorOf(cellByNum.get(cellNum)));
+  return anchors.reduce((sum, point) => sum + point[1], 0) / anchors.length;
+}
+
 function findTriangle(complex, neighborTable) {
   const members = [...complex.cellNums].sort((a, b) => a - b);
   const adjacent = (left, right) => neighborTable.get(left)?.includes(right) ?? false;
@@ -63,6 +68,11 @@ export function resolveComplexFusions(complexes, cells) {
       complexId: complex.id,
       kind,
       anchor: Object.freeze(groupAnchorOf(fusedCellNums, cellByNum)),
+      // The image anchor stays on the lowest member so the authored sprite is
+      // positioned correctly. Painter ordering uses the centre of the whole
+      // footprint: otherwise a wide foundation is treated as if every part of
+      // it were in the foreground and can cover neighbouring single houses.
+      depthY: groupDepthYOf(fusedCellNums, cellByNum),
       cellNums: Object.freeze(fusedCellNums),
     }));
   }
@@ -71,8 +81,9 @@ export function resolveComplexFusions(complexes, cells) {
 }
 
 export function sortComplexRenderItems(items) {
+  const depthY = (item) => item.fusion?.depthY ?? item.depthY ?? item.anchor[1];
   return Object.freeze([...items].sort((left, right) => (
-    left.anchor[1] - right.anchor[1]
+    depthY(left) - depthY(right)
     || left.anchor[0] - right.anchor[0]
     || left.kind.localeCompare(right.kind)
     || (left.cellNum ?? -1) - (right.cellNum ?? -1)

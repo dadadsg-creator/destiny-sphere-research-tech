@@ -25,6 +25,8 @@ test('center and six neighbors fuse into one seven-cell quarter', () => {
   assert.equal(fusions[0].cellNums.length, 7);
   const lowestAnchorY = Math.max(...cells.map((cell) => cell.y + 26));
   assert.equal(fusions[0].anchor[1], lowestAnchorY);
+  const footprintCenterY = cells.reduce((sum, cell) => sum + cell.y + 26, 0) / cells.length;
+  assert.equal(fusions[0].depthY, footprintCenterY);
 });
 
 test('line and pair keep their individual modules', () => {
@@ -71,6 +73,15 @@ test('foreground single modules render after a fused complex', () => {
   ]);
   assert.deepEqual(queue.map((item) => item.kind), ['building', 'fusion', 'building']);
   assert.equal(queue.at(-1).cellNum, 5);
+});
+
+test('a fusion foundation is ordered by its footprint centre instead of its lowest edge', () => {
+  const queue = sortComplexRenderItems([
+    { kind: 'building', cellNum: 8, anchor: [20, 104] },
+    { kind: 'fusion', anchor: [40, 126], fusion: { depthY: 100 } },
+    { kind: 'building', cellNum: 9, anchor: [60, 96] },
+  ]);
+  assert.deepEqual(queue.map((item) => item.cellNum ?? item.kind), [9, 'fusion', 8]);
 });
 
 test('nineteen-cell district fuses its central seven and keeps the outer ring separate', () => {
