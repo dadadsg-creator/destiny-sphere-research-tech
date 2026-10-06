@@ -73,6 +73,8 @@ const controls = {
   animateScene: document.querySelector('#animateScene'),
   waterIntensity: document.querySelector('#waterIntensity'),
   waterIntensityValue: document.querySelector('#waterIntensityValue'),
+  waterProfileSelect: document.querySelector('#waterProfileSelect'),
+  isolateWaterProfile: document.querySelector('#isolateWaterProfile'),
   waterProfileStatus: document.querySelector('#waterProfileStatus'),
   ringOffsetX: document.querySelector('#ringOffsetX'),
   ringOffsetXValue: document.querySelector('#ringOffsetXValue'),
@@ -337,6 +339,7 @@ function resetRippleTuning() {
 updateRippleTuningLabels();
 
 function activeWaterVisualId() {
+  if (controls.packageSelect.value === 'voranerMix') return controls.waterProfileSelect.value;
   if (controls.packageSelect.value === 'voranerComplex3') return 'tech/residential/voraner-complex-3';
   if (controls.packageSelect.value === 'voranerComplex7') return 'tech/residential/voraner-complex-7';
   return activeVisual?.id ?? null;
@@ -360,6 +363,17 @@ function storeCurrentWaterTuningProfile() {
 }
 
 function applyActiveWaterTuningProfile() {
+  const isMixedScene = controls.packageSelect.value === 'voranerMix';
+  const forcedVisualId = controls.packageSelect.value === 'voranerComplex3'
+    ? 'tech/residential/voraner-complex-3'
+    : controls.packageSelect.value === 'voranerComplex7'
+      ? 'tech/residential/voraner-complex-7'
+      : activeVisual?.id ?? null;
+  if (!isMixedScene && forcedVisualId && [...controls.waterProfileSelect.options].some((option) => option.value === forcedVisualId)) {
+    controls.waterProfileSelect.value = forcedVisualId;
+  }
+  controls.waterProfileSelect.disabled = !isMixedScene;
+  controls.isolateWaterProfile.disabled = !isMixedScene;
   const visualId = activeWaterVisualId();
   const hasWater = Boolean(visualId && WATER_SURFACES[visualId]?.length);
   const profile = waterTuningProfile(visualId);
@@ -389,8 +403,9 @@ function applyActiveWaterTuningProfile() {
     control.disabled = !hasWater;
   }
 
-  controls.waterProfileStatus.textContent = controls.packageSelect.value === 'voranerMix'
-    ? 'Большая площадка: одновременно применяются профили v02, v03, 3 → 1 и 7 → 1. Ползунки редактируют v02.'
+  const selectedProfileName = controls.waterProfileSelect.selectedOptions[0]?.textContent ?? visualId;
+  controls.waterProfileStatus.textContent = isMixedScene
+    ? `Сейчас редактируется: ${selectedProfileName}. ${controls.isolateWaterProfile.checked ? 'Вода других типов временно скрыта.' : 'Показаны все четыре независимых профиля.'}`
     : hasWater
       ? `Индивидуальный профиль: ${visualId}. Изменения сохраняются автоматически.`
       : 'У выбранного дома нет настраиваемой водной поверхности.';
@@ -1053,6 +1068,11 @@ function drawWaterSurfaceEffects(item, timeMs) {
   const surfaces = WATER_SURFACES[descriptor?.visual.id];
   const image = descriptor?.layers.color;
   if (!descriptor || !image || !surfaces?.length || descriptor.state !== 'working') return;
+  if (
+    controls.packageSelect.value === 'voranerMix'
+    && controls.isolateWaterProfile.checked
+    && descriptor.visual.id !== controls.waterProfileSelect.value
+  ) return;
 
   const levelScale = descriptor.level > 1 ? 1 + (descriptor.level - 1) * 0.035 : 1;
   const width = descriptor.visual.logicalWidth * levelScale;
@@ -2597,6 +2617,14 @@ controls.zoom.addEventListener('input', () => {
 });
 controls.waterIntensity.addEventListener('input', () => {
   updateWaterIntensityLabel();
+  drawDynamicEffects();
+});
+controls.waterProfileSelect.addEventListener('change', () => {
+  applyActiveWaterTuningProfile();
+  drawDynamicEffects();
+});
+controls.isolateWaterProfile.addEventListener('change', () => {
+  applyActiveWaterTuningProfile();
   drawDynamicEffects();
 });
 for (const control of [controls.ringOffsetX, controls.ringOffsetY, controls.ringScaleX, controls.ringScaleY]) {

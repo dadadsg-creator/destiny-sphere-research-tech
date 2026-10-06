@@ -97,6 +97,16 @@
             <input id="waterIntensity" type="range" min="0.5" max="2.5" step="0.1" value="1.6" />
             <small>Меняет контраст водяных бликов и волн без пересборки основного кадра.</small>
           </label>
+          <label class="field water-profile-field">
+            Настраиваемый тип воды
+            <select id="waterProfileSelect" autocomplete="off">
+              <option value="tech/residential/voraner-v02-simple">Простой дом v02</option>
+              <option value="tech/residential/voraner-v03-dome">Купольный дом v03</option>
+              <option value="tech/residential/voraner-complex-3">Комплекс 3 → 1</option>
+              <option value="tech/residential/voraner-complex-7">Комплекс 7 → 1</option>
+            </select>
+          </label>
+          <label><input id="isolateWaterProfile" type="checkbox" checked /> Показывать воду только выбранного типа</label>
           <p id="waterProfileStatus" class="status water-profile-status" role="status">Профиль воды загружается…</p>
           <section class="water-tuning" aria-labelledby="waterTuningTitle">
             <h3 id="waterTuningTitle">Посадка колец в фонтан</h3>
@@ -221,6 +231,6 @@
         </nav>
       </section>
     </main>
-    <script type="module" src="./src/main.mjs?v=20261006-3"></script>
+    <script type="module" src="./src/main.mjs?v=20261007-1"></script>
   </body>
 </html>
