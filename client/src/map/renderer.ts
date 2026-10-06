@@ -7,6 +7,7 @@
 import { Application, Container, Sprite, TilingSprite, Assets, Graphics, Text } from 'pixi.js';
 import { buildHexGrid, buildingAnchor, mapPixelSize, hexPolygonPoints, CELL_WEIGHT_H, CELL_WEIGHT_V } from './hexGrid';
 import { parseGroundString, GROUND_LINKAGE } from './groundTypes';
+import { CENTRAL_INITIAL_GROUND, NEUTRAL_INITIAL_GROUND } from './locationGround';
 import { BUILDING_NAMES, buildingAssetKey, buildingMapAssetPath, effectiveBuildingRace, type Race } from './buildingTypes';
 // Размер постройки на карте в пикселях мира (как у оригинального
 // Flash-спрайта) — сами текстуры buildings-map/ хранятся с запасом
@@ -47,13 +48,11 @@ import type { BuildRecord } from './buildData';
 const ENV_MARGIN = 150;
 
 const LOOPBACK = {
-  center: parseGroundString(
-    'EFFFFFFFEFEFFFFFFEFFFEFFFFFEFFFFFEFFFFEFFFFFFFEFFFEFFFFFFFFFEFFEFFFFFFFFFFFEFEFFFFFFFFFFFFFEEFFFFFFFEEEEEEEEEEEEEEEEEFFFFFFFEEFFFFFFFFFFFFFESEFFFFFFFFFFFESREFFFFFFFFFERSSEFFFFFFFESSSREFFFFFESRRSSEFFFESRRRSSEFESSRRSRRE',
-  ),
+  center: parseGroundString(CENTRAL_INITIAL_GROUND),
   home: parseGroundString(
     'DDDDDSSSSDDDSSSDDDDDDDSSSDDDDDDDDDSSDDDGGGSDDDDSSDGGGGGSDDDGGSDGGGGGGSSSSGGSGGGWWWSGSSSSGGSGGGWWWSSSSSSGGGGSGWWWWSSSSSSGGGGSSWWWWSSSSSSGWWWWWWWWGSSSSSDWWWSSGGWGSSSSWWWSSGGWGGSSSSSWSSWWWSSSSSSWWWWWSSGSWWWWSSSSSSSSSSSSS',
   ),
-  neutral: parseGroundString('D'.repeat(217)),
+  neutral: parseGroundString(NEUTRAL_INITIAL_GROUND),
   unknown: parseGroundString('F'.repeat(217)),
 };
 
