@@ -1406,7 +1406,7 @@ const devAutoLogin = import.meta.env.DEV
 // прокрутки страницы. Для изолированных `?screen=`-тестов (окна поверх
 // произвольного фона) размер #app не важен — оставлен прежним
 // компактным, чтобы не менять поведение уже устоявшихся скриншот-тестов.
-if (wantsLive && !screen) {
+if ((wantsLive && !screen) || screen === 'hive-217') {
   app.style.width = '100vw';
   app.style.height = '100vh';
 } else {
@@ -1428,6 +1428,15 @@ async function main() {
       uiRoot,
     );
   renderUi(false);
+
+  if (screen === 'hive-217') {
+    const { Hive217Experiment } = await import('./map/hive217Experiment');
+    const experiment = await Hive217Experiment.create(app);
+    (window as any).__hive217Experiment = experiment;
+    (window as any).__mapRenderer = experiment;
+    (window as any).__renderDone = true;
+    return;
+  }
 
   if (screen === 'army' || screen === 'army-nopremium') {
     openWindow(

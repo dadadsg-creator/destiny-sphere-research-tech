@@ -1,0 +1,68 @@
+.ds-hive-lab-hud {
+  position: fixed;
+  z-index: 20;
+  top: 14px;
+  left: 50%;
+  width: min(920px, calc(100vw - 28px));
+  transform: translateX(-50%);
+  box-sizing: border-box;
+  padding: 10px 14px;
+  border: 1px solid rgba(112, 205, 255, 0.36);
+  border-radius: 10px;
+  background: rgba(3, 12, 25, 0.76);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28), inset 0 0 20px rgba(80, 181, 255, 0.05);
+  color: #dff5ff;
+  font: 13px/1.35 "Segoe UI", sans-serif;
+  backdrop-filter: blur(7px);
+  pointer-events: auto;
+}
+
+.ds-hive-lab-hud__title {
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+}
+
+.ds-hive-lab-hud__metrics {
+  margin-top: 3px;
+  color: #82d9ff;
+  font-variant-numeric: tabular-nums;
+}
+
+.ds-hive-lab-hud__help {
+  margin-top: 3px;
+  color: #9db3c5;
+}
+
+.ds-hive-lab-hud__actions {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  display: flex;
+  gap: 6px;
+}
+
+.ds-hive-lab-hud button {
+  padding: 5px 9px;
+  border: 1px solid rgba(121, 214, 255, 0.38);
+  border-radius: 5px;
+  background: rgba(16, 47, 72, 0.86);
+  color: #e8f8ff;
+  cursor: pointer;
+}
+
+.ds-hive-lab-hud button:hover {
+  background: rgba(29, 78, 112, 0.92);
+}
+
+@media (max-width: 760px) {
+  .ds-hive-lab-hud {
+    padding-right: 12px;
+  }
+
+  .ds-hive-lab-hud__actions {
+    position: static;
+    margin-top: 7px;
+  }
+}

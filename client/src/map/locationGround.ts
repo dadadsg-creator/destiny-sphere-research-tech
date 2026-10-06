@@ -15,6 +15,10 @@ export const CENTRAL_INITIAL_GROUND =
 /** Нейтральная сота начинается как 217 игровых клеток песка/пустыни. */
 export const NEUTRAL_INITIAL_GROUND = 'D'.repeat(TOTAL_CELLS);
 
+/** Проверенная смешанная раскладка домашней соты для автономного стенда. */
+export const HOME_LAB_GROUND =
+  'DDDDDSSSSDDDSSSDDDDDDDSSSDDDDDDDDDSSDDDGGGSDDDDSSDGGGGGSDDDGGSDGGGGGGSSSSGGSGGGWWWSGSSSSGGSGGGWWWSSSSSSGGGGSGWWWWSSSSSSGGGGSSWWWWSSSSSSGWWWWWWWWGSSSSSDWWWSSGGWGSSSSWWWSSGGWGGSSSSSWSSWWWSSSSSSWWWWWSSGSWWWWSSSSSSSSSSSSS';
+
 export type InitialGroundLocation = 'CENTRAL' | 'NEUTRAL';
 
 /** Стартовый fallback; после загрузки мира приоритет всегда у серверного `<refresh><sota>`. */
@@ -31,6 +35,7 @@ if (
   || countCode(CENTRAL_INITIAL_GROUND, 'S') !== 16
   || countCode(CENTRAL_INITIAL_GROUND, 'R') !== 12
   || NEUTRAL_INITIAL_GROUND.length !== TOTAL_CELLS
+  || HOME_LAB_GROUND.length !== TOTAL_CELLS
 ) {
   throw new Error('Стартовые карты грунта не соответствуют игровому контракту');
 }
