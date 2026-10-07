@@ -10,6 +10,9 @@ import { BattleRenderer } from './battle/battleRenderer';
 import type { BattleRound } from './battle/battleData';
 import { WindowHost } from './ui/WindowHost';
 import { MainScreenHud } from './ui/hud/MainScreenHud';
+import { hudActions } from './ui/hud/hudActionsStore';
+import { setCombRes } from './data/combResStore';
+import { serverClock } from './data/serverClockStore';
 import { LoginScreen } from './ui/LoginScreen';
 import { GameSession } from './protocol/gameProtocol';
 import type { ComponentChildren } from 'preact';
@@ -1432,6 +1435,44 @@ async function main() {
   if (screen === 'hive-217') {
     const { Hive217Experiment } = await import('./map/hive217Experiment');
     const experiment = await Hive217Experiment.create(app);
+    setCombRes({
+      KADERIUM: { current: 6_435_000 },
+      NANO_CRYSTAL: { current: 396_774_000 },
+      PRODIUM: { current: 89_859_000 },
+      FOOD: { current: 14_721_000 },
+      STASIS_ENERGY: { current: 475_324_000 },
+      WORKER: { current: 6_500, max: 6_500 },
+      SCIENTIST: { current: 4_000, max: 4_000 },
+      ARCHEOLOGIST: { current: 2_110, max: 4_000 },
+      GOLD_CREDIT: { current: 0 },
+      SILVER_CREDIT: { current: 1_800_000 },
+    });
+    serverClock.value = { offsetMs: 0, gmtHours: 3 };
+    const announce = (label: string) => console.info(`[hive-217] ${label}`);
+    hudActions.value = {
+      openMail: () => announce('Почта будет подключена к живому протоколу'),
+      openCabinet: () => announce('Личный кабинет'),
+      openComplex: () => announce('Игровой комплекс'),
+      openColonies: () => announce('Мои колонии'),
+      navigateHome: () => announce('Домашняя сота'),
+      navigateCentral: () => announce('Центральная сота'),
+      navigateNeutral: () => announce('Нейтральная сота'),
+      refresh: async () => experiment.reset(),
+      openRanking: () => announce('Рейтинг'),
+      openProfile: () => announce('Профиль'),
+      openForum: () => announce('Форум'),
+      openPortal: () => announce('Портал'),
+      openShop: () => announce('Магазин'),
+      openSysLog: (type) => announce(`Лог ${type}`),
+      openBilling: () => announce('Биллинг'),
+      openPremiumInfo: () => announce('Премиум'),
+      openFaq: () => announce('FAQ'),
+      logout: () => announce('Выход отключён на технологическом стенде'),
+      openWarFactories: () => announce('Военные заводы'),
+      openArtefactStat: () => announce('Артефакты'),
+      openAdvice: () => announce('Советник'),
+    };
+    renderUi(true);
     (window as any).__hive217Experiment = experiment;
     (window as any).__mapRenderer = experiment;
     (window as any).__renderDone = true;

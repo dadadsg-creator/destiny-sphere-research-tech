@@ -11,8 +11,9 @@ import { buildHexGrid, buildingAnchor, hexPolygonPoints, mapPixelSize, type Cell
 import { HOME_LAB_GROUND } from './locationGround';
 import './hive217Experiment.css';
 
-type BuildingState = 'construction' | 'working';
+type BuildingState = 'construction' | 'working' | 'disabled';
 type FusionKind = 'three' | 'seven';
+type BuildingVariant = 0 | 1 | 2;
 
 interface Fusion {
   kind: FusionKind;
@@ -29,13 +30,64 @@ interface RenderItem {
   variant: number;
 }
 
+interface BuildingAsset {
+  alias: string;
+  src: string;
+  logicalWidth: number;
+  anchor: readonly [number, number];
+}
+
+interface EffectItem {
+  item: RenderItem;
+  asset: BuildingAsset;
+  emissive: Sprite | null;
+  width: number;
+  height: number;
+}
+
 const MAP_ASSETS = {
   ground: { alias: 'hive-lab/ground', src: '/assets/hive-lab/hive-ground.png' },
   v02: { alias: 'hive-lab/v02', src: '/assets/hive-lab/house-v02.png', logicalWidth: 56, anchor: [0.5, 0.954128] as const },
+  v02Emissive: { alias: 'hive-lab/v02-emissive', src: '/assets/hive-lab/house-v02-emissive.png' },
   v03: { alias: 'hive-lab/v03', src: '/assets/hive-lab/house-v03.png', logicalWidth: 54, anchor: [0.5, 0.839867] as const },
+  v03Emissive: { alias: 'hive-lab/v03-emissive', src: '/assets/hive-lab/house-v03-emissive.png' },
   v05: { alias: 'hive-lab/v05', src: '/assets/hive-lab/house-v05.png', logicalWidth: 52, anchor: [0.5, 0.840701] as const },
+  v05Emissive: { alias: 'hive-lab/v05-emissive', src: '/assets/hive-lab/house-v05-emissive.png' },
   three: { alias: 'hive-lab/complex-3', src: '/assets/hive-lab/complex-3.png', logicalWidth: 92, anchor: [0.5, 0.901585] as const },
+  threeEmissive: { alias: 'hive-lab/complex-3-emissive', src: '/assets/hive-lab/complex-3-emissive.png' },
   seven: { alias: 'hive-lab/complex-7', src: '/assets/hive-lab/complex-7.png', logicalWidth: 126, anchor: [0.5, 0.920767] as const },
+  sevenEmissive: { alias: 'hive-lab/complex-7-emissive', src: '/assets/hive-lab/complex-7-emissive.png' },
+};
+
+const EMISSIVE_ASSET_BY_KIND = {
+  v02: MAP_ASSETS.v02Emissive,
+  v03: MAP_ASSETS.v03Emissive,
+  v05: MAP_ASSETS.v05Emissive,
+  three: MAP_ASSETS.threeEmissive,
+  seven: MAP_ASSETS.sevenEmissive,
+} as const;
+
+interface WaterSurface {
+  x: number;
+  y: number;
+  rx: number;
+  ry: number;
+  jet?: number;
+}
+
+// Координаты сняты с принятого водного стенда и выражены в долях PNG.
+const WATER_SURFACES: Partial<Record<'v02' | 'v03' | 'v05' | 'three' | 'seven', WaterSurface[]>> = {
+  v02: [{ x: 0.37, y: 0.885, rx: 0.078, ry: 0.018 }],
+  v03: [{ x: 0.805, y: 0.69, rx: 0.082, ry: 0.023 }],
+  three: [{ x: 0.555, y: 0.59, rx: 0.145, ry: 0.052, jet: 0.125 }],
+  seven: [
+    { x: 0.515, y: 0.35, rx: 0.07, ry: 0.021, jet: 0.11 },
+    { x: 0.205, y: 0.625, rx: 0.06, ry: 0.021, jet: 0.075 },
+    { x: 0.52, y: 0.625, rx: 0.055, ry: 0.019, jet: 0.08 },
+    { x: 0.825, y: 0.625, rx: 0.06, ry: 0.021, jet: 0.075 },
+    { x: 0.405, y: 0.825, rx: 0.075, ry: 0.022 },
+    { x: 0.63, y: 0.825, rx: 0.075, ry: 0.022 },
+  ],
 };
 
 const TERRAIN_NAMES: Record<string, string> = {
@@ -151,21 +203,28 @@ export class Hive217Experiment {
   readonly cells = buildHexGrid();
   readonly terrain = HOME_LAB_GROUND.split('');
   readonly buildings = new Map<number, BuildingState>();
+  readonly variants = new Map<number, BuildingVariant>();
 
   private readonly neighbors = makeNeighborTable(this.cells);
   private readonly buildingLayer = new Container();
   private readonly shadowLayer = new Container();
+  private readonly waterLayer = new Graphics();
+  private readonly emissiveLayer = new Container();
   private readonly hoverLayer = new Graphics();
   private readonly selectionLayer = new Graphics();
   private readonly domeLayer = new Graphics();
   private readonly interactiveLayer = new Graphics();
   private readonly hud: HTMLDivElement;
+  private effectItems: EffectItem[] = [];
   private selectedCell = 108;
   private hoveredCell: number | null = null;
   private fpsSamples: number[] = [];
   private lastHudUpdate = 0;
   private lastFusionCount = 0;
   private lastVisualCount = 0;
+  private animationEnabled = true;
+  private animationIntensity = 1.6;
+  private lastEffectUpdate = 0;
   private readonly resizeHandler = () => this.fitToViewport();
 
   private constructor(app: Application, parent: HTMLElement) {
@@ -198,7 +257,16 @@ export class Hive217Experiment {
     this.drawPlatform();
     this.drawSharedGround();
     this.drawDome();
-    this.world.addChild(this.shadowLayer, this.buildingLayer, this.domeLayer, this.hoverLayer, this.selectionLayer, this.interactiveLayer);
+    this.world.addChild(
+      this.shadowLayer,
+      this.buildingLayer,
+      this.waterLayer,
+      this.emissiveLayer,
+      this.domeLayer,
+      this.hoverLayer,
+      this.selectionLayer,
+      this.interactiveLayer,
+    );
     this.seedBuildings();
     this.bindInteraction();
     this.rebuildBuildings();
@@ -210,6 +278,10 @@ export class Hive217Experiment {
       if (this.fpsSamples.length > 45) this.fpsSamples.shift();
       const now = performance.now();
       this.domeLayer.alpha = 0.94 + Math.sin(now / 3500) * 0.04;
+      if (this.animationEnabled && now - this.lastEffectUpdate >= 50) {
+        this.animateEffects(now);
+        this.lastEffectUpdate = now;
+      }
       if (now - this.lastHudUpdate > 500) {
         this.updateHud();
         this.lastHudUpdate = now;
@@ -293,13 +365,24 @@ export class Hive217Experiment {
       const candidates = byTerrain.get(code) ?? [];
       for (let index = 2; index < candidates.length; index += Math.max(5, Math.floor(candidates.length / 8))) {
         this.buildings.set(candidates[index], 'working');
+        this.variants.set(candidates[index], (candidates[index] % 3) as BuildingVariant);
       }
     }
     const center = 108;
     this.buildings.set(center, 'working');
-    for (const neighbor of this.neighbors.get(center) ?? []) this.buildings.set(neighbor, 'working');
-    for (const cellNum of [65, 66, 78, 139, 151, 152]) this.buildings.set(cellNum, 'working');
-    for (const cellNum of [34, 173]) this.buildings.set(cellNum, 'construction');
+    this.variants.set(center, 1);
+    for (const neighbor of this.neighbors.get(center) ?? []) {
+      this.buildings.set(neighbor, 'working');
+      this.variants.set(neighbor, (neighbor % 3) as BuildingVariant);
+    }
+    for (const cellNum of [65, 66, 78, 139, 151, 152]) {
+      this.buildings.set(cellNum, 'working');
+      this.variants.set(cellNum, (cellNum % 3) as BuildingVariant);
+    }
+    for (const cellNum of [34, 173]) {
+      this.buildings.set(cellNum, 'construction');
+      this.variants.set(cellNum, (cellNum % 3) as BuildingVariant);
+    }
   }
 
   private bindInteraction(): void {
@@ -327,13 +410,9 @@ export class Hive217Experiment {
       const cellNum = this.hitCell(point.x, point.y);
       if (cellNum === null) return;
       this.selectedCell = cellNum;
-      const state = this.buildings.get(cellNum);
-      if (!state) this.buildings.set(cellNum, 'construction');
-      else if (state === 'construction') this.buildings.set(cellNum, 'working');
-      else this.buildings.delete(cellNum);
       this.selectionLayer.clear();
       this.drawCellMarker(this.selectionLayer, cellNum, 0xffd777, 0.92, 2);
-      this.rebuildBuildings();
+      this.updateHud();
     });
   }
 
@@ -353,6 +432,9 @@ export class Hive217Experiment {
   private rebuildBuildings(): void {
     this.shadowLayer.removeChildren().forEach((child) => child.destroy());
     this.buildingLayer.removeChildren().forEach((child) => child.destroy());
+    this.emissiveLayer.removeChildren().forEach((child) => child.destroy());
+    this.waterLayer.clear();
+    this.effectItems = [];
     const working = new Set([...this.buildings].filter(([, state]) => state === 'working').map(([cellNum]) => cellNum));
     const fusions = resolveFusions(working, this.cells, this.neighbors);
     const fusedCells = new Set(fusions.flatMap((fusion) => fusion.cellNums));
@@ -371,7 +453,7 @@ export class Hive217Experiment {
         cellNums: [cellNum],
         anchor: { x: anchor.x, y: anchor.y - 4.5 },
         depthY: anchor.y,
-        variant: cellNum % 3,
+        variant: this.variants.get(cellNum) ?? cellNum % 3,
       });
     }
     items.sort((left, right) => left.depthY - right.depthY || left.anchor.x - right.anchor.x);
@@ -399,8 +481,36 @@ export class Hive217Experiment {
       if (item.kind === 'construction') {
         sprite.alpha = 0.35;
         sprite.tint = 0x9fdfff;
+      } else if (this.buildings.get(item.cellNums[0]) === 'disabled') {
+        sprite.alpha = 0.62;
+        sprite.tint = 0x9eb8c4;
       }
       this.buildingLayer.addChild(sprite);
+
+      const itemState = item.kind === 'three' || item.kind === 'seven'
+        ? 'working'
+        : this.buildings.get(item.cellNums[0]);
+      const effectKey = item.kind === 'three' || item.kind === 'seven'
+        ? item.kind
+        : item.variant === 0 ? 'v02' : item.variant === 1 ? 'v03' : 'v05';
+      let emissive: Sprite | null = null;
+      if (itemState === 'working') {
+        emissive = Sprite.from(EMISSIVE_ASSET_BY_KIND[effectKey].alias);
+        emissive.anchor.set(asset.anchor[0], asset.anchor[1]);
+        emissive.width = asset.logicalWidth;
+        emissive.height = asset.logicalWidth * emissive.texture.height / emissive.texture.width;
+        emissive.x = item.anchor.x;
+        emissive.y = item.anchor.y;
+        emissive.alpha = 0.1;
+        this.emissiveLayer.addChild(emissive);
+      }
+      this.effectItems.push({
+        item,
+        asset,
+        emissive,
+        width: sprite.width,
+        height: sprite.height,
+      });
 
       if (item.kind === 'construction') {
         const scaffold = new Graphics()
@@ -412,29 +522,170 @@ export class Hive217Experiment {
         this.buildingLayer.addChild(scaffold);
       }
     }
+    if (this.animationEnabled) this.animateEffects(performance.now());
     this.updateHud(fusions.length, items.length);
+  }
+
+  private animateEffects(timeMs: number): void {
+    this.waterLayer.clear();
+    const seconds = timeMs / 1000;
+    for (const [index, effect] of this.effectItems.entries()) {
+      if (effect.emissive) {
+        const pulse = 0.09 + (Math.sin(seconds * 0.72 + index * 0.43) + 1) * 0.055;
+        effect.emissive.alpha = Math.min(0.28, pulse * this.animationIntensity);
+      }
+      const kind = effect.item.kind === 'three' || effect.item.kind === 'seven'
+        ? effect.item.kind
+        : effect.item.variant === 0 ? 'v02' : effect.item.variant === 1 ? 'v03' : 'v05';
+      const surfaces = WATER_SURFACES[kind];
+      if (!surfaces || !effect.emissive) continue;
+      const left = effect.item.anchor.x - effect.asset.anchor[0] * effect.width;
+      const top = effect.item.anchor.y - effect.asset.anchor[1] * effect.height;
+      const seed = effect.item.cellNums.reduce((sum, cellNum) => sum + cellNum, 0) * 0.17;
+      for (const [surfaceIndex, surface] of surfaces.entries()) {
+        const centerX = left + surface.x * effect.width;
+        const centerY = top + surface.y * effect.height;
+        const radiusX = Math.max(1.15, surface.rx * effect.width);
+        const radiusY = Math.max(0.45, surface.ry * effect.height);
+        const phase = seconds * 0.36 + seed + surfaceIndex * 0.31;
+
+        // Светлая движущаяся полоса и тёмная впадина остаются внутри чаши.
+        const drift = Math.sin(phase * Math.PI * 2) * radiusY * 0.46;
+        this.waterLayer
+          .ellipse(centerX, centerY + drift, radiusX * 0.82, Math.max(0.28, radiusY * 0.38))
+          .stroke({ width: 0.48, color: 0xbaf7ff, alpha: Math.min(0.62, 0.22 * this.animationIntensity) });
+        this.waterLayer
+          .ellipse(centerX, centerY - drift * 0.65, radiusX * 0.68, Math.max(0.24, radiusY * 0.3))
+          .stroke({ width: 0.55, color: 0x07527a, alpha: Math.min(0.42, 0.13 * this.animationIntensity) });
+
+        for (let ringIndex = 0; ringIndex < 2; ringIndex += 1) {
+          const progress = ((phase * 0.58 + ringIndex / 2) % 1 + 1) % 1;
+          this.waterLayer
+            .ellipse(
+              centerX,
+              centerY,
+              Math.max(0.35, radiusX * progress),
+              Math.max(0.18, radiusY * progress),
+            )
+            .stroke({
+              width: Math.max(0.35, 0.7 - progress * 0.28),
+              color: 0xd3fbff,
+              alpha: Math.min(0.75, (1 - progress) * 0.42 * this.animationIntensity),
+            });
+        }
+
+        if (surface.jet) {
+          const jetHeight = surface.jet * effect.height;
+          const sway = Math.sin(seconds * 0.9 + seed) * radiusX * 0.06;
+          this.waterLayer
+            .moveTo(centerX, centerY)
+            .quadraticCurveTo(centerX - sway * 0.4, centerY - jetHeight * 0.5, centerX + sway, centerY - jetHeight)
+            .stroke({ width: 0.68, color: 0xa7edff, alpha: Math.min(0.66, 0.28 * this.animationIntensity) });
+        }
+      }
+    }
+  }
+
+  private setAnimationEnabled(enabled: boolean): void {
+    this.animationEnabled = enabled;
+    this.emissiveLayer.visible = enabled;
+    this.waterLayer.visible = enabled;
+    if (enabled) this.animateEffects(performance.now());
+    else this.waterLayer.clear();
+    this.updateHud();
+  }
+
+  private buildSelected(variant: BuildingVariant): void {
+    if (this.buildings.has(this.selectedCell)) return;
+    this.variants.set(this.selectedCell, variant);
+    this.buildings.set(this.selectedCell, 'construction');
+    this.rebuildBuildings();
+  }
+
+  private completeSelected(): void {
+    if (this.buildings.get(this.selectedCell) !== 'construction') return;
+    this.buildings.set(this.selectedCell, 'working');
+    this.rebuildBuildings();
+  }
+
+  private toggleSelectedPower(): void {
+    const state = this.buildings.get(this.selectedCell);
+    if (state !== 'working' && state !== 'disabled') return;
+    this.buildings.set(this.selectedCell, state === 'working' ? 'disabled' : 'working');
+    this.rebuildBuildings();
+  }
+
+  private demolishSelected(): void {
+    this.buildings.delete(this.selectedCell);
+    this.variants.delete(this.selectedCell);
+    this.rebuildBuildings();
+  }
+
+  reset(): void {
+    this.buildings.clear();
+    this.variants.clear();
+    this.seedBuildings();
+    this.rebuildBuildings();
+  }
+
+  clear(): void {
+    this.buildings.clear();
+    this.variants.clear();
+    this.rebuildBuildings();
   }
 
   private createHud(parent: HTMLElement): HTMLDivElement {
     const hud = document.createElement('div');
     hud.className = 'ds-hive-lab-hud';
     hud.innerHTML = `
-      <div class="ds-hive-lab-hud__title">Сота 217 · технологический эксперимент</div>
+      <div class="ds-hive-lab-hud__title">Жилая сота · 217 клеток</div>
       <div class="ds-hive-lab-hud__metrics" data-role="metrics"></div>
-      <div class="ds-hive-lab-hud__help">Клик: стройка → готово → снести. Сетка видна только при наведении.</div>
+      <div class="ds-hive-lab-hud__animation">
+        <label><input type="checkbox" data-action="animation" checked> Вода и свечение</label>
+        <label class="ds-hive-lab-hud__range">Интенсивность
+          <input type="range" min="0.5" max="2.5" step="0.1" value="1.6" data-action="intensity">
+          <output data-role="intensity">1,6×</output>
+        </label>
+      </div>
+      <section class="ds-hive-lab-hud__cell">
+        <h3 data-role="cell-title">Клетка</h3>
+        <p data-role="cell-state"></p>
+        <div class="ds-hive-lab-hud__build" data-role="build-menu">
+          <button type="button" data-build="0">Башенный дом</button>
+          <button type="button" data-build="1">Купольный дом</button>
+          <button type="button" data-build="2">Овальный дом</button>
+        </div>
+        <div class="ds-hive-lab-hud__build" data-role="construction-menu" hidden>
+          <button type="button" data-action="complete">Завершить строительство</button>
+          <button type="button" data-action="demolish">Отменить</button>
+        </div>
+        <div class="ds-hive-lab-hud__build" data-role="building-menu" hidden>
+          <button type="button" data-action="power">Отключить здание</button>
+          <button type="button" class="danger" data-action="demolish">Снести здание</button>
+        </div>
+      </section>
+      <div class="ds-hive-lab-hud__help">Выбери клетку. Контур появляется только при наведении.</div>
       <div class="ds-hive-lab-hud__actions">
         <button type="button" data-action="reset">Исходная застройка</button>
-        <button type="button" data-action="clear">Очистить</button>
+        <button type="button" data-action="clear">Очистить соту</button>
       </div>`;
     parent.appendChild(hud);
-    hud.querySelector('[data-action="reset"]')?.addEventListener('click', () => {
-      this.buildings.clear();
-      this.seedBuildings();
-      this.rebuildBuildings();
+    hud.querySelector('[data-action="reset"]')?.addEventListener('click', () => this.reset());
+    hud.querySelector('[data-action="clear"]')?.addEventListener('click', () => this.clear());
+    hud.querySelector('[data-action="complete"]')?.addEventListener('click', () => this.completeSelected());
+    hud.querySelector('[data-action="power"]')?.addEventListener('click', () => this.toggleSelectedPower());
+    hud.querySelectorAll('[data-action="demolish"]').forEach((button) => button.addEventListener('click', () => this.demolishSelected()));
+    hud.querySelectorAll<HTMLElement>('[data-build]').forEach((button) => button.addEventListener('click', () => {
+      this.buildSelected(Number(button.dataset.build) as BuildingVariant);
+    }));
+    hud.querySelector<HTMLInputElement>('[data-action="animation"]')?.addEventListener('change', (event) => {
+      this.setAnimationEnabled((event.currentTarget as HTMLInputElement).checked);
     });
-    hud.querySelector('[data-action="clear"]')?.addEventListener('click', () => {
-      this.buildings.clear();
-      this.rebuildBuildings();
+    hud.querySelector<HTMLInputElement>('[data-action="intensity"]')?.addEventListener('input', (event) => {
+      this.animationIntensity = Number((event.currentTarget as HTMLInputElement).value);
+      const output = this.hud.querySelector<HTMLOutputElement>('[data-role="intensity"]');
+      if (output) output.value = `${this.animationIntensity.toFixed(1).replace('.', ',')}×`;
+      if (this.animationEnabled) this.animateEffects(performance.now());
     });
     return hud;
   }
@@ -443,7 +694,8 @@ export class Hive217Experiment {
     const metrics = this.hud.querySelector<HTMLElement>('[data-role="metrics"]');
     if (!metrics) return;
     const working = [...this.buildings.values()].filter((state) => state === 'working').length;
-    const construction = this.buildings.size - working;
+    const construction = [...this.buildings.values()].filter((state) => state === 'construction').length;
+    const disabled = [...this.buildings.values()].filter((state) => state === 'disabled').length;
     const fps = this.fpsSamples.length
       ? Math.round(this.fpsSamples.reduce((sum, value) => sum + value, 0) / this.fpsSamples.length)
       : 0;
@@ -455,10 +707,34 @@ export class Hive217Experiment {
       `клеток 217`,
       `домов ${working}`,
       `строится ${construction}`,
+      `отключено ${disabled}`,
       `комплексов ${existingFusionCount}`,
       `визуальных объектов ${visualCount ?? this.lastVisualCount}`,
       `клетка ${hovered}: ${TERRAIN_NAMES[terrainCode] ?? terrainCode}`,
     ].join('  ·  ');
+
+    const selectedTerrain = TERRAIN_NAMES[this.terrain[this.selectedCell]] ?? this.terrain[this.selectedCell];
+    const state = this.buildings.get(this.selectedCell);
+    const title = this.hud.querySelector<HTMLElement>('[data-role="cell-title"]');
+    const stateText = this.hud.querySelector<HTMLElement>('[data-role="cell-state"]');
+    const buildMenu = this.hud.querySelector<HTMLElement>('[data-role="build-menu"]');
+    const constructionMenu = this.hud.querySelector<HTMLElement>('[data-role="construction-menu"]');
+    const buildingMenu = this.hud.querySelector<HTMLElement>('[data-role="building-menu"]');
+    const powerButton = this.hud.querySelector<HTMLButtonElement>('[data-action="power"]');
+    if (title) title.textContent = `Клетка ${this.selectedCell} · ${selectedTerrain}`;
+    if (stateText) {
+      stateText.textContent = !state
+        ? 'Свободная клетка. Выбери одноклеточный дом.'
+        : state === 'construction'
+          ? 'Строительство начато. Следующая команда завершит его.'
+          : state === 'disabled'
+            ? 'Здание заморожено и не участвует в объединении.'
+            : 'Здание работает. Соседние одинаковые уровни объединяются автоматически.';
+    }
+    if (buildMenu) buildMenu.hidden = state !== undefined;
+    if (constructionMenu) constructionMenu.hidden = state !== 'construction';
+    if (buildingMenu) buildingMenu.hidden = state !== 'working' && state !== 'disabled';
+    if (powerButton) powerButton.textContent = state === 'disabled' ? 'Включить здание' : 'Отключить здание';
   }
 
   private fitToViewport(): void {

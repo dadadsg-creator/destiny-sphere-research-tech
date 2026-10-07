@@ -1,68 +1,130 @@
 .ds-hive-lab-hud {
   position: fixed;
-  z-index: 20;
-  top: 14px;
-  left: 50%;
-  width: min(920px, calc(100vw - 28px));
-  transform: translateX(-50%);
+  z-index: 55;
+  top: 106px;
+  right: 14px;
+  width: 286px;
+  max-height: calc(100vh - 392px);
+  overflow: auto;
   box-sizing: border-box;
-  padding: 10px 14px;
-  border: 1px solid rgba(112, 205, 255, 0.36);
-  border-radius: 10px;
-  background: rgba(3, 12, 25, 0.76);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28), inset 0 0 20px rgba(80, 181, 255, 0.05);
+  padding: 12px;
+  border: 1px solid rgba(112, 205, 255, 0.38);
+  border-radius: 8px;
+  background: rgba(3, 12, 25, 0.86);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.34), inset 0 0 20px rgba(80, 181, 255, 0.05);
   color: #dff5ff;
-  font: 13px/1.35 "Segoe UI", sans-serif;
+  font: 12px/1.38 "Segoe UI", sans-serif;
   backdrop-filter: blur(7px);
   pointer-events: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(97, 203, 255, 0.55) rgba(4, 17, 31, 0.7);
 }
 
 .ds-hive-lab-hud__title {
-  color: #ffffff;
+  color: #fff;
   font-size: 15px;
   font-weight: 650;
   letter-spacing: 0.02em;
 }
 
 .ds-hive-lab-hud__metrics {
-  margin-top: 3px;
+  margin-top: 4px;
   color: #82d9ff;
+  font-size: 11px;
   font-variant-numeric: tabular-nums;
 }
 
-.ds-hive-lab-hud__help {
-  margin-top: 3px;
-  color: #9db3c5;
+.ds-hive-lab-hud__animation,
+.ds-hive-lab-hud__cell {
+  margin-top: 11px;
+  padding: 9px;
+  border: 1px solid rgba(111, 191, 226, 0.22);
+  border-radius: 6px;
+  background: rgba(13, 33, 52, 0.72);
 }
 
-.ds-hive-lab-hud__actions {
-  position: absolute;
-  top: 10px;
-  right: 12px;
+.ds-hive-lab-hud__animation label {
   display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.ds-hive-lab-hud__range {
+  margin-top: 8px;
+  color: #a9bfce;
+}
+
+.ds-hive-lab-hud__range input {
+  width: 92px;
+  min-width: 0;
+}
+
+.ds-hive-lab-hud__range output {
+  min-width: 30px;
+  color: #7bddff;
+  text-align: right;
+}
+
+.ds-hive-lab-hud__cell h3 {
+  margin: 0;
+  color: #fff;
+  font-size: 13px;
+}
+
+.ds-hive-lab-hud__cell p {
+  min-height: 32px;
+  margin: 5px 0 8px;
+  color: #a9bfce;
+}
+
+.ds-hive-lab-hud__build {
+  display: grid;
   gap: 6px;
 }
 
+.ds-hive-lab-hud__build[hidden] {
+  display: none;
+}
+
+.ds-hive-lab-hud__help {
+  margin-top: 8px;
+  color: #8ca5b7;
+}
+
+.ds-hive-lab-hud__actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 9px;
+}
+
 .ds-hive-lab-hud button {
-  padding: 5px 9px;
+  padding: 6px 8px;
   border: 1px solid rgba(121, 214, 255, 0.38);
   border-radius: 5px;
-  background: rgba(16, 47, 72, 0.86);
+  background: rgba(16, 47, 72, 0.9);
   color: #e8f8ff;
+  font: inherit;
   cursor: pointer;
 }
 
 .ds-hive-lab-hud button:hover {
-  background: rgba(29, 78, 112, 0.92);
+  background: rgba(29, 78, 112, 0.96);
 }
 
-@media (max-width: 760px) {
-  .ds-hive-lab-hud {
-    padding-right: 12px;
-  }
+.ds-hive-lab-hud button.danger {
+  border-color: rgba(255, 125, 104, 0.5);
+  background: rgba(92, 34, 34, 0.72);
+}
 
-  .ds-hive-lab-hud__actions {
-    position: static;
-    margin-top: 7px;
+@media (max-height: 760px) {
+  .ds-hive-lab-hud {
+    max-height: calc(100vh - 326px);
+  }
+}
+
+@media (max-width: 900px) {
+  .ds-hive-lab-hud {
+    right: 8px;
+    width: 250px;
   }
 }

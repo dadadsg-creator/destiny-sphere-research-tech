@@ -43,10 +43,15 @@ function Export-ScaledPng {
 $assets = @(
   @{ Source = 'environment\exports\voraner-sandy-hive-background-v01.png'; Target = 'hive-ground.png'; Width = 1280 },
   @{ Source = 'residential\exports\voraner-residential-v02-color.png'; Target = 'house-v02.png'; Width = 512 },
+  @{ Source = 'residential\exports\voraner-residential-v02-emissive.png'; Target = 'house-v02-emissive.png'; Width = 512 },
   @{ Source = 'residential\exports\voraner-residential-v03-color.png'; Target = 'house-v03.png'; Width = 512 },
+  @{ Source = 'residential\exports\voraner-residential-v03-emissive.png'; Target = 'house-v03-emissive.png'; Width = 512 },
   @{ Source = 'residential\exports\voraner-residential-v05-color.png'; Target = 'house-v05.png'; Width = 512 },
+  @{ Source = 'residential\exports\voraner-residential-v05-emissive.png'; Target = 'house-v05-emissive.png'; Width = 512 },
   @{ Source = 'residential\exports\voraner-residential-complex-3-color.png'; Target = 'complex-3.png'; Width = 512 },
-  @{ Source = 'residential\exports\voraner-residential-complex-7-color.png'; Target = 'complex-7.png'; Width = 512 }
+  @{ Source = 'residential\exports\voraner-residential-complex-3-emissive.png'; Target = 'complex-3-emissive.png'; Width = 512 },
+  @{ Source = 'residential\exports\voraner-residential-complex-7-color.png'; Target = 'complex-7.png'; Width = 512 },
+  @{ Source = 'residential\exports\voraner-residential-complex-7-emissive.png'; Target = 'complex-7-emissive.png'; Width = 512 }
 )
 
 foreach ($asset in $assets) {
