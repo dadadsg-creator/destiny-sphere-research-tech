@@ -6,6 +6,7 @@ import {
   Graphics,
   Rectangle,
   Sprite,
+  Texture,
 } from 'pixi.js';
 import { buildHexGrid, buildingAnchor, hexPolygonPoints, mapPixelSize, type CellPosition } from './hexGrid';
 import { HOME_LAB_GROUND } from './locationGround';
@@ -45,6 +46,38 @@ interface EffectItem {
   height: number;
 }
 
+interface ShadowTuning {
+  azimuth: number;
+  elevation: number;
+  compression: number;
+  alphaThreshold: number;
+  rayWidth: number;
+  joinRadius: number;
+  baselineOffset: number;
+  groundOpacity: number;
+  contactOpacity: number;
+  blur: number;
+}
+
+interface SilhouetteProfile {
+  width: number;
+  height: number;
+  columns: Array<{ x: number; top: number; bottom: number }>;
+}
+
+const DEFAULT_SHADOW_TUNING: ShadowTuning = {
+  azimuth: 220,
+  elevation: 33,
+  compression: 0.84,
+  alphaThreshold: 26,
+  rayWidth: 2.25,
+  joinRadius: 0.8,
+  baselineOffset: 0.06,
+  groundOpacity: 0.58,
+  contactOpacity: 0.72,
+  blur: 1.2,
+};
+
 const MAP_ASSETS = {
   ground: { alias: 'hive-lab/ground', src: '/assets/hive-lab/hive-ground.png' },
   v02: { alias: 'hive-lab/v02', src: '/assets/hive-lab/house-v02.png', logicalWidth: 56, anchor: [0.5, 0.954128] as const },
@@ -66,6 +99,10 @@ const EMISSIVE_ASSET_BY_KIND = {
   three: MAP_ASSETS.threeEmissive,
   seven: MAP_ASSETS.sevenEmissive,
 } as const;
+
+// Сумма одиннадцати подготовленных PNG из client/public/assets/hive-lab.
+// Обновляется вместе с prepare-hive-lab-assets.ps1 после смены экспорта.
+const RUNTIME_PNG_BYTES = 3_511_407;
 
 interface WaterSurface {
   x: number;
@@ -208,6 +245,7 @@ export class Hive217Experiment {
   private readonly neighbors = makeNeighborTable(this.cells);
   private readonly buildingLayer = new Container();
   private readonly shadowLayer = new Container();
+  private readonly contactShadowLayer = new Graphics();
   private readonly waterLayer = new Graphics();
   private readonly emissiveLayer = new Container();
   private readonly hoverLayer = new Graphics();
@@ -222,9 +260,16 @@ export class Hive217Experiment {
   private lastHudUpdate = 0;
   private lastFusionCount = 0;
   private lastVisualCount = 0;
+  private runtimeTextureBytes = 0;
   private animationEnabled = true;
   private animationIntensity = 1.6;
   private lastEffectUpdate = 0;
+  private shadowsEnabled = true;
+  private shadowTuning: ShadowTuning = { ...DEFAULT_SHADOW_TUNING };
+  private readonly shadowTextureCache = new Map<string, Texture>();
+  private readonly silhouetteCache = new Map<string, SilhouetteProfile>();
+  private viewScale = 1;
+  private drawerOpen = true;
   private readonly resizeHandler = () => this.fitToViewport();
 
   private constructor(app: Application, parent: HTMLElement) {
@@ -253,12 +298,18 @@ export class Hive217Experiment {
 
   private async initialize(): Promise<void> {
     await Assets.load(Object.values(MAP_ASSETS).map(({ alias, src }) => ({ alias, src })));
+    this.runtimeTextureBytes = [...new Set(Object.values(MAP_ASSETS).map(({ alias }) => alias))]
+      .reduce((sum, alias) => {
+        const texture = Assets.get(alias) as Texture;
+        return sum + Math.round(texture.width) * Math.round(texture.height) * 4;
+      }, 0);
     this.app.stage.addChild(this.world);
     this.drawPlatform();
     this.drawSharedGround();
     this.drawDome();
     this.world.addChild(
       this.shadowLayer,
+      this.contactShadowLayer,
       this.buildingLayer,
       this.waterLayer,
       this.emissiveLayer,
@@ -267,7 +318,8 @@ export class Hive217Experiment {
       this.selectionLayer,
       this.interactiveLayer,
     );
-    this.seedBuildings();
+    if (new URLSearchParams(window.location.search).get('density') === 'full') this.seedAllBuildings();
+    else this.seedBuildings();
     this.bindInteraction();
     this.rebuildBuildings();
     this.drawCellMarker(this.selectionLayer, this.selectedCell, 0xffd777, 0.92, 2);
@@ -385,6 +437,13 @@ export class Hive217Experiment {
     }
   }
 
+  private seedAllBuildings(): void {
+    for (const cell of this.cells) {
+      this.buildings.set(cell.num, 'working');
+      this.variants.set(cell.num, (cell.num % 3) as BuildingVariant);
+    }
+  }
+
   private bindInteraction(): void {
     const size = mapPixelSize();
     this.interactiveLayer.rect(0, 0, size.width, size.height).fill({ color: 0xffffff, alpha: 0.001 });
@@ -429,8 +488,117 @@ export class Hive217Experiment {
       .stroke({ width, color, alpha });
   }
 
+  private silhouetteFor(asset: BuildingAsset): SilhouetteProfile {
+    const cached = this.silhouetteCache.get(asset.alias);
+    if (cached) return cached;
+    const texture = Assets.get(asset.alias) as Texture;
+    const width = Math.max(1, Math.round(texture.width));
+    const height = Math.max(1, Math.round(texture.height));
+    const source = document.createElement('canvas');
+    source.width = width;
+    source.height = height;
+    const context = source.getContext('2d', { willReadFrequently: true });
+    if (!context) throw new Error(`Не удалось прочитать альфа-силуэт ${asset.alias}`);
+    context.drawImage(texture.source.resource as CanvasImageSource, 0, 0, width, height);
+    const rgba = context.getImageData(0, 0, width, height).data;
+    const columns: SilhouetteProfile['columns'] = [];
+    for (let x = 0; x < width; x += 1) {
+      let top = -1;
+      let bottom = -1;
+      for (let y = 0; y < height; y += 1) {
+        if (rgba[(y * width + x) * 4 + 3] < this.shadowTuning.alphaThreshold) continue;
+        if (top < 0) top = y;
+        bottom = y;
+      }
+      if (top >= 0 && bottom >= 0) columns.push({ x, top, bottom });
+    }
+    const profile = { width, height, columns };
+    this.silhouetteCache.set(asset.alias, profile);
+    return profile;
+  }
+
+  private shadowTextureFor(asset: BuildingAsset): Texture {
+    const tuning = this.shadowTuning;
+    const cacheKey = [
+      asset.alias,
+      tuning.azimuth,
+      tuning.elevation,
+      tuning.compression,
+      tuning.alphaThreshold,
+      tuning.rayWidth,
+      tuning.joinRadius,
+      tuning.baselineOffset,
+      tuning.blur,
+    ].join(':');
+    const cached = this.shadowTextureCache.get(cacheKey);
+    if (cached) return cached;
+
+    const profile = this.silhouetteFor(asset);
+    const raw = document.createElement('canvas');
+    raw.width = profile.width;
+    raw.height = profile.height;
+    const rawContext = raw.getContext('2d');
+    if (!rawContext) throw new Error(`Не удалось построить тень ${asset.alias}`);
+    const azimuth = tuning.azimuth * Math.PI / 180;
+    const elevation = tuning.elevation * Math.PI / 180;
+    const directionX = Math.cos(azimuth);
+    const directionY = Math.sin(azimuth);
+    const lengthPerHeight = tuning.compression / Math.tan(elevation);
+    const baseline = Math.max(0, Math.min(profile.height - 1, (asset.anchor[1] + tuning.baselineOffset) * profile.height));
+    const sourceToLogical = profile.width / asset.logicalWidth;
+    rawContext.strokeStyle = 'rgba(2, 7, 12, 0.9)';
+    rawContext.lineWidth = Math.max(1, tuning.rayWidth + tuning.joinRadius * 2 * sourceToLogical);
+    rawContext.lineCap = tuning.joinRadius > 0 ? 'round' : 'butt';
+    rawContext.lineJoin = 'round';
+    rawContext.beginPath();
+    for (const column of profile.columns) {
+      const screenHeight = Math.max(0, baseline - column.top);
+      if (screenHeight <= 0) continue;
+      const startY = Math.min(column.bottom, baseline);
+      const length = screenHeight * lengthPerHeight;
+      rawContext.moveTo(column.x, startY);
+      rawContext.lineTo(column.x + directionX * length, startY + directionY * length);
+    }
+    rawContext.stroke();
+
+    const output = document.createElement('canvas');
+    output.width = profile.width;
+    output.height = profile.height;
+    const outputContext = output.getContext('2d');
+    if (!outputContext) throw new Error(`Не удалось сгладить тень ${asset.alias}`);
+    const sourceBlur = Math.max(0, tuning.blur * sourceToLogical);
+    outputContext.filter = sourceBlur > 0 ? `blur(${sourceBlur}px)` : 'none';
+    outputContext.drawImage(raw, 0, 0);
+    const texture = Texture.from(output);
+    this.shadowTextureCache.set(cacheKey, texture);
+    return texture;
+  }
+
+  private drawBuildingShadow(item: RenderItem, asset: BuildingAsset): void {
+    if (!this.shadowsEnabled) return;
+    const width = asset.logicalWidth;
+    const height = width * (Assets.get(asset.alias) as Texture).height / (Assets.get(asset.alias) as Texture).width;
+    this.contactShadowLayer
+      .ellipse(item.anchor.x, item.anchor.y - 0.6, width * 0.46, Math.max(2, width * 0.065))
+      .fill({ color: 0x071017, alpha: this.shadowTuning.contactOpacity * 0.22 })
+      .ellipse(item.anchor.x, item.anchor.y - 0.25, width * 0.31, Math.max(1.35, width * 0.04))
+      .fill({ color: 0x02070b, alpha: this.shadowTuning.contactOpacity * 0.56 });
+
+    const cast = new Sprite(this.shadowTextureFor(asset));
+    cast.anchor.set(asset.anchor[0], asset.anchor[1]);
+    cast.width = width;
+    cast.height = height;
+    cast.x = item.anchor.x;
+    cast.y = item.anchor.y;
+    cast.alpha = item.kind === 'construction'
+      ? this.shadowTuning.groundOpacity * 0.42
+      : this.shadowTuning.groundOpacity;
+    this.shadowLayer.addChild(cast);
+  }
+
   private rebuildBuildings(): void {
     this.shadowLayer.removeChildren().forEach((child) => child.destroy());
+    this.contactShadowLayer.clear();
     this.buildingLayer.removeChildren().forEach((child) => child.destroy());
     this.emissiveLayer.removeChildren().forEach((child) => child.destroy());
     this.waterLayer.clear();
@@ -466,11 +634,7 @@ export class Hive217Experiment {
         : item.kind === 'three'
           ? MAP_ASSETS.three
           : [MAP_ASSETS.v02, MAP_ASSETS.v03, MAP_ASSETS.v05][item.variant];
-      const shadowWidth = asset.logicalWidth * (item.kind === 'single' || item.kind === 'construction' ? 0.78 : 0.9);
-      const shadow = new Graphics()
-        .ellipse(item.anchor.x - shadowWidth * 0.13, item.anchor.y - 2.5, shadowWidth * 0.52, Math.max(3.6, shadowWidth * 0.075))
-        .fill({ color: 0x07101a, alpha: item.kind === 'construction' ? 0.22 : 0.42 });
-      this.shadowLayer.addChild(shadow);
+      this.drawBuildingShadow(item, asset);
 
       const sprite = Sprite.from(asset.alias);
       sprite.anchor.set(asset.anchor[0], asset.anchor[1]);
@@ -625,12 +789,68 @@ export class Hive217Experiment {
     this.buildings.clear();
     this.variants.clear();
     this.seedBuildings();
+    this.setDensityQuery(null);
+    this.rebuildBuildings();
+  }
+
+  fillAll(): void {
+    this.buildings.clear();
+    this.variants.clear();
+    this.seedAllBuildings();
+    const animationInput = this.hud.querySelector<HTMLInputElement>('[data-action="animation"]');
+    if (animationInput) animationInput.checked = true;
+    this.setAnimationEnabled(true);
+    this.setDensityQuery('full');
     this.rebuildBuildings();
   }
 
   clear(): void {
     this.buildings.clear();
     this.variants.clear();
+    this.setDensityQuery(null);
+    this.rebuildBuildings();
+  }
+
+  private setDensityQuery(value: 'full' | null): void {
+    const url = new URL(window.location.href);
+    if (value) url.searchParams.set('density', value);
+    else url.searchParams.delete('density');
+    window.history.replaceState(null, '', url);
+  }
+
+  private clearGeneratedShadows(clearSilhouettes = false): void {
+    for (const texture of this.shadowTextureCache.values()) texture.destroy(true);
+    this.shadowTextureCache.clear();
+    if (clearSilhouettes) this.silhouetteCache.clear();
+  }
+
+  private shadowValueLabel(key: keyof ShadowTuning, value: number): string {
+    if (key === 'azimuth' || key === 'elevation') return `${Math.round(value)}°`;
+    if (key === 'groundOpacity' || key === 'contactOpacity') return `${Math.round(value * 100)}%`;
+    if (key === 'alphaThreshold') return String(Math.round(value));
+    if (key === 'baselineOffset') return value.toFixed(3).replace('.', ',');
+    if (key === 'compression') return value.toFixed(2).replace('.', ',');
+    return `${value.toFixed(2).replace(/0$/, '').replace('.', ',')} px`;
+  }
+
+  private syncShadowControls(root: ParentNode = this.hud): void {
+    for (const input of root.querySelectorAll<HTMLInputElement>('[data-shadow]')) {
+      const key = input.dataset.shadow as keyof ShadowTuning;
+      input.value = String(this.shadowTuning[key]);
+      const output = root.querySelector<HTMLOutputElement>(`[data-shadow-output="${key}"]`);
+      if (output) output.value = this.shadowValueLabel(key, this.shadowTuning[key]);
+    }
+    const lengthOutput = root.querySelector<HTMLOutputElement>('[data-role="shadow-length"]');
+    if (lengthOutput) {
+      const length = this.shadowTuning.compression / Math.tan(this.shadowTuning.elevation * Math.PI / 180);
+      lengthOutput.value = `${length.toFixed(2).replace('.', ',')} px`;
+    }
+  }
+
+  private resetShadowTuning(): void {
+    this.shadowTuning = { ...DEFAULT_SHADOW_TUNING };
+    this.clearGeneratedShadows(true);
+    this.syncShadowControls();
     this.rebuildBuildings();
   }
 
@@ -638,38 +858,163 @@ export class Hive217Experiment {
     const hud = document.createElement('div');
     hud.className = 'ds-hive-lab-hud';
     hud.innerHTML = `
-      <div class="ds-hive-lab-hud__title">Жилая сота · 217 клеток</div>
-      <div class="ds-hive-lab-hud__metrics" data-role="metrics"></div>
-      <div class="ds-hive-lab-hud__animation">
-        <label><input type="checkbox" data-action="animation" checked> Вода и свечение</label>
-        <label class="ds-hive-lab-hud__range">Интенсивность
-          <input type="range" min="0.5" max="2.5" step="0.1" value="1.6" data-action="intensity">
-          <output data-role="intensity">1,6×</output>
-        </label>
-      </div>
-      <section class="ds-hive-lab-hud__cell">
-        <h3 data-role="cell-title">Клетка</h3>
-        <p data-role="cell-state"></p>
-        <div class="ds-hive-lab-hud__build" data-role="build-menu">
-          <button type="button" data-build="0">Башенный дом</button>
-          <button type="button" data-build="1">Купольный дом</button>
-          <button type="button" data-build="2">Овальный дом</button>
+      <button class="ds-hive-lab-hud__toggle" type="button" data-action="drawer" aria-expanded="true" title="Свернуть инженерную панель">›</button>
+      <div class="ds-hive-lab-hud__content">
+        <div class="ds-hive-lab-hud__title">Наша инженерная панель</div>
+        <div class="ds-hive-lab-hud__subtitle">Жилая сота · 217 клеток</div>
+        <div class="ds-hive-lab-hud__metrics" data-role="metrics"></div>
+
+        <details open>
+          <summary>Нагрузка сцены</summary>
+          <div class="ds-hive-lab-hud__load-metrics" data-role="load-metrics"></div>
+        </details>
+
+        <details open>
+          <summary>Вид соты</summary>
+          <div class="ds-hive-lab-hud__group">
+            <label class="ds-hive-lab-hud__range">Масштаб
+              <input type="range" min="80" max="160" step="5" value="100" data-action="zoom">
+              <output data-role="zoom">100%</output>
+            </label>
+            <label><input type="checkbox" data-action="dome" checked> Защитная сфера</label>
+            <label><input type="checkbox" data-action="shadows" checked> Падающие и контактные тени</label>
+          </div>
+        </details>
+
+        <details open>
+          <summary>Свет и тени</summary>
+          <div class="ds-hive-lab-hud__group">
+            <label class="ds-hive-lab-hud__range">Направление тени
+              <input type="range" min="180" max="270" step="1" value="220" data-shadow="azimuth">
+              <output data-shadow-output="azimuth">220°</output>
+            </label>
+            <label class="ds-hive-lab-hud__range">Высота Силуса
+              <input type="range" min="10" max="80" step="1" value="33" data-shadow="elevation">
+              <output data-shadow-output="elevation">33°</output>
+            </label>
+            <label class="ds-hive-lab-hud__range">Сжатие изометрии
+              <input type="range" min="0.15" max="0.9" step="0.01" value="0.84" data-shadow="compression">
+              <output data-shadow-output="compression">0,84</output>
+            </label>
+            <label class="ds-hive-lab-hud__range">Плотность тени
+              <input type="range" min="0" max="0.9" step="0.02" value="0.58" data-shadow="groundOpacity">
+              <output data-shadow-output="groundOpacity">58%</output>
+            </label>
+            <label class="ds-hive-lab-hud__range">Контакт с землёй
+              <input type="range" min="0" max="1" step="0.02" value="0.72" data-shadow="contactOpacity">
+              <output data-shadow-output="contactOpacity">72%</output>
+            </label>
+            <label class="ds-hive-lab-hud__range">Мягкость края
+              <input type="range" min="0" max="4" step="0.2" value="1.2" data-shadow="blur">
+              <output data-shadow-output="blur">1,2 px</output>
+            </label>
+            <p class="ds-hive-lab-hud__derived">Длина на 1 px высоты: <output data-role="shadow-length">1,29 px</output></p>
+            <button type="button" data-action="reset-shadow">Вернуть принятый свет</button>
+          </div>
+        </details>
+
+        <details>
+          <summary>Точная математика силуэта</summary>
+          <div class="ds-hive-lab-hud__group">
+            <label class="ds-hive-lab-hud__range">Порог прозрачности
+              <input type="range" min="1" max="180" step="1" value="26" data-shadow="alphaThreshold">
+              <output data-shadow-output="alphaThreshold">26</output>
+            </label>
+            <label class="ds-hive-lab-hud__range">Толщина луча
+              <input type="range" min="0.5" max="8" step="0.25" value="2.25" data-shadow="rayWidth">
+              <output data-shadow-output="rayWidth">2,25 px</output>
+            </label>
+            <label class="ds-hive-lab-hud__range">Склейка силуэта
+              <input type="range" min="0" max="3" step="0.1" value="0.8" data-shadow="joinRadius">
+              <output data-shadow-output="joinRadius">0,8 px</output>
+            </label>
+            <label class="ds-hive-lab-hud__range">Поправка основания
+              <input type="range" min="-0.1" max="0.1" step="0.005" value="0.06" data-shadow="baselineOffset">
+              <output data-shadow-output="baselineOffset">0,060</output>
+            </label>
+          </div>
+        </details>
+
+        <details open>
+          <summary>Оживление</summary>
+          <div class="ds-hive-lab-hud__group">
+            <label><input type="checkbox" data-action="animation" checked> Вода и свечение</label>
+            <label class="ds-hive-lab-hud__range">Интенсивность
+              <input type="range" min="0.5" max="2.5" step="0.1" value="1.6" data-action="intensity">
+              <output data-role="intensity">1,6×</output>
+            </label>
+          </div>
+        </details>
+
+        <details open>
+          <summary>Выбранная клетка</summary>
+          <section class="ds-hive-lab-hud__cell">
+            <h3 data-role="cell-title">Клетка</h3>
+            <p data-role="cell-state"></p>
+            <div class="ds-hive-lab-hud__build" data-role="build-menu">
+              <button type="button" data-build="0">Башенный дом</button>
+              <button type="button" data-build="1">Купольный дом</button>
+              <button type="button" data-build="2">Овальный дом</button>
+            </div>
+            <div class="ds-hive-lab-hud__build" data-role="construction-menu" hidden>
+              <button type="button" data-action="complete">Завершить строительство</button>
+              <button type="button" data-action="demolish">Отменить</button>
+            </div>
+            <div class="ds-hive-lab-hud__build" data-role="building-menu" hidden>
+              <button type="button" data-action="power">Отключить здание</button>
+              <button type="button" class="danger" data-action="demolish">Снести здание</button>
+            </div>
+          </section>
+        </details>
+
+        <div class="ds-hive-lab-hud__help">Выбери клетку. Контур появляется только при наведении.</div>
+        <div class="ds-hive-lab-hud__actions">
+          <button type="button" data-action="fill-all">Заполнить 217</button>
+          <button type="button" data-action="reset">Исходная застройка</button>
+          <button type="button" data-action="clear">Очистить соту</button>
         </div>
-        <div class="ds-hive-lab-hud__build" data-role="construction-menu" hidden>
-          <button type="button" data-action="complete">Завершить строительство</button>
-          <button type="button" data-action="demolish">Отменить</button>
-        </div>
-        <div class="ds-hive-lab-hud__build" data-role="building-menu" hidden>
-          <button type="button" data-action="power">Отключить здание</button>
-          <button type="button" class="danger" data-action="demolish">Снести здание</button>
-        </div>
-      </section>
-      <div class="ds-hive-lab-hud__help">Выбери клетку. Контур появляется только при наведении.</div>
-      <div class="ds-hive-lab-hud__actions">
-        <button type="button" data-action="reset">Исходная застройка</button>
-        <button type="button" data-action="clear">Очистить соту</button>
       </div>`;
     parent.appendChild(hud);
+    hud.querySelector<HTMLButtonElement>('[data-action="drawer"]')?.addEventListener('click', (event) => {
+      this.drawerOpen = !this.drawerOpen;
+      hud.classList.toggle('is-collapsed', !this.drawerOpen);
+      const button = event.currentTarget as HTMLButtonElement;
+      button.textContent = this.drawerOpen ? '›' : '‹';
+      button.title = this.drawerOpen ? 'Свернуть инженерную панель' : 'Развернуть инженерную панель';
+      button.setAttribute('aria-expanded', String(this.drawerOpen));
+    });
+    hud.querySelector<HTMLInputElement>('[data-action="zoom"]')?.addEventListener('input', (event) => {
+      const input = event.currentTarget as HTMLInputElement;
+      this.viewScale = Number(input.value) / 100;
+      const output = hud.querySelector<HTMLOutputElement>('[data-role="zoom"]');
+      if (output) output.value = `${input.value}%`;
+      this.fitToViewport();
+    });
+    hud.querySelector<HTMLInputElement>('[data-action="dome"]')?.addEventListener('change', (event) => {
+      this.domeLayer.visible = (event.currentTarget as HTMLInputElement).checked;
+    });
+    hud.querySelector<HTMLInputElement>('[data-action="shadows"]')?.addEventListener('change', (event) => {
+      this.shadowsEnabled = (event.currentTarget as HTMLInputElement).checked;
+      this.shadowLayer.visible = this.shadowsEnabled;
+      this.contactShadowLayer.visible = this.shadowsEnabled;
+    });
+    hud.querySelectorAll<HTMLInputElement>('[data-shadow]').forEach((input) => input.addEventListener('input', (event) => {
+      const target = event.currentTarget as HTMLInputElement;
+      const key = target.dataset.shadow as keyof ShadowTuning;
+      const value = Number(target.value);
+      this.shadowTuning[key] = value;
+      const output = hud.querySelector<HTMLOutputElement>(`[data-shadow-output="${key}"]`);
+      if (output) output.value = this.shadowValueLabel(key, value);
+      const lengthOutput = hud.querySelector<HTMLOutputElement>('[data-role="shadow-length"]');
+      if (lengthOutput) {
+        const length = this.shadowTuning.compression / Math.tan(this.shadowTuning.elevation * Math.PI / 180);
+        lengthOutput.value = `${length.toFixed(2).replace('.', ',')} px`;
+      }
+      this.clearGeneratedShadows(key === 'alphaThreshold');
+      this.rebuildBuildings();
+    }));
+    hud.querySelector('[data-action="reset-shadow"]')?.addEventListener('click', () => this.resetShadowTuning());
+    hud.querySelector('[data-action="fill-all"]')?.addEventListener('click', () => this.fillAll());
     hud.querySelector('[data-action="reset"]')?.addEventListener('click', () => this.reset());
     hud.querySelector('[data-action="clear"]')?.addEventListener('click', () => this.clear());
     hud.querySelector('[data-action="complete"]')?.addEventListener('click', () => this.completeSelected());
@@ -713,6 +1058,27 @@ export class Hive217Experiment {
       `клетка ${hovered}: ${TERRAIN_NAMES[terrainCode] ?? terrainCode}`,
     ].join('  ·  ');
 
+    const loadMetrics = this.hud.querySelector<HTMLElement>('[data-role="load-metrics"]');
+    if (loadMetrics) {
+      const shadowTextureBytes = [...this.shadowTextureCache.values()]
+        .reduce((sum, texture) => sum + Math.round(texture.width) * Math.round(texture.height) * 4, 0);
+      const waterSurfaceCount = this.effectItems.reduce((sum, effect) => {
+        if (!effect.emissive) return sum;
+        const kind = effect.item.kind === 'three' || effect.item.kind === 'seven'
+          ? effect.item.kind
+          : effect.item.variant === 0 ? 'v02' : effect.item.variant === 1 ? 'v03' : 'v05';
+        return sum + (WATER_SURFACES[kind]?.length ?? 0);
+      }, 0);
+      const frameMs = fps > 0 ? 1000 / fps : 0;
+      const toMiB = (bytes: number) => (bytes / 1024 / 1024).toFixed(2).replace('.', ',');
+      loadMetrics.innerHTML = `
+        <div><b>${working + construction + disabled}</b> занятых клеток · <b>${visualCount ?? this.lastVisualCount}</b> отрисованных зданий</div>
+        <div><b>${waterSurfaceCount}</b> водных поверхностей · анимация ${this.animationEnabled ? 'включена' : 'выключена'}</div>
+        <div><b>${fps || '—'} FPS</b> · ${frameMs ? `${frameMs.toFixed(1).replace('.', ',')} мс/кадр` : 'сбор данных'}</div>
+        <div>PNG <b>${toMiB(RUNTIME_PNG_BYTES)} МиБ</b> · текстуры сцены ≈ <b>${toMiB(this.runtimeTextureBytes + shadowTextureBytes)} МиБ</b></div>
+        <small>Оценка RGBA в памяти, без кадровых буферов браузера.</small>`;
+    }
+
     const selectedTerrain = TERRAIN_NAMES[this.terrain[this.selectedCell]] ?? this.terrain[this.selectedCell];
     const state = this.buildings.get(this.selectedCell);
     const title = this.hud.querySelector<HTMLElement>('[data-role="cell-title"]');
@@ -740,7 +1106,7 @@ export class Hive217Experiment {
   private fitToViewport(): void {
     const size = mapPixelSize();
     const bounds = { x: -36, y: -175, width: size.width + 72, height: size.height + 220 };
-    const scale = Math.min(this.app.screen.width / bounds.width, this.app.screen.height / bounds.height) * 0.96;
+    const scale = Math.min(this.app.screen.width / bounds.width, this.app.screen.height / bounds.height) * 0.96 * this.viewScale;
     this.world.scale.set(scale);
     this.world.x = (this.app.screen.width - size.width * scale) / 2;
     this.world.y = (this.app.screen.height - bounds.height * scale) / 2 - bounds.y * scale;
@@ -748,6 +1114,7 @@ export class Hive217Experiment {
 
   destroy(): void {
     this.app.renderer.off('resize', this.resizeHandler);
+    this.clearGeneratedShadows(true);
     this.hud.remove();
     this.app.destroy(true, { children: true });
   }

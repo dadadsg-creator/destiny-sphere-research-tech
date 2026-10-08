@@ -1,68 +1,152 @@
 .ds-hive-lab-hud {
   position: fixed;
   z-index: 55;
-  top: 106px;
-  right: 14px;
-  width: 286px;
-  max-height: calc(100vh - 392px);
-  overflow: auto;
+  top: 94px;
+  right: 0;
+  bottom: 60px;
+  width: 350px;
   box-sizing: border-box;
-  padding: 12px;
-  border: 1px solid rgba(112, 205, 255, 0.38);
-  border-radius: 8px;
-  background: rgba(3, 12, 25, 0.86);
-  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.34), inset 0 0 20px rgba(80, 181, 255, 0.05);
   color: #dff5ff;
   font: 12px/1.38 "Segoe UI", sans-serif;
-  backdrop-filter: blur(7px);
+  pointer-events: none;
+  transition: transform 180ms ease;
+}
+
+.ds-hive-lab-hud.is-collapsed {
+  transform: translateX(350px);
+}
+
+.ds-hive-lab-hud__toggle {
+  position: absolute;
+  left: -34px;
+  top: calc(50% - 36px);
+  width: 35px;
+  height: 72px;
+  padding: 0 !important;
+  border-radius: 9px 0 0 9px !important;
+  border-right: 0 !important;
+  font-size: 27px !important;
+  line-height: 1;
+  pointer-events: auto;
+}
+
+.ds-hive-lab-hud__content {
+  height: 100%;
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 13px 14px 18px;
+  border: 1px solid rgba(112, 205, 255, 0.4);
+  border-right: 0;
+  border-radius: 9px 0 0 9px;
+  background: rgba(3, 12, 25, 0.9);
+  box-shadow: -12px 12px 34px rgba(0, 0, 0, 0.36), inset 0 0 24px rgba(80, 181, 255, 0.055);
+  backdrop-filter: blur(8px);
   pointer-events: auto;
   scrollbar-width: thin;
-  scrollbar-color: rgba(97, 203, 255, 0.55) rgba(4, 17, 31, 0.7);
+  scrollbar-color: rgba(97, 203, 255, 0.58) rgba(4, 17, 31, 0.72);
 }
 
 .ds-hive-lab-hud__title {
   color: #fff;
-  font-size: 15px;
-  font-weight: 650;
+  font-size: 16px;
+  font-weight: 680;
   letter-spacing: 0.02em;
 }
 
+.ds-hive-lab-hud__subtitle {
+  margin-top: 1px;
+  color: #9fb9ca;
+  font-size: 12px;
+}
+
 .ds-hive-lab-hud__metrics {
-  margin-top: 4px;
+  margin: 5px 0 10px;
   color: #82d9ff;
   font-size: 11px;
   font-variant-numeric: tabular-nums;
 }
 
-.ds-hive-lab-hud__animation,
-.ds-hive-lab-hud__cell {
-  margin-top: 11px;
+.ds-hive-lab-hud__load-metrics {
+  display: grid;
+  gap: 4px;
   padding: 9px;
+  color: #a9c5d6;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ds-hive-lab-hud__load-metrics b {
+  color: #78dcff;
+  font-weight: 680;
+}
+
+.ds-hive-lab-hud__load-metrics small {
+  color: #708b9c;
+  font-size: 10px;
+}
+
+.ds-hive-lab-hud details {
+  margin-top: 8px;
   border: 1px solid rgba(111, 191, 226, 0.22);
   border-radius: 6px;
   background: rgba(13, 33, 52, 0.72);
 }
 
-.ds-hive-lab-hud__animation label {
+.ds-hive-lab-hud summary {
+  padding: 8px 9px;
+  color: #e9f8ff;
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+  user-select: none;
+}
+
+.ds-hive-lab-hud details[open] summary {
+  border-bottom: 1px solid rgba(111, 191, 226, 0.18);
+}
+
+.ds-hive-lab-hud__group,
+.ds-hive-lab-hud__cell {
+  display: grid;
+  gap: 8px;
+  padding: 9px;
+}
+
+.ds-hive-lab-hud__group > label:not(.ds-hive-lab-hud__range) {
   display: flex;
   align-items: center;
   gap: 7px;
 }
 
 .ds-hive-lab-hud__range {
-  margin-top: 8px;
+  display: grid;
+  grid-template-columns: 1fr 108px 48px;
+  align-items: center;
+  gap: 7px;
   color: #a9bfce;
 }
 
 .ds-hive-lab-hud__range input {
-  width: 92px;
+  width: 108px;
   min-width: 0;
 }
 
 .ds-hive-lab-hud__range output {
-  min-width: 30px;
+  min-width: 44px;
   color: #7bddff;
   text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.ds-hive-lab-hud__derived {
+  margin: 0;
+  padding-top: 2px;
+  color: #88a8bc;
+  font-size: 11px;
+}
+
+.ds-hive-lab-hud__derived output {
+  color: #7bddff;
 }
 
 .ds-hive-lab-hud__cell h3 {
@@ -72,8 +156,8 @@
 }
 
 .ds-hive-lab-hud__cell p {
-  min-height: 32px;
-  margin: 5px 0 8px;
+  min-height: 30px;
+  margin: -2px 0 0;
   color: #a9bfce;
 }
 
@@ -92,7 +176,8 @@
 }
 
 .ds-hive-lab-hud__actions {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 6px;
   margin-top: 9px;
 }
@@ -101,30 +186,35 @@
   padding: 6px 8px;
   border: 1px solid rgba(121, 214, 255, 0.38);
   border-radius: 5px;
-  background: rgba(16, 47, 72, 0.9);
+  background: rgba(16, 47, 72, 0.92);
   color: #e8f8ff;
   font: inherit;
   cursor: pointer;
 }
 
 .ds-hive-lab-hud button:hover {
-  background: rgba(29, 78, 112, 0.96);
+  background: rgba(29, 78, 112, 0.98);
 }
 
 .ds-hive-lab-hud button.danger {
   border-color: rgba(255, 125, 104, 0.5);
-  background: rgba(92, 34, 34, 0.72);
-}
-
-@media (max-height: 760px) {
-  .ds-hive-lab-hud {
-    max-height: calc(100vh - 326px);
-  }
+  background: rgba(92, 34, 34, 0.74);
 }
 
 @media (max-width: 900px) {
   .ds-hive-lab-hud {
-    right: 8px;
-    width: 250px;
+    width: 316px;
+  }
+
+  .ds-hive-lab-hud.is-collapsed {
+    transform: translateX(316px);
+  }
+
+  .ds-hive-lab-hud__range {
+    grid-template-columns: 1fr 92px 43px;
+  }
+
+  .ds-hive-lab-hud__range input {
+    width: 92px;
   }
 }
