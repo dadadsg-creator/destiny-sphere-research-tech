@@ -42,6 +42,7 @@ interface EffectItem {
   item: RenderItem;
   asset: BuildingAsset;
   sprite: Sprite;
+  groundShadow: Sprite | null;
   shadow: Sprite | null;
   emissive: Sprite | null;
   width: number;
@@ -58,6 +59,7 @@ interface ShadowTuning {
   joinRadius: number;
   baselineOffset: number;
   groundOpacity: number;
+  neighborOpacity: number;
   contactOpacity: number;
   blur: number;
 }
@@ -77,6 +79,7 @@ const DEFAULT_SHADOW_TUNING: ShadowTuning = {
   joinRadius: 0.8,
   baselineOffset: 0.06,
   groundOpacity: 0.58,
+  neighborOpacity: 0.16,
   contactOpacity: 0.72,
   blur: 1.2,
 };
@@ -639,7 +642,7 @@ export class Hive217Experiment {
     return texture;
   }
 
-  private drawBuildingShadow(item: RenderItem, asset: BuildingAsset): Sprite | null {
+  private drawBuildingShadows(item: RenderItem, asset: BuildingAsset): { ground: Sprite | null; receiver: Sprite | null } {
     const width = asset.logicalWidth;
     const height = width * (Assets.get(asset.alias) as Texture).height / (Assets.get(asset.alias) as Texture).width;
     if (this.contactShadowsEnabled) {
@@ -650,19 +653,26 @@ export class Hive217Experiment {
         .fill({ color: 0x02070b, alpha: this.shadowTuning.contactOpacity * 0.56 });
     }
 
-    if (!this.shadowsEnabled) return null;
+    if (!this.shadowsEnabled) return { ground: null, receiver: null };
 
-    const cast = new Sprite(this.shadowTextureFor(asset));
-    cast.anchor.set(asset.anchor[0], asset.anchor[1]);
-    cast.width = width;
-    cast.height = height;
-    cast.x = item.anchor.x;
-    cast.y = item.anchor.y;
-    cast.alpha = item.kind === 'construction'
-      ? this.shadowTuning.groundOpacity * 0.42
-      : this.shadowTuning.groundOpacity;
-    this.shadowLayer.addChild(cast);
-    return cast;
+    const texture = this.shadowTextureFor(asset);
+    const stateFactor = item.kind === 'construction' ? 0.42 : 1;
+    const configure = (sprite: Sprite) => {
+      sprite.anchor.set(asset.anchor[0], asset.anchor[1]);
+      sprite.width = width;
+      sprite.height = height;
+      sprite.x = item.anchor.x;
+      sprite.y = item.anchor.y;
+    };
+    const ground = new Sprite(texture);
+    configure(ground);
+    ground.alpha = this.shadowTuning.groundOpacity * stateFactor;
+    this.shadowLayer.addChild(ground);
+
+    const receiver = new Sprite(texture);
+    configure(receiver);
+    receiver.alpha = this.shadowTuning.neighborOpacity * stateFactor;
+    return { ground, receiver };
   }
 
   private rebuildBuildings(): void {
@@ -703,7 +713,8 @@ export class Hive217Experiment {
         : item.kind === 'three'
           ? MAP_ASSETS.three
           : [MAP_ASSETS.v02, MAP_ASSETS.v03, MAP_ASSETS.v05][item.variant];
-      const shadow = this.drawBuildingShadow(item, asset);
+      const shadows = this.drawBuildingShadows(item, asset);
+      if (shadows.receiver) this.buildingLayer.addChild(shadows.receiver);
 
       const sprite = Sprite.from(asset.alias);
       sprite.anchor.set(asset.anchor[0], asset.anchor[1]);
@@ -741,7 +752,8 @@ export class Hive217Experiment {
         item,
         asset,
         sprite,
-        shadow,
+        groundShadow: shadows.ground,
+        shadow: shadows.receiver,
         emissive,
         width: sprite.width,
         height: sprite.height,
@@ -783,6 +795,7 @@ export class Hive217Experiment {
         && top <= safe.bottom + margin;
       effect.visible = visible;
       effect.sprite.visible = visible;
+      if (effect.groundShadow) effect.groundShadow.visible = visible;
       if (effect.shadow) effect.shadow.visible = visible;
       if (effect.emissive) effect.emissive.visible = visible;
       if (visible) visibleCount += 1;
@@ -934,7 +947,7 @@ export class Hive217Experiment {
 
   private shadowValueLabel(key: keyof ShadowTuning, value: number): string {
     if (key === 'azimuth' || key === 'elevation') return `${Math.round(value)}°`;
-    if (key === 'groundOpacity' || key === 'contactOpacity') return `${Math.round(value * 100)}%`;
+    if (key === 'groundOpacity' || key === 'neighborOpacity' || key === 'contactOpacity') return `${Math.round(value * 100)}%`;
     if (key === 'alphaThreshold') return String(Math.round(value));
     if (key === 'baselineOffset') return value.toFixed(3).replace('.', ',');
     if (key === 'compression') return value.toFixed(2).replace('.', ',');
@@ -1013,6 +1026,10 @@ export class Hive217Experiment {
             <label class="ds-hive-lab-hud__range">Плотность тени
               <input type="range" min="0" max="0.9" step="0.02" value="0.58" data-shadow="groundOpacity">
               <output data-shadow-output="groundOpacity">58%</output>
+            </label>
+            <label class="ds-hive-lab-hud__range">Тень на соседних домах
+              <input type="range" min="0" max="0.45" step="0.01" value="0.16" data-shadow="neighborOpacity">
+              <output data-shadow-output="neighborOpacity">16%</output>
             </label>
             <label class="ds-hive-lab-hud__range">Контакт с землёй
               <input type="range" min="0" max="1" step="0.02" value="0.72" data-shadow="contactOpacity">
@@ -1106,7 +1123,7 @@ export class Hive217Experiment {
     });
     hud.querySelector<HTMLInputElement>('[data-action="shadows"]')?.addEventListener('change', (event) => {
       this.shadowsEnabled = (event.currentTarget as HTMLInputElement).checked;
-      this.shadowLayer.visible = this.shadowsEnabled;
+      this.rebuildBuildings();
     });
     hud.querySelector<HTMLInputElement>('[data-action="contact-shadows"]')?.addEventListener('change', (event) => {
       this.contactShadowsEnabled = (event.currentTarget as HTMLInputElement).checked;
