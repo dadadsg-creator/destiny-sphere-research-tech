@@ -42,6 +42,7 @@ function Export-ScaledPng {
 
 $assets = @(
   @{ Source = 'environment\exports\voraner-sandy-hive-background-v01.png'; Target = 'hive-ground.png'; Width = 1280 },
+  @{ Source = 'environment\exports\voraner-sandy-hive-background-v01.png'; Target = 'hive-ground-hd.png'; Width = 3072 },
   @{ Source = 'residential\exports\voraner-residential-v02-color.png'; Target = 'house-v02.png'; Width = 512 },
   @{ Source = 'residential\exports\voraner-residential-v02-emissive.png'; Target = 'house-v02-emissive.png'; Width = 512 },
   @{ Source = 'residential\exports\voraner-residential-v03-color.png'; Target = 'house-v03.png'; Width = 512 },

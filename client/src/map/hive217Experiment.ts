@@ -85,7 +85,7 @@ const DEFAULT_SHADOW_TUNING: ShadowTuning = {
 };
 
 const MAP_ASSETS = {
-  ground: { alias: 'hive-lab/ground', src: '/assets/hive-lab/hive-ground.png' },
+  ground: { alias: 'hive-lab/ground-hd', src: '/assets/hive-lab/hive-ground-hd.png' },
   v02: { alias: 'hive-lab/v02', src: '/assets/hive-lab/house-v02.png', logicalWidth: 56, anchor: [0.5, 0.954128] as const },
   v02Emissive: { alias: 'hive-lab/v02-emissive', src: '/assets/hive-lab/house-v02-emissive.png' },
   v03: { alias: 'hive-lab/v03', src: '/assets/hive-lab/house-v03.png', logicalWidth: 54, anchor: [0.5, 0.839867] as const },
@@ -108,7 +108,7 @@ const EMISSIVE_ASSET_BY_KIND = {
 
 // Сумма одиннадцати подготовленных PNG из client/public/assets/hive-lab.
 // Обновляется вместе с prepare-hive-lab-assets.ps1 после смены экспорта.
-const RUNTIME_PNG_BYTES = 3_511_407;
+const RUNTIME_PNG_BYTES = 12_226_510;
 
 interface WaterSurface {
   x: number;
