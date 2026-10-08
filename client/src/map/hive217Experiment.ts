@@ -265,6 +265,8 @@ export class Hive217Experiment {
   private animationIntensity = 1.6;
   private lastEffectUpdate = 0;
   private shadowsEnabled = true;
+  private contactShadowsEnabled = true;
+  private fusionsEnabled = true;
   private shadowTuning: ShadowTuning = { ...DEFAULT_SHADOW_TUNING };
   private readonly shadowTextureCache = new Map<string, Texture>();
   private readonly silhouetteCache = new Map<string, SilhouetteProfile>();
@@ -297,6 +299,13 @@ export class Hive217Experiment {
   }
 
   private async initialize(): Promise<void> {
+    const urlParams = new URLSearchParams(window.location.search);
+    this.contactShadowsEnabled = urlParams.get('contact-shadow') !== 'off';
+    this.fusionsEnabled = urlParams.get('fusions') !== 'off';
+    const contactShadowInput = this.hud.querySelector<HTMLInputElement>('[data-action="contact-shadows"]');
+    const fusionsInput = this.hud.querySelector<HTMLInputElement>('[data-action="fusions"]');
+    if (contactShadowInput) contactShadowInput.checked = this.contactShadowsEnabled;
+    if (fusionsInput) fusionsInput.checked = this.fusionsEnabled;
     await Assets.load(Object.values(MAP_ASSETS).map(({ alias, src }) => ({ alias, src })));
     this.runtimeTextureBytes = [...new Set(Object.values(MAP_ASSETS).map(({ alias }) => alias))]
       .reduce((sum, alias) => {
@@ -318,7 +327,7 @@ export class Hive217Experiment {
       this.selectionLayer,
       this.interactiveLayer,
     );
-    if (new URLSearchParams(window.location.search).get('density') === 'full') this.seedAllBuildings();
+    if (urlParams.get('density') === 'full') this.seedAllBuildings();
     else this.seedBuildings();
     this.bindInteraction();
     this.rebuildBuildings();
@@ -575,14 +584,17 @@ export class Hive217Experiment {
   }
 
   private drawBuildingShadow(item: RenderItem, asset: BuildingAsset): void {
-    if (!this.shadowsEnabled) return;
     const width = asset.logicalWidth;
     const height = width * (Assets.get(asset.alias) as Texture).height / (Assets.get(asset.alias) as Texture).width;
-    this.contactShadowLayer
-      .ellipse(item.anchor.x, item.anchor.y - 0.6, width * 0.46, Math.max(2, width * 0.065))
-      .fill({ color: 0x071017, alpha: this.shadowTuning.contactOpacity * 0.22 })
-      .ellipse(item.anchor.x, item.anchor.y - 0.25, width * 0.31, Math.max(1.35, width * 0.04))
-      .fill({ color: 0x02070b, alpha: this.shadowTuning.contactOpacity * 0.56 });
+    if (this.contactShadowsEnabled) {
+      this.contactShadowLayer
+        .ellipse(item.anchor.x, item.anchor.y - 0.6, width * 0.46, Math.max(2, width * 0.065))
+        .fill({ color: 0x071017, alpha: this.shadowTuning.contactOpacity * 0.22 })
+        .ellipse(item.anchor.x, item.anchor.y - 0.25, width * 0.31, Math.max(1.35, width * 0.04))
+        .fill({ color: 0x02070b, alpha: this.shadowTuning.contactOpacity * 0.56 });
+    }
+
+    if (!this.shadowsEnabled) return;
 
     const cast = new Sprite(this.shadowTextureFor(asset));
     cast.anchor.set(asset.anchor[0], asset.anchor[1]);
@@ -604,7 +616,7 @@ export class Hive217Experiment {
     this.waterLayer.clear();
     this.effectItems = [];
     const working = new Set([...this.buildings].filter(([, state]) => state === 'working').map(([cellNum]) => cellNum));
-    const fusions = resolveFusions(working, this.cells, this.neighbors);
+    const fusions = this.fusionsEnabled ? resolveFusions(working, this.cells, this.neighbors) : [];
     const fusedCells = new Set(fusions.flatMap((fusion) => fusion.cellNums));
     const items: RenderItem[] = fusions.map((fusion) => ({
       kind: fusion.kind,
@@ -818,6 +830,13 @@ export class Hive217Experiment {
     window.history.replaceState(null, '', url);
   }
 
+  private setBooleanQuery(name: 'contact-shadow' | 'fusions', enabled: boolean): void {
+    const url = new URL(window.location.href);
+    if (enabled) url.searchParams.delete(name);
+    else url.searchParams.set(name, 'off');
+    window.history.replaceState(null, '', url);
+  }
+
   private clearGeneratedShadows(clearSilhouettes = false): void {
     for (const texture of this.shadowTextureCache.values()) texture.destroy(true);
     this.shadowTextureCache.clear();
@@ -877,7 +896,9 @@ export class Hive217Experiment {
               <output data-role="zoom">100%</output>
             </label>
             <label><input type="checkbox" data-action="dome" checked> Защитная сфера</label>
-            <label><input type="checkbox" data-action="shadows" checked> Падающие и контактные тени</label>
+            <label><input type="checkbox" data-action="shadows" checked> Падающие тени по силуэту</label>
+            <label><input type="checkbox" data-action="contact-shadows" checked> Контактные тени под домами</label>
+            <label><input type="checkbox" data-action="fusions" checked> Объединять дома 3 → 1 и 7 → 1</label>
           </div>
         </details>
 
@@ -996,7 +1017,16 @@ export class Hive217Experiment {
     hud.querySelector<HTMLInputElement>('[data-action="shadows"]')?.addEventListener('change', (event) => {
       this.shadowsEnabled = (event.currentTarget as HTMLInputElement).checked;
       this.shadowLayer.visible = this.shadowsEnabled;
-      this.contactShadowLayer.visible = this.shadowsEnabled;
+    });
+    hud.querySelector<HTMLInputElement>('[data-action="contact-shadows"]')?.addEventListener('change', (event) => {
+      this.contactShadowsEnabled = (event.currentTarget as HTMLInputElement).checked;
+      this.setBooleanQuery('contact-shadow', this.contactShadowsEnabled);
+      this.rebuildBuildings();
+    });
+    hud.querySelector<HTMLInputElement>('[data-action="fusions"]')?.addEventListener('change', (event) => {
+      this.fusionsEnabled = (event.currentTarget as HTMLInputElement).checked;
+      this.setBooleanQuery('fusions', this.fusionsEnabled);
+      this.rebuildBuildings();
     });
     hud.querySelectorAll<HTMLInputElement>('[data-shadow]').forEach((input) => input.addEventListener('input', (event) => {
       const target = event.currentTarget as HTMLInputElement;
@@ -1073,6 +1103,7 @@ export class Hive217Experiment {
       const toMiB = (bytes: number) => (bytes / 1024 / 1024).toFixed(2).replace('.', ',');
       loadMetrics.innerHTML = `
         <div><b>${working + construction + disabled}</b> занятых клеток · <b>${visualCount ?? this.lastVisualCount}</b> отрисованных зданий</div>
+        <div>Объединение <b>${this.fusionsEnabled ? 'включено' : 'выключено'}</b> · контактная тень <b>${this.contactShadowsEnabled ? 'включена' : 'выключена'}</b></div>
         <div><b>${waterSurfaceCount}</b> водных поверхностей · анимация ${this.animationEnabled ? 'включена' : 'выключена'}</div>
         <div><b>${fps || '—'} FPS</b> · ${frameMs ? `${frameMs.toFixed(1).replace('.', ',')} мс/кадр` : 'сбор данных'}</div>
         <div>PNG <b>${toMiB(RUNTIME_PNG_BYTES)} МиБ</b> · текстуры сцены ≈ <b>${toMiB(this.runtimeTextureBytes + shadowTextureBytes)} МиБ</b></div>
