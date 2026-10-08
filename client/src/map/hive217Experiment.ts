@@ -41,9 +41,12 @@ interface BuildingAsset {
 interface EffectItem {
   item: RenderItem;
   asset: BuildingAsset;
+  sprite: Sprite;
+  shadow: Sprite | null;
   emissive: Sprite | null;
   width: number;
   height: number;
+  visible: boolean;
 }
 
 interface ShadowTuning {
@@ -260,6 +263,7 @@ export class Hive217Experiment {
   private lastHudUpdate = 0;
   private lastFusionCount = 0;
   private lastVisualCount = 0;
+  private lastVisibleCount = 0;
   private runtimeTextureBytes = 0;
   private animationEnabled = true;
   private animationIntensity = 1.6;
@@ -272,7 +276,22 @@ export class Hive217Experiment {
   private readonly silhouetteCache = new Map<string, SilhouetteProfile>();
   private viewScale = 1;
   private drawerOpen = true;
-  private readonly resizeHandler = () => this.fitToViewport();
+  private cameraInitialized = false;
+  private cameraDragging = false;
+  private cameraDragMoved = false;
+  private cameraDragStart = { x: 0, y: 0 };
+  private cameraWorldStart = { x: 0, y: 0 };
+  private readonly resizeHandler = () => this.handleCameraResize();
+  private readonly wheelHandler = (event: WheelEvent) => {
+    event.preventDefault();
+    const rect = this.app.canvas.getBoundingClientRect();
+    const screenPoint = {
+      x: (event.clientX - rect.left) * this.app.screen.width / Math.max(1, rect.width),
+      y: (event.clientY - rect.top) * this.app.screen.height / Math.max(1, rect.height),
+    };
+    const factor = Math.exp(-event.deltaY * 0.0012);
+    this.zoomCameraAt(screenPoint, this.world.scale.x * factor);
+  };
 
   private constructor(app: Application, parent: HTMLElement) {
     this.app = app;
@@ -332,7 +351,8 @@ export class Hive217Experiment {
     this.bindInteraction();
     this.rebuildBuildings();
     this.drawCellMarker(this.selectionLayer, this.selectedCell, 0xffd777, 0.92, 2);
-    this.fitToViewport();
+    this.focusSelectedCell(true);
+    this.app.canvas.addEventListener('wheel', this.wheelHandler, { passive: false });
     this.app.renderer.on('resize', this.resizeHandler);
     this.app.ticker.add((ticker) => {
       this.fpsSamples.push(ticker.FPS);
@@ -457,9 +477,24 @@ export class Hive217Experiment {
     const size = mapPixelSize();
     this.interactiveLayer.rect(0, 0, size.width, size.height).fill({ color: 0xffffff, alpha: 0.001 });
     this.interactiveLayer.eventMode = 'static';
-    this.interactiveLayer.cursor = 'pointer';
+    this.interactiveLayer.cursor = 'grab';
     this.interactiveLayer.hitArea = new Rectangle(0, 0, size.width, size.height);
     this.interactiveLayer.on('pointermove', (event: FederatedPointerEvent) => {
+      if (this.cameraDragging) {
+        const dx = event.global.x - this.cameraDragStart.x;
+        const dy = event.global.y - this.cameraDragStart.y;
+        if (!this.cameraDragMoved && Math.hypot(dx, dy) >= 5) this.cameraDragMoved = true;
+        if (this.cameraDragMoved) {
+          this.world.x = this.cameraWorldStart.x + dx;
+          this.world.y = this.cameraWorldStart.y + dy;
+          this.clampCamera();
+          this.updateVisibleItems();
+          this.interactiveLayer.cursor = 'grabbing';
+          this.hoverLayer.clear();
+          this.hoveredCell = null;
+          return;
+        }
+      }
       const point = this.world.toLocal(event.global);
       const hit = this.hitCell(point.x, point.y);
       if (hit === this.hoveredCell) return;
@@ -469,11 +504,32 @@ export class Hive217Experiment {
       this.updateHud();
     });
     this.interactiveLayer.on('pointerout', () => {
+      if (this.cameraDragging) return;
       this.hoveredCell = null;
       this.hoverLayer.clear();
       this.updateHud();
     });
+    this.interactiveLayer.on('pointerdown', (event: FederatedPointerEvent) => {
+      this.cameraDragging = true;
+      this.cameraDragMoved = false;
+      this.cameraDragStart = { x: event.global.x, y: event.global.y };
+      this.cameraWorldStart = { x: this.world.x, y: this.world.y };
+      this.interactiveLayer.cursor = 'grabbing';
+    });
+    const endCameraDrag = () => {
+      this.cameraDragging = false;
+      this.interactiveLayer.cursor = 'grab';
+    };
+    this.interactiveLayer.on('pointerup', endCameraDrag);
+    this.interactiveLayer.on('pointerupoutside', () => {
+      endCameraDrag();
+      this.cameraDragMoved = false;
+    });
     this.interactiveLayer.on('pointertap', (event: FederatedPointerEvent) => {
+      if (this.cameraDragMoved) {
+        this.cameraDragMoved = false;
+        return;
+      }
       const point = this.world.toLocal(event.global);
       const cellNum = this.hitCell(point.x, point.y);
       if (cellNum === null) return;
@@ -583,7 +639,7 @@ export class Hive217Experiment {
     return texture;
   }
 
-  private drawBuildingShadow(item: RenderItem, asset: BuildingAsset): void {
+  private drawBuildingShadow(item: RenderItem, asset: BuildingAsset): Sprite | null {
     const width = asset.logicalWidth;
     const height = width * (Assets.get(asset.alias) as Texture).height / (Assets.get(asset.alias) as Texture).width;
     if (this.contactShadowsEnabled) {
@@ -594,7 +650,7 @@ export class Hive217Experiment {
         .fill({ color: 0x02070b, alpha: this.shadowTuning.contactOpacity * 0.56 });
     }
 
-    if (!this.shadowsEnabled) return;
+    if (!this.shadowsEnabled) return null;
 
     const cast = new Sprite(this.shadowTextureFor(asset));
     cast.anchor.set(asset.anchor[0], asset.anchor[1]);
@@ -606,6 +662,7 @@ export class Hive217Experiment {
       ? this.shadowTuning.groundOpacity * 0.42
       : this.shadowTuning.groundOpacity;
     this.shadowLayer.addChild(cast);
+    return cast;
   }
 
   private rebuildBuildings(): void {
@@ -646,7 +703,7 @@ export class Hive217Experiment {
         : item.kind === 'three'
           ? MAP_ASSETS.three
           : [MAP_ASSETS.v02, MAP_ASSETS.v03, MAP_ASSETS.v05][item.variant];
-      this.drawBuildingShadow(item, asset);
+      const shadow = this.drawBuildingShadow(item, asset);
 
       const sprite = Sprite.from(asset.alias);
       sprite.anchor.set(asset.anchor[0], asset.anchor[1]);
@@ -683,9 +740,12 @@ export class Hive217Experiment {
       this.effectItems.push({
         item,
         asset,
+        sprite,
+        shadow,
         emissive,
         width: sprite.width,
         height: sprite.height,
+        visible: true,
       });
 
       if (item.kind === 'construction') {
@@ -698,14 +758,43 @@ export class Hive217Experiment {
         this.buildingLayer.addChild(scaffold);
       }
     }
+    this.updateVisibleItems();
     if (this.animationEnabled) this.animateEffects(performance.now());
     this.updateHud(fusions.length, items.length);
+  }
+
+  private updateVisibleItems(): void {
+    if (!this.cameraInitialized) {
+      this.lastVisibleCount = this.effectItems.length;
+      return;
+    }
+    const scale = this.world.scale.x;
+    const safe = this.safeViewport();
+    const margin = 42;
+    let visibleCount = 0;
+    for (const effect of this.effectItems) {
+      const left = this.world.x + (effect.item.anchor.x - effect.asset.anchor[0] * effect.width) * scale;
+      const top = this.world.y + (effect.item.anchor.y - effect.asset.anchor[1] * effect.height) * scale;
+      const right = left + effect.width * scale;
+      const bottom = top + effect.height * scale;
+      const visible = right >= safe.left - margin
+        && left <= safe.right + margin
+        && bottom >= safe.top - margin
+        && top <= safe.bottom + margin;
+      effect.visible = visible;
+      effect.sprite.visible = visible;
+      if (effect.shadow) effect.shadow.visible = visible;
+      if (effect.emissive) effect.emissive.visible = visible;
+      if (visible) visibleCount += 1;
+    }
+    this.lastVisibleCount = visibleCount;
   }
 
   private animateEffects(timeMs: number): void {
     this.waterLayer.clear();
     const seconds = timeMs / 1000;
     for (const [index, effect] of this.effectItems.entries()) {
+      if (!effect.visible) continue;
       if (effect.emissive) {
         const pulse = 0.09 + (Math.sin(seconds * 0.72 + index * 0.43) + 1) * 0.055;
         effect.emissive.alpha = Math.min(0.28, pulse * this.animationIntensity);
@@ -891,10 +980,14 @@ export class Hive217Experiment {
         <details open>
           <summary>Вид соты</summary>
           <div class="ds-hive-lab-hud__group">
-            <label class="ds-hive-lab-hud__range">Масштаб
-              <input type="range" min="80" max="160" step="5" value="100" data-action="zoom">
+            <label class="ds-hive-lab-hud__range">Масштаб камеры
+              <input type="range" min="20" max="250" step="5" value="100" data-action="zoom">
               <output data-role="zoom">100%</output>
             </label>
+            <div class="ds-hive-lab-hud__camera-actions">
+              <button type="button" data-action="overview">Вся сота</button>
+              <button type="button" data-action="focus-selected">К выбранной клетке</button>
+            </div>
             <label><input type="checkbox" data-action="dome" checked> Защитная сфера</label>
             <label><input type="checkbox" data-action="shadows" checked> Падающие тени по силуэту</label>
             <label><input type="checkbox" data-action="contact-shadows" checked> Контактные тени под домами</label>
@@ -988,7 +1081,7 @@ export class Hive217Experiment {
           </section>
         </details>
 
-        <div class="ds-hive-lab-hud__help">Выбери клетку. Контур появляется только при наведении.</div>
+        <div class="ds-hive-lab-hud__help">Колесо меняет масштаб относительно курсора. Потяни пустую поверхность, чтобы переместить камеру.</div>
         <div class="ds-hive-lab-hud__actions">
           <button type="button" data-action="fill-all">Заполнить 217</button>
           <button type="button" data-action="reset">Исходная застройка</button>
@@ -997,20 +1090,17 @@ export class Hive217Experiment {
       </div>`;
     parent.appendChild(hud);
     hud.querySelector<HTMLButtonElement>('[data-action="drawer"]')?.addEventListener('click', (event) => {
-      this.drawerOpen = !this.drawerOpen;
-      hud.classList.toggle('is-collapsed', !this.drawerOpen);
-      const button = event.currentTarget as HTMLButtonElement;
-      button.textContent = this.drawerOpen ? '›' : '‹';
-      button.title = this.drawerOpen ? 'Свернуть инженерную панель' : 'Развернуть инженерную панель';
-      button.setAttribute('aria-expanded', String(this.drawerOpen));
+      this.setDrawerOpen(!this.drawerOpen, event.currentTarget as HTMLButtonElement);
     });
     hud.querySelector<HTMLInputElement>('[data-action="zoom"]')?.addEventListener('input', (event) => {
       const input = event.currentTarget as HTMLInputElement;
       this.viewScale = Number(input.value) / 100;
       const output = hud.querySelector<HTMLOutputElement>('[data-role="zoom"]');
       if (output) output.value = `${input.value}%`;
-      this.fitToViewport();
+      this.zoomCameraAt(this.safeViewportCenter(), this.detailCameraScale() * this.viewScale);
     });
+    hud.querySelector('[data-action="overview"]')?.addEventListener('click', () => this.showOverview());
+    hud.querySelector('[data-action="focus-selected"]')?.addEventListener('click', () => this.focusSelectedCell(true));
     hud.querySelector<HTMLInputElement>('[data-action="dome"]')?.addEventListener('change', (event) => {
       this.domeLayer.visible = (event.currentTarget as HTMLInputElement).checked;
     });
@@ -1099,12 +1189,19 @@ export class Hive217Experiment {
           : effect.item.variant === 0 ? 'v02' : effect.item.variant === 1 ? 'v03' : 'v05';
         return sum + (WATER_SURFACES[kind]?.length ?? 0);
       }, 0);
+      const visibleWaterSurfaceCount = this.effectItems.reduce((sum, effect) => {
+        if (!effect.emissive || !effect.visible) return sum;
+        const kind = effect.item.kind === 'three' || effect.item.kind === 'seven'
+          ? effect.item.kind
+          : effect.item.variant === 0 ? 'v02' : effect.item.variant === 1 ? 'v03' : 'v05';
+        return sum + (WATER_SURFACES[kind]?.length ?? 0);
+      }, 0);
       const frameMs = fps > 0 ? 1000 / fps : 0;
       const toMiB = (bytes: number) => (bytes / 1024 / 1024).toFixed(2).replace('.', ',');
       loadMetrics.innerHTML = `
-        <div><b>${working + construction + disabled}</b> занятых клеток · <b>${visualCount ?? this.lastVisualCount}</b> отрисованных зданий</div>
+        <div><b>${working + construction + disabled}</b> занятых клеток · <b>${visualCount ?? this.lastVisualCount}</b> визуальных зданий · <b>${this.lastVisibleCount}</b> в кадре</div>
         <div>Объединение <b>${this.fusionsEnabled ? 'включено' : 'выключено'}</b> · контактная тень <b>${this.contactShadowsEnabled ? 'включена' : 'выключена'}</b></div>
-        <div><b>${waterSurfaceCount}</b> водных поверхностей · анимация ${this.animationEnabled ? 'включена' : 'выключена'}</div>
+        <div><b>${visibleWaterSurfaceCount}</b> из ${waterSurfaceCount} водных поверхностей в кадре · анимация ${this.animationEnabled ? 'включена' : 'выключена'}</div>
         <div><b>${fps || '—'} FPS</b> · ${frameMs ? `${frameMs.toFixed(1).replace('.', ',')} мс/кадр` : 'сбор данных'}</div>
         <div>PNG <b>${toMiB(RUNTIME_PNG_BYTES)} МиБ</b> · текстуры сцены ≈ <b>${toMiB(this.runtimeTextureBytes + shadowTextureBytes)} МиБ</b></div>
         <small>Оценка RGBA в памяти, без кадровых буферов браузера.</small>`;
@@ -1134,17 +1231,150 @@ export class Hive217Experiment {
     if (powerButton) powerButton.textContent = state === 'disabled' ? 'Включить здание' : 'Отключить здание';
   }
 
-  private fitToViewport(): void {
+  private cameraBounds(): { x: number; y: number; width: number; height: number } {
     const size = mapPixelSize();
-    const bounds = { x: -36, y: -175, width: size.width + 72, height: size.height + 220 };
-    const scale = Math.min(this.app.screen.width / bounds.width, this.app.screen.height / bounds.height) * 0.96 * this.viewScale;
+    return { x: -36, y: -175, width: size.width + 72, height: size.height + 220 };
+  }
+
+  private safeViewport(): { left: number; top: number; right: number; bottom: number; width: number; height: number } {
+    const screenWidth = this.app.screen.width;
+    const screenHeight = this.app.screen.height;
+    const left = screenWidth >= 560 ? 128 : 0;
+    const requestedRight = this.drawerOpen ? (screenWidth <= 900 ? 316 : 350) : 0;
+    const rightInset = Math.min(requestedRight, Math.max(0, screenWidth - left - 150));
+    const top = Math.min(94, screenHeight * 0.2);
+    const bottomInset = Math.min(60, screenHeight * 0.16);
+    const right = screenWidth - rightInset;
+    const bottom = screenHeight - bottomInset;
+    return {
+      left,
+      top,
+      right,
+      bottom,
+      width: Math.max(150, right - left),
+      height: Math.max(150, bottom - top),
+    };
+  }
+
+  private safeViewportCenter(): { x: number; y: number } {
+    const safe = this.safeViewport();
+    return { x: safe.left + safe.width / 2, y: safe.top + safe.height / 2 };
+  }
+
+  private detailCameraScale(): number {
+    return 1.6;
+  }
+
+  private overviewCameraScale(): number {
+    const safe = this.safeViewport();
+    const bounds = this.cameraBounds();
+    return Math.min(safe.width / bounds.width, safe.height / bounds.height) * 0.94;
+  }
+
+  private syncCameraZoomControl(): void {
+    const percent = Math.round(this.world.scale.x / this.detailCameraScale() * 100);
+    const input = this.hud.querySelector<HTMLInputElement>('[data-action="zoom"]');
+    const output = this.hud.querySelector<HTMLOutputElement>('[data-role="zoom"]');
+    if (input) input.value = String(Math.max(Number(input.min), Math.min(Number(input.max), percent)));
+    if (output) output.value = `${percent}%`;
+  }
+
+  private clampCamera(): void {
+    if (!this.cameraInitialized) return;
+    const safe = this.safeViewport();
+    const bounds = this.cameraBounds();
+    const scale = this.world.scale.x;
+    const projectedWidth = bounds.width * scale;
+    const projectedHeight = bounds.height * scale;
+    if (projectedWidth <= safe.width) {
+      this.world.x = safe.left + (safe.width - projectedWidth) / 2 - bounds.x * scale;
+    } else {
+      const visibleX = Math.min(120, safe.width * 0.42);
+      const minimumX = safe.left + visibleX - (bounds.x + bounds.width) * scale;
+      const maximumX = safe.right - visibleX - bounds.x * scale;
+      this.world.x = Math.max(minimumX, Math.min(maximumX, this.world.x));
+    }
+    if (projectedHeight <= safe.height) {
+      this.world.y = safe.top + (safe.height - projectedHeight) / 2 - bounds.y * scale;
+    } else {
+      const visibleY = Math.min(90, safe.height * 0.38);
+      const minimumY = safe.top + visibleY - (bounds.y + bounds.height) * scale;
+      const maximumY = safe.bottom - visibleY - bounds.y * scale;
+      this.world.y = Math.max(minimumY, Math.min(maximumY, this.world.y));
+    }
+  }
+
+  private zoomCameraAt(screenPoint: { x: number; y: number }, requestedScale: number): void {
+    if (!this.cameraInitialized) return;
+    const minimumScale = Math.max(0.2, this.overviewCameraScale() * 0.85);
+    const maximumScale = this.detailCameraScale() * 2.5;
+    const nextScale = Math.max(minimumScale, Math.min(maximumScale, requestedScale));
+    const worldPoint = this.world.toLocal(screenPoint);
+    this.world.scale.set(nextScale);
+    this.world.x = screenPoint.x - worldPoint.x * nextScale;
+    this.world.y = screenPoint.y - worldPoint.y * nextScale;
+    this.viewScale = nextScale / this.detailCameraScale();
+    this.clampCamera();
+    this.updateVisibleItems();
+    this.syncCameraZoomControl();
+  }
+
+  private focusSelectedCell(restoreDetailScale = false): void {
+    const anchor = buildingAnchor(this.cells[this.selectedCell]);
+    const scale = restoreDetailScale || !this.cameraInitialized
+      ? this.detailCameraScale()
+      : this.world.scale.x;
+    if (restoreDetailScale) this.viewScale = 1;
+    this.cameraInitialized = true;
     this.world.scale.set(scale);
-    this.world.x = (this.app.screen.width - size.width * scale) / 2;
-    this.world.y = (this.app.screen.height - bounds.height * scale) / 2 - bounds.y * scale;
+    const center = this.safeViewportCenter();
+    this.world.x = center.x - anchor.x * scale;
+    this.world.y = center.y - (anchor.y - 12) * scale;
+    this.clampCamera();
+    this.updateVisibleItems();
+    this.syncCameraZoomControl();
+  }
+
+  private showOverview(): void {
+    if (this.drawerOpen) this.setDrawerOpen(false);
+    const bounds = this.cameraBounds();
+    const safe = this.safeViewport();
+    const scale = this.overviewCameraScale();
+    this.cameraInitialized = true;
+    this.world.scale.set(scale);
+    this.world.x = safe.left + (safe.width - bounds.width * scale) / 2 - bounds.x * scale;
+    this.world.y = safe.top + (safe.height - bounds.height * scale) / 2 - bounds.y * scale;
+    this.viewScale = scale / this.detailCameraScale();
+    this.updateVisibleItems();
+    this.syncCameraZoomControl();
+  }
+
+  private setDrawerOpen(open: boolean, providedButton?: HTMLButtonElement): void {
+    this.drawerOpen = open;
+    this.hud.classList.toggle('is-collapsed', !open);
+    const button = providedButton ?? this.hud.querySelector<HTMLButtonElement>('[data-action="drawer"]');
+    if (button) {
+      button.textContent = open ? '›' : '‹';
+      button.title = open ? 'Свернуть инженерную панель' : 'Развернуть инженерную панель';
+      button.setAttribute('aria-expanded', String(open));
+    }
+    if (this.cameraInitialized) {
+      if (open) this.focusSelectedCell();
+      else {
+        this.clampCamera();
+        this.updateVisibleItems();
+      }
+    }
+  }
+
+  private handleCameraResize(): void {
+    if (!this.cameraInitialized) return;
+    this.focusSelectedCell();
   }
 
   destroy(): void {
     this.app.renderer.off('resize', this.resizeHandler);
+    this.app.canvas.removeEventListener('wheel', this.wheelHandler);
     this.clearGeneratedShadows(true);
     this.hud.remove();
     this.app.destroy(true, { children: true });
