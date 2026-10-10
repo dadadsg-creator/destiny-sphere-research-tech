@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "check:maxim-buildings": "tsx scripts/check-maxim-building-audit.ts"
   },
   "devDependencies": {
     "puppeteer-core": "^24.43.1",

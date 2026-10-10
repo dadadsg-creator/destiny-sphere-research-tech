@@ -1409,7 +1409,7 @@ const devAutoLogin = import.meta.env.DEV
 // прокрутки страницы. Для изолированных `?screen=`-тестов (окна поверх
 // произвольного фона) размер #app не важен — оставлен прежним
 // компактным, чтобы не менять поведение уже устоявшихся скриншот-тестов.
-if ((wantsLive && !screen) || screen === 'hive-217') {
+if ((wantsLive && !screen) || screen === 'hive-217' || screen === 'maxim-buildings') {
   app.style.width = '100vw';
   app.style.height = '100vh';
 } else {
@@ -1431,6 +1431,15 @@ async function main() {
       uiRoot,
     );
   renderUi(false);
+
+  if (screen === 'maxim-buildings') {
+    const { MaximBuildingAudit } = await import('./map/maximBuildingAudit');
+    const audit = await MaximBuildingAudit.create(app);
+    (window as any).__maximBuildingAudit = audit;
+    (window as any).__mapRenderer = audit;
+    (window as any).__renderDone = true;
+    return;
+  }
 
   if (screen === 'hive-217') {
     const { Hive217Experiment } = await import('./map/hive217Experiment');
