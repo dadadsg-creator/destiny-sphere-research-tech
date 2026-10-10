@@ -24,7 +24,18 @@ main {
 header { margin-bottom: 22px; }
 .eyebrow { color: #75d6ff; font-size: 12px; letter-spacing: 0.16em; }
 h1 { margin: 8px 0; font-size: clamp(25px, 4vw, 42px); }
-header > p:last-child { color: #a9bfd0; }
+header > p:nth-of-type(2) { color: #a9bfd0; }
+.labs-index-link {
+  display: inline-flex;
+  margin-top: 5px;
+  padding: 8px 12px;
+  border: 1px solid rgba(117, 214, 255, 0.4);
+  border-radius: 8px;
+  color: #bfeeff;
+  background: rgba(8, 34, 55, 0.68);
+  text-decoration: none;
+}
+.labs-index-link:hover { border-color: #75d6ff; color: #fff; background: rgba(17, 64, 96, 0.82); }
 
 .workspace {
   position: relative;
