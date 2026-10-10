@@ -190,6 +190,7 @@ export class MaximBuildingAudit {
       <p class="ds-maxim-audit__eyebrow">СРАВНЕНИЕ ГРАФИКИ</p>
       <h1>Домики Максима на нашей соте</h1>
       <p class="ds-maxim-audit__intro">Исходные PNG не меняются. Стенд сравнивает текущую посадку клиента и нормализацию до ширины одной клетки.</p>
+      <p class="ds-maxim-audit__verdict"><strong>Решение:</strong> набор отклонён как художественная основа. Экран сохранён для проверки совместимости, размеров и производительности.</p>
       <label>Раса
         <select data-control="race">
           <option value="tech">Воранеры</option>

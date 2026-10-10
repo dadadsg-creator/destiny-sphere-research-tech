@@ -23,6 +23,15 @@
 .ds-maxim-audit__eyebrow { margin: 20px 0 5px; color: #70d6ff; font-size: 10px; letter-spacing: .16em; }
 .ds-maxim-audit h1 { margin: 0; color: #fff; font-size: 21px; line-height: 1.18; }
 .ds-maxim-audit__intro { margin: 9px 0 18px; color: #91aebe; }
+.ds-maxim-audit__verdict {
+  margin: 0 0 18px;
+  padding: 10px 11px;
+  border: 1px solid rgba(255, 154, 112, .42);
+  border-radius: 7px;
+  color: #ffd8c8;
+  background: rgba(102, 38, 26, .3);
+}
+.ds-maxim-audit__verdict strong { color: #ffb391; }
 
 .ds-maxim-audit > label {
   display: grid;
