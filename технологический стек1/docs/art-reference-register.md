@@ -37,6 +37,9 @@
 | `concept-art/functional-buildings/voraner-economic-core-ringworld-v02-verticals.png` | Проверка обновлённого перепада высот внутри защищённого сегмента кольцевого мира |
 | `concept-art/functional-buildings/voraner-economic-core-v03-functional-silhouettes.png` | Полная переработка шести функций: различимые основания, массы, механизмы и функционально оправданные доминанты вместо вариаций одного купола |
 | `concept-art/functional-buildings/voraner-economic-core-ringworld-v03-functional-silhouettes.png` | Проверка силуэтов V03 в застройке искусственного кольца: низкая основная масса и редкие высокие ориентиры |
+| `concept-art/terrain-prototypes/home-hive-landscape-v02-gameplay.png` | Основной прототип домашней поверхности: связные зоны земли, пустыни, травы и воды в плоской игровой изометрии |
+| `concept-art/terrain-prototypes/central-complex-landscape-v01.png` | Пустой центральный комплекс из шести соседних сегментов, 16 земельных и 12 скальных позиций в рабочем сегменте |
+| `concept-art/terrain-prototypes/neutral-hive-landscape-v01.png` | Пустая 217-клеточная нейтраль: песок над древней конструкцией и низкие археологические признаки без потери клеток |
 
 ## Вспомогательные материалы
 
