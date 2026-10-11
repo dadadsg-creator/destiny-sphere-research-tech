@@ -40,6 +40,10 @@
 | `concept-art/terrain-prototypes/home-hive-landscape-v02-gameplay.png` | Основной прототип домашней поверхности: связные зоны земли, пустыни, травы и воды в плоской игровой изометрии |
 | `concept-art/terrain-prototypes/central-complex-landscape-v01.png` | Пустой центральный комплекс из шести соседних сегментов, 16 земельных и 12 скальных позиций в рабочем сегменте |
 | `concept-art/terrain-prototypes/neutral-hive-landscape-v01.png` | Пустая 217-клеточная нейтраль: песок над древней конструкцией и низкие археологические признаки без потери клеток |
+| `concept-art/terrain-prototypes/home-ground-layout-reference.png` | Рабочая 217-позиционная маска домашней соты: официальные количества грунтов, системная позиция `X` и композиция, восстановленная по `HOME_LAB_GROUND` |
+| `concept-art/terrain-prototypes/home-hive-landscape-v03-honeycomb.png` | Основной прототип домашней соты: игровая стартовая раскладка и непосредственное касание соседних модулей кольца |
+| `concept-art/terrain-prototypes/central-complex-landscape-v02-honeycomb.png` | Центральная сота, разделённая между шестью игроками и окружённая касающимися домашними сотами комплекса |
+| `concept-art/terrain-prototypes/neutral-hive-landscape-v02-honeycomb.png` | Нейтральная пустынная сота как бесшовный модуль общей сотовой поверхности кольца |
 
 ## Вспомогательные материалы
 
