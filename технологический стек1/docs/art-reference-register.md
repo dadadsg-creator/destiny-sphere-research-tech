@@ -35,6 +35,8 @@
 | `concept-art/functional-buildings/voraner-economic-core-ringworld-v01.png` | Проверка тех же шести функций внутри защищённого сегмента искусственного кольцевого мира; эталон связи зданий с древней конструкцией, куполом и светом Силуса |
 | `concept-art/functional-buildings/voraner-economic-core-v02-verticals.png` | Обновлённый функциональный лист: высокие технологические доминанты кузницы, нанокристаллизатора и науки при сохранении низких сборщиков и жилья |
 | `concept-art/functional-buildings/voraner-economic-core-ringworld-v02-verticals.png` | Проверка обновлённого перепада высот внутри защищённого сегмента кольцевого мира |
+| `concept-art/functional-buildings/voraner-economic-core-v03-functional-silhouettes.png` | Полная переработка шести функций: различимые основания, массы, механизмы и функционально оправданные доминанты вместо вариаций одного купола |
+| `concept-art/functional-buildings/voraner-economic-core-ringworld-v03-functional-silhouettes.png` | Проверка силуэтов V03 в застройке искусственного кольца: низкая основная масса и редкие высокие ориентиры |
 
 ## Вспомогательные материалы
 
