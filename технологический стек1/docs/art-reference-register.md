@@ -67,6 +67,9 @@
 | `concept-art/world-structure/ring-single-row-v12-isometric-trough-rotated-proof.png` | Отрицательный технический пример неверно выбранной оси вращения |
 | `concept-art/world-structure/ring-single-row-v13-isometric-trough-axis-roll.png` | Исправленный вариант: лоток качнулся на `15°` вокруг продольной центральной линии; одна губа поднялась, другая опустилась |
 | `concept-art/world-structure/ring-single-row-v13-isometric-trough-axis-roll-proof.png` | Техническая маска правильного осевого roll V13 |
+| `concept-art/world-structure/ring-single-row-v16-gameplay-reverse-tilt.png` | Принятый геометрический ориентир: игровая поверхность лежит горизонтально, дальняя часть опущена, сохранены семь одинаковых комплексов |
+| `concept-art/world-structure/ring-single-row-v16-gameplay-reverse-tilt-proof.png` | Главная техническая маска для последующих общих видов и концепт-арта |
+| `concept-art/world-structure/ring-single-row-v16-concept-art-v01.png` | Первый атмосферный перевод V16; брать настроение, конструкцию оболочки и свет, а число и границы сот проверять по proof-маске |
 
 ## Вспомогательные материалы
 
