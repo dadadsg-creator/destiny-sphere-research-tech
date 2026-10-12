@@ -63,6 +63,8 @@
 | `concept-art/world-structure/ring-single-row-v10-half-cylinder-proof.png` | Техническая маска полуцилиндра V10; использовать для проверки проекции, границ и сохранения соседства |
 | `concept-art/world-structure/ring-single-row-v11-isometric-trough.png` | Кандидат обзорной сцены: неглубокий лоток `112°`, повёрнутый в длиннофокусную изометрию без сильного перспективного уменьшения |
 | `concept-art/world-structure/ring-single-row-v11-isometric-trough-proof.png` | Техническая маска V11 для проверки семи одинаковых комплексов после пространственного поворота |
+| `concept-art/world-structure/ring-single-row-v12-isometric-trough-rotated.png` | Более динамичный обзорный ракурс: геометрия V11 дополнительно повёрнута на `15°`, итоговый yaw `−50°` |
+| `concept-art/world-structure/ring-single-row-v12-isometric-trough-rotated-proof.png` | Техническая маска V12; сравнивать с V11 только по ракурсу |
 
 ## Вспомогательные материалы
 

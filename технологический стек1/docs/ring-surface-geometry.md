@@ -70,6 +70,8 @@ V11 уменьшает поперечный охват до `112°` и пово�
 
 V11 предназначен для общего вида кольцевого участка. При приближении к отдельной соте клиент может плавно переходить к принятой локальной изометрии зданий, не показывая кривизну всего сегмента.
 
+V12 сохраняет геометрию V11 и увеличивает продольный поворот ещё на `15°`: `yaw = −50°`. Полоса образует более крутую экранную диагональ, пригодную для композиции игровой карты. Этот вариант следует сравнивать с V11 только по ракурсу; радиус, состав и проекция поверхности не менялись.
+
 ## Артефакты
 
 - `concept-art/world-structure/ring-surface-geometry-v01.png` — сравнение плоского аннулярного пояса и цилиндрической ленты.
@@ -81,7 +83,11 @@ V11 предназначен для общего вида кольцевого �
 - `concept-art/world-structure/ring-single-row-v11-isometric-trough.png` — неглубокий цилиндрический лоток в обзорной изометрии.
 - `concept-art/world-structure/ring-single-row-v11-isometric-trough-proof.png` — техническая ролевая маска V11.
 - `concept-art/world-structure/ring-single-row-v11-geometry.json` — параметры проекции и геометрические инварианты V11.
+- `concept-art/world-structure/ring-single-row-v12-isometric-trough-rotated.png` — V11 с дополнительным поворотом оси на `15°`.
+- `concept-art/world-structure/ring-single-row-v12-isometric-trough-rotated-proof.png` — техническая маска повёрнутого варианта V12.
+- `concept-art/world-structure/ring-single-row-v12-geometry.json` — параметры камеры и инварианты V12.
 - `tools/render_ring_surface_geometry.py` — воспроизводимый генератор физической схемы.
 - `tools/render_ring_half_cylinder.py` — воспроизводимый генератор эксперимента V10.
 - `tools/render_ring_isometric_trough.py` — воспроизводимый генератор эксперимента V11.
+- `tools/render_ring_isometric_trough_v12.py` — воспроизводимый генератор повёрнутого V12.
 
