@@ -1,0 +1,29 @@
+{
+  "version": "v09",
+  "layout": "single repeating row for standard worlds",
+  "step": [
+    3,
+    -1
+  ],
+  "screen_rotation_deg": -10.893394649130906,
+  "complex_count": 9,
+  "cell_count": 117,
+  "cells_per_complex": 13,
+  "roles_per_complex": {
+    "central": 1,
+    "home": 6,
+    "neutral": 6
+  },
+  "hex_side_px": 53.580885048714435,
+  "edge_length_spread_px": 5.684341886080801e-13,
+  "shared_edge_multiplicity": {
+    "1": 122,
+    "2": 290
+  },
+  "max_cells_at_vertex": 3,
+  "no_cell_overlap": true,
+  "strip_connected": true,
+  "all_cells_regular": true,
+  "no_edge_shared_by_more_than_two_cells": true,
+  "no_vertex_shared_by_more_than_three_cells": true
+}
