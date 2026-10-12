@@ -1,0 +1,15 @@
+{
+  "version": "v10",
+  "surface": "developable inner half-cylinder",
+  "complex_count": 7,
+  "cell_count": 91,
+  "cells_per_complex": 13,
+  "half_cylinder_angle_deg": 164.0,
+  "axis_yaw_deg": 0.0,
+  "camera_pitch_deg": 9.0,
+  "flat_to_cylinder_isometry": true,
+  "no_cell_overlap": true,
+  "max_flat_edge_multiplicity": 2,
+  "projection_changes_screen_shape": true,
+  "physical_hexes_remain_equal": true
+}
