@@ -1,0 +1,18 @@
+{
+  "version": "v06",
+  "projection": "orthographic flat-top axial grid",
+  "cell_count": 45,
+  "complex_centres_visible": 3,
+  "hex_side_px": 112.0,
+  "edge_length_min_px": 111.99999999999991,
+  "edge_length_max_px": 112.00000000000006,
+  "edge_length_spread_px": 1.4210854715202004e-13,
+  "shared_edge_multiplicity": {
+    "1": 62,
+    "2": 104
+  },
+  "max_cells_at_vertex": 3,
+  "all_cells_regular": true,
+  "no_edge_shared_by_more_than_two_cells": true,
+  "no_vertex_shared_by_more_than_three_cells": true
+}
