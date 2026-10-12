@@ -55,6 +55,8 @@
 | `concept-art/world-structure/ring-segment-honeycomb-v06-grid-proof.png` | Техническое доказательство V06: точные общие грани, не более трёх сот в вершине и одинаковая описанная окружность всех игровых модулей |
 | `concept-art/world-structure/ring-segment-honeycomb-v07-complete-complex.png` | Исправленный центральный модуль: к четырём видимым нейтралям добавлены полные верхняя и нижняя соты; центральный комплекс читается как `1 + 6 + 6` |
 | `concept-art/world-structure/ring-segment-honeycomb-v07-grid-proof.png` | Техническая маска V07 из 47 одинаковых гексов; боковые центры считаются только фрагментами продолжения до расчёта шага полных комплексов |
+| `concept-art/world-structure/ring-segment-honeycomb-v08-repeating-complexes.png` | Первый полностью периодический участок: 10 одинаковых комплексов `1 + 6 + 6`, 130 равных сот, без наложений и внутренних дыр |
+| `concept-art/world-structure/ring-segment-honeycomb-v08-tiling-proof.png` | Техническая маска периодического замощения; золотым показаны границы одинаковых тринадцатисотовых комплексов |
 
 ## Вспомогательные материалы
 

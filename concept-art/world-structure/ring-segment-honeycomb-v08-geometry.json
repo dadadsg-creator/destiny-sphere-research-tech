@@ -1,0 +1,38 @@
+{
+  "version": "v08",
+  "tiling_rule": "q + 3r mod 13",
+  "translation_basis": [
+    [
+      3,
+      -1
+    ],
+    [
+      1,
+      4
+    ]
+  ],
+  "translation_determinant": 13,
+  "motif_residue_count": 13,
+  "motif_has_all_residues": true,
+  "complex_count": 10,
+  "cell_count": 130,
+  "cells_per_complex": 13,
+  "roles_per_complex": {
+    "home": 6,
+    "neutral": 6,
+    "central": 1
+  },
+  "unique_role_patterns": 1,
+  "hex_side_px": 42.67371554879843,
+  "edge_length_spread_px": 2.5579538487363607e-13,
+  "shared_edge_multiplicity": {
+    "1": 94,
+    "2": 343
+  },
+  "max_cells_at_vertex": 3,
+  "no_cell_overlap": true,
+  "all_complexes_identical": true,
+  "all_cells_regular": true,
+  "no_edge_shared_by_more_than_two_cells": true,
+  "no_vertex_shared_by_more_than_three_cells": true
+}
