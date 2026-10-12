@@ -61,6 +61,8 @@
 | `concept-art/world-structure/ring-single-row-v09-tiling-proof.png` | Техническая проверка однорядной полосы: 9 одинаковых комплексов, 117 уникальных сот и повторяемые межкомплексные стыки |
 | `concept-art/world-structure/ring-single-row-v10-half-cylinder.png` | Экспериментальный объём однорядной полосы: 7 комплексов свёрнуты поперёк на внутренний цилиндрический сектор без изменения физического размера сот |
 | `concept-art/world-structure/ring-single-row-v10-half-cylinder-proof.png` | Техническая маска полуцилиндра V10; использовать для проверки проекции, границ и сохранения соседства |
+| `concept-art/world-structure/ring-single-row-v11-isometric-trough.png` | Кандидат обзорной сцены: неглубокий лоток `112°`, повёрнутый в длиннофокусную изометрию без сильного перспективного уменьшения |
+| `concept-art/world-structure/ring-single-row-v11-isometric-trough-proof.png` | Техническая маска V11 для проверки семи одинаковых комплексов после пространственного поворота |
 
 ## Вспомогательные материалы
 
