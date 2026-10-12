@@ -13,9 +13,9 @@ ROOT = Path(__file__).resolve().parents[1]
 WORLD_DIR = ROOT / "concept-art" / "world-structure"
 TERRAIN_DIR = ROOT / "concept-art" / "terrain-prototypes"
 
-OUT_ART = WORLD_DIR / "ring-segment-honeycomb-v06-exact.png"
-OUT_PROOF = WORLD_DIR / "ring-segment-honeycomb-v06-grid-proof.png"
-OUT_REPORT = WORLD_DIR / "ring-segment-honeycomb-v06-geometry.json"
+OUT_ART = WORLD_DIR / "ring-segment-honeycomb-v07-complete-complex.png"
+OUT_PROOF = WORLD_DIR / "ring-segment-honeycomb-v07-grid-proof.png"
+OUT_REPORT = WORLD_DIR / "ring-segment-honeycomb-v07-geometry.json"
 
 W, H = 2400, 1400
 SIDE = 112.0
@@ -65,8 +65,16 @@ def valid_cell(q: int, r: int) -> bool:
     )
 
 
+FORCED_NEUTRALS = {(0, -2), (0, 2)}
+
+
 CELLS = sorted(
-    [(q, r) for q in range(-12, 13) for r in range(-12, 13) if valid_cell(q, r)],
+    [
+        (q, r)
+        for q in range(-12, 13)
+        for r in range(-12, 13)
+        if valid_cell(q, r) or (q, r) in FORCED_NEUTRALS
+    ],
     key=lambda cell: (axial_to_px(*cell)[1], axial_to_px(*cell)[0]),
 )
 
@@ -89,6 +97,8 @@ def owner(cell: tuple[int, int]) -> tuple[int, int] | None:
 
 def terrain_kind(cell: tuple[int, int]) -> str:
     _, cy = axial_to_px(*cell)
+    if cell in FORCED_NEUTRALS:
+        return "neutral"
     if cy < 430 or cy > 975:
         return "neutral"
     own = owner(cell)
@@ -241,7 +251,7 @@ def geometry_report() -> dict[str, object]:
             edges[edge_key(point, nxt)] += 1
             vertices[(round(point[0] * 1000), round(point[1] * 1000))] += 1
     return {
-        "version": "v06",
+        "version": "v07",
         "projection": "orthographic flat-top axial grid",
         "cell_count": len(CELLS),
         "complex_centres_visible": len(CENTRES),
