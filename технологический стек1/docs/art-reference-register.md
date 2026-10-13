@@ -70,6 +70,9 @@
 | `concept-art/world-structure/ring-single-row-v16-gameplay-reverse-tilt.png` | Принятый геометрический ориентир: игровая поверхность лежит горизонтально, дальняя часть опущена, сохранены семь одинаковых комплексов |
 | `concept-art/world-structure/ring-single-row-v16-gameplay-reverse-tilt-proof.png` | Главная техническая маска для последующих общих видов и концепт-арта |
 | `concept-art/world-structure/ring-single-row-v16-concept-art-v01.png` | Первый атмосферный перевод V16; брать настроение, конструкцию оболочки и свет, а число и границы сот проверять по proof-маске |
+| `concept-art/world-structure/ring-single-row-v16-concept-art-v04-grid-locked.png` | Принятый широкий художественный ориентир с лучше сохранённой сеткой; proof-маска использована как неизменяемая основа |
+| `concept-art/world-structure/ring-three-complex-v17-close-proof.png` | Точный крупный шаблон: 3 комплекса, 39 равных сот, принятая проекция V16 |
+| `concept-art/world-structure/ring-three-complex-v17-concept-art-v01.png` | Принятый крупный концепт трёх комплексов; материалы и атмосфера допустимы, топологию проверять по V17 proof |
 
 ## Вспомогательные материалы
 
