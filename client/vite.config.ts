@@ -6,6 +6,7 @@ import { defineConfig } from 'vite';
 // будет заблокирован CORS — в отличие от Node/curl-тестов Фазы 1, где
 // CORS вообще не действует). См. CLIENT_PORTING_PLAN.md, Фаза 2.
 export default defineConfig({
+  base: process.env.VITE_BASE_PATH || '/',
   server: {
     proxy: {
       '/ds': {

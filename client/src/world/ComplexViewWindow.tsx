@@ -53,6 +53,7 @@
  */
 import { useRef, useState } from 'preact/hooks';
 import type { ComplexViewComb, ComplexViewData, ComplexViewNavigateCommand } from './complexViewData';
+import { publicAssetUrl } from '../assets/publicAssetUrl';
 
 export interface ComplexViewWindowProps {
   data: ComplexViewData;
@@ -87,9 +88,9 @@ const SLOT_DIRECTIONS: Array<{ x: number; y: number }> = [
 ];
 
 const RACE_LOGO: Record<string, string> = {
-  '1': '/assets/complex/VORAN_LOGO_DEF.png',
-  '2': '/assets/complex/LIENSU_LOGO_DEF.png',
-  '3': '/assets/complex/PSOLAO_LOGO_DEF.png',
+  '1': publicAssetUrl('/assets/complex/VORAN_LOGO_DEF.png'),
+  '2': publicAssetUrl('/assets/complex/LIENSU_LOGO_DEF.png'),
+  '3': publicAssetUrl('/assets/complex/PSOLAO_LOGO_DEF.png'),
 };
 
 /** Приоритет статуса — sota.as:1491-1513 (каждая проверка перекрывает предыдущую, npc "побеждает" всех). `null` — обычные открытые/закрытые врата без особого статуса, отдельный значок не нужен (сам факт открыт/закрыт уже показан кольцом). */

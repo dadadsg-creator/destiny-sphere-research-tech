@@ -14,6 +14,7 @@ import { BUILDING_NAMES, buildingAssetKey, buildingMapAssetPath, effectiveBuildi
 // разрешения, см. scripts/make-map-sprites.py.
 import buildingMapSizes from './buildingMapSizes.json';
 import type { BuildRecord } from './buildData';
+import { publicAssetUrl } from '../assets/publicAssetUrl';
 
 /**
  * Декоративное окружение вокруг соты (владелец, 2026-09-16: "убери синее
@@ -491,13 +492,13 @@ export class MapRenderer {
     // с уже загруженными алиасами — дёшево (кэш PixiJS), не грузит
     // повторно при переключении между HOME/CENTRAL/NEUTRAL.
     await Assets.load([
-      { alias: 'ROCK', src: '/assets/ground/ROCK.png' },
-      { alias: 'SOIL', src: '/assets/ground/SOIL.png' },
-      { alias: 'DESERT', src: '/assets/ground/DESERT.png' },
-      { alias: 'GRASS', src: '/assets/ground/GRASS.png' },
-      { alias: 'WATER', src: '/assets/ground/WATER.png' },
-      { alias: 'FROG', src: '/assets/ground/FROG.png' },
-      { alias: 'E_FIELD', src: '/assets/ground/E_FIELD.png' },
+      { alias: 'ROCK', src: publicAssetUrl('/assets/ground/ROCK.png') },
+      { alias: 'SOIL', src: publicAssetUrl('/assets/ground/SOIL.png') },
+      { alias: 'DESERT', src: publicAssetUrl('/assets/ground/DESERT.png') },
+      { alias: 'GRASS', src: publicAssetUrl('/assets/ground/GRASS.png') },
+      { alias: 'WATER', src: publicAssetUrl('/assets/ground/WATER.png') },
+      { alias: 'FROG', src: publicAssetUrl('/assets/ground/FROG.png') },
+      { alias: 'E_FIELD', src: publicAssetUrl('/assets/ground/E_FIELD.png') },
     ]);
     for (const cell of cells) {
       const mask = new Graphics().poly(hexPoints).fill(0xffffff);
@@ -567,7 +568,7 @@ export class MapRenderer {
     this.groundSprites.length = 0;
     const names = parseGroundString(sotaString);
     const uniqueNames = [...new Set(Object.values(GROUND_LINKAGE))];
-    await Assets.load(uniqueNames.map((n) => ({ alias: n, src: `/assets/ground/${n}.png` })));
+    await Assets.load(uniqueNames.map((n) => ({ alias: n, src: publicAssetUrl(`/assets/ground/${n}.png`) })));
 
     const hexPoints = hexPolygonPoints();
     const cells = buildHexGrid();
@@ -693,7 +694,7 @@ export class MapRenderer {
       toLoad.set(alias, buildingMapAssetPath(buildingname, race));
       if (record.status === '4') needsUnactiveIcon = true;
     }
-    if (needsUnactiveIcon) toLoad.set('UNACTIVE', '/assets/buildings/UNACTIVE.png');
+    if (needsUnactiveIcon) toLoad.set('UNACTIVE', publicAssetUrl('/assets/buildings/UNACTIVE.png'));
     await Assets.load([...toLoad.entries()].map(([alias, src]) => ({ alias, src })));
 
     for (const record of records) {

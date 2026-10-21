@@ -14,6 +14,7 @@
  * понадобится конкретный экран, использующий этот паттерн.
  */
 import type { TabDef } from './tabs';
+import { publicAssetUrl } from '../assets/publicAssetUrl';
 
 export interface TabBarProps {
   tabs: TabDef[];
@@ -49,7 +50,7 @@ export function TabBar({ tabs, onTabClick }: TabBarProps) {
               }
             }}
           >
-            {tab.icon && <img class="ds-tabbar__icon" src={`/assets/icons/${tab.icon}.png`} alt="" />}
+            {tab.icon && <img class="ds-tabbar__icon" src={publicAssetUrl(`/assets/icons/${tab.icon}.png`)} alt="" />}
             <span>{tab.ln}</span>
           </button>
         );

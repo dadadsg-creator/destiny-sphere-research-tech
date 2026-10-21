@@ -8,6 +8,7 @@
 import { Application, Container, Sprite, Text, Assets } from 'pixi.js';
 import type { BattleRound, BattleUnit } from './battleData';
 import { unitDisplayName } from '../data/resourceIcons';
+import { publicAssetUrl } from '../assets/publicAssetUrl';
 
 const ROW_HEIGHT = 40;
 const ARMY_GAP = 12;
@@ -46,7 +47,7 @@ export class BattleRenderer {
 
     const libnames = new Set([...round.sideA, ...round.sideD].map((u) => u.libname));
     await Assets.load(
-      [...libnames].map((name) => ({ alias: name, src: `/assets/units/${name}.png` })),
+      [...libnames].map((name) => ({ alias: name, src: publicAssetUrl(`/assets/units/${name}.png`) })),
     );
 
     this.renderSide(round.sideA, 0);

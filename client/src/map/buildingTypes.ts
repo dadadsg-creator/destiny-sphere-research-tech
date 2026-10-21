@@ -1,3 +1,5 @@
+import { publicAssetUrl } from '../assets/publicAssetUrl';
+
 /**
  * id_building -> buildingname из живой БД мира (таблица ds_building,
  * ExecOnDB.php, world='eridan'/dbId=2, снято 2026-09-04). buildingname —
@@ -175,11 +177,11 @@ export function effectiveBuildingRace(buildingname: string, race: Race): Race {
  */
 export function buildingMapAssetPath(buildingname: string, race: Race): string {
   const key = buildingAssetKey(buildingname);
-  return `/assets/buildings-map/${effectiveBuildingRace(buildingname, race)}/${key}.png`;
+  return publicAssetUrl(`/assets/buildings-map/${effectiveBuildingRace(buildingname, race)}/${key}.png`);
 }
 
 /** Путь к текстуре постройки с учётом расы владельца — client/public/assets/buildings/<tech|bio|psi>/<NAME>.png. */
 export function buildingAssetPath(buildingname: string, race: Race): string {
   const key = buildingAssetKey(buildingname);
-  return `/assets/buildings/${effectiveBuildingRace(buildingname, race)}/${key}.png`;
+  return publicAssetUrl(`/assets/buildings/${effectiveBuildingRace(buildingname, race)}/${key}.png`);
 }

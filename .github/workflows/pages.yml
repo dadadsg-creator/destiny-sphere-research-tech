@@ -36,6 +36,7 @@ jobs:
         working-directory: client
         env:
           VITE_SHOWCASE_SCREEN: hive-217
+          VITE_BASE_PATH: /destiny-sphere-research-tech/
         run: npm run build
 
       - name: Configure GitHub Pages

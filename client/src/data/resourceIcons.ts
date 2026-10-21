@@ -18,6 +18,7 @@
  */
 import { localData } from './localDataStore';
 import { capitalizeFirst, resolveLocalName } from './localNameResolver';
+import { publicAssetUrl } from '../assets/publicAssetUrl';
 
 export const RESOURCE_NAME_RU: Record<string, string> = {
   KADERIUM: 'Кадериум',
@@ -55,7 +56,7 @@ export const RESOURCE_LETTER_TO_NAME: Record<string, string> = {
 };
 
 export function resourceIconUrl(name: string): string {
-  return `/assets/resources/${name}.png`;
+  return publicAssetUrl(`/assets/resources/${name}.png`);
 }
 
 /** Есть ли у машинного имени готовая иконка ресурса (см. RESOURCE_NAME_RU) — чтобы не рисовать иконку для произвольных атрибутов (ATTACK/DEFENCE и т.п.), похожих на id ресурса лишь по формату. */
@@ -72,7 +73,7 @@ export function hasResourceIcon(name: string): boolean {
  * `ArmyCreationWindow` (раньше юниты показывались без картинки вовсе).
  */
 export function unitIconUrl(unitname: string): string {
-  return `/assets/units/${unitname}.png`;
+  return publicAssetUrl(`/assets/units/${unitname}.png`);
 }
 
 /**
@@ -83,9 +84,9 @@ export function unitIconUrl(unitname: string): string {
  * калькулятора биржи (`SellWindow.tsx`), где раса хранится в этом виде.
  */
 export function raceLogoUrl(race: 'tech' | 'bio' | 'psi'): string {
-  if (race === 'tech') return '/assets/complex/VORAN_LOGO_DEF.png';
-  if (race === 'psi') return '/assets/complex/PSOLAO_LOGO_DEF.png';
-  return '/assets/complex/LIENSU_LOGO_DEF.png';
+  if (race === 'tech') return publicAssetUrl('/assets/complex/VORAN_LOGO_DEF.png');
+  if (race === 'psi') return publicAssetUrl('/assets/complex/PSOLAO_LOGO_DEF.png');
+  return publicAssetUrl('/assets/complex/LIENSU_LOGO_DEF.png');
 }
 
 /**
@@ -181,7 +182,7 @@ export function transferArtefactDisplayName(rawLibname: string, bonusName?: stri
  * иконка есть только по постфиксу, не по полному "MIGHTY_SPHERE_..."-имени).
  */
 export function artefactIconUrl(postfix: string): string {
-  return `/assets/artefacts/${postfix}.png`;
+  return publicAssetUrl(`/assets/artefacts/${postfix}.png`);
 }
 
 /**
@@ -259,7 +260,7 @@ export const KNOWN_ARTEFACT_SCOPES = new Set([
 
 export function artefactScopeMaskUrl(scope: string | null): string | null {
   if (!scope || !KNOWN_ARTEFACT_SCOPES.has(scope)) return null;
-  return `/assets/artefact-scopes/${scope}.png`;
+  return publicAssetUrl(`/assets/artefact-scopes/${scope}.png`);
 }
 
 /**
@@ -300,5 +301,5 @@ export function researchBranchName(branchId: string): string {
 
 export function researchBranchIconUrl(branchId: string): string | null {
   if (!RESOURCE_BRANCH_IDS.has(branchId) && !(branchId in RESEARCH_BRANCH_NAMES_FALLBACK)) return null;
-  return `/assets/research/${branchId}.png`;
+  return publicAssetUrl(`/assets/research/${branchId}.png`);
 }

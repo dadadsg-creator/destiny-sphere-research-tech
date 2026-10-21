@@ -9,6 +9,7 @@ import {
   type Race,
 } from './buildingTypes';
 import buildingMapSizes from './buildingMapSizes.json';
+import { publicAssetUrl } from '../assets/publicAssetUrl';
 
 type AuditScope = 'core' | 'all';
 type AuditScale = 'current' | 'cell';
@@ -34,7 +35,7 @@ interface AuditItem {
 
 const GROUND_ASSET = {
   alias: 'maxim-audit/ground-hd',
-  src: '/assets/hive-lab/hive-ground-hd.png',
+  src: publicAssetUrl('/assets/hive-lab/hive-ground-hd.png'),
 };
 
 const CORE_BUILDING_IDS = [
