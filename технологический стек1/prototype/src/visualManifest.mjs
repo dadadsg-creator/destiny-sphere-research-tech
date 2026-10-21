@@ -6,7 +6,7 @@ const REQUIRED_KEYS = [
   'id', 'race', 'complexGroup', 'footprint', 'logicalWidth', 'anchor', 'ports', 'layers',
 ];
 const RACES = new Set(['tech', 'bio', 'psi', 'common']);
-const LAYER_KEYS = new Set(['color', 'shadow', 'castShadow', 'emissive', 'construction', 'disabled', 'damage']);
+const LAYER_KEYS = new Set(['color', 'shadow', 'castShadow', 'emissive', 'rearShield', 'construction', 'disabled', 'damage']);
 
 function isRecord(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);

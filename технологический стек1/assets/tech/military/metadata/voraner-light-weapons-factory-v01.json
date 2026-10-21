@@ -1,0 +1,15 @@
+{
+  "id": "tech/military/voraner-light-weapons-factory-v01",
+  "race": "tech",
+  "complexGroup": "light-weapons-industry",
+  "variant": 0,
+  "footprint": [1, 1],
+  "logicalWidth": 58,
+  "anchor": [0.5, 0.97],
+  "shadowOffset": [0, 0],
+  "emissiveOffset": [0, 0],
+  "ports": [false, false, false, false, false, false],
+  "layers": {
+    "color": "../exports/voraner-light-weapons-factory-v01-color.png?v=20261018-1"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "id": "tech/military/voraner-military-base-v03",
+  "race": "tech",
+  "complexGroup": "military-command",
+  "variant": 0,
+  "footprint": [1, 1],
+  "logicalWidth": 70,
+  "anchor": [0.5, 0.97],
+  "shadowOffset": [0, 0],
+  "emissiveOffset": [0, 0],
+  "ports": [false, false, false, false, false, false],
+  "layers": {
+    "color": "../exports/voraner-military-base-v03-color-base.png?v=20261018-3",
+    "rearShield": "../exports/voraner-military-base-v03-shield-v06-no-border.png?v=20261021-2"
+  }
+}

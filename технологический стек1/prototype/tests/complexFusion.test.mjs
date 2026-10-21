@@ -97,3 +97,51 @@ test('nineteen-cell district fuses its central seven and keeps the outer ring se
   assert.equal(fusions[0].kind, 'seven');
   assert.deepEqual(fusions[0].cellNums, [0, 1, 2, 3, 4, 5, 6]);
 });
+
+test('fixed functional buildings keep their own visuals and never join residential fusions', () => {
+  const cells = nineteenCellCluster();
+  const buildings = [
+    ...Array.from({ length: 7 }, (_, cellNum) => ({ cellNum, complexGroup: 'residential-core' })),
+    {
+      cellNum: 8,
+      complexGroup: 'stasis-energy',
+      connectable: false,
+      visualKey: 'voranerEnergy01',
+    },
+    {
+      cellNum: 17,
+      complexGroup: 'kaderium-industry',
+      connectable: false,
+      visualKey: 'voranerForge03',
+    },
+    {
+      cellNum: 11,
+      complexGroup: 'nano-industry',
+      connectable: false,
+      visualKey: 'voranerNano02',
+    },
+    {
+      cellNum: 14,
+      complexGroup: 'food-industry',
+      connectable: false,
+      visualKey: 'voranerFood02',
+    },
+  ];
+  const complexes = resolveComplexes(buildings, cells);
+  const fusions = resolveComplexFusions(complexes, cells);
+  const collector = complexes.find((complex) => complex.complexGroup === 'stasis-energy');
+  const forge = complexes.find((complex) => complex.complexGroup === 'kaderium-industry');
+  const crystallizer = complexes.find((complex) => complex.complexGroup === 'nano-industry');
+  const greenhouse = complexes.find((complex) => complex.complexGroup === 'food-industry');
+
+  assert.equal(fusions.length, 1);
+  assert.equal(fusions[0].kind, 'seven');
+  assert.deepEqual(collector.cellNums, [8]);
+  assert.equal(collector.members[0].visualKey, 'voranerEnergy01');
+  assert.deepEqual(forge.cellNums, [17]);
+  assert.equal(forge.members[0].visualKey, 'voranerForge03');
+  assert.deepEqual(crystallizer.cellNums, [11]);
+  assert.equal(crystallizer.members[0].visualKey, 'voranerNano02');
+  assert.deepEqual(greenhouse.cellNums, [14]);
+  assert.equal(greenhouse.members[0].visualKey, 'voranerFood02');
+});

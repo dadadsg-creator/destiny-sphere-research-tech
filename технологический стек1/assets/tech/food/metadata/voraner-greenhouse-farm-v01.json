@@ -1,0 +1,15 @@
+{
+  "id": "tech/food/voraner-greenhouse-farm-v01",
+  "race": "tech",
+  "complexGroup": "food-industry",
+  "variant": 0,
+  "footprint": [1, 1],
+  "logicalWidth": 60,
+  "anchor": [0.5, 0.97],
+  "shadowOffset": [0, 0],
+  "emissiveOffset": [0, 0],
+  "ports": [false, false, false, false, false, false],
+  "layers": {
+    "color": "../exports/voraner-greenhouse-farm-v01-color.png?v=20261018-1"
+  }
+}

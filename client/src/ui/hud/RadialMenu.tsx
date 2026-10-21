@@ -57,6 +57,7 @@ interface Sector {
 
 export function RadialMenu() {
   const actions = hudActions.value;
+  const [open, setOpen] = useState(false);
   // "Дом" — активный сектор по умолчанию: это и есть главный экран.
   const [active, setActive] = useState<string | null>('home');
   const [pressed, setPressed] = useState<string | null>(null);
@@ -83,8 +84,9 @@ export function RadialMenu() {
   }
 
   return (
-    <div class="ds-hud-radial2">
-      <svg width="210" height="210" viewBox="0 0 210 210">
+    <div class={`ds-hud-radial-nav${open ? ' is-open' : ''}`}>
+      <div class="ds-hud-radial2" aria-hidden={!open}>
+        <svg width="210" height="210" viewBox="0 0 210 210">
         {sectors.map((s) => {
           const start = s.mid - step / 2;
           const end = s.mid + step / 2;
@@ -147,7 +149,23 @@ export function RadialMenu() {
             {loading ? '...' : 'Обновить'}
           </text>
         </g>
-      </svg>
+        </svg>
+      </div>
+
+      <button
+        type="button"
+        class="ds-hud-radial-nav__toggle"
+        aria-expanded={open}
+        aria-label={open ? 'Скрыть переходы' : 'Открыть переходы'}
+        title={open ? 'Скрыть переходы' : 'Переходы между сотами'}
+        onClick={() => setOpen((value) => !value)}
+      >
+        <svg viewBox="0 0 48 48" aria-hidden="true">
+          <circle cx="24" cy="24" r="14.5" />
+          <path d="M24 5.5v8M24 34.5v8M5.5 24h8M34.5 24h8" />
+          <path class="ds-hud-radial-nav__needle" d="M29.5 18.5 26 26l-7.5 3.5L22 22z" />
+        </svg>
+      </button>
     </div>
   );
 }

@@ -1,0 +1,18 @@
+{
+  "version": "v14",
+  "surface": "shallow developable inner cylindrical trough",
+  "complex_count": 7,
+  "cell_count": 91,
+  "cells_per_complex": 13,
+  "trough_angle_deg": 112.0,
+  "axis_yaw_deg": -35.0,
+  "camera_pitch_deg": 30.0,
+  "screen_center_pivot_deg": 15.0,
+  "rotation_pivot": "projected ring geometric centre",
+  "camera_distance_in_trough_radii": 40.0,
+  "flat_to_cylinder_isometry": true,
+  "no_cell_overlap": true,
+  "max_flat_edge_multiplicity": 2,
+  "projection_changes_screen_shape": true,
+  "physical_hexes_remain_equal": true
+}

@@ -1389,10 +1389,14 @@ const app = document.querySelector<HTMLDivElement>('#app')!;
 app.innerHTML = '';
 
 const params = new URLSearchParams(location.search);
-const screen = params.get('screen'); // "battle"/"army" — тестовые экраны вместо карты
+// Статическая GitHub Pages-витрина сразу открывает выбранный полигон и не
+// обращается к игровому серверу. Явный ?screen= в URL по-прежнему имеет
+// приоритет и позволяет переключать технологические стенды.
+const showcaseScreen = import.meta.env.VITE_SHOWCASE_SCREEN || null;
+const screen = params.get('screen') ?? showcaseScreen; // "battle"/"army" — тестовые экраны вместо карты
 // Собранный клиент (alpha.destinysphere.ru) всегда в живом режиме; в dev —
 // только с ?live, без него показывается статичная демо-карта.
-const wantsLive = import.meta.env.PROD || params.has('live');
+const wantsLive = !showcaseScreen && (import.meta.env.PROD || params.has('live'));
 // Автологин из .env.local — ТОЛЬКО в dev-сервере. В production-сборке
 // import.meta.env.DEV === false, ветка вырезается целиком, и логин/пароль
 // в бандл не попадают (проверять grep'ом по dist/ перед каждой выкладкой).

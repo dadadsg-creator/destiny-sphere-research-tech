@@ -82,6 +82,22 @@ test('construction buildings join the scenario without modifying its base defini
   });
 });
 
+test('a functional building keeps its own visual and never joins a residential complex', () => {
+  const started = beginConstruction(new Map(), 18, 3, 'stasis-energy', {
+    visualKey: 'voranerEnergy01',
+    connectable: false,
+  });
+  assert.deepEqual(started.get(18), {
+    cellNum: 18,
+    buildingVariant: 3,
+    state: 'construction',
+    complexGroup: 'stasis-energy',
+    visualKey: 'voranerEnergy01',
+    connectable: false,
+  });
+  assert.equal(completeConstruction(started, 18).get(18).state, 'working');
+});
+
 test('a rebuilt member keeps its original group and restores the seven-cell complex', () => {
   const cells = sevenCellCluster();
   const base = cells.map(({ num }) => ({ cellNum: num, complexGroup: 'residential-core' }));

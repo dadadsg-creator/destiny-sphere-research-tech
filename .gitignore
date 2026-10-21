@@ -34,6 +34,7 @@ desktop.ini
 
 # Local prototype previews and application caches
 /tmp/
+/client/tmp/
 /технологический стек1/tmp/
 **/__pycache__/
 *.pyc

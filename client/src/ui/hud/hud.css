@@ -36,51 +36,188 @@ body {
   font-family: inherit;
 }
 
-/* §5-6 — верхний стек (ресурсы + навигация). */
-.ds-hud-topstack {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  pointer-events: auto;
-}
-
+/* Ресурсы идут вертикально под рабочими/учёными/археологами. Так они
+   остаются рядом с экономикой и не образуют шапку над игровой сценой. */
 .ds-hud-resbar {
-  height: 48px;
+  width: 100%;
+  box-sizing: border-box;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 16px;
-  padding: 0 12px;
-  background: rgba(7, 20, 43, 0.92);
-  border-bottom: 1px solid var(--hud-border);
-  backdrop-filter: blur(2px);
+  gap: 3px;
+  padding: 5px;
+  background: linear-gradient(180deg, rgba(9, 31, 52, 0.7), rgba(3, 15, 29, 0.58));
+  border: 1px solid rgba(107, 205, 244, 0.25);
+  border-radius: 7px;
+  box-shadow: 0 7px 24px rgba(0, 0, 0, 0.18), inset 0 0 18px rgba(77, 190, 234, 0.035);
+  backdrop-filter: blur(7px);
 }
 .ds-hud-resbar--loading {
   color: var(--hud-text2);
   font-size: 14px;
 }
 .ds-hud-resbar__item {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 5px;
-  background: var(--hud-bg2);
-  border: 1px solid var(--hud-border);
-  border-radius: 5px;
-  padding: 4px 10px;
+  width: 100%;
+  box-sizing: border-box;
+  gap: 4px;
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+  padding: 4px 7px;
   min-width: 0;
+  opacity: 0.84;
+  transition: opacity 140ms ease, background-color 140ms ease;
+}
+.ds-hud-resbar__item + .ds-hud-resbar__item::before {
+  content: '';
+  position: absolute;
+  left: 7px;
+  right: 7px;
+  top: -2px;
+  height: 1px;
+  background: rgba(117, 201, 235, 0.16);
+}
+.ds-hud-resbar__item:hover {
+  opacity: 1;
+  background: rgba(85, 190, 231, 0.08);
 }
 .ds-hud-resbar__icon {
-  width: 20px;
-  height: 20px;
+  width: 15px;
+  height: 15px;
   flex-shrink: 0;
   object-fit: contain;
 }
 .ds-hud-resbar__value {
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 560;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
+  margin-left: auto;
+}
+
+/* Одна кнопка вместо прежней верхней полосы сервисных разделов. */
+.ds-hud-mainmenu {
+  position: absolute;
+  z-index: 8;
+  top: 10px;
+  left: 12px;
+  width: 42px;
+  height: 42px;
+  pointer-events: auto;
+}
+.ds-hud-mainmenu__toggle {
+  position: relative;
+  z-index: 2;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 1px solid rgba(111, 213, 251, 0.38);
+  border-radius: 50%;
+  color: #a9e7fb;
+  background: radial-gradient(circle at 40% 35%, rgba(29, 79, 106, 0.76), rgba(4, 20, 36, 0.74) 70%);
+  box-shadow: 0 7px 20px rgba(0, 0, 0, 0.24), inset 0 0 14px rgba(86, 204, 247, 0.06);
+  backdrop-filter: blur(7px);
+  cursor: pointer;
+  transition: color 140ms ease, border-color 140ms ease, transform 140ms ease;
+}
+.ds-hud-mainmenu__toggle:hover,
+.ds-hud-mainmenu.is-open .ds-hud-mainmenu__toggle {
+  color: #fff;
+  border-color: rgba(145, 229, 255, 0.78);
+}
+.ds-hud-mainmenu__toggle:hover {
+  transform: translateY(-1px);
+}
+.ds-hud-mainmenu__toggle svg {
+  width: 30px;
+  height: 30px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.2;
+}
+.ds-hud-mainmenu__toggle svg circle:nth-child(2) {
+  fill: rgba(104, 218, 255, 0.28);
+}
+.ds-hud-mainmenu__panel {
+  position: absolute;
+  top: 50px;
+  left: 0;
+  width: 190px;
+  max-height: calc(100vh - 118px);
+  overflow-y: auto;
+  padding: 7px;
+  border: 1px solid rgba(101, 199, 237, 0.25);
+  border-radius: 9px;
+  background: linear-gradient(145deg, rgba(4, 20, 35, 0.9), rgba(7, 33, 50, 0.78));
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.32), inset 0 0 24px rgba(73, 185, 228, 0.04);
+  backdrop-filter: blur(10px);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-6px) scale(0.96);
+  transform-origin: top left;
+  transition: opacity 150ms ease, transform 170ms ease;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(92, 190, 226, 0.48) rgba(3, 17, 30, 0.5);
+}
+.ds-hud-mainmenu__panel::-webkit-scrollbar {
+  width: 6px;
+}
+.ds-hud-mainmenu__panel::-webkit-scrollbar-track {
+  background: rgba(3, 17, 30, 0.5);
+}
+.ds-hud-mainmenu__panel::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background: rgba(92, 190, 226, 0.48);
+}
+.ds-hud-mainmenu__section + .ds-hud-mainmenu__section {
+  margin-top: 5px;
+  padding-top: 5px;
+  border-top: 1px solid rgba(109, 202, 237, 0.14);
+}
+.ds-hud-mainmenu.is-open .ds-hud-mainmenu__panel {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+.ds-hud-mainmenu__caption {
+  padding: 4px 8px 7px;
+  color: rgba(153, 217, 239, 0.7);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.ds-hud-mainmenu__item {
+  width: 100%;
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 9px;
+  border: 0;
+  border-radius: 5px;
+  color: #c9e3ed;
+  background: transparent;
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+.ds-hud-mainmenu__item:hover,
+.ds-hud-mainmenu__item.is-active {
+  color: #fff;
+  background: rgba(72, 179, 219, 0.12);
+}
+.ds-hud-mainmenu__item.is-danger:hover,
+.ds-hud-mainmenu__item.is-danger.is-active {
+  color: #ffd0c8;
+  background: rgba(218, 91, 67, 0.12);
+}
+.ds-hud-mainmenu__mark {
+  color: rgba(112, 211, 247, 0.62);
+  font-size: 18px;
+  line-height: 1;
 }
 
 .ds-hud-nav {
@@ -140,10 +277,13 @@ body {
 .ds-hud-left {
   position: absolute;
   left: 0;
-  top: 106px;
-  width: 210px;
+  top: 54px;
+  width: 146px;
   padding: 10px;
   pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 .ds-hud-population {
   display: flex;
@@ -212,14 +352,15 @@ body {
   pointer-events: auto;
 }
 .ds-hud-bottombar {
-  height: 60px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
   padding: 0 14px;
-  background: rgba(7, 20, 43, 0.92);
-  border-top: 1px solid var(--hud-border);
+  background: linear-gradient(180deg, rgba(3, 15, 29, 0.38), rgba(3, 14, 27, 0.72));
+  border-top: 1px solid rgba(94, 185, 225, 0.18);
+  backdrop-filter: blur(6px);
 }
 .ds-hud-bottombar__left {
   display: flex;
@@ -265,13 +406,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
-  background: var(--hud-bg2);
-  border: 1px solid var(--hud-border);
+  width: 34px;
+  height: 34px;
+  background: rgba(10, 32, 53, 0.66);
+  border: 1px solid rgba(92, 188, 230, 0.3);
   border-radius: 50%;
   color: var(--hud-text);
-  font-size: 18px;
+  font-size: 15px;
   cursor: pointer;
 }
 .ds-hud-bottombar__icon-btn:hover {
@@ -296,10 +437,10 @@ body {
 .ds-hud-radial2 {
   --ds-radial-size: 210px;
   --ds-radial-center-size: 95px;
-  --ds-radial-color-normal: #16233f;
-  --ds-radial-color-hover: #1f345c;
-  --ds-radial-color-pressed: #0d1730;
-  --ds-radial-color-active: rgba(40, 184, 255, 0.35);
+  --ds-radial-color-normal: rgba(7, 28, 48, 0.72);
+  --ds-radial-color-hover: rgba(16, 59, 88, 0.9);
+  --ds-radial-color-pressed: rgba(4, 21, 39, 0.94);
+  --ds-radial-color-active: rgba(32, 159, 207, 0.38);
   --ds-radial-color-locked: #0e1524;
   --ds-radial-color-center: #1f345c;
   --ds-radial-color-center-hover: #2b4a80;
@@ -314,15 +455,75 @@ body {
 }
 .ds-hud-radial-wrap {
   position: absolute;
-  right: 0;
-  bottom: 60px;
+  right: 54px;
+  bottom: 58px;
   pointer-events: auto;
+}
+.ds-hud-radial-nav {
+  position: relative;
+  width: 48px;
+  height: 48px;
+}
+.ds-hud-radial-nav__toggle {
+  position: relative;
+  z-index: 2;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 1px solid rgba(111, 213, 251, 0.48);
+  border-radius: 50%;
+  color: #bceeff;
+  background: radial-gradient(circle at 42% 36%, rgba(31, 88, 118, 0.9), rgba(4, 22, 39, 0.88) 68%);
+  box-shadow: 0 7px 22px rgba(0, 0, 0, 0.34), inset 0 0 15px rgba(89, 210, 255, 0.08);
+  cursor: pointer;
+  backdrop-filter: blur(7px);
+  transition: border-color 150ms ease, color 150ms ease, transform 150ms ease;
+}
+.ds-hud-radial-nav__toggle:hover {
+  color: #fff;
+  border-color: rgba(148, 230, 255, 0.86);
+  transform: translateY(-1px);
+}
+.ds-hud-radial-nav__toggle svg {
+  width: 36px;
+  height: 36px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.25;
+}
+.ds-hud-radial-nav__needle {
+  fill: rgba(81, 210, 255, 0.22);
+  stroke-width: 1.5;
+}
+.ds-hud-radial-nav.is-open .ds-hud-radial-nav__toggle {
+  color: #fff;
+  border-color: rgba(116, 220, 255, 0.92);
+}
+.ds-hud-radial-nav.is-open .ds-hud-radial-nav__needle {
+  transform: rotate(180deg);
+  transform-origin: 24px 24px;
 }
 .ds-hud-radial2 svg {
   display: block;
   width: var(--ds-radial-size);
   height: var(--ds-radial-size);
   overflow: visible;
+}
+.ds-hud-radial-nav .ds-hud-radial2 {
+  position: absolute;
+  right: 0;
+  bottom: 57px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px) scale(0.86);
+  transform-origin: bottom right;
+  filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.35));
+  transition: opacity 170ms ease, transform 190ms ease;
+}
+.ds-hud-radial-nav.is-open .ds-hud-radial2 {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
 }
 
 .ds-hud-radial2__sector path {
@@ -497,7 +698,7 @@ body {
 .ds-hud-right {
   position: absolute;
   right: 0;
-  top: 106px;
+  top: 54px;
   /* Ниже кругового меню (190px + отступ) не заходит — иначе панель
      здания перекрывает RadialMenu.tsx целиком в правом нижнем углу. */
   bottom: 220px;
@@ -649,7 +850,7 @@ body {
 /* §15 — адаптивность. */
 @media (max-width: 1365px) {
   .ds-hud-left {
-    width: 170px;
+    width: 140px;
   }
   .ds-hud-nav__btn {
     padding: 0 10px;
@@ -663,23 +864,42 @@ body {
      теми же средствами, что раньше (когда это были отдельные кнопки);
      здесь — пропорциональное уменьшение вместо полной переразметки,
      сохраняет металлический корпус/секторы, просто компактнее. */
-  .ds-hud-radial2 {
-    transform: scale(0.78);
-    transform-origin: bottom right;
+  .ds-hud-radial-nav.is-open .ds-hud-radial2 {
+    transform: translateY(0) scale(0.82);
   }
 }
 
 @media (max-width: 1023px) {
   .ds-hud-left {
-    width: 140px;
+    width: 132px;
   }
   .ds-hud-population__values {
     font-size: 12px;
   }
-  .ds-hud-resbar {
-    padding: 0 6px;
-  }
   .ds-hud-resbar__item {
     padding: 3px 6px;
+  }
+}
+
+@media (max-width: 720px) {
+  .ds-hud-resbar {
+    max-height: calc(100vh - 250px);
+    overflow-y: auto;
+  }
+  .ds-hud-resbar__item {
+    padding-inline: 5px;
+  }
+  .ds-hud-left {
+    top: 48px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ds-hud-radial-nav .ds-hud-radial2,
+  .ds-hud-radial-nav__toggle,
+  .ds-hud-radial-nav__needle,
+  .ds-hud-mainmenu__toggle,
+  .ds-hud-mainmenu__panel {
+    transition: none;
   }
 }

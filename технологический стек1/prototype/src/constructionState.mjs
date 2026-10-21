@@ -1,7 +1,10 @@
-export function beginConstruction(buildings, cellNum, buildingVariant, complexGroup = null) {
+export function beginConstruction(buildings, cellNum, buildingVariant, complexGroup = null, properties = {}) {
   if (!(buildings instanceof Map)) throw new TypeError('buildings должен быть Map');
   if (!Number.isInteger(cellNum) || cellNum < 0) throw new RangeError('cellNum должен быть неотрицательным целым');
   if (!Number.isInteger(buildingVariant) || buildingVariant < 0) throw new RangeError('buildingVariant должен быть неотрицательным целым');
+  if (properties == null || typeof properties !== 'object' || Array.isArray(properties)) {
+    throw new TypeError('properties должен быть объектом');
+  }
   if (buildings.has(cellNum)) throw new TypeError(`Клетка ${cellNum} уже занята`);
   const next = new Map(buildings);
   next.set(cellNum, Object.freeze({
@@ -9,6 +12,7 @@ export function beginConstruction(buildings, cellNum, buildingVariant, complexGr
     buildingVariant,
     state: 'construction',
     ...(complexGroup == null ? {} : { complexGroup }),
+    ...properties,
   }));
   return next;
 }

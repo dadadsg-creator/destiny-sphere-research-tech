@@ -1,0 +1,15 @@
+{
+  "id": "tech/materials/voraner-nano-crystallizer-v01",
+  "race": "tech",
+  "complexGroup": "nano-industry",
+  "variant": 0,
+  "footprint": [1, 1],
+  "logicalWidth": 62,
+  "anchor": [0.5, 0.965],
+  "shadowOffset": [0, 0],
+  "emissiveOffset": [0, 0],
+  "ports": [false, false, false, false, false, false],
+  "layers": {
+    "color": "../exports/voraner-nano-crystallizer-v01-color.png?v=20261018-1"
+  }
+}

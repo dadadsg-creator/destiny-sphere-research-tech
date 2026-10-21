@@ -151,6 +151,7 @@ let mask = 0b100111;
 let activeVisual = null;
 let activePackages = [];
 let activeFusionPackages = new Map();
+let activeSpecialPackages = new Map();
 let packageRequest = 0;
 let selectedCellNum = 0;
 let hoveredCellNum = null;
@@ -526,10 +527,25 @@ const PACKAGE_URLS = Object.freeze({
   voraner05: '../assets/tech/residential/metadata/voraner-residential-v05.json?v=20261001-13',
   voraner3d: '../assets/tech/residential/metadata/voraner-l1-blockout.json?v=20261002-3',
   voranerProxy: '../assets/tech/residential/metadata/voraner-v02-shadow-proxy.json?v=20261002-1',
+  voranerEnergy01: '../assets/tech/energy/metadata/voraner-stasis-collector-v01.json?v=20261014-3',
+  voranerForge02: '../assets/tech/industry/metadata/voraner-kaderium-forge-v02.json?v=20261018-1',
+  voranerForge03: '../assets/tech/industry/metadata/voraner-kaderium-forge-v03-dispatch.json?v=20261018-1',
+  voranerNano01: '../assets/tech/materials/metadata/voraner-nano-crystallizer-v01.json?v=20261018-1',
+  voranerNano02: '../assets/tech/materials/metadata/voraner-nano-crystallizer-v02-dispatch.json?v=20261018-1',
+  voranerFood01: '../assets/tech/food/metadata/voraner-greenhouse-farm-v01.json?v=20261018-1',
+  voranerFood02: '../assets/tech/food/metadata/voraner-greenhouse-farm-v02.json?v=20261018-1',
+  voranerLightWeapons01: '../assets/tech/military/metadata/voraner-light-weapons-factory-v01.json?v=20261018-1',
+  voranerLightWeapons02: '../assets/tech/military/metadata/voraner-light-weapons-factory-v02.json?v=20261018-1',
+  voranerHeavyWeapons01: '../assets/tech/military/metadata/voraner-heavy-weapons-factory-v01.json?v=20261018-1',
+  voranerHeavyWeapons02: '../assets/tech/military/metadata/voraner-heavy-weapons-factory-v02.json?v=20261018-1',
+  voranerMilitaryBase03: '../assets/tech/military/metadata/voraner-military-base-v03.json?v=20261018-1',
 });
 const PACKAGE_PRESETS = Object.freeze({
   auto: Object.freeze(['blue', 'gold', 'teal']),
   voranerMix: Object.freeze(['voraner02', 'voraner03', 'voraner05']),
+  voranerDistrictEnergy: Object.freeze(['voraner02', 'voraner03', 'voraner05']),
+  voranerDistrictFunctional: Object.freeze(['voraner02', 'voraner03', 'voraner05']),
+  voranerDistrictProduction: Object.freeze(['voraner02', 'voraner03', 'voraner05']),
   voranerComplex3: Object.freeze(['voraner02']),
   voranerComplex7: Object.freeze(['voraner02']),
   shadowLab: Object.freeze(['voraner02', 'voranerProxy']),
@@ -540,6 +556,9 @@ const FUSION_PACKAGE_URLS = Object.freeze({
 });
 const FUSION_PACKAGE_PRESETS = Object.freeze({
   voranerMix: Object.freeze(['three', 'seven']),
+  voranerDistrictEnergy: Object.freeze(['three', 'seven']),
+  voranerDistrictFunctional: Object.freeze(['three', 'seven']),
+  voranerDistrictProduction: Object.freeze(['three', 'seven']),
   voranerComplex3: Object.freeze(['three']),
   voranerComplex7: Object.freeze(['seven']),
 });
@@ -556,6 +575,61 @@ const DISTRICT_SCENARIO = Object.freeze([
   ...Array.from({ length: 12 }, (_, index) => ({ cellNum: index + 7, complexGroup: 'residential-ring' }))
     .filter(({ cellNum }) => !DISTRICT_BUILD_SLOTS.has(cellNum)),
 ]);
+const STASIS_COLLECTOR_CELL_NUM = 8;
+const KADERIUM_FORGE_CELL_NUM = 17;
+const NANO_CRYSTALLIZER_CELL_NUM = 11;
+const GREENHOUSE_FARM_CELL_NUM = 14;
+const DISTRICT_ENERGY_SCENARIO = Object.freeze([
+  ...DISTRICT_SCENARIO,
+  Object.freeze({
+    cellNum: STASIS_COLLECTOR_CELL_NUM,
+    complexGroup: 'stasis-energy',
+    connectable: false,
+    visualKey: 'voranerEnergy01',
+  }),
+]);
+const DISTRICT_FUNCTIONAL_SCENARIO = Object.freeze([
+  ...DISTRICT_ENERGY_SCENARIO,
+  Object.freeze({
+    cellNum: KADERIUM_FORGE_CELL_NUM,
+    complexGroup: 'kaderium-industry',
+    connectable: false,
+    visualKey: 'voranerForge03',
+  }),
+]);
+const DISTRICT_PRODUCTION_SCENARIO = Object.freeze([
+  ...DISTRICT_FUNCTIONAL_SCENARIO,
+  Object.freeze({
+    cellNum: NANO_CRYSTALLIZER_CELL_NUM,
+    complexGroup: 'nano-industry',
+    connectable: false,
+    visualKey: 'voranerNano02',
+  }),
+  Object.freeze({
+    cellNum: GREENHOUSE_FARM_CELL_NUM,
+    complexGroup: 'food-industry',
+    connectable: false,
+    visualKey: 'voranerFood02',
+  }),
+]);
+const SPECIAL_PACKAGE_PRESETS = Object.freeze({
+  voranerMix: Object.freeze(['voranerEnergy01', 'voranerForge03', 'voranerNano02', 'voranerFood02']),
+  voranerDistrictEnergy: Object.freeze(['voranerEnergy01']),
+  voranerDistrictFunctional: Object.freeze(['voranerEnergy01', 'voranerForge03']),
+  voranerDistrictProduction: Object.freeze(['voranerEnergy01', 'voranerForge03', 'voranerNano02', 'voranerFood02']),
+});
+const BUILDING_CHOICES = Object.freeze({
+  0: Object.freeze({ label: 'Башенный дом v02', complexGroup: 'residential-ring' }),
+  1: Object.freeze({ label: 'Купольный дом v03', complexGroup: 'residential-ring' }),
+  2: Object.freeze({ label: 'Овальный дом v05', complexGroup: 'residential-ring' }),
+  3: Object.freeze({ label: 'Стази-сборщик', complexGroup: 'stasis-energy', visualKey: 'voranerEnergy01', connectable: false }),
+  4: Object.freeze({ label: 'Кадериумная кузница', complexGroup: 'kaderium-industry', visualKey: 'voranerForge03', connectable: false }),
+  5: Object.freeze({ label: 'Нанокристаллизатор', complexGroup: 'nano-industry', visualKey: 'voranerNano02', connectable: false }),
+  6: Object.freeze({ label: 'Фермерский парник', complexGroup: 'food-industry', visualKey: 'voranerFood02', connectable: false }),
+  7: Object.freeze({ label: 'Завод лёгкого вооружения', complexGroup: 'light-weapons-industry', visualKey: 'voranerLightWeapons02', connectable: false }),
+  8: Object.freeze({ label: 'Фабрика тяжёлого вооружения', complexGroup: 'heavy-weapons-industry', visualKey: 'voranerHeavyWeapons02', connectable: false }),
+  9: Object.freeze({ label: 'Военная база', complexGroup: 'military-command', visualKey: 'voranerMilitaryBase03', connectable: false }),
+});
 const SCENARIOS = Object.freeze({
   district: DISTRICT_SCENARIO,
   districtWide: DISTRICT_SCENARIO,
@@ -620,6 +694,9 @@ function isBuildableCell(cellNum) {
   if (controls.scenarioSelect.value === 'shadowLab') {
     return pilotCells.some((cell) => cell.num === cellNum);
   }
+  if (controls.scenarioSelect.value === 'districtWide') {
+    return pilotCells.some((cell) => cell.num === cellNum) && !isRingGateCell(cellNum);
+  }
   return DISTRICT_BUILD_SLOTS.has(cellNum) || removedCells.has(cellNum);
 }
 
@@ -632,6 +709,16 @@ function constructionComplexGroup(cellNum) {
   return ['district', 'districtWide'].includes(controls.scenarioSelect.value)
     ? 'residential-ring'
     : 'residential';
+}
+
+function buildingChoice(variant) {
+  return BUILDING_CHOICES[variant] ?? BUILDING_CHOICES[0];
+}
+
+function buildingLabelForMember(member, fallbackVariant = 0) {
+  const specialChoice = Object.values(BUILDING_CHOICES)
+    .find((choice) => choice.visualKey && choice.visualKey === member?.visualKey);
+  return (specialChoice ?? buildingChoice(member?.buildingVariant ?? fallbackVariant)).label;
 }
 
 function showsAncientEnvironment() {
@@ -675,6 +762,7 @@ const shadowMode = requestedShadowMode === 'projection' || requestedShadowMode =
 const previewPackage = previewParams.get('package');
 if (previewPackage && (Object.hasOwn(PACKAGE_URLS, previewPackage) || Object.hasOwn(PACKAGE_PRESETS, previewPackage))) {
   controls.packageSelect.value = previewPackage;
+  if (['voranerEnergy01', 'voranerForge02', 'voranerForge03', 'voranerNano01', 'voranerNano02', 'voranerFood01', 'voranerFood02', 'voranerLightWeapons01', 'voranerLightWeapons02', 'voranerHeavyWeapons01', 'voranerHeavyWeapons02', 'voranerMilitaryBase03'].includes(previewPackage)) controls.residentialGround.checked = false;
 }
 const previewScenario = previewParams.get('scenario');
 if (previewScenario && Object.hasOwn(SCENARIOS, previewScenario)) {
@@ -720,7 +808,14 @@ function rebuildVariants() {
 }
 
 function rebuildScenario() {
-  const scenarioDefinition = SCENARIOS[controls.scenarioSelect.value] ?? SCENARIOS.sevenFull;
+  const districtScenario = ['district', 'districtWide'].includes(controls.scenarioSelect.value);
+  const scenarioDefinition = districtScenario && controls.packageSelect.value === 'voranerDistrictProduction'
+    ? DISTRICT_PRODUCTION_SCENARIO
+    : districtScenario && controls.packageSelect.value === 'voranerDistrictFunctional'
+      ? DISTRICT_FUNCTIONAL_SCENARIO
+      : districtScenario && controls.packageSelect.value === 'voranerDistrictEnergy'
+        ? DISTRICT_ENERGY_SCENARIO
+        : (SCENARIOS[controls.scenarioSelect.value] ?? SCENARIOS.sevenFull);
   const editable = isEditableScenario();
   const baseDefinition = editable
     ? removeBuildings(scenarioDefinition, removedCells)
@@ -827,9 +922,11 @@ function drawBuilding(cell, scale, center, member) {
   const anchorX = cell.x + BUILDING_ANCHOR[0];
   const anchorY = cell.y + BUILDING_ANCHOR[1];
   const assignment = variantByCell.get(cell.num);
-  const selectedPackage = activePackages.length > 0
-    ? activePackages[(assignment?.variant ?? 0) % activePackages.length]
-    : null;
+  const selectedPackage = member?.visualKey
+    ? activeSpecialPackages.get(member.visualKey)
+    : activePackages.length > 0
+      ? activePackages[(assignment?.variant ?? 0) % activePackages.length]
+      : null;
   const visual = selectedPackage?.visual;
   const layers = selectedPackage?.layers;
 
@@ -939,9 +1036,11 @@ function resolveArtItem(item) {
   const assignment = variantByCell.get(item.cell.num);
   const member = memberByCell.get(item.cell.num);
   const packageVariant = member?.buildingVariant ?? assignment?.variant ?? 0;
-  const selectedPackage = activePackages.length > 0
-    ? activePackages[packageVariant % activePackages.length]
-    : null;
+  const selectedPackage = member?.visualKey
+    ? activeSpecialPackages.get(member.visualKey)
+    : activePackages.length > 0
+      ? activePackages[packageVariant % activePackages.length]
+      : null;
   if (!selectedPackage) return null;
   return {
     ...selectedPackage,
@@ -1857,12 +1956,13 @@ function updateBuildPanel() {
   if (inShadowLab) {
     buildButtons[0].textContent = 'PNG-дом · математическая тень';
     buildButtons[1].textContent = '3D-дублёр · физическая тень';
-    buildButtons[2].hidden = true;
+    buildButtons.slice(2).forEach((button) => { button.hidden = true; });
   } else {
-    buildButtons[0].textContent = 'Башенный дом v02';
-    buildButtons[1].textContent = 'Купольный дом v03';
-    buildButtons[2].textContent = 'Овальный дом v05';
-    buildButtons[2].hidden = false;
+    buildButtons.forEach((button) => {
+      const choice = buildingChoice(Number(button.dataset.buildingVariant));
+      button.textContent = choice.label;
+      button.hidden = false;
+    });
   }
   if (member?.state === 'construction') {
     controls.buildHint.textContent = `Клетка ${selectedCellNum}: строительство идёт. Нажмите на дом ещё раз, чтобы завершить.`;
@@ -1871,9 +1971,10 @@ function updateBuildPanel() {
   if (member) {
     const disabled = member.state === 'disabled';
     const level = member.level ?? 1;
+    const buildingName = buildingLabelForMember(member, variantByCell.get(selectedCellNum)?.variant ?? 0);
     controls.buildHint.textContent = disabled
-      ? `Клетка ${selectedCellNum}: здание уровня ${level} отключено.`
-      : `Клетка ${selectedCellNum}: здание уровня ${level} работает.`;
+      ? `Клетка ${selectedCellNum}: ${buildingName}, уровень ${level}, отключено.`
+      : `Клетка ${selectedCellNum}: ${buildingName}, уровень ${level}, работает.`;
     controls.togglePower.textContent = disabled ? 'Включить здание' : 'Отключить здание';
     controls.togglePower.hidden = false;
     controls.upgradeBuilding.textContent = level >= 3 ? 'Максимальный уровень 3' : `Улучшить до уровня ${level + 1}`;
@@ -1885,10 +1986,6 @@ function updateBuildPanel() {
   if (isBuildableCell(selectedCellNum)) {
     controls.buildHint.textContent = `Клетка ${selectedCellNum} свободна. Выберите одноклеточное здание:`;
     controls.buildMenu.hidden = false;
-    return;
-  }
-  if (inShadowLab === false && controls.scenarioSelect.value === 'districtWide' && selectedCellNum >= 19) {
-    controls.buildHint.textContent = `Клетка ${selectedCellNum}: свободная территория окружения. Жилая застройка здесь пока отключена.`;
     return;
   }
   controls.buildHint.textContent = 'Выберите подсвеченную свободную клетку внешнего кольца.';
@@ -2389,7 +2486,8 @@ function render() {
     })),
     ...fusions.map((fusion) => ({ kind: 'fusion', anchor: fusion.anchor, fusion })),
   ]);
-  const hasAuthoredCastShadow = activePackages.some((item) => Boolean(item.layers.castShadow));
+  const hasAuthoredCastShadow = [...activePackages, ...activeSpecialPackages.values()]
+    .some((item) => Boolean(item.layers.castShadow));
   if (!complexTheme.showTopology && (
     activeFusionPackages.size > 0
     || hasAuthoredCastShadow
@@ -2492,24 +2590,39 @@ async function selectPackage(manifestUrl) {
         return [kind, { visual, layers }];
       }))
       : [];
+    const specialKeys = SPECIAL_PACKAGE_PRESETS[manifestUrl] ?? [];
+    const specialPackages = specialKeys.length > 0
+      ? await Promise.all(specialKeys.map(async (key) => {
+        const visual = await loadBuildingVisual(PACKAGE_URLS[key]);
+        const layers = await loadVisualLayers(visual);
+        return [key, { visual, layers }];
+      }))
+      : [];
     if (request !== packageRequest) return;
     packages.sort((a, b) => (a.visual.variant ?? 0) - (b.visual.variant ?? 0));
     activePackages = packages;
     activeFusionPackages = new Map(fusionPackages);
+    activeSpecialPackages = new Map(specialPackages);
     activeVisual = packages[0].visual;
     applyActiveWaterTuningProfile();
     rebuildScenario();
-    const layerCount = [...packages, ...fusionPackages.map(([, item]) => item)]
+    const layerCount = [...packages, ...fusionPackages.map(([, item]) => item), ...specialPackages.map(([, item]) => item)]
       .reduce((sum, item) => sum + Object.keys(item.layers).length, 0);
-    controls.packageStatus.textContent = fusionPackages.length > 0
-      ? `${packages.length} дома · ${fusionPackages.length} комплекса · ${layerCount} слоёв`
-      : `${packages.length} пакет(а) · ${layerCount} слоёв`;
+    const specialPackageLabel = specialPackages.length === 1
+      ? '1 особое здание'
+      : `${specialPackages.length} особых здания`;
+    controls.packageStatus.textContent = specialPackages.length > 0
+      ? `${packages.length} дома · ${fusionPackages.length} комплекса · ${specialPackageLabel} · ${layerCount} слоёв`
+      : fusionPackages.length > 0
+        ? `${packages.length} дома · ${fusionPackages.length} комплекса · ${layerCount} слоёв`
+        : `${packages.length} пакет(а) · ${layerCount} слоёв`;
     render();
   } catch (error) {
     if (request !== packageRequest) return;
     activeVisual = null;
     activePackages = [];
     activeFusionPackages = new Map();
+    activeSpecialPackages = new Map();
     applyActiveWaterTuningProfile();
     controls.packageStatus.classList.add('error');
     controls.packageStatus.textContent = error instanceof Error ? error.message : String(error);
@@ -2560,6 +2673,46 @@ controls.packageSelect.addEventListener('change', () => {
     controls.scenarioSelect.value = 'sevenFull';
     controls.zoom.value = '145';
     updateZoomLabel();
+  } else if (controls.packageSelect.value === 'voranerEnergy01') {
+    controls.scenarioSelect.value = 'single';
+    controls.zoom.value = '190';
+    controls.residentialGround.checked = false;
+    updateZoomLabel();
+  } else if (controls.packageSelect.value === 'voranerForge02' || controls.packageSelect.value === 'voranerForge03') {
+    controls.scenarioSelect.value = 'single';
+    controls.zoom.value = '190';
+    controls.residentialGround.checked = false;
+    updateZoomLabel();
+  } else if (controls.packageSelect.value === 'voranerNano01' || controls.packageSelect.value === 'voranerNano02') {
+    controls.scenarioSelect.value = 'single';
+    controls.zoom.value = '190';
+    controls.residentialGround.checked = false;
+    updateZoomLabel();
+  } else if (controls.packageSelect.value === 'voranerFood01' || controls.packageSelect.value === 'voranerFood02') {
+    controls.scenarioSelect.value = 'single';
+    controls.zoom.value = '190';
+    controls.residentialGround.checked = false;
+    updateZoomLabel();
+  } else if (controls.packageSelect.value === 'voranerLightWeapons01' || controls.packageSelect.value === 'voranerLightWeapons02' || controls.packageSelect.value === 'voranerHeavyWeapons01' || controls.packageSelect.value === 'voranerHeavyWeapons02' || controls.packageSelect.value === 'voranerMilitaryBase03') {
+    controls.scenarioSelect.value = 'single';
+    controls.zoom.value = '190';
+    controls.residentialGround.checked = false;
+    updateZoomLabel();
+  } else if (controls.packageSelect.value === 'voranerDistrictEnergy') {
+    controls.scenarioSelect.value = 'district';
+    controls.zoom.value = '170';
+    controls.residentialGround.checked = true;
+    updateZoomLabel();
+  } else if (controls.packageSelect.value === 'voranerDistrictFunctional') {
+    controls.scenarioSelect.value = 'district';
+    controls.zoom.value = '170';
+    controls.residentialGround.checked = true;
+    updateZoomLabel();
+  } else if (controls.packageSelect.value === 'voranerDistrictProduction') {
+    controls.scenarioSelect.value = 'district';
+    controls.zoom.value = '170';
+    controls.residentialGround.checked = true;
+    updateZoomLabel();
   }
   selectPackage(controls.packageSelect.value);
 });
@@ -2575,11 +2728,17 @@ controls.buildMenu.addEventListener('click', (event) => {
   const button = event.target.closest('[data-building-variant]');
   const buildable = isBuildableCell(selectedCellNum);
   if (!button || memberByCell.has(selectedCellNum) || !buildable) return;
+  const variant = Number(button.dataset.buildingVariant);
+  const choice = buildingChoice(variant);
+  const properties = choice.visualKey
+    ? { visualKey: choice.visualKey, connectable: choice.connectable }
+    : {};
   constructionBuildings = beginConstruction(
     constructionBuildings,
     selectedCellNum,
-    Number(button.dataset.buildingVariant),
-    constructionComplexGroup(selectedCellNum),
+    variant,
+    choice.visualKey ? choice.complexGroup : constructionComplexGroup(selectedCellNum),
+    properties,
   );
   rebuildScenario();
   render();

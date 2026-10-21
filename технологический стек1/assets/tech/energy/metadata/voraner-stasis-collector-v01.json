@@ -1,0 +1,15 @@
+{
+  "id": "tech/energy/voraner-stasis-collector-v01",
+  "race": "tech",
+  "complexGroup": "stasis-energy",
+  "variant": 0,
+  "footprint": [1, 1],
+  "logicalWidth": 56,
+  "anchor": [0.5, 0.965],
+  "shadowOffset": [0, 0],
+  "emissiveOffset": [0, 0],
+  "ports": [false, false, false, false, false, false],
+  "layers": {
+    "color": "../exports/voraner-stasis-collector-v01-color.png?v=20261014-2"
+  }
+}
