@@ -155,6 +155,7 @@ const MAP_ASSETS = {
   groundRingV14Preview: { alias: 'hive-lab/ground-ring-v14-preview', src: publicAssetUrl('/assets/hive-lab/home-hive-large-v14-preview.png?v=20261021-1') },
   groundRingV15: { alias: 'hive-lab/ground-ring-v15', src: publicAssetUrl('/assets/hive-lab/home-hive-large-v15-cell-locked-4608.png?v=20261020-1') },
   groundRingV17Preview: { alias: 'hive-lab/ground-ring-v17-preview', src: publicAssetUrl('/assets/hive-lab/home-hive-large-v17-preview.png?v=20261022-1') },
+  groundRingV19Preview: { alias: 'hive-lab/ground-ring-v19-preview', src: publicAssetUrl('/assets/hive-lab/home-hive-large-v19-preview.png?v=20261022-1') },
   v02: { alias: 'hive-lab/v02', src: publicAssetUrl('/assets/hive-lab/house-v02.png'), logicalWidth: 56, anchor: [0.5, 0.954128] as const },
   v02Emissive: { alias: 'hive-lab/v02-emissive', src: publicAssetUrl('/assets/hive-lab/house-v02-emissive.png') },
   v03: { alias: 'hive-lab/v03', src: publicAssetUrl('/assets/hive-lab/house-v03.png'), logicalWidth: 54, anchor: [0.5, 0.839867] as const },
@@ -228,6 +229,7 @@ const RUNTIME_PNG_BYTES = {
   ringV14Preview: 5_090_805,
   ringV15: 37_862_672,
   ringV17Preview: 3_755_073,
+  ringV19Preview: 3_845_278,
 } as const;
 
 const V14_TILE_COLUMNS = 6;
@@ -266,6 +268,27 @@ const V17_GROUND_TILES: GroundTileState[] = V17_TILE_PNG_BYTES.map((pngBytes, in
   return {
     alias: `hive-lab/ground-ring-v17-r${row}-c${column}`,
     src: publicAssetUrl(`/assets/hive-lab/home-hive-large-v17-tiles/r${row}-c${column}.png?v=20261022-1`),
+    column,
+    row,
+    pngBytes,
+    loading: false,
+    sprite: null,
+  };
+});
+
+const V19_TILE_PNG_BYTES = [
+  1_093_750, 1_146_446, 1_101_848, 1_079_893, 1_105_780, 1_080_736,
+  1_097_091, 1_037_470, 911_518, 940_553, 1_033_288, 1_089_732,
+  1_152_296, 1_152_686, 1_030_586, 1_020_501, 1_098_317, 1_181_917,
+  1_212_483, 1_179_566, 1_166_056, 1_179_395, 1_187_345, 1_192_015,
+] as const;
+
+const V19_GROUND_TILES: GroundTileState[] = V19_TILE_PNG_BYTES.map((pngBytes, index) => {
+  const row = Math.floor(index / V14_TILE_COLUMNS);
+  const column = index % V14_TILE_COLUMNS;
+  return {
+    alias: `hive-lab/ground-ring-v19-r${row}-c${column}`,
+    src: publicAssetUrl(`/assets/hive-lab/home-hive-large-v19-tiles/r${row}-c${column}.png?v=20261022-1`),
     column,
     row,
     pngBytes,
@@ -565,7 +588,7 @@ export class Hive217Experiment {
   private contactShadowsEnabled = true;
   private fusionsEnabled = true;
   private ringGroundEnabled = false;
-  private ringGroundVersion: 'v04' | 'v05' | 'v07' | 'v08' | 'v09' | 'v10' | 'v11' | 'v12' | 'v13' | 'v14' | 'v15' | 'v17' = 'v15';
+  private ringGroundVersion: 'v04' | 'v05' | 'v07' | 'v08' | 'v09' | 'v10' | 'v11' | 'v12' | 'v13' | 'v14' | 'v15' | 'v17' | 'v19' = 'v15';
   private terrainCalibrationEnabled = false;
   private terrainAuditEnabled = false;
   private buildNotice = '';
@@ -634,7 +657,7 @@ export class Hive217Experiment {
     this.fusionsEnabled = urlParams.get('fusions') !== 'off';
     this.terrainAuditEnabled = urlParams.get('terrain-audit') === 'on';
     this.terrainCalibrationEnabled = urlParams.get('terrain-map') === 'on' || this.terrainAuditEnabled;
-    const groundParam = urlParams.get('ground') ?? (this.demoMode ? 'ring-v17' : null);
+    const groundParam = urlParams.get('ground') ?? (this.demoMode ? 'ring-v19' : null);
     this.ringGroundEnabled = groundParam !== 'legacy';
     this.ringGroundVersion = groundParam === 'ring-v04'
       ? 'v04'
@@ -656,8 +679,12 @@ export class Hive217Experiment {
                         ? 'v13'
                         : groundParam === 'ring-v14'
                           ? 'v14'
-                          : groundParam === 'ring-v17' ? 'v17' : 'v15';
-    this.groundTiles = (this.ringGroundVersion === 'v17' ? V17_GROUND_TILES : V14_GROUND_TILES)
+                          : groundParam === 'ring-v17'
+                            ? 'v17'
+                            : groundParam === 'ring-v19' ? 'v19' : 'v15';
+    this.groundTiles = (this.ringGroundVersion === 'v19'
+      ? V19_GROUND_TILES
+      : this.ringGroundVersion === 'v17' ? V17_GROUND_TILES : V14_GROUND_TILES)
       .map((tile) => ({ ...tile }));
     this.restoreTerrainAudit();
     const contactShadowInput = this.hud.querySelector<HTMLInputElement>('[data-action="contact-shadows"]');
@@ -690,7 +717,9 @@ export class Hive217Experiment {
                         ? MAP_ASSETS.groundRingV13
                         : this.ringGroundVersion === 'v14'
                           ? MAP_ASSETS.groundRingV14Preview
-                          : this.ringGroundVersion === 'v17' ? MAP_ASSETS.groundRingV17Preview : MAP_ASSETS.groundRingV15;
+                          : this.ringGroundVersion === 'v17'
+                            ? MAP_ASSETS.groundRingV17Preview
+                            : this.ringGroundVersion === 'v19' ? MAP_ASSETS.groundRingV19Preview : MAP_ASSETS.groundRingV15;
     const groundAliases = new Set([
       MAP_ASSETS.ground.alias,
       MAP_ASSETS.groundRingV04.alias,
@@ -706,6 +735,7 @@ export class Hive217Experiment {
       MAP_ASSETS.groundRingV14Preview.alias,
       MAP_ASSETS.groundRingV15.alias,
       MAP_ASSETS.groundRingV17Preview.alias,
+      MAP_ASSETS.groundRingV19Preview.alias,
     ]);
     const activeAssets = Object.values(MAP_ASSETS).filter(({ alias }) => !groundAliases.has(alias) || alias === activeGround.alias);
     await Assets.load(activeAssets.map(({ alias, src }) => ({ alias, src })));
@@ -824,12 +854,14 @@ export class Hive217Experiment {
                         ? MAP_ASSETS.groundRingV13
                         : this.ringGroundVersion === 'v14'
                           ? MAP_ASSETS.groundRingV14Preview
-                          : this.ringGroundVersion === 'v17' ? MAP_ASSETS.groundRingV17Preview : MAP_ASSETS.groundRingV15;
+                          : this.ringGroundVersion === 'v17'
+                            ? MAP_ASSETS.groundRingV17Preview
+                            : this.ringGroundVersion === 'v19' ? MAP_ASSETS.groundRingV19Preview : MAP_ASSETS.groundRingV15;
     const texture = Assets.get(groundAsset.alias);
     const ground = new Sprite(texture);
     const aspect = texture.width / texture.height;
     if (this.ringGroundEnabled) {
-      if (this.ringGroundVersion === 'v07' || this.ringGroundVersion === 'v08' || this.ringGroundVersion === 'v09' || this.ringGroundVersion === 'v10' || this.ringGroundVersion === 'v11' || this.ringGroundVersion === 'v12' || this.ringGroundVersion === 'v13' || this.ringGroundVersion === 'v14' || this.ringGroundVersion === 'v15' || this.ringGroundVersion === 'v17') {
+      if (this.ringGroundVersion === 'v07' || this.ringGroundVersion === 'v08' || this.ringGroundVersion === 'v09' || this.ringGroundVersion === 'v10' || this.ringGroundVersion === 'v11' || this.ringGroundVersion === 'v12' || this.ringGroundVersion === 'v13' || this.ringGroundVersion === 'v14' || this.ringGroundVersion === 'v15' || this.ringGroundVersion === 'v17' || this.ringGroundVersion === 'v19') {
         // В исходниках V07–V09 центральный шестиугольник занимает только часть
         // кадра. Масштабируем его шесть граней к точной игровой границе,
         // оставляя фрагменты соседних сот за пределами логической сетки.
@@ -844,7 +876,7 @@ export class Hive217Experiment {
         ground.y = 0;
       }
       this.world.addChildAt(ground, 0);
-      if (this.ringGroundVersion === 'v14' || this.ringGroundVersion === 'v17') {
+      if (this.ringGroundVersion === 'v14' || this.ringGroundVersion === 'v17' || this.ringGroundVersion === 'v19') {
         this.groundPreview = ground;
         this.world.addChildAt(this.groundTileLayer, 1);
       }
@@ -1007,11 +1039,11 @@ export class Hive217Experiment {
   }
 
   private homeTerrainAt(cellNum: number): HomeTerrainCode {
-    // V17 сохраняет геометрию и принятую классификацию V14, поэтому их
+    // V17–V19 сохраняют геометрию и принятую классификацию V14, поэтому их
     // разметка является единым источником для подписей, меню строительства
     // и восстановления сохранённых домов. Иначе игрок видит один грунт,
     // а после перезагрузки снова получает тип из старого проектного плана.
-    const terrain = this.ringGroundVersion === 'v14' || this.ringGroundVersion === 'v17'
+    const terrain = this.ringGroundVersion === 'v14' || this.ringGroundVersion === 'v17' || this.ringGroundVersion === 'v19'
       ? this.actualTerrain[cellNum]
       : this.terrain[cellNum];
     if (!isHomeTerrainCode(terrain)) throw new Error(`Неизвестный тип поверхности ${terrain} в клетке ${cellNum}`);
@@ -1450,7 +1482,7 @@ export class Hive217Experiment {
   }
 
   private updateGroundTiles(): void {
-    if ((this.ringGroundVersion !== 'v14' && this.ringGroundVersion !== 'v17') || !this.cameraInitialized) return;
+    if ((this.ringGroundVersion !== 'v14' && this.ringGroundVersion !== 'v17' && this.ringGroundVersion !== 'v19') || !this.cameraInitialized) return;
     if (this.groundPreview) this.groundPreview.visible = true;
     const useHighDetail = !this.overviewMode && this.world.scale.x >= 0.72;
     const size = mapPixelSize();
@@ -1806,7 +1838,7 @@ export class Hive217Experiment {
   }
 
   private restoreTerrainAudit(): void {
-    const baseline = this.ringGroundVersion === 'v14' || this.ringGroundVersion === 'v17'
+    const baseline = this.ringGroundVersion === 'v14' || this.ringGroundVersion === 'v17' || this.ringGroundVersion === 'v19'
       ? HOME_ART_GROUND_V14_AUDIT
       : HOME_ART_GROUND;
     this.actualTerrain.splice(0, this.actualTerrain.length, ...(baseline.split('') as HomeTerrainCode[]));
@@ -1878,14 +1910,14 @@ export class Hive217Experiment {
   }
 
   private resetTerrainAudit(): void {
-    const baseline = this.ringGroundVersion === 'v14' || this.ringGroundVersion === 'v17'
+    const baseline = this.ringGroundVersion === 'v14' || this.ringGroundVersion === 'v17' || this.ringGroundVersion === 'v19'
       ? HOME_ART_GROUND_V14_AUDIT
       : HOME_ART_GROUND;
     this.actualTerrain.splice(0, this.actualTerrain.length, ...(baseline.split('') as HomeTerrainCode[]));
     this.saveTerrainAudit();
     this.drawTerrainCalibration();
     const status = this.hud.querySelector<HTMLElement>('[data-role="terrain-audit-status"]');
-    if (status) status.textContent = this.ringGroundVersion === 'v14' || this.ringGroundVersion === 'v17'
+    if (status) status.textContent = this.ringGroundVersion === 'v14' || this.ringGroundVersion === 'v17' || this.ringGroundVersion === 'v19'
       ? 'Разметка возвращена к принятой классификации художественной подложки и сохранена локально.'
       : 'Разметка возвращена к исходному плану и сохранена локально.';
     this.updateHud();
@@ -2250,13 +2282,15 @@ export class Hive217Experiment {
                             ? RUNTIME_PNG_BYTES.ringV14Preview + this.loadedGroundTilePngBytes
                             : this.ringGroundVersion === 'v17'
                               ? RUNTIME_PNG_BYTES.ringV17Preview + this.loadedGroundTilePngBytes
-                              : RUNTIME_PNG_BYTES.ringV15;
+                              : this.ringGroundVersion === 'v19'
+                                ? RUNTIME_PNG_BYTES.ringV19Preview + this.loadedGroundTilePngBytes
+                                : RUNTIME_PNG_BYTES.ringV15;
       loadMetrics.innerHTML = `
         <div><b>${working + construction + disabled}</b> занятых клеток · <b>${visualCount ?? this.lastVisualCount}</b> визуальных зданий · <b>${this.lastVisibleCount}</b> в кадре</div>
         <div>Объединение <b>${this.fusionsEnabled ? 'включено' : 'выключено'}</b> · контактная тень <b>${this.contactShadowsEnabled ? 'включена' : 'выключена'}</b></div>
         <div><b>${visibleWaterSurfaceCount}</b> из ${waterSurfaceCount} водных поверхностей в кадре · анимация ${this.animationEnabled ? 'включена' : 'выключена'}</div>
         <div><b>${fps || '—'} FPS</b> · ${frameMs ? `${frameMs.toFixed(1).replace('.', ',')} мс/кадр` : 'сбор данных'}</div>
-        ${this.ringGroundVersion === 'v14' || this.ringGroundVersion === 'v17' ? `<div>HD-тайлы ${this.ringGroundVersion.toUpperCase()}: <b>${loadedTileCount} / ${this.groundTiles.length}</b> · ${this.overviewMode ? 'сейчас только preview' : 'видимая область + preview'}</div>` : ''}
+        ${this.ringGroundVersion === 'v14' || this.ringGroundVersion === 'v17' || this.ringGroundVersion === 'v19' ? `<div>HD-тайлы ${this.ringGroundVersion.toUpperCase()}: <b>${loadedTileCount} / ${this.groundTiles.length}</b> · ${this.overviewMode ? 'сейчас только preview' : 'видимая область + preview'}</div>` : ''}
         <div>PNG <b>${toMiB(groundPngBytes)} МиБ</b> · текстуры сцены ≈ <b>${toMiB(this.runtimeTextureBytes + this.groundTileTextureBytes + shadowTextureBytes)} МиБ</b></div>
         <small>Оценка RGBA в памяти, без кадровых буферов браузера.</small>`;
     }
@@ -2264,7 +2298,7 @@ export class Hive217Experiment {
     const auditCounts = this.hud.querySelector<HTMLElement>('[data-role="terrain-audit-counts"]');
     const terrainContract = this.hud.querySelector<HTMLElement>('[data-role="terrain-contract"]');
     if (terrainContract) {
-      const source = this.ringGroundVersion === 'v14' || this.ringGroundVersion === 'v17' ? this.actualTerrain : this.terrain;
+      const source = this.ringGroundVersion === 'v14' || this.ringGroundVersion === 'v17' || this.ringGroundVersion === 'v19' ? this.actualTerrain : this.terrain;
       const count = (code: HomeTerrainCode) => source.filter((value) => value === code).length;
       terrainContract.textContent = `${count('S')} земли · ${count('D')} песка · ${count('G')} травы · ${count('W')} воды · центр X`;
     }
@@ -2435,7 +2469,7 @@ export class Hive217Experiment {
     const maximumScale = this.detailCameraScale() * 2.5;
     const nextScale = Math.max(minimumScale, Math.min(maximumScale, requestedScale));
     // Обычное колесо и ползунок раньше меняли scale, но оставляли флаг
-    // overviewMode=true. Из-за этого HD-тайлы V14/V17 никогда не включались
+    // overviewMode=true. Из-за этого HD-тайлы V14/V17/V19 никогда не включались
     // при ручном приближении и игрок всё время растягивал лёгкий preview.
     this.overviewMode = nextScale <= this.overviewCameraScale() * 1.04;
     const worldPoint = this.world.toLocal(screenPoint);

@@ -38,6 +38,10 @@ desktop.ini
 /технологический стек1/tmp/
 /client/art-source/hive-lab/experiments/
 /client/art-source/hive-lab/masters/
+/client/art-source/hive-lab/environment-v18/
+/client/public/assets/hive-lab/home-hive-large-v18-preview.png
+/client/public/assets/hive-lab/home-hive-large-v18-tiles/
+/client/scripts/build-hive-terrain-v18.py
 **/__pycache__/
 *.pyc
 *.blend1
