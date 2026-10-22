@@ -36,6 +36,8 @@ desktop.ini
 /tmp/
 /client/tmp/
 /технологический стек1/tmp/
+/client/art-source/hive-lab/experiments/
+/client/art-source/hive-lab/masters/
 **/__pycache__/
 *.pyc
 *.blend1
