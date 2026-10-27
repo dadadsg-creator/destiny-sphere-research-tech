@@ -39,6 +39,10 @@ jobs:
           VITE_BASE_PATH: /destiny-sphere-research-tech/
         run: npm run build
 
+      - name: Check V22 terrain and showcase
+        working-directory: client
+        run: npm run check:terrain-v22
+
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 

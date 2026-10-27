@@ -8,6 +8,10 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   base: process.env.VITE_BASE_PATH || '/',
   server: {
+    fs: {
+      // Local API credentials must also be inaccessible via /@fs/.
+      deny: ['.env', '.env.*', '*.{crt,pem}', '**/.git/**', '**/.private/**'],
+    },
     proxy: {
       '/ds': {
         target: 'https://destinysphere.ru',

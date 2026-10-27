@@ -11,6 +11,8 @@ import {
 } from 'pixi.js';
 import { buildHexGrid, buildingAnchor, hexPolygonPoints, mapPixelSize, type CellPosition } from './hexGrid';
 import { HOME_ART_GROUND, HOME_ART_GROUND_V14_AUDIT } from './locationGround';
+import { restoreV22Audit, v22AuditCounts } from './terrainV22Audit';
+import { V22_SHOWCASE } from './showcaseV22';
 import {
   BUILDING_LABELS,
   TERRAIN_BUILD_HINTS,
@@ -157,6 +159,7 @@ const MAP_ASSETS = {
   groundRingV17Preview: { alias: 'hive-lab/ground-ring-v17-preview', src: publicAssetUrl('/assets/hive-lab/home-hive-large-v17-preview.png?v=20261022-1') },
   groundRingV19Preview: { alias: 'hive-lab/ground-ring-v19-preview', src: publicAssetUrl('/assets/hive-lab/home-hive-large-v19-preview.png?v=20261022-1') },
   groundRingV20Preview: { alias: 'hive-lab/ground-ring-v20-preview', src: publicAssetUrl('/assets/hive-lab/home-hive-large-v20-preview.png?v=20261022-1') },
+  groundRingV22: { alias: 'hive-lab/ground-ring-v22', src: publicAssetUrl('/terrain-uhd-lab/home-hive-v22-v14-silus-detail-3504.png?v=20261027-1') },
   v02: { alias: 'hive-lab/v02', src: publicAssetUrl('/assets/hive-lab/house-v02.png'), logicalWidth: 56, anchor: [0.5, 0.954128] as const },
   v02Emissive: { alias: 'hive-lab/v02-emissive', src: publicAssetUrl('/assets/hive-lab/house-v02-emissive.png') },
   v03: { alias: 'hive-lab/v03', src: publicAssetUrl('/assets/hive-lab/house-v03.png'), logicalWidth: 54, anchor: [0.5, 0.839867] as const },
@@ -232,6 +235,7 @@ const RUNTIME_PNG_BYTES = {
   ringV17Preview: 3_755_073,
   ringV19Preview: 3_845_278,
   ringV20Preview: 3_429_044,
+  ringV22: 22_107_460,
 } as const;
 
 const V14_TILE_COLUMNS = 6;
@@ -611,7 +615,9 @@ export class Hive217Experiment {
   private contactShadowsEnabled = true;
   private fusionsEnabled = true;
   private ringGroundEnabled = false;
-  private ringGroundVersion: 'v04' | 'v05' | 'v07' | 'v08' | 'v09' | 'v10' | 'v11' | 'v12' | 'v13' | 'v14' | 'v15' | 'v17' | 'v19' | 'v20' = 'v15';
+  private ringGroundVersion: 'v04' | 'v05' | 'v07' | 'v08' | 'v09' | 'v10' | 'v11' | 'v12' | 'v13' | 'v14' | 'v15' | 'v17' | 'v19' | 'v20' | 'v22' = 'v15';
+  private readonly v22AssignedTerrain = HOME_ART_GROUND_V14_AUDIT.split('') as HomeTerrainCode[];
+  private readonly v22ReviewedCells = new Set<number>();
   private terrainCalibrationEnabled = false;
   private terrainAuditEnabled = false;
   private buildNotice = '';
@@ -672,17 +678,17 @@ export class Hive217Experiment {
     this.overviewMode = true;
     if (urlParams.get('tools') === 'open') this.setDrawerOpen(true);
     const selectedCellValue = urlParams.get('selectedCell');
-    const selectedCellParam = selectedCellValue === null ? Number.NaN : Number(selectedCellValue);
+    const selectedCellParam = selectedCellValue === null ? (this.demoMode ? V22_SHOWCASE.selectedCell : Number.NaN) : Number(selectedCellValue);
     if (Number.isInteger(selectedCellParam) && selectedCellParam >= 0 && selectedCellParam < this.cells.length) {
       this.selectedCell = selectedCellParam;
     }
-    this.contactShadowsEnabled = urlParams.get('contact-shadow') !== 'off';
+    this.contactShadowsEnabled = urlParams.has('contact-shadow') ? urlParams.get('contact-shadow') !== 'off' : this.demoMode ? V22_SHOWCASE.contactShadows : true;
     this.fusionsEnabled = urlParams.get('fusions') !== 'off';
     this.terrainAuditEnabled = urlParams.get('terrain-audit') === 'on';
     this.terrainCalibrationEnabled = urlParams.get('terrain-map') === 'on' || this.terrainAuditEnabled;
-    const groundParam = urlParams.get('ground') ?? (this.demoMode ? 'ring-v20' : null);
+    const groundParam = urlParams.get('ground') ?? (this.demoMode ? 'ring-v22' : null);
     this.ringGroundEnabled = groundParam !== 'legacy';
-    this.ringGroundVersion = groundParam === 'ring-v04'
+    this.ringGroundVersion = groundParam === 'ring-v22' ? 'v22' : groundParam === 'ring-v04'
       ? 'v04'
       : groundParam === 'ring-v05'
         ? 'v05'
@@ -707,12 +713,22 @@ export class Hive217Experiment {
                             : groundParam === 'ring-v19'
                               ? 'v19'
                               : groundParam === 'ring-v20' ? 'v20' : 'v15';
-    this.groundTiles = (this.ringGroundVersion === 'v20'
+    this.groundTiles = (this.ringGroundVersion === 'v22' ? [] : this.ringGroundVersion === 'v20'
       ? V20_GROUND_TILES
       : this.ringGroundVersion === 'v19' ? V19_GROUND_TILES
       : this.ringGroundVersion === 'v17' ? V17_GROUND_TILES : V14_GROUND_TILES)
       .map((tile) => ({ ...tile }));
     this.restoreTerrainAudit();
+    if (this.demoMode && this.ringGroundVersion === 'v22') {
+      this.shadowTuning = { ...V22_SHOWCASE.shadowTuning };
+      this.shadowsEnabled = V22_SHOWCASE.shadows;
+      this.animationEnabled = V22_SHOWCASE.animation;
+      this.animationIntensity = V22_SHOWCASE.animationIntensity;
+      if (!urlParams.has('fusions')) this.fusionsEnabled = V22_SHOWCASE.fusions;
+      if (!this.terrainAuditEnabled) {
+        this.v22AssignedTerrain.splice(0, this.v22AssignedTerrain.length, ...(V22_SHOWCASE.terrain.split('') as HomeTerrainCode[]));
+      }
+    }
     const contactShadowInput = this.hud.querySelector<HTMLInputElement>('[data-action="contact-shadows"]');
     const fusionsInput = this.hud.querySelector<HTMLInputElement>('[data-action="fusions"]');
     const terrainMapInput = this.hud.querySelector<HTMLInputElement>('[data-action="terrain-map"]');
@@ -723,6 +739,7 @@ export class Hive217Experiment {
     if (terrainAuditInput) terrainAuditInput.checked = this.terrainAuditEnabled;
     const activeGround = !this.ringGroundEnabled
       ? MAP_ASSETS.ground
+      : this.ringGroundVersion === 'v22' ? MAP_ASSETS.groundRingV22
       : this.ringGroundVersion === 'v04'
         ? MAP_ASSETS.groundRingV04
         : this.ringGroundVersion === 'v05'
@@ -765,6 +782,7 @@ export class Hive217Experiment {
       MAP_ASSETS.groundRingV17Preview.alias,
       MAP_ASSETS.groundRingV19Preview.alias,
       MAP_ASSETS.groundRingV20Preview.alias,
+      MAP_ASSETS.groundRingV22.alias,
     ]);
     const activeAssets = Object.values(MAP_ASSETS).filter(({ alias }) => !groundAliases.has(alias) || alias === activeGround.alias);
     await Assets.load(activeAssets.map(({ alias, src }) => ({ alias, src })));
@@ -801,6 +819,7 @@ export class Hive217Experiment {
     const buildingsRestored = !this.demoMode && this.restoreBuildingState();
     if (!buildingsRestored) {
       if (urlParams.get('density') === 'full') this.seedAllBuildings();
+      else if (this.demoMode && this.ringGroundVersion === 'v22') this.seedV22Showcase();
       else this.seedGameBuildings();
       this.saveBuildingState();
     }
@@ -814,6 +833,28 @@ export class Hive217Experiment {
       if (saveSnapshotButton) saveSnapshotButton.disabled = true;
       if (restoreSnapshotButton) restoreSnapshotButton.disabled = true;
       this.setBuildingSaveStatus('Демонстрационный режим: сохранения отключены.');
+    }
+    if (this.ringGroundVersion === 'v22') {
+      const subtitle = this.hud.querySelector<HTMLElement>('[data-role="subtitle"]');
+      const help = this.hud.querySelector<HTMLElement>('[data-role="help"]');
+      const reset = this.hud.querySelector<HTMLButtonElement>('[data-action="reset-terrain-audit"]');
+      const auditHelp = this.hud.querySelector<HTMLElement>('[data-role="terrain-audit-help"]');
+      const saveStatus = this.hud.querySelector<HTMLElement>('[data-role="building-save-status"]');
+      if (subtitle) subtitle.textContent = this.terrainAuditEnabled ? 'V22 · сетка V14 · 217 клеток · отдельная сверка' : this.demoMode ? 'Полигон для Максима · V22 · 217 клеток' : 'Домашняя игровая сота · V22 · 217 клеток';
+      if (help) help.textContent = this.terrainAuditEnabled
+        ? 'Назначения клеток взяты из принятой V14. Отмечай видимый грунт кнопками S/D/G/W. Сверка V22 сохраняется отдельно и не меняет назначения клеток V14.'
+        : this.demoMode
+          ? 'Можно строить, сносить, объединять дома и настраивать свет. После обновления страницы возвращается стартовая сцена. Колесо приближает, перетаскивание двигает карту.'
+          : 'Колесо приближает, перетаскивание двигает карту. Выбери клетку для строительства. Застройка сохраняется в этом браузере автоматически.';
+      if (reset) reset.textContent = 'Сбросить сверку V22';
+      if (auditHelp) auditHelp.textContent = 'Выбери клетку и нажми видимый на рисунке грунт. Даже совпавший код отмечай кнопкой: появится ✓. Непроверенные клетки не входят в число подтверждённых совпадений.';
+      if (saveStatus && this.demoMode) saveStatus.textContent = 'Постройки в демонстрации не сохраняются; сверка грунта V22 сохраняется отдельно.';
+      const auditDetails = this.hud.querySelector('[data-action="terrain-audit"]')?.closest('details');
+      const firstDetails = this.hud.querySelector('details');
+      if (this.terrainAuditEnabled) {
+        if (auditDetails && firstDetails) firstDetails.before(auditDetails);
+        this.hud.querySelectorAll('details').forEach(details => { details.open = details === auditDetails; });
+      } else if (auditDetails) auditDetails.open = false;
     }
     this.bindInteraction();
     this.rebuildBuildings();
@@ -863,6 +904,7 @@ export class Hive217Experiment {
     const size = mapPixelSize();
     const groundAsset = !this.ringGroundEnabled
       ? MAP_ASSETS.ground
+      : this.ringGroundVersion === 'v22' ? MAP_ASSETS.groundRingV22
       : this.ringGroundVersion === 'v04'
         ? MAP_ASSETS.groundRingV04
         : this.ringGroundVersion === 'v05'
@@ -892,7 +934,7 @@ export class Hive217Experiment {
     const ground = new Sprite(texture);
     const aspect = texture.width / texture.height;
     if (this.ringGroundEnabled) {
-      if (this.ringGroundVersion === 'v07' || this.ringGroundVersion === 'v08' || this.ringGroundVersion === 'v09' || this.ringGroundVersion === 'v10' || this.ringGroundVersion === 'v11' || this.ringGroundVersion === 'v12' || this.ringGroundVersion === 'v13' || this.ringGroundVersion === 'v14' || this.ringGroundVersion === 'v15' || this.ringGroundVersion === 'v17' || this.ringGroundVersion === 'v19' || this.ringGroundVersion === 'v20') {
+      if (this.ringGroundVersion === 'v07' || this.ringGroundVersion === 'v08' || this.ringGroundVersion === 'v09' || this.ringGroundVersion === 'v10' || this.ringGroundVersion === 'v11' || this.ringGroundVersion === 'v12' || this.ringGroundVersion === 'v13' || this.ringGroundVersion === 'v14' || this.ringGroundVersion === 'v15' || this.ringGroundVersion === 'v17' || this.ringGroundVersion === 'v19' || this.ringGroundVersion === 'v20' || this.ringGroundVersion === 'v22') {
         // В исходниках V07–V09 центральный шестиугольник занимает только часть
         // кадра. Масштабируем его шесть граней к точной игровой границе,
         // оставляя фрагменты соседних сот за пределами логической сетки.
@@ -961,14 +1003,14 @@ export class Hive217Experiment {
     this.terrainCalibrationLayer.clear();
     this.terrainCalibrationLabelLayer.removeChildren().forEach((child) => child.destroy());
     for (const cell of this.cells) {
-      const plannedCode = this.terrain[cell.num];
+      const plannedCode = this.auditReferenceAt(cell.num);
       const code = this.terrainAuditEnabled ? this.actualTerrain[cell.num] : this.homeTerrainAt(cell.num);
       const mismatch = this.terrainAuditEnabled && code !== plannedCode;
       const color = TERRAIN_COLORS[code] ?? 0xffffff;
       const points = projectedCellPolygon(cell);
       this.terrainCalibrationLayer
         .poly(points)
-        .fill({ color, alpha: mismatch ? 0.52 : code === 'X' ? 0.66 : 0.3 })
+        .fill({ color, alpha: this.ringGroundVersion === 'v22' ? (mismatch ? 0.18 : 0.04) : mismatch ? 0.52 : code === 'X' ? 0.66 : 0.3 })
         .stroke({
           width: mismatch ? 2.4 : code === 'X' ? 1.5 : 0.8,
           color: mismatch ? 0xff6d5f : code === 'X' ? 0xe0d7ff : 0xe7f7ff,
@@ -976,7 +1018,7 @@ export class Hive217Experiment {
         });
 
       const label = new Text({
-        text: `#${String(cell.num).padStart(3, '0')} ${mismatch ? `${plannedCode}→${code}` : code}\nr${String(cell.row).padStart(2, '0')} c${String(cell.col).padStart(2, '0')}`,
+        text: `#${String(cell.num).padStart(3, '0')} ${mismatch ? `${plannedCode}→${code}` : code}${this.ringGroundVersion === 'v22' && this.v22ReviewedCells.has(cell.num) ? ' ✓' : ''}\nr${String(cell.row).padStart(2, '0')} c${String(cell.col).padStart(2, '0')}`,
         style: {
           fontFamily: 'Consolas, "Courier New", monospace',
           fontSize: 5.8,
@@ -1069,7 +1111,18 @@ export class Hive217Experiment {
     }
   }
 
+  private seedV22Showcase(): void {
+    for (const building of V22_SHOWCASE.buildings) {
+      if (!canBuildVariantOnTerrain(building.variant, this.homeTerrainAt(building.cell))) {
+        throw new Error(`Здание демонстрации несовместимо с грунтом клетки ${building.cell}`);
+      }
+      this.buildings.set(building.cell, building.state);
+      this.variants.set(building.cell, building.variant);
+    }
+  }
+
   private homeTerrainAt(cellNum: number): HomeTerrainCode {
+    if (this.ringGroundVersion === 'v22') return this.v22AssignedTerrain[cellNum];
     // V17–V20 сохраняют геометрию и принятую классификацию V14, поэтому их
     // разметка является единым источником для подписей, меню строительства
     // и восстановления сохранённых домов. Иначе игрок видит один грунт,
@@ -1079,6 +1132,12 @@ export class Hive217Experiment {
       : this.terrain[cellNum];
     if (!isHomeTerrainCode(terrain)) throw new Error(`Неизвестный тип поверхности ${terrain} в клетке ${cellNum}`);
     return terrain;
+  }
+
+  private auditReferenceAt(cellNum: number): HomeTerrainCode {
+    const code = this.ringGroundVersion === 'v22' ? this.v22AssignedTerrain[cellNum] : this.terrain[cellNum];
+    if (!isHomeTerrainCode(code)) throw new Error(`Неизвестное назначение грунта в клетке ${cellNum}`);
+    return code;
   }
 
   private bindInteraction(): void {
@@ -1720,7 +1779,8 @@ export class Hive217Experiment {
   reset(): void {
     this.buildings.clear();
     this.variants.clear();
-    this.seedGameBuildings();
+    if (this.demoMode && this.ringGroundVersion === 'v22') this.seedV22Showcase();
+    else this.seedGameBuildings();
     this.setDensityQuery(null);
     this.saveBuildingState();
     this.rebuildBuildings();
@@ -1869,6 +1929,20 @@ export class Hive217Experiment {
   }
 
   private restoreTerrainAudit(): void {
+    if (this.ringGroundVersion === 'v22') {
+      let stored: string | null = null;
+      let acceptedV14: string | null = null;
+      try {
+        stored = window.localStorage.getItem(this.terrainAuditStorageKey());
+        acceptedV14 = window.localStorage.getItem('ds:hive217:ring-v14:terrain-audit:v2');
+      } catch { /* Fall back to the accepted V14 stored in the project. */ }
+      const audit = restoreV22Audit(stored, acceptedV14);
+      this.v22AssignedTerrain.splice(0, this.v22AssignedTerrain.length, ...(audit.reference.split('') as HomeTerrainCode[]));
+      this.actualTerrain.splice(0, this.actualTerrain.length, ...(audit.actual.split('') as HomeTerrainCode[]));
+      this.v22ReviewedCells.clear();
+      audit.reviewed.forEach(n => this.v22ReviewedCells.add(n));
+      return;
+    }
     const baseline = this.ringGroundVersion === 'v14' || this.ringGroundVersion === 'v17' || this.ringGroundVersion === 'v19' || this.ringGroundVersion === 'v20'
       ? HOME_ART_GROUND_V14_AUDIT
       : HOME_ART_GROUND;
@@ -1886,7 +1960,10 @@ export class Hive217Experiment {
 
   private saveTerrainAudit(): void {
     try {
-      window.localStorage.setItem(this.terrainAuditStorageKey(), this.actualTerrain.join(''));
+      const value = this.ringGroundVersion === 'v22'
+        ? JSON.stringify({ version: 1, reference: this.v22AssignedTerrain.join(''), actual: this.actualTerrain.join(''), reviewed: [...this.v22ReviewedCells] })
+        : this.actualTerrain.join('');
+      window.localStorage.setItem(this.terrainAuditStorageKey(), value);
     } catch {
       // Сама разметка продолжает жить до перезагрузки страницы.
     }
@@ -1933,6 +2010,7 @@ export class Hive217Experiment {
 
   private setActualTerrain(code: HomeTerrainCode): void {
     this.actualTerrain[this.selectedCell] = code;
+    if (this.ringGroundVersion === 'v22') this.v22ReviewedCells.add(this.selectedCell);
     this.saveTerrainAudit();
     this.drawTerrainCalibration();
     this.selectionLayer.clear();
@@ -1941,6 +2019,14 @@ export class Hive217Experiment {
   }
 
   private resetTerrainAudit(): void {
+    if (this.ringGroundVersion === 'v22') {
+      this.actualTerrain.splice(0, this.actualTerrain.length, ...this.v22AssignedTerrain);
+      this.v22ReviewedCells.clear();
+      this.saveTerrainAudit();
+      this.drawTerrainCalibration();
+      this.updateHud();
+      return;
+    }
     const baseline = this.ringGroundVersion === 'v14' || this.ringGroundVersion === 'v17' || this.ringGroundVersion === 'v19' || this.ringGroundVersion === 'v20'
       ? HOME_ART_GROUND_V14_AUDIT
       : HOME_ART_GROUND;
@@ -2030,7 +2116,7 @@ export class Hive217Experiment {
           <summary>Сверка грунта с рисунком</summary>
           <div class="ds-hive-lab-hud__group">
             <label><input type="checkbox" data-action="terrain-audit"> Режим ручной сверки</label>
-            <small>Включи режим, выбери клетку на чистой подложке и укажи, какой грунт виден на рисунке. Неизменённые клетки считаются совпавшими с планом.</small>
+            <small data-role="terrain-audit-help">Включи режим, выбери клетку на чистой подложке и укажи, какой грунт виден на рисунке. Неизменённые клетки считаются совпавшими с планом.</small>
             <div class="ds-hive-lab-hud__audit-counts" data-role="terrain-audit-counts"></div>
             <div class="ds-hive-lab-hud__terrain-buttons" data-role="terrain-audit-buttons">
               <button type="button" data-art-terrain="S">S · земля</button>
@@ -2150,7 +2236,9 @@ export class Hive217Experiment {
         <div class="ds-hive-lab-hud__save-actions">
           <button type="button" data-action="save-building-snapshot">Запомнить постройки</button>
           <button type="button" data-action="restore-building-snapshot">Вернуть снимок</button>
+          <button type="button" data-action="export-showcase">Экспорт полигона</button>
         </div>
+        <pre data-role="showcase-export" hidden style="white-space:pre-wrap;overflow-wrap:anywhere;max-height:240px;overflow:auto"></pre>
         <div class="ds-hive-lab-hud__actions">
           <button type="button" data-action="fill-all">Заполнить доступные</button>
           <button type="button" data-action="reset">Игровая застройка</button>
@@ -2235,6 +2323,24 @@ export class Hive217Experiment {
     hud.querySelector('[data-action="clear"]')?.addEventListener('click', () => this.clear());
     hud.querySelector('[data-action="save-building-snapshot"]')?.addEventListener('click', () => this.saveBuildingSnapshot());
     hud.querySelector('[data-action="restore-building-snapshot"]')?.addEventListener('click', () => this.restoreBuildingSnapshot());
+    hud.querySelector('[data-action="export-showcase"]')?.addEventListener('click', () => {
+      const output = hud.querySelector<HTMLElement>('[data-role="showcase-export"]');
+      if (!output) return;
+      output.textContent = JSON.stringify({
+        version: 1,
+        ground: `ring-${this.ringGroundVersion}`,
+        terrain: this.cells.map(cell => this.homeTerrainAt(cell.num)).join(''),
+        buildings: this.storedBuildingState().buildings,
+        selectedCell: this.selectedCell,
+        fusions: this.fusionsEnabled,
+        contactShadows: this.contactShadowsEnabled,
+        shadows: this.shadowsEnabled,
+        shadowTuning: this.shadowTuning,
+        animation: this.animationEnabled,
+        animationIntensity: this.animationIntensity,
+      }, null, 2);
+      output.hidden = false;
+    });
     hud.querySelector('[data-action="complete"]')?.addEventListener('click', () => this.completeSelected());
     hud.querySelector('[data-action="power"]')?.addEventListener('click', () => this.toggleSelectedPower());
     hud.querySelectorAll('[data-action="demolish"]').forEach((button) => button.addEventListener('click', () => this.demolishSelected()));
@@ -2263,7 +2369,7 @@ export class Hive217Experiment {
       ? Math.round(this.fpsSamples.reduce((sum, value) => sum + value, 0) / this.fpsSamples.length)
       : 0;
     const hovered = this.hoveredCell ?? this.selectedCell;
-    const plannedTerrainCode = this.terrain[hovered];
+    const plannedTerrainCode = this.auditReferenceAt(hovered);
     const terrainCode = this.terrainAuditEnabled ? this.actualTerrain[hovered] : this.homeTerrainAt(hovered);
     const existingFusionCount = fusionCount ?? this.lastFusionCount;
     metrics.textContent = [
@@ -2300,6 +2406,7 @@ export class Hive217Experiment {
       const loadedTileCount = this.groundTiles.filter((tile) => tile.sprite).length;
       const groundPngBytes = !this.ringGroundEnabled
         ? RUNTIME_PNG_BYTES.legacy
+        : this.ringGroundVersion === 'v22' ? RUNTIME_PNG_BYTES.ringV22
         : this.ringGroundVersion === 'v04' ? RUNTIME_PNG_BYTES.ringV04
           : this.ringGroundVersion === 'v05' ? RUNTIME_PNG_BYTES.ringV05
             : this.ringGroundVersion === 'v07' ? RUNTIME_PNG_BYTES.ringV07
@@ -2331,29 +2438,36 @@ export class Hive217Experiment {
     const auditCounts = this.hud.querySelector<HTMLElement>('[data-role="terrain-audit-counts"]');
     const terrainContract = this.hud.querySelector<HTMLElement>('[data-role="terrain-contract"]');
     if (terrainContract) {
-      const source = this.ringGroundVersion === 'v14' || this.ringGroundVersion === 'v17' || this.ringGroundVersion === 'v19' || this.ringGroundVersion === 'v20' ? this.actualTerrain : this.terrain;
+      const source = this.ringGroundVersion === 'v22' ? this.v22AssignedTerrain : this.ringGroundVersion === 'v14' || this.ringGroundVersion === 'v17' || this.ringGroundVersion === 'v19' || this.ringGroundVersion === 'v20' ? this.actualTerrain : this.terrain;
       const count = (code: HomeTerrainCode) => source.filter((value) => value === code).length;
       terrainContract.textContent = `${count('S')} земли · ${count('D')} песка · ${count('G')} травы · ${count('W')} воды · центр X`;
     }
-    const mismatchCount = this.actualTerrain.reduce((sum, code, index) => sum + (code === this.terrain[index] ? 0 : 1), 0);
+    const mismatchCount = this.actualTerrain.reduce((sum, code, index) => sum + (code === this.auditReferenceAt(index) ? 0 : 1), 0);
     if (auditCounts) {
       const rows = TERRAIN_AUDIT_CODES.map((code) => {
         const actual = this.actualTerrain.filter((value) => value === code).length;
-        const target = TERRAIN_TARGET_COUNTS[code];
+        const target = this.ringGroundVersion === 'v22' ? this.v22AssignedTerrain.filter(value => value === code).length : TERRAIN_TARGET_COUNTS[code];
         const delta = actual - target;
         const deltaLabel = delta === 0 ? '0' : delta > 0 ? `+${delta}` : String(delta);
         const deltaClass = delta === 0 ? 'is-even' : delta > 0 ? 'is-extra' : 'is-missing';
         return `<div><b>${code}</b><span>${TERRAIN_NAMES[code]}</span><span>${actual} / ${target}</span><em class="${deltaClass}">${deltaLabel}</em></div>`;
       }).join('');
-      auditCounts.innerHTML = `<strong>${mismatchCount} отличий от плана</strong>${rows}`;
+      const v22 = v22AuditCounts(this.v22AssignedTerrain, this.actualTerrain, this.v22ReviewedCells);
+      auditCounts.innerHTML = this.ringGroundVersion === 'v22'
+        ? `<strong>${v22.mismatches} несовпадений · проверено ${v22.reviewed} / 217</strong><small>Не проверено: ${217 - v22.reviewed}. Таблица: рисунок / назначение V14. ✓ — проверенная клетка.</small>${rows}`
+        : `<strong>${mismatchCount} отличий от плана</strong>${rows}`;
     }
     const selectedActualTerrain = this.actualTerrain[this.selectedCell];
+    if (this.ringGroundVersion === 'v22') {
+      const auditStatus = this.hud.querySelector<HTMLElement>('[data-role="terrain-audit-status"]');
+      if (auditStatus) auditStatus.textContent = `Клетка #${this.selectedCell}: назначение ${this.auditReferenceAt(this.selectedCell)}, рисунок ${selectedActualTerrain}. ${this.v22ReviewedCells.has(this.selectedCell) ? 'Проверена ✓.' : 'Ещё не проверена.'} Сверка сохраняется отдельно в этом браузере.`;
+    }
     this.hud.querySelectorAll<HTMLButtonElement>('[data-art-terrain]').forEach((button) => {
       button.classList.toggle('is-active', button.dataset.artTerrain === selectedActualTerrain);
       button.disabled = !this.terrainAuditEnabled;
     });
 
-    const selectedTerrainCode = this.terrain[this.selectedCell];
+    const selectedTerrainCode = this.auditReferenceAt(this.selectedCell);
     const selectedGameplayTerrainCode = this.homeTerrainAt(this.selectedCell);
     const selectedTerrain = TERRAIN_NAMES[selectedGameplayTerrainCode] ?? selectedGameplayTerrainCode;
     const selectedCellMeta = this.cells[this.selectedCell];
@@ -2376,7 +2490,9 @@ export class Hive217Experiment {
     }
     if (stateText) {
       stateText.textContent = this.terrainAuditEnabled
-        ? selectedTerrainCode === selectedActualTerrain
+        ? this.ringGroundVersion === 'v22' && !this.v22ReviewedCells.has(this.selectedCell)
+          ? 'Ещё не проверена. Нажми код грунта на рисунке, даже если он совпадает с назначением.'
+        : selectedTerrainCode === selectedActualTerrain
           ? 'Пока считается совпавшей с планом. Если рисунок показывает другой грунт, выбери его выше.'
           : `Отмечено расхождение: по плану ${TERRAIN_NAMES[selectedTerrainCode]}, на рисунке ${TERRAIN_NAMES[selectedActualTerrain]}.`
         : selectedGameplayTerrainCode === 'X'
